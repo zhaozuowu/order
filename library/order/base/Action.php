@@ -6,6 +6,17 @@
  */
 abstract class Order_Base_Action extends Nscm_Base_Action {
 
+    abstract function myConstruct();
+
+    /**
+     * init function
+     */
+    public function init()
+    {
+        parent::init();
+        $this->myConstruct();
+    }
+
     /**
      * define it Order_Define_Const::METHOD_GET or Order_Define_Const::METHOD_POST
      * @var int $intMethod
