@@ -1,9 +1,9 @@
 Image:
-    type : default
+    type : wm-centos6u5
 BeforeBuild:
     script :
 Build:
-    script :
+    script : ./build.sh
 AfterBuild:
     script :
 Package:
@@ -11,4 +11,4 @@ Package:
     artifacts:
         name : application
         version : $COMMIT_ID-$BUILD_ID
-        files : [./ci.yml] # seperate multiple files by comma
+        files : [./output] # seperate multiple files by comma
