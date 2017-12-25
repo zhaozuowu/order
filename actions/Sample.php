@@ -29,12 +29,19 @@ class Action_Sample extends Order_Base_Action
     private $objPage;
 
     /**
+     * init object
+     */
+    public function myConstruct()
+    {
+        $this->objPage = new Service_Page_Sample();
+    }
+
+    /**
      * real execute
      * @return array
      */
     public function myExecute()
     {
-        $this->objPage = new Service_Page_Sample();
         return $this->objPage->execute($this->arrFilterResult);
     }
 
