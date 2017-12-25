@@ -1,47 +1,50 @@
 <?php
 /**
  * @name Action_Sample
- * @desc sample action, 和url对应
- * @author nscm
+ * @desc Action_Sample
+ * @author lvbochao@iwaimai.baidu.com
  */
-class Action_Sample extends Ap_Action_Abstract {
 
-	public function execute() {
-		//1. check if user is login as needed
-		$arrUserinfo = Saf_SmartMain::getUserInfo();
-		if (empty($arrUserinfo)) {
-    		//ouput error
-    	}
-    	
-	    //2. get and validate input params
-	    $arrRequest = Saf_SmartMain::getCgi();
-        $arrInput = $arrRequest['get'];
-        if(!isset($arrInput['id'])){
-        	//output error
-        }
-        Bd_Log::debug('request input', 0, $arrInput);
-        
-	    //3. call PageService
-		$objServicePageSample = new Service_Page_Sample();
-		$arrPageInfo = $objServicePageSample->execute($arrInput);
-		
+class Action_Sample extends Order_Base_Action
+{
+    /**
+     * input params
+     * @var array
+     */
+    protected $arrInputParams = [
+        'param1' => 'int|required',
+        'param2' => 'int|required',
+    ];
 
-		//4. chage data to out format
-		$arrOutput = $arrPageInfo;
-		
-		//5. build page
-		// smarty模板，以下渲染模板的代码依赖于提供一个tpl模板
-		//$tpl = Bd_TplFactory::getInstance();
-	    //$tpl->assign($arrOutput);
-	    //$tpl->display('en/newapp/index.tpl');
-		
-		//这里直接输出,作为示例
-		$strOut = $arrOutput['data'];
-        echo $strOut;
+    /**
+     * method
+     * @var int
+     */
+    protected $intMethod = Order_Define_Const::METHOD_POST;
 
-		//notice日志信息打印，只需要添加日志信息，saf会自动打一条log
-		Bd_Log::addNotice('out', $arrOutput);
+    /**
+     * page service
+     * @var Service_Page_Sample
+     */
+    private $objPage;
 
-	}
+    /**
+     * real execute
+     * @return array
+     */
+    public function myExecute()
+    {
+        $this->objPage = new Service_Page_Sample();
+        return $this->objPage->execute($this->arrFilterResult);
+    }
 
+    /**
+     * format result
+     * @param array $data
+     * @return array
+     */
+    public function format($data)
+    {
+        return $data;
+    }
 }
