@@ -15,7 +15,7 @@
  * @property int $sku_price_tax
  * @property int $stockin_order_sku_total_price
  * @property int $stockin_order_sku_total_price_tax
- * @property int $stockin_order_sku_plan_amount
+ * @property int $purchase_order_sku_plan_amount
  * @property int $stockin_order_sku_real_amount
  * @property string $stockin_order_sku_extra_info
  * @property int $is_delete
@@ -40,7 +40,7 @@
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
 */
 
-class Model_Orm_StockinOrderSku extends Wm_Orm_ActiveRecord
+class Model_Orm_StockinOrderSku extends Model_Orm_OrderBase
 {
 
     public static $tableName = 'stockin_order_sku';

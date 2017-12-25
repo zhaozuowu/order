@@ -40,7 +40,7 @@
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
 */
 
-class Model_Orm_PurchaseOrderSku extends Wm_Orm_ActiveRecord
+class Model_Orm_PurchaseOrderSku extends Model_Orm_OrderBase
 {
 
     public static $tableName = 'purchase_order_sku';
