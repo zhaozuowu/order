@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @property int $id
+ * @property int $stockout_order_id
+ * @property int $stockout_order_status
+ * @property int $destroy_order_status
+ * @property int $business_form_order_id
+ * @property int $stockout_order_type
+ * @property int $warehouse_id
+ * @property string $warehouse_name
+ * @property int $stockout_order_source
+ * @property int $expect_send_time
+ * @property int $stockout_order_amount
+ * @property int $stockout_order_distribute_amount
+ * @property int $stockout_order_pickup_amount
+ * @property string $stockout_order_remark
+ * @property string $customer_name
+ * @property int $customer_id
+ * @property string $customer_contactor
+ * @property int $stockout_order_total_price
+ * @property string $customer_contact
+ * @property string $customer_address
+ * @property int $stockout_order_is_print
+ * @property int $create_time
+ * @property int $update_time
+ * @property int $is_delete
+ * @property int $version
+ * @method static Model_Orm_StockoutOrder findOne($condition, $orderBy = [], $lockOption = '')
+ * @method static Model_Orm_StockoutOrder[] findAll($cond, $orderBy = [], $offset = 0, $limit = null, $with = [])
+ * @method static Generator|Model_Orm_StockoutOrder[] yieldAll($cond, $orderBy = [], $offset = 0, $limit = null)
+ * @method static Model_Orm_StockoutOrder findOneFromRdview($condition, $orderBy = [], $lockOption = '')
+ * @method static findRowFromRdview($columns, $condition, $orderBy = [])
+ * @method static Model_Orm_StockoutOrder[] findAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null, $with = [])
+ * @method static findRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
+ * @method static findColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
+ * @method static findValueFromRdview($column, $cond, $orderBy = [])
+ * @method static findFromRdview($cond = [])
+ * @method static findBySqlFromRdview($sql, $asArray = true)
+ * @method static countFromRdview($cond, $column = '*')
+ * @method static existsFromRdview($cond)
+ * @method static Generator|Model_Orm_StockoutOrder[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
+ * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
+ * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
+*/
+
+class Model_Orm_StockoutOrder extends Wm_Orm_ActiveRecord
+{
+
+    public static $tableName = 'stockout_order';
+    public static $dbName = 'nwms_order';
+    public static $clusterName = 'nwms_order_cluster';
+}
