@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @name Service_Page_DeliveryOrder
- * @desc TMS完成揽收
- * @author nscm
+ * @name Service_Page_GetBusinessFormOrderList
+ * @desc 查询业态订单列表
+ * @author zhaozuowu@iwaimai.baidu.com
  */
-class Service_Page_DeliveryOrder
+class Service_Page_GetBusinessFormOrderList
 {
     /**
      * @var Service_Data_StockoutOrder
@@ -28,6 +28,6 @@ class Service_Page_DeliveryOrder
      */
     public function execute($arrInput)
     {
-        return $this->objStockoutOrder->deliveryOrder($arrInput);
+        return $this->objStockoutOrder->getBusinessFormOrderList($arrInput);
     }
 }

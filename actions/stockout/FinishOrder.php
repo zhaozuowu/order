@@ -5,7 +5,7 @@
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
-class Action_DeliveryOrder extends Order_Base_Action
+class Action_FinishOrder extends Order_Base_Action
 {
     protected $boolCheckLogin = false;
     protected $boolCheckAuth = false;
@@ -15,6 +15,7 @@ class Action_DeliveryOrder extends Order_Base_Action
      */
     protected $arrInputParams = [
         'stockout_order_id' => 'int|required',
+        'signup_status' => 'int|required',
     ];
 
     /**
