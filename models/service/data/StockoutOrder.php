@@ -62,6 +62,7 @@ class Service_Data_StockoutOrder
             return [];
         }
         $stockoutOrderInfo = $stockoutOrderInfo->toArray();
+
         Bd_Log::debug(__METHOD__ . ' return: ' . json_encode($stockoutOrderInfo));
         return $stockoutOrderInfo;
 
@@ -105,5 +106,47 @@ class Service_Data_StockoutOrder
         $result = $keys[array_search($stockoutOrderStatus, $keys) + 1] ?? false;
         return $result;
 
+    }
+
+    /**
+     * 根据出库单号，完成揽收
+     * @param $arrInput
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function deliveryOrder($arrInput)
+    {
+        $stockoutOrderId = isset($arrInput['stockout_order_id']) ? intval($arrInput['stockout_order_id']) : 0;
+
+        if (empty($stockoutOrderId)) {
+            Bd_Log::warning(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+        $stockoutOrderInfo = $this->getStockoutOrderInfoById($stockoutOrderId);//获取出库订单信息
+
+        if (empty($stockoutOrderInfo)) {
+            Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $stockoutOrderId . 'no data');
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
+        }
+
+        $stayRecevied = Service_Data_StockoutOrder::STAY_RECEIVED_STOCKOUT_ORDER_STATUS;//获取待揽收状态
+        if ($stockoutOrderInfo['stockout_order_status'] != $stayRecevied) {
+            Bd_Log::warning(__METHOD__ . ' no allow update stockout_order_status become stockoutinfo:' . json_encode($stockoutOrderInfo));
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
+
+        }
+
+        $nextStockoutOrderStatus = $this->getNextStockoutOrderStatus($stockoutOrderInfo['stockout_order_status']);//获取下一步操作状态
+        if (empty($nextStockoutOrderStatus)) {
+            Bd_Log::warning(__METHOD__ . ' update stockout_order_status fail  become stockoutinfo:' . json_encode($stockoutOrderInfo));
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+        }
+        $updateData = ['stockout_order_status' => $nextStockoutOrderStatus];
+        $result = $this->updateStockoutOrderStatusById($stockoutOrderId, $updateData);
+        if (empty($result)) {
+            Bd_Log::warning(__METHOD__ . ' update stockout_order_status fail  become stockoutinfo:' . json_encode($stockoutOrderInfo));
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+        }
+        return [];
     }
 }
