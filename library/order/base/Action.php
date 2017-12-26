@@ -9,6 +9,11 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
     abstract function myConstruct();
 
     /**
+     * @var Order_Base_Page
+     */
+    protected $objPage;
+
+    /**
      * init function
      */
     public function init()
@@ -51,4 +56,15 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
             $this->objValidator->addValidator($key, $arrInput[$key], $value);
         }
     }
+
+    /**
+     * real execute
+     * @return array
+     */
+    public function myExecute()
+    {
+        $arrResult = $this->objPage->execute($this->arrFilterResult);
+        return $arrResult;
+    }
+
 }
