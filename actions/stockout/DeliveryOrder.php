@@ -36,16 +36,7 @@ class Action_DeliveryOrder extends Order_Base_Action
     {
         $this->objDeliveryOrder = new Service_Page_DeliveryOrder();
     }
-
-    /**
-     * execute
-     * @return array
-     */
-    public function myExecute()
-    {
-        return $this->objDeliveryOrder->execute($this->arrFilterResult);
-    }
-
+    
     /**
      * format result
      * @param array $data
