@@ -23,26 +23,11 @@ class Action_Sample extends Order_Base_Action
     protected $intMethod = Order_Define_Const::METHOD_POST;
 
     /**
-     * page service
-     * @var Service_Page_Sample
-     */
-    private $objPage;
-
-    /**
      * init object
      */
     public function myConstruct()
     {
         $this->objPage = new Service_Page_Sample();
-    }
-
-    /**
-     * real execute
-     * @return array
-     */
-    public function myExecute()
-    {
-        return $this->objPage->execute($this->arrFilterResult);
     }
 
     /**
