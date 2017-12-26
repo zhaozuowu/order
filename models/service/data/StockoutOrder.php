@@ -43,53 +43,6 @@ class Service_Data_StockoutOrder
 
     }
 
-    /**
-     * 根据出库单号获取出库单信息
-     * @param $stockoutOrderId 出库单号
-     * @return array
-     */
-    public function getStockoutOrderInfoById($stockoutOrderId)
-    {
-        Bd_Log::debug(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
-        $stockoutOrderId = empty($stockoutOrderId) ? 0 : intval($stockoutOrderId);
-        if (empty($stockoutOrderId)) {
-            return [];
-        }
-
-        $condition = ['stockout_order_id' => $stockoutOrderId];
-        $stockoutOrderInfo = $this->objOrmStockoutOrder->findOne($condition);
-        if (empty($stockoutOrderInfo)) {
-            return [];
-        }
-        $stockoutOrderInfo = $stockoutOrderInfo->toArray();
-
-        Bd_Log::debug(__METHOD__ . ' return: ' . json_encode($stockoutOrderInfo));
-        return $stockoutOrderInfo;
-
-
-    }
-
-    /**
-     * 根据出库单号更新出库单状态
-     * @param $stockoutOrderId
-     * @param $updateData
-     * @return bool|int|mysqli|null
-     */
-    public function updateStockoutOrderStatusById($stockoutOrderId, $updateData)
-    {
-        Bd_Log::debug(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
-        $stockoutOrderId = empty($stockoutOrderId) ? 0 : intval($stockoutOrderId);
-        if (empty($stockoutOrderId)) {
-            return false;
-        }
-        $condition = ['stockout_order_id' => $stockoutOrderId];
-        $stockoutOrderInfo = $this->objOrmStockoutOrder->findOne($condition);
-        if (empty($stockoutOrderInfo)) {
-            return false;
-        }
-        $res = $stockoutOrderInfo->update($updateData);
-        return $res;
-    }
 
     /**
      * 获取下一步操作的出库单操作状态
@@ -109,7 +62,7 @@ class Service_Data_StockoutOrder
     }
 
     /**
-     * 根据出库单号，完成揽收
+     * 根据出库单号，更新出库单状态完成揽收
      * @param $arrInput
      * @return array
      * @throws Order_BusinessError
@@ -122,7 +75,7 @@ class Service_Data_StockoutOrder
             Bd_Log::warning(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
-        $stockoutOrderInfo = $this->getStockoutOrderInfoById($stockoutOrderId);//获取出库订单信息
+        $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($stockoutOrderId);//获取出库订单信息
 
         if (empty($stockoutOrderInfo)) {
             Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $stockoutOrderId . 'no data');
@@ -142,7 +95,7 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
         }
         $updateData = ['stockout_order_status' => $nextStockoutOrderStatus];
-        $result = $this->updateStockoutOrderStatusById($stockoutOrderId, $updateData);
+        $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($stockoutOrderId, $updateData);
         if (empty($result)) {
             Bd_Log::warning(__METHOD__ . ' update stockout_order_status fail  become stockoutinfo:' . json_encode($stockoutOrderInfo));
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
