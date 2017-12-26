@@ -82,8 +82,11 @@ class Service_Data_StockoutOrder
             return false;
         }
         $condition = ['stockout_order_id' => $stockoutOrderId];
-        $res = $this->objOrmStockoutOrder->update($updateData, $condition);
-        var_dump($res);exit();
+        $stockoutOrderInfo = $this->objOrmStockoutOrder->findOne($condition);
+        if (empty($stockoutOrderInfo)) {
+            return false;
+        }
+        $res = $stockoutOrderInfo->update($updateData);
         return $res;
     }
 
