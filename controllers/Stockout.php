@@ -7,5 +7,6 @@
 class Controller_Stockout extends Ap_Controller_Abstract {
     public $actions = array(
         'deliveryorder' => 'actions/stockout/DeliveryOrder.php',
+        'createStockoutOrder' => 'actions/stockout/CreateStockoutOrder.php',
     );
 }
