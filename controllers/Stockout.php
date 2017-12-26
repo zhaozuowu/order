@@ -6,6 +6,6 @@
  */
 class Controller_Stockout extends Ap_Controller_Abstract {
     public $actions = array(
-        'deliveryorder' => 'actions/DeliveryOrder.php',
+        'deliveryorder' => 'actions/stockout/DeliveryOrder.php',
     );
 }

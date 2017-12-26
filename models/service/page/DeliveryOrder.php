@@ -28,24 +28,30 @@ class Service_Page_DeliveryOrder
         $stockoutOrderId = isset($arrInput['stockout_order_id']) ? intval($arrInput['stockout_order_id']) : 0;
 
         if (empty($stockoutOrderId)) {
-            throw  new Exception('参数有误', 1000);
+            throw  new Exception(Order_Error_Message::PARAMS_ERROR, Order_Error_Code::PARAMS_ERROR);
         }
 
-        $stockoutOrderInfo = $this->objStockoutOrder->getStockoutOrderInfoById($stockoutOrderId);
+        $stockoutOrderInfo = $this->objStockoutOrder->getStockoutOrderInfoById($stockoutOrderId);//获取出库订单信息
 
         if (empty($stockoutOrderInfo)) {
-            throw  new Exception('订单不存在', 2000);
+            throw  new Exception(Order_Error_Message::STOCKOUT_ORDER_NO_EXISTS, Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
         }
 
-        if ($stockoutOrderInfo['stockout_order_status'] != 20) {
-            throw  new Exception('订单状态有误', 2000);
+        $stayRecevied = Service_Data_StockoutOrder::STAY_RECEIVED_STOCKOUT_ORDER_STATUS;//获取待揽收状态
+        if ($stockoutOrderInfo['stockout_order_status'] != $stayRecevied) {
+            throw  new Exception(Order_Error_Message::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE, Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
         }
 
-        $result = $this->objStockoutOrder->updateStockoutOrderStatusById($stockoutOrderId);
-
+        $nextStockoutOrderStatus = $this->objStockoutOrder->getNextStockoutOrderStatus($stockoutOrderInfo['stockout_order_status']);//获取下一步操作状态
+        if (empty($nextStockoutOrderStatus)) {
+            throw  new Exception(Order_Error_Message::STOCKOUT_ORDER_STATUS_UPDATE_FAIL, Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+        }
+        $updateData = ['stockout_order_status' => $nextStockoutOrderStatus];
+        $result = $this->objStockoutOrder->updateStockoutOrderStatusById($stockoutOrderId, $updateData);
         if (empty($result)) {
-            throw  new Exception('更新失败', 3000);
+            throw  new Exception(Order_Error_Message::STOCKOUT_ORDER_STATUS_UPDATE_FAIL, Order_Error_Message::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
         }
+        return [];
 
     }
 }
