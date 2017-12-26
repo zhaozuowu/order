@@ -4,7 +4,7 @@
  * @desc sample page service, 和action对应，组织页面逻辑，组合调用data service
  * @author nscm
  */
-class Service_Page_Sample {
+class Service_Page_Sample implements Order_Base_Page {
     private $objServiceDataSample;
     public function __construct(){
         $this->objServiceDataSample = new Service_Data_Sample();
