@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_Sample
- * @desc Action_Sample
- * @author lvbochao@iwaimai.baidu.com
+ * @name Action_CreateBusinessFormOrder
+ * @desc Action_CreateBusinessFormOrder
+ * @author jinyu02@iwaimai.baidu.com
  */
 
-class Action_Sample extends Order_Base_Action
+class Action_CreateBusinessFormOrder extends Order_Base_Action
 {
     /**
      * input params
@@ -27,7 +27,7 @@ class Action_Sample extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Sample();
+        $this->objPage = new Service_Page_Business_CreateBusinessForm();
     }
 
     /**

@@ -25,4 +25,14 @@ class  Order_Define_Const
         self::NOT_DELETE => '未删除',
         self::IS_DELETE  => '已删除',
     ];
+
+    /**
+     * get方法
+     */
+    const METHOD_GET = 1;
+
+    /**
+     * post方法
+     */
+    const METHOD_POST = 2;
 }
