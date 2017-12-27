@@ -49,6 +49,17 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
     public static $clusterName = 'nwms_order_cluster';
 
     /**
+     * update status
+     * @param $intStatus
+     * @return bool
+     */
+    public function updateStatus($intStatus)
+    {
+        $this->purchase_order_status = $intStatus;
+        return $this->update();
+    }
+
+    /**
      * get purchase info by nscm purchase order id
      * @param $intNscmPurchaseOrderId
      * @return Model_Orm_PurchaseOrder

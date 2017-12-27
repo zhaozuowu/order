@@ -8,5 +8,6 @@ class Controller_Purchase extends Ap_Controller_Abstract {
     public $actions = array(
         'createpurchaseorder' => 'actions/purchase/CreatePurchaseOrder.php',
         'createpurchaseorderwrite' => 'actions/purchase/CreatePurchaseOrderWrite.php',
+        'destroypurchaseorder' => 'actions/purchase/DestroyPurchaseOrder.php',
     );
 }

@@ -6,6 +6,27 @@
  */
 
 class Service_Data_Purchase_PurchaseOrder {
+
+    /**
+     * destroy purchase order
+     * @param $intNscmPurchaseOrderId
+     * @param $intDestroyType
+     */
+    public function destroyPurchaseOrder($intNscmPurchaseOrderId, $intDestroyType)
+    {
+        $intStatus = Order_Define_PurchaseOrder::NSCM_DESTROY_STATUS[$intDestroyType];
+        if (empty($intStatus)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+        $objPurchaseOrder = Model_Orm_PurchaseOrder::getPurchaseInfoByNscmPurchaseOrderId($intNscmPurchaseOrderId);
+        if (empty($objPurchaseOrder)) {
+            Order_BusinessError::throwException(Order_Error_Code::NSCM_PURCHASE_ORDER_NOT_EXIST);
+        }
+        if (!isset(Order_Define_PurchaseOrder::ALLOW_DESTROY[$objPurchaseOrder->purchase_order_status])) {
+            Order_BusinessError::throwException(Order_Error_Code::NSCM_PURCHASE_ORDER_NOT_ALLOW_DESTROY);
+        }
+        $objPurchaseOrder->updateStatus($intStatus);
+    }
     
     /**
      * create purchase order by nscm purchase order id
