@@ -53,6 +53,7 @@ class Order_Define_PurchaseOrder
 
     /**
      * 允许作废的状态
+     * @var array
      */
     const ALLOW_DESTROY = [
         self::STATUS_STOCKING => true,
