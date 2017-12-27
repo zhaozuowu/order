@@ -46,4 +46,37 @@ class Model_Orm_PurchaseOrderSku extends Order_Base_Orm
     public static $tableName = 'purchase_order_sku';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * create purchase order sku
+     * @param $arrPurchaseOrderSkus
+     * @param $intPurchaseOrderId
+     * @return int
+     */
+    public static function createPurchaseOrderSku($arrPurchaseOrderSkus, $intPurchaseOrderId)
+    {
+        $arrDbPurchaseOrderSkus = [];
+        foreach ($arrPurchaseOrderSkus as $arrInputRow) {
+            $arrRow = [
+                'purchase_order_id' => $intPurchaseOrderId,
+                'sku_id' => $arrInputRow['sku_id'],
+                'upc_id' => $arrInputRow['upc_id'],
+                'upc_unit' => $arrInputRow['upc_unit'],
+                'upc_unit_num' => $arrInputRow['upc_unit_num'],
+                'sku_name' => $arrInputRow['sku_name'],
+                'sku_net' => $arrInputRow['sku_net'],
+                'sku_net_unit' => $arrInputRow['sku_net_unit'],
+                'sku_net_gram' => $arrInputRow['sku_net_gram'],
+                'sku_price' => $arrInputRow['sku_price'],
+                'sku_price_tax' => $arrInputRow['sku_price_tax'],
+                'purchase_order_sku_total_price' => $arrInputRow['purchase_order_sku_total_price'],
+                'purchase_order_sku_total_price_tax' => $arrInputRow['purchase_order_sku_total_price_tax'],
+                'purchase_order_sku_plan_amount' => $arrInputRow['purchase_order_sku_plan_amount'],
+                'stockin_order_sku_real_amount' => 0,
+                'stockin_order_sku_extra_info' => '',
+            ];
+            $arrDbPurchaseOrderSkus[] = $arrRow;
+        }
+        return self::batchInsert($arrDbPurchaseOrderSkus);
+    }
 }
