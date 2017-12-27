@@ -29,6 +29,6 @@ class Service_Page_DeliveryOrder
     public function execute($arrInput)
     {
         $strStockoutOrderId = isset($arrInput['stockout_order_id']) ? intval($arrInput['stockout_order_id']) : 0;
-        return $this->objStockoutOrder->deliveryOrder($strStockoutOrderId);
+        return $this->objStockoutOrder->deliveryOrder();
     }
 }

@@ -158,12 +158,13 @@ class Service_Data_BusinessFormOrder
         if (empty($arrBusinessFormOrderList)) {
             return [];
         }
+        $arrWarehouseIds = array_column($arrBusinessFormOrderList, 'warehouse_id');
         $arrOrderIds = array_column($arrBusinessFormOrderList, 'business_form_order_id');
+        // $arrWarehouseList = $this->getWarehouseList($arrWarehouseIds);
         $colums = ['business_form_order_id', 'sum(order_amount) as  order_amount', 'sum(distribute_amount) as distribute_amount '];
         $arrSkuConditions['business_form_order_id'] = ['in', $arrOrderIds];
         $arrSkuList = Model_Orm_BusinessFormOrderSku::find($arrSkuConditions)->select($colums)->groupBy(['business_form_order_id'])->rows();
         $arrSkuList = array_column($arrSkuList, null, 'business_form_order_id');
-
         foreach ($arrBusinessFormOrderList as $key => $item) {
 
             $arrBusinessFormOrderList[$key]['order_amount'] = isset($arrSkuList[$item['business_form_order_id']]) ? $arrSkuList[$item['business_form_order_id']]['order_amount'] : 0;
@@ -213,4 +214,37 @@ class Service_Data_BusinessFormOrder
         }
         return $arrConditions;
     }
+
+    /**
+     * 根据业态订单id查询业态订单明细
+     * @param $strOrderid
+     * @return array|Model_Orm_BusinessFormOrder
+     */
+    public function getBusinessFormOrderByid($strOrderid)
+    {
+        if (empty($strOrderid)) {
+            return [];
+        }
+        $condition['business_form_order_id'] = $strOrderid;
+        $arrBusFormOrderList = Model_Orm_BusinessFormOrder::findOne($condition);
+        $arrBusFormOrderList = empty($arrBusFormOrderList) ? [] : $arrBusFormOrderList->toArray();
+        if (empty($arrBusFormOrderList)) {
+            return [];
+        }
+
+        // $arrWarehouseList = $this->getWarehouseList($arrWarehouseIds);
+        $colums = ['sum(order_amount) as  order_amount', 'sum(distribute_amount) as distribute_amount'];
+        $arrSkuConditions = ['business_form_order_id' => $arrBusFormOrderList['business_form_order_id']];
+        $arrSkuList = Model_Orm_BusinessFormOrderSku::find($arrSkuConditions)->select($colums)->groupBy(['business_form_order_id'])->row();
+        if (empty($arrSkuList)) {
+            return $arrBusFormOrderList;
+        }
+        $arrBusFormOrderList = array_merge($arrBusFormOrderList, $arrSkuList);
+        $skuInfo = Model_Orm_BusinessFormOrderSku::findRows(['*'], $arrSkuConditions);
+        $arrBusFormOrderList['skus'] = $skuInfo;
+        return $arrBusFormOrderList;
+
+    }
+
+
 }
