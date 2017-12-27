@@ -41,4 +41,21 @@ class Order_Define_PurchaseOrder
         self::STATUS_DUPLICATE_HUMAN => true,
         self::STATUS_DUPLICATE_TIME => true,
     ];
+
+    /**
+     * 彩云作废
+     * @var array
+     */
+    const NSCM_DESTROY_STATUS = [
+        1 => self::STATUS_DUPLICATE_HUMAN,
+        2 => self::STATUS_DUPLICATE_TIME,
+    ];
+
+    /**
+     * 允许作废的状态
+     * @var array
+     */
+    const ALLOW_DESTROY = [
+        self::STATUS_STOCKING => true,
+    ];
 }

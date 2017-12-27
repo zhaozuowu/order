@@ -4,8 +4,13 @@
  * @desc Order_Base_Action
  * @author lvbochao@iwaimai.baidu.com
  */
+
 abstract class Order_Base_Action extends Nscm_Base_Action {
 
+    /**
+     * constructor
+     * @return mixed
+     */
     abstract function myConstruct();
 
     /**
@@ -36,6 +41,12 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
     protected $arrInputParams;
 
     /**
+     * array validate
+     * @var array
+     */
+    private $arrArrayValidate;
+
+    /**
      * add general validate
      */
     public function beforeValidate()
@@ -52,8 +63,46 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
             trigger_error('must rewrite arrInputParams in class Action', E_ERROR );
             exit(-1);
         }
+        $this->arrArrayValidate = [];
         foreach ($this->arrInputParams as $key => $value) {
-            $this->objValidator->addValidator($key, $arrInput[$key], $value);
+            if (is_string($value)) {
+                $this->objValidator->addValidator($key, $arrInput[$key], $value);
+            } else if (is_array($value)) {
+                $this->objValidator->addValidator($key, $arrInput[$key], $value['validate']);
+                $this->arrArrayValidate[$key] = $value;
+            }
+        }
+    }
+
+    /**
+     * add validate
+     */
+    public function beforeMyExecute()
+    {
+        parent::beforeMyExecute();
+        foreach ($this->arrArrayValidate as $key => $value) {
+            $arrBefore = $this->arrFilterResult[$key];
+            if (!is_array($arrBefore)) {
+                trigger_error('array param must be decoded', E_ERROR );
+            }
+            if ('map' == $value['type']) {
+                $objValidator = new Wm_Validator();
+                foreach ($value['params'] as $strParamKey => $strValidate) {
+                    $objValidator->addValidator($strParamKey, $arrBefore[$strParamKey], $strValidate);
+                }
+                $arrResult = $objValidator->validate();
+            } else {
+                $arrResult = [];
+                foreach ($arrBefore as $row) {
+                    $objValidator = new Wm_Validator();
+                    foreach ($value['params'] as $strParamKey => $strValidate) {
+                        $objValidator->addValidator($strParamKey, $row[$strParamKey], $strValidate);
+                    }
+                    $arrResultRow = $objValidator->validate();
+                    $arrResult[] = $arrResultRow;
+                }
+            }
+            $this->arrFilterResult[$key] = $arrResult;
         }
     }
 

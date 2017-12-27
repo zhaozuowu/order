@@ -9,5 +9,7 @@ class Controller_Purchase extends Ap_Controller_Abstract {
         'createpurchaseorder' => 'actions/purchase/CreatePurchaseOrder.php',
         'getpurchaseorderlist' => 'actions/purchase/GetPurchaseOrderList.php',
         'getpurchaseorderstatistics' => 'actions/purchase/GetPurchaseOrderStatistics.php',
+        'createpurchaseorderwrite' => 'actions/purchase/CreatePurchaseOrderWrite.php',
+        'destroypurchaseorder' => 'actions/purchase/DestroyPurchaseOrder.php',
     );
 }
