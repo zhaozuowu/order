@@ -31,7 +31,7 @@
  * @method static Generator|Model_Orm_BusinessFormOrder[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
-*/
+ */
 
 class Model_Orm_BusinessFormOrder extends Wm_Orm_ActiveRecord
 {
@@ -39,4 +39,28 @@ class Model_Orm_BusinessFormOrder extends Wm_Orm_ActiveRecord
     public static $tableName = 'business_form_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+    public static $arrDefaultColumns = [
+        'id',
+        'business_form_order_id',
+        'business_form_order_type',
+        'business_form_order_price',
+        'business_form_order_remark',
+        'customer_id',
+        'status',
+        'customer_name',
+        'customer_contactor',
+        'customer_contact',
+        'customer_address',
+        'create_time',
+        'update_time',
+        'is_delete'
+    ];
+
+    public static function getBusinessFormOrderListByConditions($arrConditions, $arrColumns = [], $intOffset = null, $intLimit = null)
+    {
+        if (empty($arrColumns)) {
+            $arrColumns = self::$arrDefaultColumns;
+        }
+        return self::findRows($arrColumns, $arrConditions, ['create_time' => 'desc'], $intOffset, $intLimit);
+    }
 }

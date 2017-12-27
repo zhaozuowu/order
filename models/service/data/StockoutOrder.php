@@ -103,62 +103,6 @@ class Service_Data_StockoutOrder
     }
 
     /**
-     * 获取业态订单列表
-     * @param $arrInput
-     * @return array
-     */
-    public function getBusinessFormOrderList($arrInput)
-    {
-
-        $arrConditions = $this->getListConditions($arrInput);
-        if (false === $arrConditions) {
-            return [];
-        }
-        $intLimit = intval($arrInput['page_size']);
-        $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
-        $arrQuotationList = Model_Orm_Quotation::getQuotationListByConditions($arrConditions, [], $intOffset, $intLimit);
-        $objDsVendor = new Service_Data_Vendor();
-        $arrQuotationList = $objDsVendor->appendVendorNameToList($arrQuotationList);
-        return $arrQuotationList;
-
-    }
-
-    /**
-     * 获取查询的条件
-     *
-     * @param array $arrInput
-     * @return array
-     */
-    public function getListConditions($arrInput)
-    {
-        $arrConditions = [];
-        $arrConditions['is_delete'] = Order_Define_Const::NOT_DELETE;
-        if (!empty($arrInput['status'])) {
-            $arrConditions['quotation_status'] = $arrInput['quotation_status'];
-        }
-        if (!empty($arrInput['quotation_id'])) {
-            $arrConditions['quotation_id'] = $arrInput['quotation_id'];
-        }
-        if (!empty($arrInput['vendor_name'])) {
-            $arrVendorIds = Model_Orm_Vendor::getVendorIdsByVendorName($arrInput['vendor_name']);
-            if (empty($arrVendorIds)) {
-                return false;
-            }
-            $arrConditions['vendor_id'] = ['in', $arrVendorIds];
-        }
-        if (!empty($arrInput['quotation_creator'])) {
-            $arrConditions['quotation_create_uname'] = $arrInput['quotation_creator'];
-        }
-        if (!empty($arrInput['start_time'])) {
-            $arrConditions['quotation_end_time'] = ['>=', $arrInput['start_time']];
-        }
-        if (!empty($arrInput['end_time'])) {
-            $arrConditions['quotation_start_time'] = ['<=', $arrInput['end_time']];
-        }
-        return $arrConditions;
-    }
-
-    /**
      * 创建出库单
      * @param array $arrInput
      * @return bool

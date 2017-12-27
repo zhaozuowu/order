@@ -14,14 +14,13 @@ class Action_GetBusinessFormOrderList extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'page_num' => 'int',
+        'page_num' => 'int|default[1]',
         'page_size' => 'int|required',
-        'status' => 'int|required',
         'warehouse_id' => 'int',
         'business_form_order_id' => 'int',
         'business_form_order_status' => 'int',
         'business_form_order_type' => 'int',
-        'customer_name' => 'string',
+        'customer_name' => 'str',
         'customer_id' => 'int',
         'start_time' => 'int',
         'end_time' => 'int',
@@ -35,26 +34,18 @@ class Action_GetBusinessFormOrderList extends Order_Base_Action
 
     /**
      * page service
-     * @var Service_Page_DeliveryOrder
+     * @var Service_Page_GetBusinessFormOrderList
      */
-    private $objDeliveryOrder;
+    protected $objPage;
 
     /**
      * init object
      */
     public function myConstruct()
     {
-        $this->objDeliveryOrder = new Service_Page_GetBusinessFormOrderList();
+        $this->objPage = new Service_Page_GetBusinessFormOrderList();
     }
 
-    /**
-     * execute
-     * @return array
-     */
-    public function myExecute()
-    {
-        return $this->objDeliveryOrder->execute($this->arrFilterResult);
-    }
 
     /**
      * format result

@@ -8,7 +8,7 @@
 class Service_Page_GetBusinessFormOrderList
 {
     /**
-     * @var Service_Data_StockoutOrder
+     * @var Service_Data_BusinessFormOrder
      */
     protected $objStockoutOrder;
 
@@ -17,7 +17,7 @@ class Service_Page_GetBusinessFormOrderList
      */
     public function __construct()
     {
-        $this->objStockoutOrder = new Service_Data_StockoutOrder();
+        $this->objStockoutOrder = new Service_Data_BusinessFormOrder();
     }
 
 
@@ -28,6 +28,9 @@ class Service_Page_GetBusinessFormOrderList
      */
     public function execute($arrInput)
     {
-        return $this->objStockoutOrder->getBusinessFormOrderList($arrInput);
+        $arrList = $this->objStockoutOrder->getBusinessFormOrderList($arrInput);
+        $intTotal = $this->objStockoutOrder->getBusinessFormOrderCount($arrInput);
+        return ['total' => $arrList, 'orders' => $arrList];
+
     }
 }
