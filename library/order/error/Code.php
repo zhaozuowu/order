@@ -54,4 +54,9 @@ class Order_Error_Code extends Wm_Error_Code
     const  STOCKOUT_ORDER_STATUS_UPDATE_FAIL = 310007;
 
 
+    /**
+     * nscm采购单号已经被接收
+     */
+    const NSCM_PURCHASE_ORDER_HAS_BEEN_RECEIVED = 330001;
+
 }
