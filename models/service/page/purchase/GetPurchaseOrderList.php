@@ -8,7 +8,7 @@
 class Service_Page_Purchase_GetPurchaseOrderList implements Order_Base_Page
 {
     /**
-     *
+     * Page Data服务对象，进行数据校验和处理
      * @var Service_Data_PurchaseOrder
      */
     private $objServiceData;
@@ -28,36 +28,37 @@ class Service_Page_Purchase_GetPurchaseOrderList implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $purchaseOrderStatus = $arrInput['purchase_order_status'];
-        $arrWarehouseId = $arrInput['warehouse_id'];
-        $purchaseOrderId = $arrInput['purchase_order_id'];
-        $vendorId = $arrInput['vendor_id'];
-        $createTime = [
+        $strPurchaseOrderStatus = $arrInput['purchase_order_status'];
+        $strWarehouseId = $arrInput['warehouse_id'];
+        $strPurchaseOrderId = $arrInput['purchase_order_id'];
+        $intVendorId = $arrInput['vendor_id'];
+        $arrCreateTime = [
             'start' => $arrInput['create_time_start'],
             'end' => $arrInput['create_time_end'],
         ];
 
-        $OrderPlanTime = [
+        $arrOrderPlanTime = [
             'start' => $arrInput['purchase_order_plan_time_start'],
             'end' => $arrInput['purchase_order_plan_time_end'],
         ];
 
-        $stockinTime = [
+        $arrStockinTime = [
             'start' => $arrInput['stockin_time_start'],
             'end' => $arrInput['stockin_time_end'],
         ];
 
-        $pageNum = $arrInput['page_num'];
-        $pageSize = $arrInput['page_size'];
+        $intPageNum = $arrInput['page_num'];
+        $intPageSize = $arrInput['page_size'];
 
-        return $this->objServiceData->getPurchaseOrderList($purchaseOrderStatus,
-            $arrWarehouseId,
-            $purchaseOrderId,
-            $vendorId,
-            $createTime,
-            $OrderPlanTime,
-            $stockinTime,
-            $pageNum,
-            $pageSize);
+        return $this->objServiceData->getPurchaseOrderList(
+            $strPurchaseOrderStatus,
+            $strWarehouseId,
+            $strPurchaseOrderId,
+            $intVendorId,
+            $arrCreateTime,
+            $arrOrderPlanTime,
+            $arrStockinTime,
+            $intPageNum,
+            $intPageSize);
     }
 }

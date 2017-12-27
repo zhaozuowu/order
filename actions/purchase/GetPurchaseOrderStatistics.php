@@ -1,30 +1,17 @@
 <?php
 /**
- * @name Action_GetPurchaseOrderList
- * @desc Action_GetPurchaseOrderList 获取采购订单列表（分页）
+ * @name Action_GetPurchaseOrderStatistics
+ * @desc Action GetPurchaseOrderStatistics 获取采购单状态统计
  * @author chenwende@iwaimai.baidu.com
  */
 
-class Action_GetPurchaseOrderList extends Order_Base_Action
+class Action_GetPurchaseOrderStatistics extends Order_Base_Action
 {
     /**
      * input params
      * @var array
      */
-    protected $arrInputParams = [
-        'purchase_order_status' => 'str|default[10,20,30,31]',
-        'warehouse_id' => 'str',
-        'purchase_order_id' => 'regex|patern[/^(PUR\d{13})?$/]',
-        'vendor_id' => 'int|min[0]',
-        'create_time_start' => 'int|min[0]',
-        'create_time_end' => 'int|min[0]',
-        'purchase_order_plan_time_start' => 'int|min[0]',
-        'purchase_order_plan_time_end' => 'int|min[0]',
-        'stockin_time_start' => 'int|min[0]',
-        'stockin_time_end' => 'int|min[0]',
-        'page_num' => 'int|default[1]|min[1]',
-        'page_size' => 'int|required|min[1]|max[100]',
-    ];
+    protected $arrInputParams = [];
 
     /**
      * method
@@ -37,7 +24,7 @@ class Action_GetPurchaseOrderList extends Order_Base_Action
      */
     function myConstruct()
     {
-        $this->objPage = new Service_Page_Purchase_GetPurchaseOrderList();
+        $this->objPage = new Service_Page_Purchase_GetPurchaseOrderStatistics();
     }
 
     /**

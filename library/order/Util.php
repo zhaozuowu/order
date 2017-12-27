@@ -21,7 +21,7 @@ class Order_Util{
         }
 
         // 判断非负
-        if ((0 > intval($startTime)) || (0 > intval($endTime))) {
+        if ((0 > $startTime) || (0 > $endTime)) {
             return false;
         }
 
@@ -59,5 +59,44 @@ class Order_Util{
     public static function getNowUnixDateTime()
     {
         return time();
+    }
+
+    /**
+     * 对输入的字符串进行分解，返回拆分后的整数数组
+     *
+     * @param $strInput
+     * @return array|null
+     */
+    public static function extractIntArray($strInput)
+    {
+        if(empty($strInput)){
+            return null;
+        }
+
+        $strIn = trim($strInput);
+
+        // parse array
+        $arrResult = explode(',', $strIn);
+        foreach ($arrResult as &$item){
+            $item = intval($item);
+        }
+
+        return $arrResult;
+    }
+
+    /**
+     * 去除采购单开头的PUR开头部分内容
+     * @param $strOrderId
+     * @return bool|string
+     */
+    public static function trimPurchaseIdQuotation($strOrderId)
+    {
+        if(empty($strOrderId)){
+            return $strOrderId;
+        }
+
+        $result = ltrim($strOrderId, Nscm_Define_OrderPrefix::PUR);
+
+        return $result;
     }
 }

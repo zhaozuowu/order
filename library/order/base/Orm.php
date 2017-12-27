@@ -7,6 +7,15 @@
 
 Class Order_Base_Orm extends Wm_Orm_ActiveRecord{
 
+    /**
+     * get all columns
+     * @return array
+     */
+    public static function getAllColumns()
+    {
+        return array_keys(static::getColumnsDefine());
+    }
+
     /** insert
      * @param $row
      * @param bool $ignore

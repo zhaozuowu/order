@@ -74,79 +74,72 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
         $intPageSize
     )
     {
-        // 返回结果数据
-        $rows = [
-            'vendor_name',
-            'purchase_order_id',
-            'stockin_order_id',
-            'purchase_order_status',
-            'warehouse_name',
-            'purchase_order_plan_time',
-            'stockin_time',
-            'purchase_order_plan_amount',
-            'stockin_order_real_amount',
-            'purchase_order_remark',
-        ];
-
         // 拼装查询条件
-        $condition = [];
-
         if (!empty($arrPurchaseOrderStatus)) {
-            $condition['purchase_order_status'] = [
+            $arrCondition['purchase_order_status'] = [
                 'in',
                 $arrPurchaseOrderStatus];
         }
 
-        if (!empty($arrWarehouseId) && !empty($arrWarehouseId[0])) {
-            $condition['warehouse_id'] = [
+        if (!empty($arrWarehouseId)) {
+            $arrCondition['warehouse_id'] = [
                 'in',
                 $arrWarehouseId];
         }
 
         if (!empty($intPurchaseOrderId)) {
-            $condition['purchase_order_id'] = $intPurchaseOrderId;
+            $arrCondition['purchase_order_id'] = $intPurchaseOrderId;
         }
 
         if (!empty($intVendorId)) {
-            $condition['vendor_id'] = $intVendorId;
+            $arrCondition['vendor_id'] = $intVendorId;
         }
 
-        if (!empty($arrCreateTime)) {
-            $condition['create_time'] = [
+        if (!empty($arrCreateTime['start'])
+            && !empty($arrCreateTime['end'])) {
+            $arrCondition['create_time'] = [
                 'between',
                 $arrCreateTime['start'],
                 $arrCreateTime['end']
             ];
         }
 
-        if (!empty($arrOrderPlanTime)) {
-            $condition['purchase_order_plan_time'] = [
+        if (!empty($arrOrderPlanTime['start'])
+            && !empty($arrOrderPlanTime['end'])) {
+            $arrCondition['purchase_order_plan_time'] = [
                 'between',
                 $arrOrderPlanTime['start'],
                 $arrOrderPlanTime['end']
             ];
         }
 
-        if (!empty($arrStockinTime)) {
-            $condition['stockin_time'] = [
+        if (!empty($arrStockinTime['start'])
+            && !empty($arrStockinTime['end'])) {
+            $arrCondition['stockin_time'] = [
                 'between',
                 $arrStockinTime['start'],
                 $arrStockinTime['end'],
             ];
         }
 
-        //查询未软删除的
-        $condition['is_delete'] = Order_Define_Const::NOT_DELETE;
+        //只查询未软删除的
+        $arrCondition['is_delete'] = Order_Define_Const::NOT_DELETE;
 
-        if((0 >= $intPageNum) || empty($intPageNum)){
-            $intPageNum = 1;
-        }
+        //排序条件
+        $orderBy = ['id' => 'desc'];
 
         // 分页条件
-        $offset = (intval($intPageNum ) - 1) * intval($intPageSize);
+        $offset = (intval($intPageNum) - 1) * intval($intPageSize);
         $limitCount = intval($intPageSize);
 
+        //查找满足条件的所有行数据
+        $arrRows = Model_Orm_PurchaseOrder::getAllColumns();
+        $intCount = Model_Orm_PurchaseOrder::count($arrCondition);
+        $arrData = Model_Orm_PurchaseOrder::findRows($arrRows, $arrCondition, $orderBy, $offset, $limitCount);
 
-        return Model_Orm_PurchaseOrder::findRows($rows, $condition, [],  $offset, $limitCount);
+        $arrResult['total'] = $intCount;
+        $arrResult['list'] = $arrData;
+
+        return $arrResult;
     }
 }

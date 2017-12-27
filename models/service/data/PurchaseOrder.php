@@ -8,18 +8,11 @@
 class Service_Data_PurchaseOrder
 {
     /**
-     * Service_Data_PurchaseOrder constructor.
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * 查询采购单列表
      *
      * @param $strPurchaseOrderStatus
-     * @param $arrWarehouseId
-     * @param $intPurchaseOrderId
+     * @param $strWarehouseId
+     * @param $strPurchaseOrderId
      * @param $intVendorId
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
@@ -30,8 +23,8 @@ class Service_Data_PurchaseOrder
      * @throws Order_BusinessError
      */
     public function getPurchaseOrderList($strPurchaseOrderStatus,
-                                         $arrWarehouseId,
-                                         $intPurchaseOrderId,
+                                         $strWarehouseId,
+                                         $strPurchaseOrderId,
                                          $intVendorId,
                                          $arrCreateTime,
                                          $arrOrderPlanTime,
@@ -39,6 +32,15 @@ class Service_Data_PurchaseOrder
                                          $intPageNum,
                                          $intPageSize)
     {
+        $arrCreateTime['start'] = intval($arrCreateTime['start']);
+        $arrCreateTime['end'] = intval($arrCreateTime['end']);
+
+        $arrOrderPlanTime['start'] = intval($arrOrderPlanTime['start']);
+        $arrOrderPlanTime['end'] = intval($arrOrderPlanTime['end']);
+
+        $arrStockinTime['start'] = intval($arrStockinTime['start']);
+        $arrStockinTime['end'] = intval($arrStockinTime['end']);
+
         if (false === Order_Util::verifyUnixTimeSpan(
                 $arrCreateTime['start'],
                 $arrCreateTime['end'])) {
@@ -60,24 +62,9 @@ class Service_Data_PurchaseOrder
                 Order_Error_Code::QUERY_TIME_SPAN_ERROR);
         }
 
-        // check and erect query default end time to now
-        if (empty($arrCreateTime['end'])) {
-            $arrCreateTime['end'] = Order_Util::getNowUnixDateTime();
-        }
-
-        if (empty($arrOrderPlanTime['end'])) {
-            $arrOrderPlanTime['end'] = Order_Util::getNowUnixDateTime();
-        }
-
-        if (empty($arrStockinTime['end'])) {
-            $arrStockinTime['end'] = Order_Util::getNowUnixDateTime();
-        }
-
-        $arrCreateTime['start'] = intval($arrCreateTime['start']);
-        $arrOrderPlanTime['start'] = intval($arrOrderPlanTime['start']);
-        $arrStockinTime['start'] = intval($arrStockinTime['start']);
-
-        $arrPurchaseOrderStatus = $this->disassemblyOrderStatus($strPurchaseOrderStatus);
+        $intPurchaseOrderId = intval(Order_Util::trimPurchaseIdQuotation($strPurchaseOrderId));
+        $arrPurchaseOrderStatus = Order_Util::extractIntArray($strPurchaseOrderStatus);
+        $arrWarehouseId  = Order_Util::extractIntArray($strWarehouseId);
 
         return Model_Orm_PurchaseOrder::getPurchaseOrderList(
             $arrPurchaseOrderStatus,
@@ -90,22 +77,5 @@ class Service_Data_PurchaseOrder
             $intPageNum,
             $intPageSize
         );
-    }
-
-    /**
-     * 分解订单状态参数为数组
-     * @param $strState
-     * @return array
-     */
-    private function disassemblyOrderStatus($strState)
-    {
-        // 默认查询所有状态
-        if (empty(trim($strState))) {
-            return null;
-        }
-
-        // parse array
-        $arrState = explode(',', $strState);
-        return $arrState;
     }
 }
