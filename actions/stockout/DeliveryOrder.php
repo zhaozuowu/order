@@ -23,11 +23,13 @@ class Action_DeliveryOrder extends Order_Base_Action
      */
     protected $intMethod = Order_Define_Const::METHOD_POST;
 
+
     /**
      * page service
      * @var Service_Page_Stockout_DeliveryOrder
      */
     protected $objPage;
+
 
     /**
      * init object
