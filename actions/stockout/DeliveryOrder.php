@@ -25,7 +25,7 @@ class Action_DeliveryOrder extends Order_Base_Action
 
     /**
      * page service
-     * @var Service_Page_DeliveryOrder
+     * @var Service_Page_Stockout_DeliveryOrder
      */
     protected $objPage;
 
@@ -34,7 +34,9 @@ class Action_DeliveryOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_DeliveryOrder();
+
+
+        $this->objPage = new Service_Page_Stockout_DeliveryOrder();
     }
 
 

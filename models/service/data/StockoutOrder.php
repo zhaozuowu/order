@@ -15,11 +15,18 @@ class Service_Data_StockoutOrder
     protected $objOrmStockoutOrder;
 
     /**
+     * orm obj
+     * @var Model_Orm_StockoutOrderSku
+     */
+    protected $objOrmSku;
+
+    /**
      * init
      */
     public function __construct()
     {
         $this->objOrmStockoutOrder = new Model_Orm_StockoutOrder();
+        $this->objOrmSku = new Model_Orm_StockoutOrderSku();
 
     }
 
@@ -49,7 +56,6 @@ class Service_Data_StockoutOrder
      */
     public function deliveryOrder($strStockoutOrderId)
     {
-
         if (empty($strStockoutOrderId)) {
             Bd_Log::warning(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
@@ -174,5 +180,44 @@ class Service_Data_StockoutOrder
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
         }
         return $arrBatchSkuCreateParams;
+    }
+
+    /**
+     * 完成揽收
+     * @param $strStockoutOrderId 出库单号
+     * @param $signupStatus 签收状态
+     * @param $signupUpcs 签收数量
+     * @return bool|mixed
+     * @throws Exception
+     * @throws Order_BusinessError
+     */
+    public function finishorder($strStockoutOrderId, $signupStatus, $signupUpcs)
+    {
+        $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
+        if (empty($stockoutOrderInfo)) {
+            Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
+        }
+
+        $status = Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS;
+        if ($stockoutOrderInfo['stockout_order_status'] != $status) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
+        }
+
+        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($strStockoutOrderId, $signupStatus, $signupUpcs) {
+            $updateData = ['signup_status' => $signupStatus];
+            $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
+            if (empty($result)) {
+                Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+            }
+            if (empty($signupUpcs)) {
+                Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+            }
+            foreach ($signupUpcs as $item) {
+                $condition = ['stockout_order_id' => $strStockoutOrderId, 'upc_id' => $item['upc_id']];
+                $skuUpdata = ['upc_accept_amount' => $item['upc_accept_amount'], 'upc_reject_amount' => $item['upc_reject_amount']];
+                $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
+            }
+        });
+
     }
 }
