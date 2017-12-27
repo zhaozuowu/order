@@ -5,7 +5,7 @@
  * @desc TMS完成揽收
  * @author nscm
  */
-class Service_Page_DeliveryOrder
+class Service_Page_DeliveryOrder implements Order_Base_Page
 {
     /**
      * @var Service_Data_StockoutOrder
