@@ -102,7 +102,6 @@ class Service_Data_StockoutOrder
         return [];
     }
 
-
     /**
      * 获取业态订单列表
      * @param $arrInput
@@ -157,5 +156,99 @@ class Service_Data_StockoutOrder
             $arrConditions['quotation_start_time'] = ['<=', $arrInput['end_time']];
         }
         return $arrConditions;
+    }
+
+    /**
+     * 创建出库单
+     * @param array $arrInput
+     * @return bool
+     */
+    public function createStockoutOrder($arrInput)
+    {
+        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrInput) {
+            $arrCreateParams = $this->getCreateParams($arrInput);
+            $objStockoutOrder = new Model_Orm_StockoutOrder();
+            $objOrmStockoutOrder->create($arrCreateParams, false);
+            $this->createStockoutOrderSku($arrInput['skus']);
+        });
+    }
+
+    /**
+     * 创建出货单商品信息
+     * @param array $arrSkus
+     * @return bool
+     */
+    public function createStockoutOrderSku($arrSkus)
+    {
+        $arrBatchSkuCreateParams = $this->getBatchSkuCreateParams($arrSkus);
+        if (empty($arrBatchSkuCreateParams)) {
+            return false;
+        }
+        return Model_Orm_StockoutOrderSku::batchInsert($arrBatchSkuCreateParams, false);
+    }
+
+    /**
+     * 获取出库单创建参数
+     * @param array $arrInput
+     * @return array
+     */
+    public function getCreateParams($arrInput)
+    {
+        $arrCreateParams = [];
+        if (empty($arrInput)) {
+            return $arrCreateParams;
+        }
+        if (!empty($arrInput['stockout_order_type'])) {
+            $arrCreateParams['stockout_order_type'] = intval($arrInput['stockout_order_type']);
+        }
+        if (!empty($arrInput['warehouse_name'])) {
+            $arrCreateParams['warehouse_name'] = intval($arrInput['warehouse_name']);
+        }
+        if (!empty($arrInput['stockout_order_remark'])) {
+            $arrCreateParams['stockout_order_remark'] = strval($arrInput['stockout_order_remark']);
+        }
+        if (!empty($arrInput['customer_id'])) {
+            $arrCreateParams['customer_id'] = intval($arrInput['customer_id']);
+        }
+        if (!empty($arrInput['customer_name'])) {
+            $arrCreateParams['customer_name'] = strval($arrInput['customer_name']);
+        }
+        if (!empty($arrInput['customer_contactor'])) {
+            $arrCreateParams['customer_contactor'] = strval($arrInput['customer_contactor']);
+        }
+        if (!empty($arrInput['customer_contact'])) {
+            $arrCreateParams['customer_contact'] = strval($arrInput['customer_contact']);
+        }
+        if (!empty($arrInput['customer_address'])) {
+            $arrCreateParams['customer_address'] = strval($arrInput['customer_address']);
+        }
+        return $arrCreateParams;
+    }
+
+    /**
+     * 获取出库单商品创建参数
+     * @param  array $arrSkus
+     * @return array
+     */
+    public function getBatchSkuCreateParams($arrSkus)
+    {
+        $arrBatchSkuCreateParams = [];
+        if (empty($arrSkus)) {
+            return $arrBatchSkuCreateParams;
+        }
+        foreach ($arrSkus as $arrItem) {
+            $arrSkuCreateParams = [];
+            if (!empty($arrItem['sku_id'])) {
+                $arrSkuCreateParams['sku_id'] = intval($arrItem['sku_id']);
+            }
+            if (!empty($arrItem['upc_id'])) {
+                $arrSkuCreateParams['upc_id'] = strval($arrItem['upc_id']);
+            }
+            if (!empty($arrItem['order_amount'])) {
+                $arrSkuCreateParams['order_amount'] = intval($arrItem['order_amount']);
+            }
+            $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
+        }
+        return $arrBatchSkuCreateParams;
     }
 }
