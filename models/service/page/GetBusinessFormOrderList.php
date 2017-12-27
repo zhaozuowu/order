@@ -30,7 +30,7 @@ class Service_Page_GetBusinessFormOrderList
     {
         $arrList = $this->objStockoutOrder->getBusinessFormOrderList($arrInput);
         $intTotal = $this->objStockoutOrder->getBusinessFormOrderCount($arrInput);
-        return ['total' => $arrList, 'orders' => $arrList];
+        return ['total' => $intTotal, 'orders' => $arrList];
 
     }
 }
