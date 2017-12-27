@@ -15,6 +15,9 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS => '出库单不存在',
         Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE => '出库单状态不允许修改',
         Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL => '出库订单更新失败',
+        Order_Error_Code::NSCM_PURCHASE_ORDER_HAS_BEEN_RECEIVED => 'nscm采购单号已经被接收',
+        Order_Error_Code::NSCM_PURCHASE_ORDER_NOT_EXIST => '采购单不存在',
+        Order_Error_Code::NSCM_PURCHASE_ORDER_NOT_ALLOW_DESTROY => '订单状态不允许作废',
     ];
 
 }
