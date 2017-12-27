@@ -3,7 +3,7 @@
 /**
  * @name Service_Page_DeliveryOrder
  * @desc TMS完成揽收
- * @author nscm
+ * @author zhaozuowu@iwaimai.baidu.com
  */
 class Service_Page_DeliveryOrder
 {
@@ -28,6 +28,7 @@ class Service_Page_DeliveryOrder
      */
     public function execute($arrInput)
     {
-        return $this->objStockoutOrder->deliveryOrder($arrInput);
+        $strStockoutOrderId = isset($arrInput['stockout_order_id']) ? intval($arrInput['stockout_order_id']) : 0;
+        return $this->objStockoutOrder->deliveryOrder($strStockoutOrderId);
     }
 }

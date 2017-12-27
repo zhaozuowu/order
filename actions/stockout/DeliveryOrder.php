@@ -27,24 +27,16 @@ class Action_DeliveryOrder extends Order_Base_Action
      * page service
      * @var Service_Page_DeliveryOrder
      */
-    private $objDeliveryOrder;
+    protected $objPage;
 
     /**
      * init object
      */
     public function myConstruct()
     {
-        $this->objDeliveryOrder = new Service_Page_DeliveryOrder();
+        $this->objPage = new Service_Page_DeliveryOrder();
     }
 
-    /**
-     * execute
-     * @return array
-     */
-    public function myExecute()
-    {
-        return $this->objDeliveryOrder->execute($this->arrFilterResult);
-    }
 
     /**
      * format result
