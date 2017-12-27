@@ -7,27 +7,7 @@
  */
 class Service_Data_StockoutOrder
 {
-    /**
-     * 出库单状态列表
-     */
-    const INIT_STOCKOUT_ORDER_STATUS = 10;//待审核
-    const STAY_PICKING_STOCKOUT_ORDER_STATUS = 20;//待拣货
-    const STAY_RECEIVED_STOCKOUT_ORDER_STATUS = 25;//待揽收
-    const STOCKOUTED_STOCKOUT_ORDER_STATUS = 30;//已出库
-    const RECEIVED_STOCKOUT_ORDER_STATUS = 40;//已签收
-    const AUDIT_NOT_PASSED_STOCKOUT_ORDER_STATUS = 50;//审核不通过
-    /**
-     * 出库单状态列表
-     * @var array
-     */
-    protected $stockoutOrderStatusList = [
-        '10' => '待审核',
-        '20' => '待拣货',
-        '25' => '待揽收',
-        '30' => '已出库',
-        '40' => '已签收',
-        '50' => '审核不通过',
-    ];
+
     /**
      * orm obj
      * @var Model_Orm_StockoutOrder
@@ -51,7 +31,7 @@ class Service_Data_StockoutOrder
      */
     public function getNextStockoutOrderStatus($stockoutOrderStatus)
     {
-        $stockoutOrderList = $this->stockoutOrderStatusList;
+        $stockoutOrderList = Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST;
         if (!array_key_exists($stockoutOrderStatus, $stockoutOrderList)) {
             return false;
         }
@@ -81,7 +61,7 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
         }
 
-        $stayRecevied = Service_Data_StockoutOrder::STAY_RECEIVED_STOCKOUT_ORDER_STATUS;//获取待揽收状态
+        $stayRecevied = Order_Define_StockoutOrder::STAY_RECEIVED_STOCKOUT_ORDER_STATUS;//获取待揽收状态
         if ($stockoutOrderInfo['stockout_order_status'] != $stayRecevied) {
             Bd_Log::warning(__METHOD__ . ' no allow update stockout_order_status become stockoutinfo:' . json_encode($stockoutOrderInfo));
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);

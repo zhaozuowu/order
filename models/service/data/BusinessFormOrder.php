@@ -155,6 +155,21 @@ class Service_Data_BusinessFormOrder
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
         $arrBusinessFormOrderList = Model_Orm_BusinessFormOrder::getBusinessFormOrderListByConditions($arrConditions, [], $intOffset, $intLimit);
+        if (empty($arrBusinessFormOrderList)) {
+            return [];
+        }
+        $arrOrderIds = array_column($arrBusinessFormOrderList, 'business_form_order_id');
+        $colums = ['business_form_order_id', 'sum(order_amount) as  order_amount', 'sum(distribute_amount) as distribute_amount '];
+        $arrSkuConditions['business_form_order_id'] = ['in', $arrOrderIds];
+        $arrSkuList = Model_Orm_BusinessFormOrderSku::find($arrSkuConditions)->select($colums)->groupBy(['business_form_order_id'])->rows();
+        $arrSkuList = array_column($arrSkuList, null, 'business_form_order_id');
+
+        foreach ($arrBusinessFormOrderList as $key => $item) {
+
+            $arrBusinessFormOrderList[$key]['order_amount'] = isset($arrSkuList[$item['business_form_order_id']]) ? $arrSkuList[$item['business_form_order_id']]['order_amount'] : 0;
+            $arrBusinessFormOrderList[$key]['distribute_amount'] = isset($arrSkuList[$item['business_form_order_id']]) ? $arrSkuList[$item['business_form_order_id']]['distribute_amount'] : 0;
+
+        }
         return $arrBusinessFormOrderList;
 
     }
