@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_CreatePurchaseOrder
- * @desc Action_CreatePurchaseOrder
+ * @name Action_CreateReserveOrder
+ * @desc Action_CreateReserveOrder
  * @author lvbochao@iwaimai.baidu.com
  */
 
-class Action_CreatePurchaseOrder extends Order_Base_Action
+class Action_CreateReserveOrder extends Order_Base_Action
 {
     /**
      * 是否验证登陆
@@ -32,18 +32,18 @@ class Action_CreatePurchaseOrder extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'purchase_order_id' => 'int|required',
+        'reserve_order_id' => 'int|required',
         'warehouse_id' => 'int|required',
         'warehouse_name' => 'strutf8|required|min[1]|len[16]',
-        'purchase_order_plan_time' => 'int|required',
-        'purchase_order_plan_amount' => 'int|required',
+        'reserve_order_plan_time' => 'int|required',
+        'reserve_order_plan_amount' => 'int|required',
         'vendor_id' => 'int|required',
         'vendor_name' => 'strutf8|required|min[1]|len[32]',
         'vendor_contactor' => 'strutf8|required|min[1]|max[64]',
         'vendor_mobile' => 'phone|required',
         'vendor_email' => 'str|required',
-        'purchase_order_remark' => 'strutf8',
-        'purchase_order_skus' => [
+        'reserve_order_remark' => 'strutf8',
+        'reserve_order_skus' => [
             'validate' => 'json|required|decode',
             'type' => 'array',
             'params' => [
@@ -59,9 +59,9 @@ class Action_CreatePurchaseOrder extends Order_Base_Action
                 'sku_price_tax'=> 'int|required',
                 'sku_effect_type' => 'int|required',
                 'sku_effect_day' => 'int|required',
-                'purchase_order_sku_total_price' => 'int|required',
-                'purchase_order_sku_total_price_tax' => 'int|required',
-                'purchase_order_sku_plan_amount' => 'int|required',
+                'reserve_order_sku_total_price' => 'int|required',
+                'reserve_order_sku_total_price_tax' => 'int|required',
+                'reserve_order_sku_plan_amount' => 'int|required',
             ],
         ],
     ];
@@ -77,7 +77,7 @@ class Action_CreatePurchaseOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Purchase_CreatePurchaseOrder();
+        $this->objPage = new Service_Page_Reserve_CreateReserveOrder();
     }
 
     /**

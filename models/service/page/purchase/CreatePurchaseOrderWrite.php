@@ -1,22 +1,22 @@
 <?php
 /**
- * @name Service_Page_Purchase_CreatePurchaseOrderWrite
- * @desc Service_Page_Purchase_CreatePurchaseOrderWrite
+ * @name Service_Page_Reserve_CreateReserveOrderWrite
+ * @desc Service_Page_Reserve_CreateReserveOrderWrite
  * @author lvbochao@iwaimai.baidu.com
  */
-class Service_Page_Purchase_CreatePurchaseOrderWrite implements Order_Base_Page
+class Service_Page_Reserve_CreateReserveOrderWrite implements Order_Base_Page
 {
     /**
-     * @var Service_Data_Purchase_PurchaseOrder
+     * @var Service_Data_Reserve_ReserveOrder
      */
-    private $objDataPurchase;
+    private $objDataReserve;
 
     /**
-     * Service_Page_Purchase_CreatePurchaseOrder constructor.
+     * Service_Page_Reserve_CreateReserveOrder constructor.
      */
     function __construct()
     {
-        $this->objDataPurchase = new Service_Data_Purchase_PurchaseOrder();
+        $this->objDataReserve = new Service_Data_Reserve_ReserveOrder();
     }
 
     /**
@@ -25,8 +25,8 @@ class Service_Page_Purchase_CreatePurchaseOrderWrite implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $intNscmPurchaseOrderId = intval($arrInput['nscm_purchase_order_id']);
-        $this->objDataPurchase->createPurchaseOrderByNscmPurchaseOrderId($intNscmPurchaseOrderId);
+        $intPurchaseOrderId = intval($arrInput['purchase_order_id']);
+        $this->objDataReserve->createReserveOrderByPurchaseOrderId($intPurchaseOrderId);
         return [];
     }
 }

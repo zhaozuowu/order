@@ -1,13 +1,13 @@
 <?php
 /**
- * @name Controller_Purchase
- * @desc Controller_Purchase
+ * @name Controller_Reserve
+ * @desc Controller_Reserve
  * @author lvbochao@iwaimai.baidu.com
  */
-class Controller_Purchase extends Ap_Controller_Abstract {
+class Controller_Reserve extends Ap_Controller_Abstract {
     public $actions = array(
-        'createpurchaseorder' => 'actions/purchase/CreatePurchaseOrder.php',
-        'createpurchaseorderwrite' => 'actions/purchase/CreatePurchaseOrderWrite.php',
-        'destroypurchaseorder' => 'actions/purchase/DestroyPurchaseOrder.php',
+        'createreserveorder' => 'actions/reserve/CreateReserveOrder.php',
+        'createreserveorderwrite' => 'actions/reserve/CreateReserveOrderWrite.php',
+        'destroyreserveorder' => 'actions/reserve/DestroyReserveOrder.php',
     );
 }

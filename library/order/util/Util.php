@@ -8,10 +8,10 @@ class Order_Util_Util
 {
 
     /**
-     * generate purchase order code
+     * generate reserve order code
      * @return int
      */
-    public static function generatePurchaseOrderCode()
+    public static function generateReserveOrderCode()
     {
         return Nscm_Lib_IdGenerator::sequenceDateNumber();
     }

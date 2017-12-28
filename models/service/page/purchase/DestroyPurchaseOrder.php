@@ -1,22 +1,22 @@
 <?php
 /**
- * @name Service_Page_Purchase_DestroyPurchaseOrder
- * @desc Service_Page_Purchase_DestroyPurchaseOrder
+ * @name Service_Page_Reserve_DestroyReserveOrder
+ * @desc Service_Page_Reserve_DestroyReserveOrder
  * @author lvbochao@iwaimai.baidu.com
  */
-class Service_Page_Purchase_DestroyPurchaseOrder implements Order_Base_Page
+class Service_Page_Reserve_DestroyReserveOrder implements Order_Base_Page
 {
     /**
-     * @var Service_Data_Purchase_PurchaseOrder
+     * @var Service_Data_Reserve_ReserveOrder
      */
-    private $objDataPurchase;
+    private $objDataReserve;
 
     /**
-     * Service_Page_Purchase_CreatePurchaseOrder constructor.
+     * Service_Page_Reserve_CreateReserveOrder constructor.
      */
     function __construct()
     {
-        $this->objDataPurchase = new Service_Data_Purchase_PurchaseOrder();
+        $this->objDataReserve = new Service_Data_Reserve_ReserveOrder();
     }
 
     /**
@@ -25,9 +25,9 @@ class Service_Page_Purchase_DestroyPurchaseOrder implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $intNscmPurchaseOrderId = intval($arrInput['purchase_order_id']);
+        $intPurchaseOrderId = intval($arrInput['reserve_order_id']);
         $intDestroyType = intval($arrInput['destroy_type']);
-        $this->objDataPurchase->destroyPurchaseOrder($intNscmPurchaseOrderId, $intDestroyType);
+        $this->objDataReserve->destroyReserveOrder($intPurchaseOrderId, $intDestroyType);
         return [];
     }
 }

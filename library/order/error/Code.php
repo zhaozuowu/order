@@ -58,18 +58,18 @@ class Order_Error_Code extends Wm_Error_Code
      * nscm采购单号已经被接收
      * @var integer
      */
-    const NSCM_PURCHASE_ORDER_HAS_BEEN_RECEIVED = 330001;
+    const PURCHASE_ORDER_HAS_BEEN_RECEIVED = 330001;
 
     /**
      * 采购单不存在
      * @var integer
      */
-    const NSCM_PURCHASE_ORDER_NOT_EXIST = 330002;
+    const PURCHASE_ORDER_NOT_EXIST = 330002;
 
     /**
      * 订单状态不允许作废
      * @var integer
      */
-    const NSCM_PURCHASE_ORDER_NOT_ALLOW_DESTROY = 330003;
+    const PURCHASE_ORDER_NOT_ALLOW_DESTROY = 330003;
 
 }
