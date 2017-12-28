@@ -50,9 +50,9 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     /**
      * 查询采购订单列表
      *
-     * @param $arrPurchaseOrderStatus
+     * @param $arrReserveOrderStatus
      * @param $arrWarehouseId
-     * @param $intPurchaseOrderId
+     * @param $intReserveOrderId
      * @param $intVendorId
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
@@ -62,9 +62,9 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
      * @return array
      */
     public static function getReserveOrderList(
-        $arrPurchaseOrderStatus,
+        $arrReserveOrderStatus,
         $arrWarehouseId,
-        $intPurchaseOrderId,
+        $intReserveOrderId,
         $intVendorId,
         $arrCreateTime,
         $arrOrderPlanTime,
@@ -74,10 +74,10 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     )
     {
         // 拼装查询条件
-        if (!empty($arrPurchaseOrderStatus)) {
-            $arrCondition['purchase_order_status'] = [
+        if (!empty($arrReserveOrderStatus)) {
+            $arrCondition['reserve_order_status'] = [
                 'in',
-                $arrPurchaseOrderStatus];
+                $arrReserveOrderStatus];
         }
 
         if (!empty($arrWarehouseId)) {
@@ -86,8 +86,8 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
                 $arrWarehouseId];
         }
 
-        if (!empty($intPurchaseOrderId)) {
-            $arrCondition['purchase_order_id'] = $intPurchaseOrderId;
+        if (!empty($intReserveOrderId)) {
+            $arrCondition['reserve_order_id'] = $intReserveOrderId;
         }
 
         if (!empty($intVendorId)) {
@@ -105,7 +105,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
 
         if (!empty($arrOrderPlanTime['start'])
             && !empty($arrOrderPlanTime['end'])) {
-            $arrCondition['purchase_order_plan_time'] = [
+            $arrCondition['reserve_order_plan_time'] = [
                 'between',
                 $arrOrderPlanTime['start'],
                 $arrOrderPlanTime['end']
@@ -157,9 +157,9 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     {
         $arrCond = ['is_delete' => Order_Define_Const::NOT_DELETE];
         $arrResult = Model_Orm_ReserveOrder::find($arrCond)
-            ->select(['purchase_order_status', 'count(*) as purchase_order_status_count'])
-            ->groupBy(['purchase_order_status'])
-            ->orderBy(['purchase_order_status' => 'desc'])
+            ->select(['reserve_order_status', 'count(*) as reserve_order_status_count'])
+            ->groupBy(['reserve_order_status'])
+            ->orderBy(['reserve_order_status' => 'desc'])
             ->rows();
 
         return $arrResult;

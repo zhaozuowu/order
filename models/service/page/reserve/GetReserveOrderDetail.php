@@ -52,7 +52,7 @@ class Service_Page_Reserve_GetReserveOrderDetail implements Order_Base_Page
         $intPageNum = $arrInput['page_num'];
         $intPageSize = $arrInput['page_size'];
 
-        return $this->objServiceData->getReserveOrderList([]
+        return $this->objServiceData->getReserveOrderList([],
             $strPurchaseOrderStatus,
             $strWarehouseId,
             $strPurchaseOrderId,
