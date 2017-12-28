@@ -1,7 +1,7 @@
 <?php
 /**
  * @name Action_GetPurchaseOrderList
- * @desc Action_GetPurchaseOrderList 获取采购订单列表（分页）
+ * @desc 获取采购订单列表（分页）
  * @author chenwende@iwaimai.baidu.com
  */
 
@@ -47,13 +47,13 @@ class Action_GetPurchaseOrderList extends Order_Base_Action
      */
     public function format($arrRet)
     {
+        $arrFormatResult = [];
         // 返回结果数据
         if (empty($arrRet['list'])) {
-            return $arrRet;
+            return $arrFormatResult;
         }
 
         $arrRetList = $arrRet['list'];
-        $arrFormatResult = [];
 
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];

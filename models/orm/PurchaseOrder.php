@@ -121,25 +121,47 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
             ];
         }
 
-        //只查询未软删除的
+        // 只查询未软删除的
         $arrCondition['is_delete'] = Order_Define_Const::NOT_DELETE;
 
-        //排序条件
+        // 排序条件
         $orderBy = ['id' => 'desc'];
 
         // 分页条件
         $offset = (intval($intPageNum) - 1) * intval($intPageSize);
         $limitCount = intval($intPageSize);
 
-        //查找满足条件的所有行数据
+        // 查找满足条件的所有行数据
         $arrRows = Model_Orm_PurchaseOrder::getAllColumns();
-        $intCount = Model_Orm_PurchaseOrder::count($arrCondition);
-        $arrData = Model_Orm_PurchaseOrder::findRows($arrRows, $arrCondition, $orderBy, $offset, $limitCount);
 
-        $arrResult['total'] = $intCount;
-        $arrResult['list'] = $arrData;
+        // 执行一次性查找
+        $arrRowsAndTotal = Model_Orm_PurchaseOrder::findRowsAndTotalCount(
+            $arrRows,
+            $arrCondition,
+            $orderBy,
+            $offset,
+            $limitCount);
+
+        $arrResult['total'] = $arrRowsAndTotal['total'];
+        $arrResult['list'] = $arrRowsAndTotal['rows'];
 
         return $arrResult;
+    }
+
+    /**
+     * 获取采购单状态统计，只查询未软删除的
+     *
+     * @return array
+     */
+    public static function getPurchaseOrderStatistics()
+    {
+        $query = Model_Orm_PurchaseOrder::getConnection()->createQuery(Model_Orm_PurchaseOrder::getTableName());
+        $query->select(['purchase_order_status', 'count(purchase_order_status) as purchase_order_status_count']);
+        // 只查询未软删除的内容
+        $query->where(['is_delete' => Order_Define_Const::NOT_DELETE]);
+        $query->groupBy(['purchase_order_status']);
+        $query->orderBy(['purchase_order_status' => 'desc']);
+        return $query->rows();
     }
 
     /**

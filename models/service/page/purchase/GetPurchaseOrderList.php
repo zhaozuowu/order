@@ -5,10 +5,12 @@
  * @desc sample page service, 和action对应，组织页面逻辑，组合调用data service
  * @author nscm
  */
+
 class Service_Page_Purchase_GetPurchaseOrderList implements Order_Base_Page
 {
     /**
      * Page Data服务对象，进行数据校验和处理
+     *
      * @var Service_Data_PurchaseOrder
      */
     private $objServiceData;
@@ -18,7 +20,7 @@ class Service_Page_Purchase_GetPurchaseOrderList implements Order_Base_Page
      */
     public function __construct()
     {
-        $this->objServiceData = new Service_Data_PurchaseOrder();
+        $this->objServiceData = new Service_Data_Purchase_PurchaseOrder();
     }
 
     /**

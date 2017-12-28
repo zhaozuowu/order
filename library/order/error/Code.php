@@ -53,13 +53,7 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const  STOCKOUT_ORDER_STATUS_UPDATE_FAIL = 310007;
 
-
     /**
-<<<<<<< HEAD
-     * 查询时间范围错误
-     */
-    const QUERY_TIME_SPAN_ERROR = 340000;
-=======
      * nscm采购单号已经被接收
      * @var integer
      */
@@ -76,6 +70,9 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NSCM_PURCHASE_ORDER_NOT_ALLOW_DESTROY = 330003;
->>>>>>> 80552499a24aab3f1cc5a79af576ced6d11de030
 
+    /**
+     * 查询时间范围错误
+     */
+    const QUERY_TIME_SPAN_ERROR = 340000;
 }

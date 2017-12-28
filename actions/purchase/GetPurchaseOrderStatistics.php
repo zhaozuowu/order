@@ -1,7 +1,7 @@
 <?php
 /**
  * @name Action_GetPurchaseOrderStatistics
- * @desc Action GetPurchaseOrderStatistics 获取采购单状态统计
+ * @desc 获取采购单状态统计
  * @author chenwende@iwaimai.baidu.com
  */
 
@@ -29,37 +29,36 @@ class Action_GetPurchaseOrderStatistics extends Order_Base_Action
 
     /**
      * format result, output data format process
+     *
      * @param array $arrRet
      * @return array
      */
     public function format($arrRet)
     {
+        // 格式化数据结果
+        $arrFormatResult = [];
         // 返回结果数据
-        if (empty($arrRet['list'])) {
-            return $arrRet;
+        if (empty($arrRet)) {
+            return $arrFormatResult;
         }
 
-        $arrRetList = $arrRet['list'];
-        $arrFormatResult = [];
-
+        $arrRetList = $arrRet;
+        $intTotal = 0;
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
-            $arrRoundResult['vendor_name'] = empty($arrListItem['vendor_name']) ? '' : strval($arrListItem['vendor_name']);
-            $arrRoundResult['purchase_order_id'] = empty($arrListItem['purchase_order_id']) ? '' : Nscm_Define_OrderPrefix::PUR . intval($arrListItem['purchase_order_id']);
-            $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? '' : Nscm_Define_OrderPrefix::ASN . strval($arrListItem['stockin_order_id']);
             $arrRoundResult['purchase_order_status'] = empty($arrListItem['purchase_order_status']) ? '' : intval($arrListItem['purchase_order_status']);
-            $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? '' : strval($arrListItem['warehouse_name']);
-            $arrRoundResult['purchase_order_plan_time'] = empty($arrListItem['purchase_order_plan_time']) ? '' : intval($arrListItem['purchase_order_plan_time']);
-            $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? '' : intval($arrListItem['stockin_time']);
-            $arrRoundResult['purchase_order_plan_amount'] = empty($arrListItem['purchase_order_plan_amount']) ? '' : intval($arrListItem['purchase_order_plan_amount']);
-            $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? '' : intval($arrListItem['stockin_order_real_amount']);
-            $arrRoundResult['purchase_order_remark'] = empty($arrListItem['purchase_order_remark']) ? '' : strval($arrListItem['purchase_order_remark']);
-
+            $arrRoundResult['purchase_order_status_count'] = empty($arrListItem['purchase_order_status_count']) ? 0 : intval($arrListItem['purchase_order_status_count']);
+            $intTotal += intval($arrRoundResult['purchase_order_status_count']);
             $arrFormatResult[] = $arrRoundResult;
         }
 
+        // 计算总数统计
+        $arrRoundResult = [];
+        $arrRoundResult['purchase_order_status'] = 0;
+        $arrRoundResult['purchase_order_status_count'] = $intTotal;
+        $arrFormatResult[] = $arrRoundResult;
+
         return [
-            'total' => $arrRet['total'],
             'list' => $arrFormatResult,
         ];
     }
