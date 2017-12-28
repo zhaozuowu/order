@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_CreatePurchaseOrderWrite
- * @desc Action_CreatePurchaseOrderWrite
+ * @name Action_CreateReserveOrderWrite
+ * @desc Action_CreateReserveOrderWrite
  * @author lvbochao@iwaimai.baidu.com
  */
 
-class Action_CreatePurchaseOrderWrite extends Order_Base_Action
+class Action_CreateReserveOrderWrite extends Order_Base_Action
 {
     /**
      * 是否验证登陆
@@ -32,7 +32,7 @@ class Action_CreatePurchaseOrderWrite extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'nscm_purchase_order_id' => 'int|required',
+        'purchase_order_id' => 'int|required',
     ];
 
     /**
@@ -46,7 +46,7 @@ class Action_CreatePurchaseOrderWrite extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Purchase_CreatePurchaseOrderWrite();
+        $this->objPage = new Service_Page_Reserve_CreateReserveOrderWrite();
     }
 
     /**

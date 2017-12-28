@@ -36,7 +36,7 @@
  * @method static Generator|Model_Orm_StockoutOrderSku[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
-*/
+ */
 
 class Model_Orm_StockoutOrderSku extends Wm_Orm_ActiveRecord
 {
@@ -44,4 +44,21 @@ class Model_Orm_StockoutOrderSku extends Wm_Orm_ActiveRecord
     public static $tableName = 'stockout_order_sku';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * 更新出库单sku信息
+     * @param $condition 查询条件
+     * @param $updateData 要更新数据
+     * @return bool|int|mysqli|null
+     */
+    public function updateStockoutOrderStatusByCondition($condition, $updateData)
+    {
+        Bd_Log::debug(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
+        $stockoutOrderInfo = $this->findOne($condition);
+        if (empty($stockoutOrderInfo)) {
+            return false;
+        }
+        $res = $stockoutOrderInfo->update($updateData);
+        return $res;
+    }
 }
