@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_DestroyPurchaseOrder
- * @desc Action_DestroyPurchaseOrder
+ * @name Action_DestroyReserveOrder
+ * @desc Action_DestroyReserveOrder
  * @author lvbochao@iwaimai.baidu.com
  */
 
-class Action_DestroyPurchaseOrder extends Order_Base_Action
+class Action_DestroyReserveOrder extends Order_Base_Action
 {
     /**
      * 是否验证登陆
@@ -32,7 +32,7 @@ class Action_DestroyPurchaseOrder extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'purchase_order_id' => 'int|required',
+        'reserve_order_id' => 'int|required',
         'destroy_type' => 'int|required',
     ];
 
@@ -47,7 +47,7 @@ class Action_DestroyPurchaseOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Purchase_DestroyPurchaseOrder();
+        $this->objPage = new Service_Page_Reserve_DestroyReserveOrder();
     }
 
     /**
