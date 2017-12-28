@@ -47,7 +47,11 @@ class Action_GetPurchaseOrderList extends Order_Base_Action
      */
     public function format($arrRet)
     {
-        $arrFormatResult = [];
+        $arrFormatResult = [
+            'list' => [],
+            'total' => 0,
+        ];
+
         // 返回结果数据
         if (empty($arrRet['list'])) {
             return $arrFormatResult;
@@ -68,12 +72,11 @@ class Action_GetPurchaseOrderList extends Order_Base_Action
             $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? '' : intval($arrListItem['stockin_order_real_amount']);
             $arrRoundResult['purchase_order_remark'] = empty($arrListItem['purchase_order_remark']) ? '' : strval($arrListItem['purchase_order_remark']);
 
-            $arrFormatResult[] = $arrRoundResult;
+            $arrFormatResult['list'][] = $arrRoundResult;
         }
 
-        return [
-            'total' => $arrRet['total'],
-            'list' => $arrFormatResult,
-        ];
+        $arrFormatResult['total'] = $arrRet['total'];
+
+        return $arrFormatResult;
     }
 }

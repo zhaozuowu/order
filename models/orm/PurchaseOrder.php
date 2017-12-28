@@ -155,13 +155,14 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
      */
     public static function getPurchaseOrderStatistics()
     {
-        $query = Model_Orm_PurchaseOrder::getConnection()->createQuery(Model_Orm_PurchaseOrder::getTableName());
-        $query->select(['purchase_order_status', 'count(purchase_order_status) as purchase_order_status_count']);
-        // 只查询未软删除的内容
-        $query->where(['is_delete' => Order_Define_Const::NOT_DELETE]);
-        $query->groupBy(['purchase_order_status']);
-        $query->orderBy(['purchase_order_status' => 'desc']);
-        return $query->rows();
+        $arrCond = ['is_delete' => Order_Define_Const::NOT_DELETE];
+        $arrResult = Model_Orm_PurchaseOrder::find($arrCond)
+            ->select(['purchase_order_status', 'count(*) as purchase_order_status_count'])
+            ->groupBy(['purchase_order_status'])
+            ->orderBy(['purchase_order_status' => 'desc'])
+            ->rows();
+
+        return $arrResult;
     }
 
     /**

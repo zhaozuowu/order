@@ -37,29 +37,25 @@ class Action_GetPurchaseOrderStatistics extends Order_Base_Action
     {
         // 格式化数据结果
         $arrFormatResult = [];
-        // 返回结果数据
-        if (empty($arrRet)) {
-            return $arrFormatResult;
-        }
 
         $arrRetList = $arrRet;
         $intTotal = 0;
-        foreach ($arrRetList as $arrListItem) {
-            $arrRoundResult = [];
-            $arrRoundResult['purchase_order_status'] = empty($arrListItem['purchase_order_status']) ? '' : intval($arrListItem['purchase_order_status']);
-            $arrRoundResult['purchase_order_status_count'] = empty($arrListItem['purchase_order_status_count']) ? 0 : intval($arrListItem['purchase_order_status_count']);
-            $intTotal += intval($arrRoundResult['purchase_order_status_count']);
-            $arrFormatResult[] = $arrRoundResult;
+        if(!empty($arrRet)) {
+            foreach ($arrRetList as $arrListItem) {
+                $arrRoundResult = [];
+                $arrRoundResult['purchase_order_status'] = empty($arrListItem['purchase_order_status']) ? 0 : intval($arrListItem['purchase_order_status']);
+                $arrRoundResult['purchase_order_status_count'] = empty($arrListItem['purchase_order_status_count']) ? 0 : intval($arrListItem['purchase_order_status_count']);
+                $intTotal += intval($arrRoundResult['purchase_order_status_count']);
+                $arrFormatResult['list'][] = $arrRoundResult;
+            }
         }
 
         // 计算总数统计
         $arrRoundResult = [];
         $arrRoundResult['purchase_order_status'] = 0;
         $arrRoundResult['purchase_order_status_count'] = $intTotal;
-        $arrFormatResult[] = $arrRoundResult;
+        $arrFormatResult['list'][] = $arrRoundResult;
 
-        return [
-            'list' => $arrFormatResult,
-        ];
+        return $arrFormatResult;
     }
 }
