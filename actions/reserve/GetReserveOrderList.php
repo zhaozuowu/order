@@ -62,8 +62,8 @@ class Action_GetReserveOrderList extends Order_Base_Action
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
             $arrRoundResult['vendor_name'] = empty($arrListItem['vendor_name']) ? '' : strval($arrListItem['vendor_name']);
-            $arrRoundResult['reserve_order_id'] = empty($arrListItem['reserve_order_id']) ? '' : Nscm_Define_OrderPrefix::PUR . intval($arrListItem['reserve_order_id']);
-            $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? '' : Nscm_Define_OrderPrefix::ASN . strval($arrListItem['stockin_order_id']);
+            $arrRoundResult['reserve_order_id'] = empty($arrListItem['reserve_order_id']) ? '' : Nscm_Define_OrderPrefix::ASN . intval($arrListItem['reserve_order_id']);
+            $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? '' : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
             $arrRoundResult['reserve_order_status'] = empty($arrListItem['reserve_order_status']) ? '' : intval($arrListItem['reserve_order_status']);
             $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? '' : strval($arrListItem['warehouse_name']);
             $arrRoundResult['reserve_order_plan_time'] = empty($arrListItem['reserve_order_plan_time']) ? '' : intval($arrListItem['reserve_order_plan_time']);
