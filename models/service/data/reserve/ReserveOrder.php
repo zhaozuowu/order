@@ -161,9 +161,9 @@ class Service_Data_Reserve_ReserveOrder {
     /**
      * 查询采购单列表
      *
-     * @param $strPurchaseOrderStatus
+     * @param $strReserveOrderStatus
      * @param $strWarehouseId
-     * @param $strPurchaseOrderId
+     * @param $strReserveOrderId
      * @param $intVendorId
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
@@ -173,9 +173,9 @@ class Service_Data_Reserve_ReserveOrder {
      * @return array
      * @throws Order_BusinessError
      */
-    public function getReserveOrderList($strPurchaseOrderStatus,
+    public function getReserveOrderList($strReserveOrderStatus,
                                         $strWarehouseId,
-                                        $strPurchaseOrderId,
+                                        $strReserveOrderId,
                                         $intVendorId,
                                         $arrCreateTime,
                                         $arrOrderPlanTime,
@@ -213,14 +213,14 @@ class Service_Data_Reserve_ReserveOrder {
                 Order_Error_Code::QUERY_TIME_SPAN_ERROR);
         }
 
-        $intPurchaseOrderId = intval(Order_Util::trimReserveOrderIdQuotation($strPurchaseOrderId));
-        $arrPurchaseOrderStatus = Order_Util::extractIntArray($strPurchaseOrderStatus);
+        $intReserveOrderId = intval(Order_Util::trimReserveOrderIdQuotation($strReserveOrderId));
+        $arrReserveOrderStatus = Order_Util::extractIntArray($strReserveOrderStatus);
         $arrWarehouseId  = Order_Util::extractIntArray($strWarehouseId);
 
-        return Model_Orm_PurchaseOrder::getReserveOrderList(
-            $arrPurchaseOrderStatus,
+        return Model_Orm_ReserveOrder::getReserveOrderList(
+            $arrReserveOrderStatus,
             $arrWarehouseId,
-            $intPurchaseOrderId,
+            $intReserveOrderId,
             $intVendorId,
             $arrCreateTime,
             $arrOrderPlanTime,
@@ -237,6 +237,6 @@ class Service_Data_Reserve_ReserveOrder {
      */
     public function getReserveOrderStatistics()
     {
-        return Model_Orm_PurchaseOrder::getReserveOrderStatistics();
+        return Model_Orm_ReserveOrder::getReserveOrderStatistics();
     }
 }

@@ -2,15 +2,15 @@
 
 /**
  * @property int $id
- * @property int $purchase_order_id
+ * @property int $reserve_order_id
  * @property int $stockin_order_id
- * @property int $nscm_purchase_order_id
- * @property int $purchase_order_status
+ * @property int $purchase_order_id
+ * @property int $reserve_order_status
  * @property int $warehouse_id
  * @property string $warehouse_name
- * @property int $purchase_order_plan_time
+ * @property int $reserve_order_plan_time
  * @property int $stockin_time
- * @property int $purchase_order_plan_amount
+ * @property int $reserve_order_plan_amount
  * @property int $stockin_order_real_amount
  * @property int $vendor_id
  * @property string $vendor_name
@@ -18,17 +18,17 @@
  * @property string $vendor_mobile
  * @property string $vendor_email
  * @property string $vendor_address
- * @property string $purchase_order_remark
+ * @property string $reserve_order_remark
  * @property int $is_delete
  * @property int $create_time
  * @property int $update_time
  * @property int $version
- * @method static Model_Orm_PurchaseOrder findOne($condition, $orderBy = [], $lockOption = '')
- * @method static Model_Orm_PurchaseOrder[] findAll($cond, $orderBy = [], $offset = 0, $limit = null, $with = [])
- * @method static Generator|Model_Orm_PurchaseOrder[] yieldAll($cond, $orderBy = [], $offset = 0, $limit = null)
- * @method static Model_Orm_PurchaseOrder findOneFromRdview($condition, $orderBy = [], $lockOption = '')
+ * @method static Model_Orm_ReserveOrder findOne($condition, $orderBy = [], $lockOption = '')
+ * @method static Model_Orm_ReserveOrder[] findAll($cond, $orderBy = [], $offset = 0, $limit = null, $with = [])
+ * @method static Generator|Model_Orm_ReserveOrder[] yieldAll($cond, $orderBy = [], $offset = 0, $limit = null)
+ * @method static Model_Orm_ReserveOrder findOneFromRdview($condition, $orderBy = [], $lockOption = '')
  * @method static findRowFromRdview($columns, $condition, $orderBy = [])
- * @method static Model_Orm_PurchaseOrder[] findAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null, $with = [])
+ * @method static Model_Orm_ReserveOrder[] findAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null, $with = [])
  * @method static findRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static findColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static findValueFromRdview($column, $cond, $orderBy = [])
@@ -36,14 +36,14 @@
  * @method static findBySqlFromRdview($sql, $asArray = true)
  * @method static countFromRdview($cond, $column = '*')
  * @method static existsFromRdview($cond)
- * @method static Generator|Model_Orm_PurchaseOrder[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
+ * @method static Generator|Model_Orm_ReserveOrder[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
  */
 
-class Model_Orm_PurchaseOrder extends Order_Base_Orm
+class Model_Orm_ReserveOrder extends Order_Base_Orm
 {
-    public static $tableName = 'purchase_order';
+    public static $tableName = 'reserve_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
 
@@ -132,10 +132,10 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
         $limitCount = intval($intPageSize);
 
         // 查找满足条件的所有行数据
-        $arrRows = Model_Orm_PurchaseOrder::getAllColumns();
+        $arrRows = Model_Orm_ReserveOrder::getAllColumns();
 
         // 执行一次性查找
-        $arrRowsAndTotal = Model_Orm_PurchaseOrder::findRowsAndTotalCount(
+        $arrRowsAndTotal = Model_Orm_ReserveOrder::findRowsAndTotalCount(
             $arrRows,
             $arrCondition,
             $orderBy,
@@ -156,7 +156,7 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
     public static function getReserveOrderStatistics()
     {
         $arrCond = ['is_delete' => Order_Define_Const::NOT_DELETE];
-        $arrResult = Model_Orm_PurchaseOrder::find($arrCond)
+        $arrResult = Model_Orm_ReserveOrder::find($arrCond)
             ->select(['purchase_order_status', 'count(*) as purchase_order_status_count'])
             ->groupBy(['purchase_order_status'])
             ->orderBy(['purchase_order_status' => 'desc'])
@@ -172,19 +172,19 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
      */
     public function updateStatus($intStatus)
     {
-        $this->purchase_order_status = $intStatus;
+        $this->reserve_order_status = $intStatus;
         return $this->update();
     }
 
     /**
-     * get reserve info by nscm reserve order id
-     * @param $intNscmPurchaseOrderId
-     * @return Model_Orm_PurchaseOrder
+     * get reserve info by reserve order id
+     * @param $intPurchaseOrderId
+     * @return Model_Orm_ReserveOrder
      */
-    public static function getPurchaseInfoByNscmPurchaseOrderId($intNscmPurchaseOrderId)
+    public static function getReserveInfoByPurchaseOrderId($intPurchaseOrderId)
     {
         $arrCondition = [
-            'nscm_purchase_order_id' => $intNscmPurchaseOrderId,
+            'reserve_order_id' => $intPurchaseOrderId,
             'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
         return self::findOne($arrCondition);
@@ -192,37 +192,37 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
 
     /**
      * create reserve order
+     * @param $intReserveOrderId
      * @param $intPurchaseOrderId
-     * @param $intNscmPurchaseOrderId
      * @param $intWarehouseId
      * @param $strWarehouseName
-     * @param $intPurchaseOrderPlanTime
-     * @param $intPurchaseOrderPlanAmount
+     * @param $intReserveOrderPlanTime
+     * @param $intReserveOrderPlanAmount
      * @param $intVendorId
      * @param $strVendorName
      * @param $strVendorContactor
      * @param $strVendorMobile
      * @param $strVendorEmail
      * @param $strVendorAddress
-     * @param $strPurchaseOrderRemark
+     * @param $strReserveOrderRemark
      * @return int
      */
-    public static function createPurchaseOrder($intPurchaseOrderId, $intNscmPurchaseOrderId,
-                                               $intWarehouseId, $strWarehouseName, $intPurchaseOrderPlanTime, $intPurchaseOrderPlanAmount,
-                                               $intVendorId, $strVendorName, $strVendorContactor, $strVendorMobile, $strVendorEmail,
-                                               $strVendorAddress, $strPurchaseOrderRemark
+    public static function createReserveOrder($intReserveOrderId, $intPurchaseOrderId,
+        $intWarehouseId, $strWarehouseName, $intReserveOrderPlanTime,$intReserveOrderPlanAmount,
+        $intVendorId, $strVendorName, $strVendorContactor,$strVendorMobile, $strVendorEmail,
+        $strVendorAddress, $strReserveOrderRemark
     )
     {
         $arrDb = [
-            'purchase_order_id' => $intPurchaseOrderId,
+            'reserve_order_id' => $intReserveOrderId,
             'stockin_order_id' => 0,
-            'nscm_purchase_order_id' => $intNscmPurchaseOrderId,
-            'purchase_order_status' => Order_Define_PurchaseOrder::STATUS_STOCKING,
+            'purchase_order_id' => $intPurchaseOrderId,
+            'reserve_order_status' => Order_Define_ReserveOrder::STATUS_STOCKING,
             'warehouse_id' => $intWarehouseId,
             'warehouse_name' => $strWarehouseName,
-            'purchase_order_plan_time' => $intPurchaseOrderPlanTime,
+            'reserve_order_plan_time' => $intReserveOrderPlanTime,
             'stockin_time' => 0,
-            'purchase_order_plan_amount' => $intPurchaseOrderPlanAmount,
+            'reserve_order_plan_amount' => $intReserveOrderPlanAmount,
             'stockin_order_real_amount' => 0,
             'vendor_id' => $intVendorId,
             'vendor_name' => $strVendorName,
@@ -230,7 +230,7 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
             'vendor_mobile' => $strVendorMobile,
             'vendor_email' => $strVendorEmail,
             'vendor_address' => $strVendorAddress,
-            'purchase_order_remark' => $strPurchaseOrderRemark,
+            'reserve_order_remark' => $strReserveOrderRemark,
         ];
         return self::insert($arrDb);
     }

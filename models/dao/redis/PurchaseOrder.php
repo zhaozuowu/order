@@ -1,29 +1,33 @@
 <?php
 /**
- * @name Dao_Redis_PurchaseOrder
- * @desc Dao_Redis_PurchaseOrder
+ * @name Dao_Redis_ReserveOrder
+ * @desc Dao_Redis_ReserveOrder
  * @author lvbochao@iwaimai.baidu.com
  */
-class Dao_Redis_PurchaseOrder extends Order_Base_Redis
+class Dao_Redis_ReserveOrder extends Order_Base_Redis
 {
     /**
      * reserve order key prefix
      * @var string
      */
-    const KEY_PREFIX = 'nwms:order:purchaseinfo:';
+    const KEY_PREFIX = 'nwms:order:reserveinfo:';
 
     /**
      * set reserve order info
+<<<<<<< HEAD
      * @param $arrPurchaseInfo
+=======
+     * @param $arrReserveInfo
+>>>>>>> 3ab3eb8c19f60339b46b311a832fd523378ce9a5
      * @return string
      */
-    public function setOrderInfo($arrPurchaseInfo)
+    public function setOrderInfo($arrReserveInfo)
     {
-        $strPurchaseInfo = json_encode($arrPurchaseInfo);
-        $strKey = $arrPurchaseInfo['nscm_purchase_order_id'];
+        $strReserveInfo = json_encode($arrReserveInfo);
+        $strKey = $arrReserveInfo['purchase_order_id'];
         $strRedisKey = self::KEY_PREFIX . $strKey;
-        Bd_Log::debug(sprintf('set redis, key[%s], data:`%s`', $strRedisKey, $strPurchaseInfo));
-        $boolRes = $this->objRedisConn->set($strRedisKey, $strPurchaseInfo);
+        Bd_Log::debug(sprintf('set redis, key[%s], data:`%s`', $strRedisKey, $strReserveInfo));
+        $boolRes = $this->objRedisConn->set($strRedisKey, $strReserveInfo);
         Bd_Log::debug('set redis result: ' . json_encode($boolRes));
         return $strKey;
     }

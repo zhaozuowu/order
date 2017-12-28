@@ -30,9 +30,9 @@ class Service_Page_Reserve_GetReserveOrderList implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $strPurchaseOrderStatus = $arrInput['reserve_order_status'];
+        $strReserveOrderStatus = $arrInput['reserve_order_status'];
         $strWarehouseId = $arrInput['warehouse_id'];
-        $strPurchaseOrderId = $arrInput['reserve_order_id'];
+        $strReserveOrderId = $arrInput['reserve_order_id'];
         $intVendorId = $arrInput['vendor_id'];
         $arrCreateTime = [
             'start' => $arrInput['create_time_start'],
@@ -53,9 +53,9 @@ class Service_Page_Reserve_GetReserveOrderList implements Order_Base_Page
         $intPageSize = $arrInput['page_size'];
 
         return $this->objServiceData->getReserveOrderList(
-            $strPurchaseOrderStatus,
+            $strReserveOrderStatus,
             $strWarehouseId,
-            $strPurchaseOrderId,
+            $strReserveOrderId,
             $intVendorId,
             $arrCreateTime,
             $arrOrderPlanTime,

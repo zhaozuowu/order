@@ -7,27 +7,7 @@
  */
 class Service_Data_StockoutOrder
 {
-    /**
-     * 出库单状态列表
-     */
-    const INIT_STOCKOUT_ORDER_STATUS = 10;//待审核
-    const STAY_PICKING_STOCKOUT_ORDER_STATUS = 20;//待拣货
-    const STAY_RECEIVED_STOCKOUT_ORDER_STATUS = 25;//待揽收
-    const STOCKOUTED_STOCKOUT_ORDER_STATUS = 30;//已出库
-    const RECEIVED_STOCKOUT_ORDER_STATUS = 40;//已签收
-    const AUDIT_NOT_PASSED_STOCKOUT_ORDER_STATUS = 50;//审核不通过
-    /**
-     * 出库单状态列表
-     * @var array
-     */
-    protected $stockoutOrderStatusList = [
-        '10' => '待审核',
-        '20' => '待拣货',
-        '25' => '待揽收',
-        '30' => '已出库',
-        '40' => '已签收',
-        '50' => '审核不通过',
-    ];
+
     /**
      * orm obj
      * @var Model_Orm_StockoutOrder
@@ -35,11 +15,18 @@ class Service_Data_StockoutOrder
     protected $objOrmStockoutOrder;
 
     /**
+     * orm obj
+     * @var Model_Orm_StockoutOrderSku
+     */
+    protected $objOrmSku;
+
+    /**
      * init
      */
     public function __construct()
     {
         $this->objOrmStockoutOrder = new Model_Orm_StockoutOrder();
+        $this->objOrmSku = new Model_Orm_StockoutOrderSku();
 
     }
 
@@ -51,7 +38,7 @@ class Service_Data_StockoutOrder
      */
     public function getNextStockoutOrderStatus($stockoutOrderStatus)
     {
-        $stockoutOrderList = $this->stockoutOrderStatusList;
+        $stockoutOrderList = Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST;
         if (!array_key_exists($stockoutOrderStatus, $stockoutOrderList)) {
             return false;
         }
@@ -63,26 +50,24 @@ class Service_Data_StockoutOrder
 
     /**
      * 根据出库单号，更新出库单状态完成揽收
-     * @param $arrInput
+     * @param $strStockoutOrderId 出库单号
      * @return array
      * @throws Order_BusinessError
      */
-    public function deliveryOrder($arrInput)
+    public function deliveryOrder($strStockoutOrderId)
     {
-        $stockoutOrderId = isset($arrInput['stockout_order_id']) ? intval($arrInput['stockout_order_id']) : 0;
-
-        if (empty($stockoutOrderId)) {
+        if (empty($strStockoutOrderId)) {
             Bd_Log::warning(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
-        $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($stockoutOrderId);//获取出库订单信息
+        $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
 
         if (empty($stockoutOrderInfo)) {
-            Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $stockoutOrderId . 'no data');
+            Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
         }
 
-        $stayRecevied = Service_Data_StockoutOrder::STAY_RECEIVED_STOCKOUT_ORDER_STATUS;//获取待揽收状态
+        $stayRecevied = Order_Define_StockoutOrder::STAY_RECEIVED_STOCKOUT_ORDER_STATUS;//获取待揽收状态
         if ($stockoutOrderInfo['stockout_order_status'] != $stayRecevied) {
             Bd_Log::warning(__METHOD__ . ' no allow update stockout_order_status become stockoutinfo:' . json_encode($stockoutOrderInfo));
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
@@ -95,7 +80,7 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
         }
         $updateData = ['stockout_order_status' => $nextStockoutOrderStatus];
-        $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($stockoutOrderId, $updateData);
+        $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
         if (empty($result)) {
             Bd_Log::warning(__METHOD__ . ' update stockout_order_status fail  become stockoutinfo:' . json_encode($stockoutOrderInfo));
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
@@ -108,13 +93,14 @@ class Service_Data_StockoutOrder
      * @param array $arrInput
      * @return bool
      */
-    public function createStockoutOrder($arrInput) {
-        return Model_Orm_StockoutOrder::getConnection()->transaction(function() use ($arrInput) {
+    public function createStockoutOrder($arrInput)
+    {
+        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrInput) {
             $arrCreateParams = $this->getCreateParams($arrInput);
             $objStockoutOrder = new Model_Orm_StockoutOrder();
             $objOrmStockoutOrder->create($arrCreateParams, false);
             $this->createStockoutOrderSku($arrInput['skus']);
-       });
+        });
     }
 
     /**
@@ -122,7 +108,8 @@ class Service_Data_StockoutOrder
      * @param array $arrSkus
      * @return bool
      */
-    public function createStockoutOrderSku($arrSkus) {
+    public function createStockoutOrderSku($arrSkus)
+    {
         $arrBatchSkuCreateParams = $this->getBatchSkuCreateParams($arrSkus);
         if (empty($arrBatchSkuCreateParams)) {
             return false;
@@ -135,7 +122,8 @@ class Service_Data_StockoutOrder
      * @param array $arrInput
      * @return array
      */
-    public function getCreateParams($arrInput) {
+    public function getCreateParams($arrInput)
+    {
         $arrCreateParams = [];
         if (empty($arrInput)) {
             return $arrCreateParams;
@@ -172,12 +160,13 @@ class Service_Data_StockoutOrder
      * @param  array $arrSkus
      * @return array
      */
-    public function getBatchSkuCreateParams($arrSkus) {
+    public function getBatchSkuCreateParams($arrSkus)
+    {
         $arrBatchSkuCreateParams = [];
         if (empty($arrSkus)) {
             return $arrBatchSkuCreateParams;
         }
-        foreach($arrSkus as $arrItem) {
+        foreach ($arrSkus as $arrItem) {
             $arrSkuCreateParams = [];
             if (!empty($arrItem['sku_id'])) {
                 $arrSkuCreateParams['sku_id'] = intval($arrItem['sku_id']);
@@ -191,5 +180,44 @@ class Service_Data_StockoutOrder
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
         }
         return $arrBatchSkuCreateParams;
+    }
+
+    /**
+     * 完成揽收
+     * @param $strStockoutOrderId 出库单号
+     * @param $signupStatus 签收状态
+     * @param $signupUpcs 签收数量
+     * @return bool|mixed
+     * @throws Exception
+     * @throws Order_BusinessError
+     */
+    public function finishorder($strStockoutOrderId, $signupStatus, $signupUpcs)
+    {
+        $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
+        if (empty($stockoutOrderInfo)) {
+            Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
+        }
+
+        $status = Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS;
+        if ($stockoutOrderInfo['stockout_order_status'] != $status) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
+        }
+
+        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($strStockoutOrderId, $signupStatus, $signupUpcs) {
+            $updateData = ['signup_status' => $signupStatus];
+            $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
+            if (empty($result)) {
+                Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+            }
+            if (empty($signupUpcs)) {
+                Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+            }
+            foreach ($signupUpcs as $item) {
+                $condition = ['stockout_order_id' => $strStockoutOrderId, 'upc_id' => $item['upc_id']];
+                $skuUpdata = ['upc_accept_amount' => $item['upc_accept_amount'], 'upc_reject_amount' => $item['upc_reject_amount']];
+                $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
+            }
+        });
+
     }
 }

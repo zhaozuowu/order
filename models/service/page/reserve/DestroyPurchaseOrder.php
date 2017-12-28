@@ -9,14 +9,14 @@ class Service_Page_Purchase_DestroyPurchaseOrder implements Order_Base_Page
     /**
      * @var Service_Data_Reserve_ReserveOrder
      */
-    private $objDataPurchase;
+    private $objDataReserve;
 
     /**
      * Service_Page_Purchase_CreatePurchaseOrder constructor.
      */
     function __construct()
     {
-        $this->objDataPurchase = new Service_Data_Reserve_ReserveOrder();
+        $this->objDataReserve = new Service_Data_Reserve_ReserveOrder();
     }
 
     /**
@@ -27,7 +27,7 @@ class Service_Page_Purchase_DestroyPurchaseOrder implements Order_Base_Page
     {
         $intNscmPurchaseOrderId = intval($arrInput['purchase_order_id']);
         $intDestroyType = intval($arrInput['destroy_type']);
-        $this->objDataPurchase->destroyPurchaseOrder($intNscmPurchaseOrderId, $intDestroyType);
+        $this->objDataReserve->destroyPurchaseOrder($intNscmPurchaseOrderId, $intDestroyType);
         return [];
     }
 }

@@ -2,7 +2,7 @@
 
 /**
  * @property int $id
- * @property int $purchase_order_id
+ * @property int $reserve_order_id
  * @property int $sku_id
  * @property string $upc_id
  * @property int $upc_unit
@@ -13,21 +13,21 @@
  * @property string $sku_net_gram
  * @property int $sku_price
  * @property int $sku_price_tax
- * @property int $purchase_order_sku_total_price
- * @property int $purchase_order_sku_total_price_tax
- * @property int $purchase_order_sku_plan_amount
+ * @property int $reserve_order_sku_total_price
+ * @property int $reserve_order_sku_total_price_tax
+ * @property int $reserve_order_sku_plan_amount
  * @property int $stockin_order_sku_real_amount
  * @property string $stockin_order_sku_extra_info
  * @property int $is_delete
  * @property int $create_time
  * @property int $update_time
  * @property int $version
- * @method static Model_Orm_PurchaseOrderSku findOne($condition, $orderBy = [], $lockOption = '')
- * @method static Model_Orm_PurchaseOrderSku[] findAll($cond, $orderBy = [], $offset = 0, $limit = null, $with = [])
- * @method static Generator|Model_Orm_PurchaseOrderSku[] yieldAll($cond, $orderBy = [], $offset = 0, $limit = null)
- * @method static Model_Orm_PurchaseOrderSku findOneFromRdview($condition, $orderBy = [], $lockOption = '')
+ * @method static Model_Orm_ReserveOrderSku findOne($condition, $orderBy = [], $lockOption = '')
+ * @method static Model_Orm_ReserveOrderSku[] findAll($cond, $orderBy = [], $offset = 0, $limit = null, $with = [])
+ * @method static Generator|Model_Orm_ReserveOrderSku[] yieldAll($cond, $orderBy = [], $offset = 0, $limit = null)
+ * @method static Model_Orm_ReserveOrderSku findOneFromRdview($condition, $orderBy = [], $lockOption = '')
  * @method static findRowFromRdview($columns, $condition, $orderBy = [])
- * @method static Model_Orm_PurchaseOrderSku[] findAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null, $with = [])
+ * @method static Model_Orm_ReserveOrderSku[] findAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null, $with = [])
  * @method static findRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static findColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static findValueFromRdview($column, $cond, $orderBy = [])
@@ -35,30 +35,30 @@
  * @method static findBySqlFromRdview($sql, $asArray = true)
  * @method static countFromRdview($cond, $column = '*')
  * @method static existsFromRdview($cond)
- * @method static Generator|Model_Orm_PurchaseOrderSku[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
+ * @method static Generator|Model_Orm_ReserveOrderSku[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
 */
 
-class Model_Orm_PurchaseOrderSku extends Order_Base_Orm
+class Model_Orm_ReserveOrderSku extends Order_Base_Orm
 {
 
-    public static $tableName = 'purchase_order_sku';
+    public static $tableName = 'reserve_order_sku';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
 
     /**
      * create reserve order sku
-     * @param $arrPurchaseOrderSkus
-     * @param $intPurchaseOrderId
+     * @param $arrReserveOrderSkus
+     * @param $intReserveOrderId
      * @return int
      */
-    public static function createPurchaseOrderSku($arrPurchaseOrderSkus, $intPurchaseOrderId)
+    public static function createReserveOrderSku($arrReserveOrderSkus, $intReserveOrderId)
     {
-        $arrDbPurchaseOrderSkus = [];
-        foreach ($arrPurchaseOrderSkus as $arrInputRow) {
+        $arrDbReserveOrderSkus = [];
+        foreach ($arrReserveOrderSkus as $arrInputRow) {
             $arrRow = [
-                'purchase_order_id' => $intPurchaseOrderId,
+                'reserve_order_id' => $intReserveOrderId,
                 'sku_id' => $arrInputRow['sku_id'],
                 'upc_id' => $arrInputRow['upc_id'],
                 'upc_unit' => $arrInputRow['upc_unit'],
@@ -69,14 +69,14 @@ class Model_Orm_PurchaseOrderSku extends Order_Base_Orm
                 'sku_net_gram' => $arrInputRow['sku_net_gram'],
                 'sku_price' => $arrInputRow['sku_price'],
                 'sku_price_tax' => $arrInputRow['sku_price_tax'],
-                'purchase_order_sku_total_price' => $arrInputRow['purchase_order_sku_total_price'],
-                'purchase_order_sku_total_price_tax' => $arrInputRow['purchase_order_sku_total_price_tax'],
-                'purchase_order_sku_plan_amount' => $arrInputRow['purchase_order_sku_plan_amount'],
+                'reserve_order_sku_total_price' => $arrInputRow['reserve_order_sku_total_price'],
+                'reserve_order_sku_total_price_tax' => $arrInputRow['reserve_order_sku_total_price_tax'],
+                'reserve_order_sku_plan_amount' => $arrInputRow['reserve_order_sku_plan_amount'],
                 'stockin_order_sku_real_amount' => 0,
                 'stockin_order_sku_extra_info' => '',
             ];
-            $arrDbPurchaseOrderSkus[] = $arrRow;
+            $arrDbReserveOrderSkus[] = $arrRow;
         }
-        return self::batchInsert($arrDbPurchaseOrderSkus);
+        return self::batchInsert($arrDbReserveOrderSkus);
     }
 }
