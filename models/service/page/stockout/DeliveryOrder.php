@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @name Service_Page_GetBusinessFormOrderList
- * @desc 查询业态订单列表
+ * @name Service_Page_Stockout_DeliveryOrder
+ * @desc TMS完成揽收
  * @author zhaozuowu@iwaimai.baidu.com
  */
-class Service_Page_GetBusinessFormOrderList
+class Service_Page_Stockout_DeliveryOrder
 {
     /**
      * @var Service_Data_StockoutOrder
@@ -17,6 +17,7 @@ class Service_Page_GetBusinessFormOrderList
      */
     public function __construct()
     {
+
         $this->objStockoutOrder = new Service_Data_StockoutOrder();
     }
 
@@ -28,6 +29,8 @@ class Service_Page_GetBusinessFormOrderList
      */
     public function execute($arrInput)
     {
-        return $this->objStockoutOrder->getBusinessFormOrderList($arrInput);
+
+        $strStockoutOrderId = isset($arrInput['stockout_order_id']) ? intval($arrInput['stockout_order_id']) : 0;
+        return $this->objStockoutOrder->deliveryOrder($strStockoutOrderId);
     }
 }

@@ -40,7 +40,7 @@
  * @method static Generator|Model_Orm_BusinessFormOrderSku[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
-*/
+ */
 
 class Model_Orm_BusinessFormOrderSku extends Wm_Orm_ActiveRecord
 {
@@ -48,4 +48,5 @@ class Model_Orm_BusinessFormOrderSku extends Wm_Orm_ActiveRecord
     public static $tableName = 'business_form_order_sku';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
 }
