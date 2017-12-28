@@ -48,7 +48,7 @@ class Model_Orm_PurchaseOrderSku extends Order_Base_Orm
     public static $clusterName = 'nwms_order_cluster';
 
     /**
-     * create purchase order sku
+     * create reserve order sku
      * @param $arrPurchaseOrderSkus
      * @param $intPurchaseOrderId
      * @return int

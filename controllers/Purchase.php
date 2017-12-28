@@ -6,10 +6,11 @@
  */
 class Controller_Purchase extends Ap_Controller_Abstract {
     public $actions = array(
-        'createpurchaseorder' => 'actions/purchase/CreatePurchaseOrder.php',
-        'getpurchaseorderlist' => 'actions/purchase/GetPurchaseOrderList.php',
-        'getpurchaseorderstatistics' => 'actions/purchase/GetPurchaseOrderStatistics.php',
-        'createpurchaseorderwrite' => 'actions/purchase/CreatePurchaseOrderWrite.php',
-        'destroypurchaseorder' => 'actions/purchase/DestroyPurchaseOrder.php',
+        'createpurchaseorder' => 'actions/reserve/CreatePurchaseOrder.php',
+        'getpurchaseorderlist' => 'actions/reserve/GetReserveOrderList.php',
+        'getpurchaseorderstatistics' => 'actions/reserve/GetReserveOrderStatistics.php',
+        'getpurchaseorderdetail' => 'actions/reserve/GetReserveOrderDetail.php',
+        'createpurchaseorderwrite' => 'actions/reserve/CreatePurchaseOrderWrite.php',
+        'destroypurchaseorder' => 'actions/reserve/DestroyPurchaseOrder.php',
     );
 }

@@ -61,7 +61,7 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
      * @param $intPageSize
      * @return array
      */
-    public static function getPurchaseOrderList(
+    public static function getReserveOrderList(
         $arrPurchaseOrderStatus,
         $arrWarehouseId,
         $intPurchaseOrderId,
@@ -153,7 +153,7 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
      *
      * @return array
      */
-    public static function getPurchaseOrderStatistics()
+    public static function getReserveOrderStatistics()
     {
         $arrCond = ['is_delete' => Order_Define_Const::NOT_DELETE];
         $arrResult = Model_Orm_PurchaseOrder::find($arrCond)
@@ -177,7 +177,7 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
     }
 
     /**
-     * get purchase info by nscm purchase order id
+     * get reserve info by nscm reserve order id
      * @param $intNscmPurchaseOrderId
      * @return Model_Orm_PurchaseOrder
      */
@@ -191,7 +191,7 @@ class Model_Orm_PurchaseOrder extends Order_Base_Orm
     }
 
     /**
-     * create purchase order
+     * create reserve order
      * @param $intPurchaseOrderId
      * @param $intNscmPurchaseOrderId
      * @param $intWarehouseId

@@ -89,13 +89,29 @@ class Order_Util{
      * @param $strOrderId
      * @return bool|string
      */
-    public static function trimPurchaseIdQuotation($strOrderId)
+    public static function trimPurchaseOrderIdQuotation($strOrderId)
     {
         if(empty($strOrderId)){
             return $strOrderId;
         }
 
         $result = ltrim($strOrderId, Nscm_Define_OrderPrefix::PUR);
+
+        return $result;
+    }
+
+    /**
+     * 去除预约入库单开头的ASN开头部分内容
+     * @param $strOrderId
+     * @return bool|string
+     */
+    public static function trimReserveOrderIdQuotation($strOrderId)
+    {
+        if(empty($strOrderId)){
+            return $strOrderId;
+        }
+
+        $result = ltrim($strOrderId, Nscm_Define_OrderPrefix::ASN);
 
         return $result;
     }

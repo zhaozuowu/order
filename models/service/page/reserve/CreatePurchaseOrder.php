@@ -7,7 +7,7 @@
 class Service_Page_Purchase_CreatePurchaseOrder implements Order_Base_Page
 {
     /**
-     * @var Service_Data_Purchase_PurchaseOrder
+     * @var Service_Data_Reserve_ReserveOrder
      */
     private $objDataPurchase;
 
@@ -16,7 +16,7 @@ class Service_Page_Purchase_CreatePurchaseOrder implements Order_Base_Page
      */
     function __construct()
     {
-        $this->objDataPurchase = new Service_Data_Purchase_PurchaseOrder();
+        $this->objDataPurchase = new Service_Data_Reserve_ReserveOrder();
     }
 
     /**

@@ -1,14 +1,14 @@
 <?php
 /**
- * @name Service_Data_Purchase_PurchaseOrder
+ * @name Service_Data_Reserve_ReserveOrder
  * @desc Service_Data_Purchase_PurchaseOrder
  * @author lvbochao@iwaimai.baidu.com
  */
 
-class Service_Data_Purchase_PurchaseOrder {
+class Service_Data_Reserve_ReserveOrder {
 
     /**
-     * destroy purchase order
+     * destroy reserve order
      * @param $intNscmPurchaseOrderId
      * @param $intDestroyType
      */
@@ -29,7 +29,7 @@ class Service_Data_Purchase_PurchaseOrder {
     }
     
     /**
-     * create purchase order by nscm purchase order id
+     * create reserve order by nscm reserve order id
      * @param $intNscmPurchaseOrderId
      */
     public function createPurchaseOrderByNscmPurchaseOrderId($intNscmPurchaseOrderId)
@@ -64,24 +64,24 @@ class Service_Data_Purchase_PurchaseOrder {
     }
 
     /**
-     * generate purchase order id
+     * generate reserve order id
      * @param int $intNscmPurchaseOrderId
      * @return int
      */
     public function generatePurchaseOrderId($intNscmPurchaseOrderId)
     {
         if ($this->checkNscmPurchaseOrderReceived($intNscmPurchaseOrderId)) {
-            Bd_Log::warning('nscm purchase order has already been received, id: ' . $intNscmPurchaseOrderId);
+            Bd_Log::warning('nscm reserve order has already been received, id: ' . $intNscmPurchaseOrderId);
             Order_BusinessError::throwException(Order_Error_Code::NSCM_PURCHASE_ORDER_HAS_BEEN_RECEIVED);
         }
-        Bd_Log::trace('generate purchase order id by nscm purchase order id: ' . $intNscmPurchaseOrderId);
+        Bd_Log::trace('generate reserve order id by nscm reserve order id: ' . $intNscmPurchaseOrderId);
         $intPurchaseOrderId = Order_Util_Util::generatePurchaseOrderCode();
-        Bd_Log::debug(sprintf('generate purchase order id[%s] by nscm purchase order id[%s]', $intPurchaseOrderId, $intNscmPurchaseOrderId));
+        Bd_Log::debug(sprintf('generate reserve order id[%s] by nscm reserve order id[%s]', $intPurchaseOrderId, $intNscmPurchaseOrderId));
         return $intPurchaseOrderId;
     }
 
     /**
-     * send create purchase order
+     * send create reserve order
      * @param $arrPurchaseOrder
      * @return array
      */
@@ -114,7 +114,7 @@ class Service_Data_Purchase_PurchaseOrder {
     }
 
     /**
-     * check nscm purchase order received
+     * check nscm reserve order received
      * @param $intPurchaseOrderId
      * @return bool
      */
@@ -136,7 +136,7 @@ class Service_Data_Purchase_PurchaseOrder {
     }
 
     /**
-     * send purchase info to wmq
+     * send reserve info to wmq
      * @param $intNscmPurchaseOrderId
      * @return void
      */
@@ -173,15 +173,15 @@ class Service_Data_Purchase_PurchaseOrder {
      * @return array
      * @throws Order_BusinessError
      */
-    public function getPurchaseOrderList($strPurchaseOrderStatus,
-                                         $strWarehouseId,
-                                         $strPurchaseOrderId,
-                                         $intVendorId,
-                                         $arrCreateTime,
-                                         $arrOrderPlanTime,
-                                         $arrStockinTime,
-                                         $intPageNum,
-                                         $intPageSize)
+    public function getReserveOrderList($strPurchaseOrderStatus,
+                                        $strWarehouseId,
+                                        $strPurchaseOrderId,
+                                        $intVendorId,
+                                        $arrCreateTime,
+                                        $arrOrderPlanTime,
+                                        $arrStockinTime,
+                                        $intPageNum,
+                                        $intPageSize)
     {
         $arrCreateTime['start'] = intval($arrCreateTime['start']);
         $arrCreateTime['end'] = intval($arrCreateTime['end']);
@@ -213,11 +213,11 @@ class Service_Data_Purchase_PurchaseOrder {
                 Order_Error_Code::QUERY_TIME_SPAN_ERROR);
         }
 
-        $intPurchaseOrderId = intval(Order_Util::trimPurchaseIdQuotation($strPurchaseOrderId));
+        $intPurchaseOrderId = intval(Order_Util::trimReserveOrderIdQuotation($strPurchaseOrderId));
         $arrPurchaseOrderStatus = Order_Util::extractIntArray($strPurchaseOrderStatus);
         $arrWarehouseId  = Order_Util::extractIntArray($strWarehouseId);
 
-        return Model_Orm_PurchaseOrder::getPurchaseOrderList(
+        return Model_Orm_PurchaseOrder::getReserveOrderList(
             $arrPurchaseOrderStatus,
             $arrWarehouseId,
             $intPurchaseOrderId,
@@ -235,8 +235,8 @@ class Service_Data_Purchase_PurchaseOrder {
      *
      * @return array
      */
-    public function getPurchaseOrderStatistics()
+    public function getReserveOrderStatistics()
     {
-        return Model_Orm_PurchaseOrder::getPurchaseOrderStatistics();
+        return Model_Orm_PurchaseOrder::getReserveOrderStatistics();
     }
 }

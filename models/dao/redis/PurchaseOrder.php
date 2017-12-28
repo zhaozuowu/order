@@ -7,13 +7,13 @@
 class Dao_Redis_PurchaseOrder extends Order_Base_Redis
 {
     /**
-     * purchase order key prefix
+     * reserve order key prefix
      * @var string
      */
     const KEY_PREFIX = 'nwms:order:purchaseinfo:';
 
     /**
-     * set purchase order info
+     * set reserve order info
      * @param $arrPurchaseInfo
      * @return string
      */

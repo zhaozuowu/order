@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_GetPurchaseOrderStatistics
+ * @name Action_GetReserveOrderStatistics
  * @desc 获取采购单状态统计
  * @author chenwende@iwaimai.baidu.com
  */
 
-class Action_GetPurchaseOrderStatistics extends Order_Base_Action
+class Action_GetReserveOrderStatistics extends Order_Base_Action
 {
     /**
      * input params
@@ -24,7 +24,7 @@ class Action_GetPurchaseOrderStatistics extends Order_Base_Action
      */
     function myConstruct()
     {
-        $this->objPage = new Service_Page_Purchase_GetPurchaseOrderStatistics();
+        $this->objPage = new Service_Page_Reserve_GetReserveOrderStatistics();
     }
 
     /**
@@ -43,17 +43,17 @@ class Action_GetPurchaseOrderStatistics extends Order_Base_Action
         if(!empty($arrRet)) {
             foreach ($arrRetList as $arrListItem) {
                 $arrRoundResult = [];
-                $arrRoundResult['purchase_order_status'] = empty($arrListItem['purchase_order_status']) ? 0 : intval($arrListItem['purchase_order_status']);
-                $arrRoundResult['purchase_order_status_count'] = empty($arrListItem['purchase_order_status_count']) ? 0 : intval($arrListItem['purchase_order_status_count']);
-                $intTotal += intval($arrRoundResult['purchase_order_status_count']);
+                $arrRoundResult['reserve_order_status'] = empty($arrListItem['reserve_order_status']) ? 0 : intval($arrListItem['reserve_order_status']);
+                $arrRoundResult['reserve_order_status_count'] = empty($arrListItem['reserve_order_status_count']) ? 0 : intval($arrListItem['reserve_order_status_count']);
+                $intTotal += intval($arrRoundResult['reserve_order_status_count']);
                 $arrFormatResult['list'][] = $arrRoundResult;
             }
         }
 
         // 计算总数统计
         $arrRoundResult = [];
-        $arrRoundResult['purchase_order_status'] = 0;
-        $arrRoundResult['purchase_order_status_count'] = $intTotal;
+        $arrRoundResult['reserve_order_status'] = 0;
+        $arrRoundResult['reserve_order_status_count'] = $intTotal;
         $arrFormatResult['list'][] = $arrRoundResult;
 
         return $arrFormatResult;
