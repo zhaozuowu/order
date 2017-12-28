@@ -30,8 +30,8 @@ class Service_Page_Reserve_GetReserveOrderDetail implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $strOrderId = strval($arrInput['reserve_order_id']);
+        $strReserveOrderId = strval($arrInput['reserve_order_id']);
 
-        return $this->objServiceData->getReserveOrderDetail($strOrderId);
+        return $this->objServiceData->getReserveOrderInfoByReserveOrderId($strReserveOrderId);
     }
 }

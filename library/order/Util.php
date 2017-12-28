@@ -1,10 +1,12 @@
 <?php
+
 /**
  * @name Order_Util
  * @desc APP公共工具类
  * @author nscm
  */
-class Order_Util{
+class Order_Util
+{
     /**
      * 对参数时间进行校验，结束时间应该在开始时间之后或者相等
      * 均为正整数
@@ -69,7 +71,7 @@ class Order_Util{
      */
     public static function extractIntArray($strInput)
     {
-        if(empty($strInput)){
+        if (empty($strInput)) {
             return null;
         }
 
@@ -77,7 +79,7 @@ class Order_Util{
 
         // parse array
         $arrResult = explode(',', $strIn);
-        foreach ($arrResult as &$item){
+        foreach ($arrResult as &$item) {
             $item = intval($item);
         }
 
@@ -91,28 +93,40 @@ class Order_Util{
      */
     public static function trimPurchaseOrderIdQuotation($strOrderId)
     {
-        if(empty($strOrderId)){
-            return $strOrderId;
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strOrderId)) {
+            return $strResult;
         }
 
-        $result = ltrim($strOrderId, Nscm_Define_OrderPrefix::PUR);
+        $strResult = ltrim(
+            trim($strOrderId),
+            Nscm_Define_OrderPrefix::PUR
+        );
 
-        return $result;
+        return $strResult;
     }
 
     /**
      * 去除预约入库单开头的ASN开头部分内容
-     * @param $strOrderId
+     * @param $strReserveOrderId
      * @return bool|string
      */
-    public static function trimReserveOrderIdQuotation($strOrderId)
+    public static function trimReserveOrderIdQuotation($strReserveOrderId)
     {
-        if(empty($strOrderId)){
-            return $strOrderId;
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strReserveOrderId)) {
+            return $strResult;
         }
 
-        $result = ltrim($strOrderId, Nscm_Define_OrderPrefix::ASN);
+        $strResult = ltrim(
+            trim($strReserveOrderId),
+            Nscm_Define_OrderPrefix::ASN
+        );
 
-        return $result;
+        return $strResult;
     }
 }

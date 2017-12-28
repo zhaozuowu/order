@@ -5,14 +5,14 @@
  * @author chenwende@iwaimai.baidu.com
  */
 
-class Action_GeReserveOrderDetail extends Order_Base_Action
+class Action_GetReserveOrderDetail extends Order_Base_Action
 {
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
-        'reserve_order_id' => 'regex|patern[/^(ASN\d{13})?$/]|required',
+        'reserve_order_id' => 'regex|patern[/^(ASN\d{13})?$/]',
     ];
 
     /**

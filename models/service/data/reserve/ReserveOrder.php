@@ -241,12 +241,20 @@ class Service_Data_Reserve_ReserveOrder {
     }
 
     /**
-     * 
-     * @param $strOrderId
+     * 查询采购订单详情
+     *
+     * @param $strReserveOrderId
      * @return array
+     * @throws Order_BusinessError
      */
-    public function getReserveOrderDetail($strOrderId)
+    public function getReserveOrderInfoByReserveOrderId($strReserveOrderId)
     {
-        return [];
+        $intReserveOrderId = intval(Order_Util::trimReserveOrderIdQuotation($strReserveOrderId));
+
+        if(empty($intReserveOrderId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+
+        return Model_Orm_ReserveOrder::getReserveOrderInfoByReserveOrderId($intReserveOrderId);
     }
 }
