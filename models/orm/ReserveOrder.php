@@ -132,10 +132,10 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
         $limitCount = intval($intPageSize);
 
         // 查找满足条件的所有列数据
-        $arrCols = Model_Orm_ReserveOrder::getAllColumns();
+        $arrCols = self::getAllColumns();
 
         // 执行一次性查找
-        $arrRowsAndTotal = Model_Orm_ReserveOrder::findRowsAndTotalCount(
+        $arrRowsAndTotal = self::findRowsAndTotalCount(
             $arrCols,
             $arrCondition,
             $orderBy,
@@ -156,7 +156,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     public static function getReserveOrderStatistics()
     {
         $arrCond = ['is_delete' => Order_Define_Const::NOT_DELETE];
-        $arrResult = Model_Orm_ReserveOrder::find($arrCond)
+        $arrResult = self::find($arrCond)
             ->select(['reserve_order_status', 'count(*) as reserve_order_status_count'])
             ->groupBy(['reserve_order_status'])
             ->orderBy(['reserve_order_status' => 'desc'])
@@ -180,7 +180,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
         ];
 
         // 查找该行所有数据
-        $arrCols = Model_Orm_ReserveOrder::getAllColumns();
+        $arrCols = self::getAllColumns();
 
         // 查找满足条件的所有行数据
         $arrResult = self::findRow($arrCols, $arrCondition);

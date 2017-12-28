@@ -79,8 +79,8 @@ class Order_Util
 
         // parse array
         $arrResult = explode(',', $strIn);
-        foreach ($arrResult as &$item) {
-            $item = intval($item);
+        foreach ($arrResult as $key => $item) {
+            $arrResult[$key] = intval($item);
         }
 
         return $arrResult;
@@ -91,7 +91,7 @@ class Order_Util
      * @param $strOrderId
      * @return bool|string
      */
-    public static function trimPurchaseOrderIdQuotation($strOrderId)
+    public static function trimPurchaseOrderIdPrefix($strOrderId)
     {
         // 返回结果默认为空
         $strResult = '';
@@ -100,10 +100,7 @@ class Order_Util
             return $strResult;
         }
 
-        $strResult = ltrim(
-            trim($strOrderId),
-            Nscm_Define_OrderPrefix::PUR
-        );
+        $strResult = ltrim($strOrderId, Nscm_Define_OrderPrefix::PUR);
 
         return $strResult;
     }
@@ -113,7 +110,7 @@ class Order_Util
      * @param $strReserveOrderId
      * @return bool|string
      */
-    public static function trimReserveOrderIdQuotation($strReserveOrderId)
+    public static function trimReserveOrderIdPrefix($strReserveOrderId)
     {
         // 返回结果默认为空
         $strResult = '';
@@ -122,11 +119,29 @@ class Order_Util
             return $strResult;
         }
 
-        $strResult = ltrim(
-            trim($strReserveOrderId),
-            Nscm_Define_OrderPrefix::ASN
-        );
+        $strResult = ltrim($strReserveOrderId, Nscm_Define_OrderPrefix::ASN);
 
         return $strResult;
+    }
+
+    /**
+     * 校验输入的采购单状态是否在合法范围内（空值返回true）
+     *
+     * @param $arrReserveOrderStatus
+     * @return bool
+     */
+    public static function isReserveOrderStatusCorrect($arrReserveOrderStatus)
+    {
+        if(empty($arrReserveOrderStatus)){
+            return true;
+        }
+
+        foreach($arrReserveOrderStatus as $intStatus){
+            if(!isset(Order_Define_ReserveOrder::ALL_STATUS[$intStatus])){
+                return false;
+            }
+        }
+
+        return true;
     }
 }
