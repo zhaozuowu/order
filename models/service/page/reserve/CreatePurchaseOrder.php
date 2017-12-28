@@ -1,22 +1,22 @@
 <?php
 /**
- * @name Service_Page_Reserve_CreateReserveOrder
- * @desc Service_Page_Reserve_CreateReserveOrder
+ * @name Service_Page_Purchase_CreatePurchaseOrder
+ * @desc Service_Page_Purchase_CreatePurchaseOrder
  * @author lvbochao@iwaimai.baidu.com
  */
-class Service_Page_Reserve_CreateReserveOrder implements Order_Base_Page
+class Service_Page_Purchase_CreatePurchaseOrder implements Order_Base_Page
 {
     /**
      * @var Service_Data_Reserve_ReserveOrder
      */
-    private $objDataReserve;
+    private $objDataPurchase;
 
     /**
-     * Service_Page_Reserve_CreateReserveOrder constructor.
+     * Service_Page_Purchase_CreatePurchaseOrder constructor.
      */
     function __construct()
     {
-        $this->objDataReserve = new Service_Data_Reserve_ReserveOrder();
+        $this->objDataPurchase = new Service_Data_Reserve_ReserveOrder();
     }
 
     /**
@@ -25,13 +25,13 @@ class Service_Page_Reserve_CreateReserveOrder implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $arrReserve = $arrInput;
-        $arrRes = $this->objDataReserve->saveCreateReserveOrder($arrReserve);
+        $arrPurchase = $arrInput;
+        $arrRes = $this->objDataPurchase->saveCreatePurchaseOrder($arrPurchase);
         $strKey = $arrRes['key'];
-        $intReserveOrderId = $arrRes['reserve_order_id'];
-        $this->objDataReserve->sendReserveInfoToWmq($strKey);
+        $intPurchaseOrderId = $arrRes['purchase_order_id'];
+        $this->objDataPurchase->sendPurchaseInfoToWmq($strKey);
         $arrRet = [
-            'reserve_order_id' => $intReserveOrderId,
+            'purchase_order_id' => $intPurchaseOrderId,
         ];
         return $arrRet;
     }

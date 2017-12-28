@@ -39,14 +39,131 @@
  * @method static Generator|Model_Orm_ReserveOrder[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
-*/
+ */
 
 class Model_Orm_ReserveOrder extends Order_Base_Orm
 {
-
     public static $tableName = 'reserve_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * 查询采购订单列表
+     *
+     * @param $arrReserveOrderStatus
+     * @param $arrWarehouseId
+     * @param $intReserveOrderId
+     * @param $intVendorId
+     * @param $arrCreateTime
+     * @param $arrOrderPlanTime
+     * @param $arrStockinTime
+     * @param $intPageNum
+     * @param $intPageSize
+     * @return array
+     */
+    public static function getReserveOrderList(
+        $arrReserveOrderStatus,
+        $arrWarehouseId,
+        $intReserveOrderId,
+        $intVendorId,
+        $arrCreateTime,
+        $arrOrderPlanTime,
+        $arrStockinTime,
+        $intPageNum,
+        $intPageSize
+    )
+    {
+        // 拼装查询条件
+        if (!empty($arrReserveOrderStatus)) {
+            $arrCondition['reserve_order_status'] = [
+                'in',
+                $arrReserveOrderStatus];
+        }
+
+        if (!empty($arrWarehouseId)) {
+            $arrCondition['warehouse_id'] = [
+                'in',
+                $arrWarehouseId];
+        }
+
+        if (!empty($intReserveOrderId)) {
+            $arrCondition['reserve_order_id'] = $intReserveOrderId;
+        }
+
+        if (!empty($intVendorId)) {
+            $arrCondition['vendor_id'] = $intVendorId;
+        }
+
+        if (!empty($arrCreateTime['start'])
+            && !empty($arrCreateTime['end'])) {
+            $arrCondition['create_time'] = [
+                'between',
+                $arrCreateTime['start'],
+                $arrCreateTime['end']
+            ];
+        }
+
+        if (!empty($arrOrderPlanTime['start'])
+            && !empty($arrOrderPlanTime['end'])) {
+            $arrCondition['reserve_order_plan_time'] = [
+                'between',
+                $arrOrderPlanTime['start'],
+                $arrOrderPlanTime['end']
+            ];
+        }
+
+        if (!empty($arrStockinTime['start'])
+            && !empty($arrStockinTime['end'])) {
+            $arrCondition['stockin_time'] = [
+                'between',
+                $arrStockinTime['start'],
+                $arrStockinTime['end'],
+            ];
+        }
+
+        // 只查询未软删除的
+        $arrCondition['is_delete'] = Order_Define_Const::NOT_DELETE;
+
+        // 排序条件
+        $orderBy = ['id' => 'desc'];
+
+        // 分页条件
+        $offset = (intval($intPageNum) - 1) * intval($intPageSize);
+        $limitCount = intval($intPageSize);
+
+        // 查找满足条件的所有行数据
+        $arrRows = Model_Orm_ReserveOrder::getAllColumns();
+
+        // 执行一次性查找
+        $arrRowsAndTotal = Model_Orm_ReserveOrder::findRowsAndTotalCount(
+            $arrRows,
+            $arrCondition,
+            $orderBy,
+            $offset,
+            $limitCount);
+
+        $arrResult['total'] = $arrRowsAndTotal['total'];
+        $arrResult['list'] = $arrRowsAndTotal['rows'];
+
+        return $arrResult;
+    }
+
+    /**
+     * 获取采购单状态统计，只查询未软删除的
+     *
+     * @return array
+     */
+    public static function getReserveOrderStatistics()
+    {
+        $arrCond = ['is_delete' => Order_Define_Const::NOT_DELETE];
+        $arrResult = Model_Orm_ReserveOrder::find($arrCond)
+            ->select(['reserve_order_status', 'count(*) as reserve_order_status_count'])
+            ->groupBy(['reserve_order_status'])
+            ->orderBy(['reserve_order_status' => 'desc'])
+            ->rows();
+
+        return $arrResult;
+    }
 
     /**
      * update status
@@ -76,7 +193,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     /**
      * create reserve order
      * @param $intReserveOrderId
-     * @param $intReserveOrderId
+     * @param $intPurchaseOrderId
      * @param $intWarehouseId
      * @param $strWarehouseName
      * @param $intReserveOrderPlanTime
