@@ -239,4 +239,14 @@ class Service_Data_Reserve_ReserveOrder {
     {
         return Model_Orm_ReserveOrder::getReserveOrderStatistics();
     }
+
+    /**
+     * 
+     * @param $strOrderId
+     * @return array
+     */
+    public function getReserveOrderDetail($strOrderId)
+    {
+        return [];
+    }
 }

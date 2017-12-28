@@ -40,23 +40,21 @@ class Action_GeReserveOrderDetail extends Order_Base_Action
         // 格式化数据结果
         $arrFormatResult = [];
 
-        $arrRetList = $arrRet;
-        $intTotal = 0;
         if(!empty($arrRet)) {
-            foreach ($arrRetList as $arrListItem) {
-                $arrRoundResult = [];
-                $arrRoundResult['reserve_order_id'] = empty($arrListItem['reserve_order_id']) ? '' : intval($arrListItem['reserve_order_id']);
-                $arrRoundResult['reserve_order_status_count'] = empty($arrListItem['reserve_order_status_count']) ? 0 : intval($arrListItem['reserve_order_status_count']);
-                $intTotal += intval($arrRoundResult['reserve_order_status_count']);
-                $arrFormatResult['list'][] = $arrRoundResult;
-            }
-        }
+            $arrRoundResult = [];
+            $arrRoundResult['reserve_order_id'] = empty($arrRet['reserve_order_id']) ? '' : Nscm_Define_OrderPrefix::ASN . intval($arrRet['reserve_order_id']);
+            $arrRoundResult['stockin_order_id'] = empty($arrRet['stockin_order_id']) ? '' : Nscm_Define_OrderPrefix::SIO . strval($arrRet['stockin_order_id']);
+            $arrRoundResult['warehouse_name'] = empty($arrRet['warehouse_name']) ? '' : strval($arrRet['warehouse_name']);
+            $arrRoundResult['reserve_order_plan_time'] = empty($arrRet['reserve_order_plan_time']) ? '' : intval($arrRet['reserve_order_plan_time']);
+            $arrRoundResult['reserve_order_status'] = empty($arrRet['reserve_order_status']) ? '' : intval($arrRet['reserve_order_status']);
+            $arrRoundResult['reserve_order_remark'] = empty($arrRet['reserve_order_remark']) ? '' : strval($arrRet['reserve_order_remark']);
+            $arrRoundResult['vendor_name'] = empty($arrRet['vendor_name']) ? '' : strval($arrRet['vendor_name']);
+            $arrRoundResult['vendor_contactor'] = empty($arrRet['vendor_contactor']) ? '' : strval($arrRet['vendor_contactor']);
+            $arrRoundResult['vendor_mobile'] = empty($arrRet['vendor_mobile']) ? '' : strval($arrRet['vendor_mobile']);
+            $arrRoundResult['vendor_address'] = empty($arrRet['vendor_address']) ? '' : strval($arrRet['vendor_address']);
 
-        // 计算总数统计
-        $arrRoundResult = [];
-        $arrRoundResult['reserve_order_status'] = 0;
-        $arrRoundResult['reserve_order_status_count'] = $intTotal;
-        $arrFormatResult['list'][] = $arrRoundResult;
+            $arrFormatResult = $arrRoundResult;
+        }
 
         return $arrFormatResult;
     }

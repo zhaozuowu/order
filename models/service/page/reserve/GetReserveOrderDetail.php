@@ -30,37 +30,8 @@ class Service_Page_Reserve_GetReserveOrderDetail implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $strPurchaseOrderStatus = $arrInput['purchase_order_status'];
-        $strWarehouseId = $arrInput['warehouse_id'];
-        $strPurchaseOrderId = $arrInput['purchase_order_id'];
-        $intVendorId = $arrInput['vendor_id'];
-        $arrCreateTime = [
-            'start' => $arrInput['create_time_start'],
-            'end' => $arrInput['create_time_end'],
-        ];
+        $strOrderId = strval($arrInput['reserve_order_id']);
 
-        $arrOrderPlanTime = [
-            'start' => $arrInput['purchase_order_plan_time_start'],
-            'end' => $arrInput['purchase_order_plan_time_end'],
-        ];
-
-        $arrStockinTime = [
-            'start' => $arrInput['stockin_time_start'],
-            'end' => $arrInput['stockin_time_end'],
-        ];
-
-        $intPageNum = $arrInput['page_num'];
-        $intPageSize = $arrInput['page_size'];
-
-        return $this->objServiceData->getReserveOrderList([],
-            $strPurchaseOrderStatus,
-            $strWarehouseId,
-            $strPurchaseOrderId,
-            $intVendorId,
-            $arrCreateTime,
-            $arrOrderPlanTime,
-            $arrStockinTime,
-            $intPageNum,
-            $intPageSize);
+        return $this->objServiceData->getReserveOrderDetail($strOrderId);
     }
 }
