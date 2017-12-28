@@ -124,7 +124,7 @@ class Service_Data_Purchase_PurchaseOrder {
         // check redis
         $objRedis = new Dao_Redis_PurchaseOrder();
         $arrRedisOrderInfo = $objRedis->getOrderInfo($strPurchaseOrderId);
-        if (!empty($arrDataInfo)) {
+        if (!empty($arrRedisOrderInfo)) {
             return true;
         }
         // check database
@@ -153,7 +153,7 @@ class Service_Data_Purchase_PurchaseOrder {
         Bd_Log::debug('rpc call input info: ' . json_encode($arrReq));
         $arrRet = $objDao->getData($arrReq);
         Bd_log::debug('rpc call output info: ' . json_encode($arrRet));
-        if (0 != json_decode($arrRet[Order_Define_Ral::NWMS_ORDER_CREATE_PURCHASE_ORDER_WRITE])['error_no']) {
+        if (0 != json_decode($arrRet[Order_Define_Ral::NWMS_ORDER_CREATE_PURCHASE_ORDER_WRITE], true)['error_no']) {
             Order_Error::throwException(Order_Error_Code::ERR__RAL_ERROR);
         }
     }
