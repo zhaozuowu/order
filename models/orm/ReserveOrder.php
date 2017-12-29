@@ -231,9 +231,9 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
      * @return int
      */
     public static function createReserveOrder($intReserveOrderId, $intPurchaseOrderId,
-        $intWarehouseId, $strWarehouseName, $intReserveOrderPlanTime,$intReserveOrderPlanAmount,
-        $intVendorId, $strVendorName, $strVendorContactor,$strVendorMobile, $strVendorEmail,
-        $strVendorAddress, $strReserveOrderRemark
+                                              $intWarehouseId, $strWarehouseName, $intReserveOrderPlanTime, $intReserveOrderPlanAmount,
+                                              $intVendorId, $strVendorName, $strVendorContactor, $strVendorMobile, $strVendorEmail,
+                                              $strVendorAddress, $strReserveOrderRemark
     )
     {
         $arrDb = [
@@ -256,5 +256,26 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
             'reserve_order_remark' => $strReserveOrderRemark,
         ];
         return self::insert($arrDb);
+    }
+
+    /**
+     * 校验输入的采购单状态是否在合法范围内（空值返回true）
+     *
+     * @param $arrReserveOrderStatus
+     * @return bool
+     */
+    public static function isReserveOrderStatusCorrect($arrReserveOrderStatus)
+    {
+        if (empty($arrReserveOrderStatus)) {
+            return true;
+        }
+
+        foreach ($arrReserveOrderStatus as $intStatus) {
+            if (!isset(Order_Define_ReserveOrder::ALL_STATUS[$intStatus])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

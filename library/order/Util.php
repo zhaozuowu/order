@@ -123,25 +123,4 @@ class Order_Util
 
         return $strResult;
     }
-
-    /**
-     * 校验输入的采购单状态是否在合法范围内（空值返回true）
-     *
-     * @param $arrReserveOrderStatus
-     * @return bool
-     */
-    public static function isReserveOrderStatusCorrect($arrReserveOrderStatus)
-    {
-        if(empty($arrReserveOrderStatus)){
-            return true;
-        }
-
-        foreach($arrReserveOrderStatus as $intStatus){
-            if(!isset(Order_Define_ReserveOrder::ALL_STATUS[$intStatus])){
-                return false;
-            }
-        }
-
-        return true;
-    }
 }
