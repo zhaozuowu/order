@@ -46,4 +46,36 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
     public static $tableName = 'stockin_order_sku';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * batch create stock in order sku
+     * @param array $arrStockinOrderSkus
+     * @param int $intStockinOrderId
+     * @return int
+     */
+    public static function batchCreateStockinOrderSku($arrStockinOrderSkus, $intStockinOrderId)
+    {
+        $arrDb = [];
+        foreach ($arrStockinOrderSkus as $arrRow) {
+            $arrDb[] = [
+                'stockin_order_id' => intval($intStockinOrderId),
+                'sku_id' => intval($arrRow['sku_id']),
+                'upc_id' => strval($arrRow['upc_id']),
+                'upc_unit' => intval($arrRow['upc_unit']),
+                'upc_unit_num' => intval($arrRow['upc_unit_num']),
+                'sku_name' => strval($arrRow['sku_name']),
+                'sku_net' => strval(floatval($arrRow['sku_net'])),
+                'sku_net_unit' => intval($arrRow['sku_net_unit']),
+                'sku_net_gram' => strval(floatval($arrRow['sku_net_gram'])),
+                'sku_price' => intval($arrRow['sku_price']),
+                'sku_price_tax' => intval($arrRow['sku_price_tax']),
+                'stockin_order_sku_total_price' => intval($arrRow['stockin_order_sku_total_price']),
+                'stockin_order_sku_total_price_tax' => intval($arrRow['stockin_order_sku_total_price_tax']),
+                'reserve_order_sku_plan_amount' => intval($arrRow['reserve_order_sku_plan_amount']),
+                'stockin_order_sku_real_amount' => intval($arrRow['stockin_order_sku_real_amount']),
+                'stockin_order_sku_extra_info' => strval($arrRow['stockin_order_sku_extra_info']),
+            ];
+        }
+        return self::batchInsert($arrDb);
+    }
 }

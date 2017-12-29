@@ -79,4 +79,26 @@ class Model_Orm_ReserveOrderSku extends Order_Base_Orm
         }
         return self::batchInsert($arrDbReserveOrderSkus);
     }
+
+    /**
+     * get reserve order skus by reserve order id
+     * @param int $intReserveOrderId
+     * @param int $intPageSize
+     * @param int $intPageNum
+     * @return array
+     */
+    public static function getReserveOrderSkusByReserveOrderId($intReserveOrderId, $intPageSize = 0, $intPageNum = 1)
+    {
+        $arrConds = [
+            'reserve_order_id' => $intReserveOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrOrderBy = [
+            'sku_id' => 'desc',
+        ];
+        $offset = ($intPageNum - 1) * $intPageSize;
+        $limit = empty($intPageSize) ? null : $intPageSize;
+        $arrResult = self::findRowsAndTotalCount(self::getAllColumns(), $arrConds, $arrOrderBy, $offset, $limit);
+        return $arrResult;
+    }
 }

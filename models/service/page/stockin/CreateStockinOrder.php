@@ -25,23 +25,6 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        switch (intval($arrInput)) {
-
-        }
-    }
-
-    private function executePurchaseStockin($arrInput)
-    {
-
-    }
-
-    private function executeStockoutStockin($arrInput)
-    {
-
-    }
-
-    private function executeReturnStockin($arrInput)
-    {
 
     }
 }
