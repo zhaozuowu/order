@@ -28,14 +28,14 @@ class Service_Page_Sku_GetSkuList
      */
     public function execute($arrInput)
     {
-        $ret = $this->objSku->getSkuList($arrInput['page_num'],
-            $arrInput['page_size'],
+        $ret = $this->objSku->getSkuList($arrInput['page_size'],
             $arrInput['sku_id'],
             $arrInput['upc_id'],
             $arrInput['sku_name'],
             $arrInput['sku_category_1'],
             $arrInput['sku_category_2'],
-            $arrInput['sku_category_3']);
+            $arrInput['sku_category_3'],
+            $arrInput['page_num']);
         return $ret;
     }
 }

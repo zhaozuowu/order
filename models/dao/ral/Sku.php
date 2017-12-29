@@ -48,17 +48,31 @@ class Dao_Ral_Sku
             return $ret;
         }
         $req[self::API_RALER_GET_SKU_LIST] = [
-            'page_num' => $strPageNum,
-            'page_size' => empty($strPageSize)?'20':$strPageSize,
-            'sku_id' => empty($strSkuId)?'':$strSkuId,
-            'upc_id' => empty($strUpcId)?'':$strUpcId,
-            'sku_name' => empty($strSkuName)?'':$strSkuName,
-            'sku_category_1' => empty($strSkuCategory1)?'':$strSkuCategory1,
-            'sku_category_2' => empty($strSkuCategory2)?'':$strSkuCategory2,
-            'sku_category_3' => empty($strSkuCategory3)?'':$strSkuCategory3,
+            'page_num' => empty($strPageNum)?'0':$strPageNum,
         ];
+        if (!empty($strPageSize)) {
+            $req[self::API_RALER_GET_SKU_LIST]['page_size'] = $strPageSize;
+        }
+        if (!empty($strSkuId)) {
+            $req[self::API_RALER_GET_SKU_LIST]['sku_id'] = $strSkuId;
+        }
+        if (!empty($strUpcId)) {
+            $req[self::API_RALER_GET_SKU_LIST]['upc_id'] = $strUpcId;
+        }
+        if (!empty($strSkuName)) {
+            $req[self::API_RALER_GET_SKU_LIST]['sku_name'] = $strSkuName;
+        }
+        if (!empty($strSkuCategory1)) {
+            $req[self::API_RALER_GET_SKU_LIST]['sku_category_1'] = $strSkuCategory1;
+        }
+        if (!empty($strSkuCategory2)) {
+            $req[self::API_RALER_GET_SKU_LIST]['sku_category_2'] = $strSkuCategory2;
+        }
+        if (!empty($strSkuCategory3)) {
+            $req[self::API_RALER_GET_SKU_LIST]['sku_category_3'] = $strSkuCategory3;
+        }
         $ret = $this->objApiRal->getData($req);
-        $ret = !empty($ret[self::API_RALER_GET_SKU_LIST])?$ret[self::API_RALER_VENDOR_SUG]:[];
+        $ret = !empty($ret[self::API_RALER_GET_SKU_LIST])?$ret[self::API_RALER_GET_SKU_LIST]:[];
         return $ret;
     }
 }
