@@ -8,6 +8,11 @@
 class Service_Data_Reserve_ReserveOrder
 {
 
+    public function getReserveOrderAndSku($intReserveOrderId)
+    {
+
+    }
+
     /**
      * destroy reserve order
      * @param $intNscmPurchaseOrderId

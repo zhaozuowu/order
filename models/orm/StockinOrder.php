@@ -43,4 +43,55 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     public static $tableName = 'stockin_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * create stock in order
+     * @param int $intStockinOrderId
+     * @param int $intStockinOrderType
+     * @param int $intSourceOrderId
+     * @param string $strSourceInfo
+     * @param int $intStockinOrderStatus
+     * @param int $intWarehouseId
+     * @param $strWarehouseName
+     * @param int $intStockinTime
+     * @param int $intStockinOrderPlanAmount
+     * @param int $intStockinOrderReadAmount
+     * @param int $intStockinOrderCreatorId
+     * @param string $strStockinOrderCreatorName
+     * @param string $strStockinOrderRemark
+     * @return int
+     */
+    public static function createStockinOrder(
+        $intStockinOrderId,
+        $intStockinOrderType,
+        $intSourceOrderId,
+        $strSourceInfo,
+        $intStockinOrderStatus,
+        $intWarehouseId,
+        $strWarehouseName,
+        $intStockinTime,
+        $intStockinOrderPlanAmount,
+        $intStockinOrderReadAmount,
+        $intStockinOrderCreatorId,
+        $strStockinOrderCreatorName,
+        $strStockinOrderRemark
+    )
+    {
+        $arrRow = [
+            'stockin_order_id' => intval($intStockinOrderId),
+            'stockin_order_type' => intval($intStockinOrderType),
+            'source_order_id' => intval($intSourceOrderId),
+            'source_info' => strval($strSourceInfo),
+            'stockin_order_status' => intval($intStockinOrderStatus),
+            'warehouse_id' => intval($intWarehouseId),
+            'warehouse_name' => intval($strWarehouseName),
+            'stockin_time' => $intStockinTime,
+            'stockin_order_plan_amount' => $intStockinOrderPlanAmount,
+            'stockin_order_real_amount' => $intStockinOrderReadAmount,
+            'stockin_order_creator_id' => $intStockinOrderCreatorId,
+            'stockin_order_creator_name' => $strStockinOrderCreatorName,
+            'stockin_order_remark' => $strStockinOrderRemark,
+        ];
+        return self::insert($arrRow);
+    }
 }
