@@ -213,8 +213,14 @@ class Service_Data_Reserve_ReserveOrder {
                 Order_Error_Code::QUERY_TIME_SPAN_ERROR);
         }
 
-        $intReserveOrderId = intval(Order_Util::trimReserveOrderIdQuotation($strReserveOrderId));
+        $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
         $arrReserveOrderStatus = Order_Util::extractIntArray($strReserveOrderStatus);
+
+        // 校验采购单状态参数是否合法
+        if(false === Order_Util::isReserveOrderStatusCorrect($arrReserveOrderStatus)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+
         $arrWarehouseId  = Order_Util::extractIntArray($strWarehouseId);
 
         return Model_Orm_ReserveOrder::getReserveOrderList(
@@ -241,12 +247,20 @@ class Service_Data_Reserve_ReserveOrder {
     }
 
     /**
-     * 
-     * @param $strOrderId
+     * 查询采购订单详情
+     *
+     * @param $strReserveOrderId
      * @return array
+     * @throws Order_BusinessError
      */
-    public function getReserveOrderDetail($strOrderId)
+    public function getReserveOrderInfoByReserveOrderId($strReserveOrderId)
     {
-        return [];
+        $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
+
+        if(empty($intReserveOrderId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+
+        return Model_Orm_ReserveOrder::getReserveOrderInfoByReserveOrderId($intReserveOrderId);
     }
 }

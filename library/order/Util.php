@@ -1,10 +1,12 @@
 <?php
+
 /**
  * @name Order_Util
  * @desc APP公共工具类
  * @author nscm
  */
-class Order_Util{
+class Order_Util
+{
     /**
      * 对参数时间进行校验，结束时间应该在开始时间之后或者相等
      * 均为正整数
@@ -69,7 +71,7 @@ class Order_Util{
      */
     public static function extractIntArray($strInput)
     {
-        if(empty($strInput)){
+        if (empty($strInput)) {
             return null;
         }
 
@@ -77,8 +79,8 @@ class Order_Util{
 
         // parse array
         $arrResult = explode(',', $strIn);
-        foreach ($arrResult as &$item){
-            $item = intval($item);
+        foreach ($arrResult as $key => $item) {
+            $arrResult[$key] = intval($item);
         }
 
         return $arrResult;
@@ -89,30 +91,57 @@ class Order_Util{
      * @param $strOrderId
      * @return bool|string
      */
-    public static function trimPurchaseOrderIdQuotation($strOrderId)
+    public static function trimPurchaseOrderIdPrefix($strOrderId)
     {
-        if(empty($strOrderId)){
-            return $strOrderId;
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strOrderId)) {
+            return $strResult;
         }
 
-        $result = ltrim($strOrderId, Nscm_Define_OrderPrefix::PUR);
+        $strResult = ltrim($strOrderId, Nscm_Define_OrderPrefix::PUR);
 
-        return $result;
+        return $strResult;
     }
 
     /**
      * 去除预约入库单开头的ASN开头部分内容
-     * @param $strOrderId
+     * @param $strReserveOrderId
      * @return bool|string
      */
-    public static function trimReserveOrderIdQuotation($strOrderId)
+    public static function trimReserveOrderIdPrefix($strReserveOrderId)
     {
-        if(empty($strOrderId)){
-            return $strOrderId;
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strReserveOrderId)) {
+            return $strResult;
         }
 
-        $result = ltrim($strOrderId, Nscm_Define_OrderPrefix::ASN);
+        $strResult = ltrim($strReserveOrderId, Nscm_Define_OrderPrefix::ASN);
 
-        return $result;
+        return $strResult;
+    }
+
+    /**
+     * 校验输入的采购单状态是否在合法范围内（空值返回true）
+     *
+     * @param $arrReserveOrderStatus
+     * @return bool
+     */
+    public static function isReserveOrderStatusCorrect($arrReserveOrderStatus)
+    {
+        if(empty($arrReserveOrderStatus)){
+            return true;
+        }
+
+        foreach($arrReserveOrderStatus as $intStatus){
+            if(!isset(Order_Define_ReserveOrder::ALL_STATUS[$intStatus])){
+                return false;
+            }
+        }
+
+        return true;
     }
 }

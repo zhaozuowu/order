@@ -11,6 +11,6 @@ class Controller_Reserve extends Ap_Controller_Abstract {
         'destroyreserveorder' => 'actions/reserve/DestroyReserveOrder.php',
         'getreserveorderlist' => 'actions/reserve/GetReserveOrderList.php',
         'getreserveorderstatistics' => 'actions/reserve/GetReserveOrderStatistics.php',
-        'getreserveeorderdetail' => 'actions/reserve/GetReserveOrderDetail.php',
+        'getreserveorderdetail' => 'actions/reserve/GetReserveOrderDetail.php',
     );
 }

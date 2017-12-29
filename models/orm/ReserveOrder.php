@@ -131,12 +131,12 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
         $offset = (intval($intPageNum) - 1) * intval($intPageSize);
         $limitCount = intval($intPageSize);
 
-        // 查找满足条件的所有行数据
-        $arrRows = Model_Orm_ReserveOrder::getAllColumns();
+        // 查找满足条件的所有列数据
+        $arrCols = self::getAllColumns();
 
         // 执行一次性查找
-        $arrRowsAndTotal = Model_Orm_ReserveOrder::findRowsAndTotalCount(
-            $arrRows,
+        $arrRowsAndTotal = self::findRowsAndTotalCount(
+            $arrCols,
             $arrCondition,
             $orderBy,
             $offset,
@@ -156,11 +156,34 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     public static function getReserveOrderStatistics()
     {
         $arrCond = ['is_delete' => Order_Define_Const::NOT_DELETE];
-        $arrResult = Model_Orm_ReserveOrder::find($arrCond)
+        $arrResult = self::find($arrCond)
             ->select(['reserve_order_status', 'count(*) as reserve_order_status_count'])
             ->groupBy(['reserve_order_status'])
             ->orderBy(['reserve_order_status' => 'desc'])
             ->rows();
+
+        return $arrResult;
+    }
+
+    /**
+     * 根据采购订单编号查询采购订单详情，只查询未软删除的
+     *
+     * @param $intReserveOrderId
+     * @return mixed
+     */
+    public static function getReserveOrderInfoByReserveOrderId($intReserveOrderId)
+    {
+        // 只查询未软删除的
+        $arrCondition = [
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+            'reserve_order_id' => $intReserveOrderId,
+        ];
+
+        // 查找该行所有数据
+        $arrCols = self::getAllColumns();
+
+        // 查找满足条件的所有行数据
+        $arrResult = self::findRow($arrCols, $arrCondition);
 
         return $arrResult;
     }
