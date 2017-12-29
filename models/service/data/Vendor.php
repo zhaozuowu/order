@@ -7,17 +7,17 @@
 class Service_Data_Vendor
 {
     /**
-     * vendor dao
+     * vendor data service
      * @var Service_Data_Vendor
      */
-    protected $objVendorDao;
+    protected $objVendor;
 
     /**
      * init
      */
     public function __construct()
     {
-        $this->objVendorDao = new Dao_Ral_Vendor();
+        $this->objVendor = new Service_Data_Vendor();
     }
 
     /**
@@ -31,7 +31,17 @@ class Service_Data_Vendor
         if (empty($strVendorName)) {
             return $ret;
         }
-        $ret = $this->objVendorDao->getVendorSugByName($strVendorName);
-        return $ret;
+        $arrVendors = Model_Orm_Vendor::findRows([
+            'vendor_id',
+            'vendor_name',
+        ], [
+            'vendor_name' => [
+                'like', "{$strVendorName}%"
+            ],
+            'is_delete' => Vendor_Define_Const::NOT_DELETE,
+        ], [
+            'id' => 'desc',
+        ]);
+        return $arrVendors;
     }
 }

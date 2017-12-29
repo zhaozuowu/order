@@ -4,6 +4,7 @@
  * @desc get vendor sug by name
  * @author wanggang01@iwaimai.baidu.com
  */
+
 class Service_Page_Vendor_GetVendorSugByName
 {
     /**
