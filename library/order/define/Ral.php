@@ -6,5 +6,5 @@
  */
 class Order_Define_Ral
 {
-    const NWMS_ORDER_CREATE_PURCHASE_ORDER_WRITE = 'createpurchaseorderwrite';
+    const NWMS_ORDER_CREATE_RESERVE_ORDER_WRITE = 'createreserveorderwrite';
 }

@@ -15,7 +15,7 @@
  * @property int $sku_price_tax
  * @property int $stockin_order_sku_total_price
  * @property int $stockin_order_sku_total_price_tax
- * @property int $purchase_order_sku_plan_amount
+ * @property int $reserve_order_sku_plan_amount
  * @property int $stockin_order_sku_real_amount
  * @property string $stockin_order_sku_extra_info
  * @property int $is_delete

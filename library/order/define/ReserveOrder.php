@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Order_Define_PurchaseOrder
- * @desc Order_Define_PurchaseOrder
+ * @name Order_Define_ReserveOrder
+ * @desc Order_Define_ReserveOrder
  * @author lvbochao@iwaimai.baidu.com
  */
 
-class Order_Define_PurchaseOrder
+class Order_Define_ReserveOrder
 {
     /**
      * 待入库

@@ -53,23 +53,26 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const  STOCKOUT_ORDER_STATUS_UPDATE_FAIL = 310007;
 
-
     /**
      * nscm采购单号已经被接收
      * @var integer
      */
-    const NSCM_PURCHASE_ORDER_HAS_BEEN_RECEIVED = 330001;
+    const PURCHASE_ORDER_HAS_BEEN_RECEIVED = 330001;
 
     /**
      * 采购单不存在
      * @var integer
      */
-    const NSCM_PURCHASE_ORDER_NOT_EXIST = 330002;
+    const PURCHASE_ORDER_NOT_EXIST = 330002;
 
     /**
      * 订单状态不允许作废
      * @var integer
      */
-    const NSCM_PURCHASE_ORDER_NOT_ALLOW_DESTROY = 330003;
+    const PURCHASE_ORDER_NOT_ALLOW_DESTROY = 330003;
 
+    /**
+     * 查询时间范围错误
+     */
+    const QUERY_TIME_SPAN_ERROR = 340000;
 }
