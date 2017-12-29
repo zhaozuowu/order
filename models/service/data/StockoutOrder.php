@@ -95,12 +95,21 @@ class Service_Data_StockoutOrder
      */
     public function createStockoutOrder($arrInput)
     {
-        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrInput) {
+        $this->checkCreateParams($arrInput);
+        $boolDuplicateFlag = $this->checkDuplicateOrder($arrInput['stockout_order_id']);
+        if (false === $boolDuplicateFlag) {
+            return [];
+        }
+        $boolCreateFlag =  Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrInput) {
             $arrCreateParams = $this->getCreateParams($arrInput);
             $objStockoutOrder = new Model_Orm_StockoutOrder();
-            $objOrmStockoutOrder->create($arrCreateParams, false);
+            $objStockoutOrder->create($arrCreateParams, false);
             $this->createStockoutOrderSku($arrInput['skus']);
         });
+        if (!$boolCreateFlag) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_CREATE_FAIL);
+        }
+        return $boolCreateFlag;
     }
 
     /**
@@ -118,6 +127,36 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     * 校验订单是否已创建
+     * @param integer $intOrderId
+     * @return void
+     */
+    public function checkDuplicateOrder($intOrderId) 
+    {
+        if (empty($intOrderId)) {
+            return false;
+        }
+        $objStockoutOrder = Model_Orm_StockoutOrder::findOne(['stockout_order_id' => $intOrderId]);
+        if ($objOrmStockoutOrder) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 校验业态订单参数
+     * @param array 
+     * @return void
+     */
+    public function checkCreateParams($arrInput) 
+    {
+        if ($arrInput['stockout_order_type'] 
+            && !isset(Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrInput['stockout_order_type']])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_TYPE_ERROR);
+        }    
+    }
+
+    /**
      * 获取出库单创建参数
      * @param array $arrInput
      * @return array
@@ -128,11 +167,15 @@ class Service_Data_StockoutOrder
         if (empty($arrInput)) {
             return $arrCreateParams;
         }
+        $arrCreateParams['stockout_order_status'] = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
+        if (!empty($arrInput['business_form_order_id'])) {
+            $arrCreateParams['business_form_order_id'] = intval($arrInput['business_form_order_id']);
+        }
         if (!empty($arrInput['stockout_order_type'])) {
             $arrCreateParams['stockout_order_type'] = intval($arrInput['stockout_order_type']);
         }
-        if (!empty($arrInput['warehouse_name'])) {
-            $arrCreateParams['warehouse_name'] = intval($arrInput['warehouse_name']);
+        if (!empty($arrInput['warehouse_id'])) {
+            $arrCreateParams['warehouse_id'] = intval($arrInput['warehouse_id']);
         }
         if (!empty($arrInput['stockout_order_remark'])) {
             $arrCreateParams['stockout_order_remark'] = strval($arrInput['stockout_order_remark']);
@@ -218,6 +261,77 @@ class Service_Data_StockoutOrder
                 $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
             }
         });
+    }
 
+    /**
+     * get list search conditions by arrInput
+     * @param array $arrInput
+     * @return array
+     */
+    protected function getListConditions($arrInput) {
+        $arrListConditions = [];
+        if (!empty($arrInput['stockout_order_id'])) {
+            $arrListConditions['stockout_order_id'] = intval($arrInput['stockout_order_id']);
+        }
+        if (!empty($arrInput['business_form_order_id'])) {
+            $arrListConditions['business_form_order_id'] = intval($arrInput['business_form_order_id']);
+        }
+        if (!empty($arrInput['customer_name'])) {
+            $arrListConditions['customer_name'] = ['like', $arrInput['customer_name'] . '%'];
+        }
+        if (!empty($arrInput['customer_id'])) {
+            $arrListConditions['customer_id'] = intval($arrInput['customer_id']);
+        }
+        if (!empty($arrInput['is_print'])) {
+            $arrListConditions['is_print'] = intval($arrInput['is_print']);
+        }
+        if (!empty($arrInput['stockout_order_status'])) {
+            $arrListConditions['stockout_order_status'] = intval($arrInput['stockout_order_status']);
+        }
+        if (!empty($arrInput['start_time'])) {
+            $arrListConditions['create_time'] = ['>=', intval($arrInput['start_time'])];
+        }
+        if (!empty($arrInput['end_time'])) {
+            $arrListConditions['create_time'] = ['<=', intval($arrInput['end_time'])];
+        }
+        return $arrListConditions;
+    }
+
+    /**
+     * get stockout order info list by page and conditions
+     * @param array $arrInput
+     * @return array
+     */
+    public function getStockoutOrderListAndCount($arrInput) {
+        $arrListConditions = $this->getListConditions($arrInput);
+        $arrColumns = Model_Orm_StockoutOrder::getAllColumns();
+        list($arrRetList, $intTotal) = Model_Orm_StockoutOrder::findRowsAndTotalCount($arrColumns, $arrListConditions, ['id' => 'asc']);
+        $arrRetList = $this->appendSkusToOrderList($arrRetList);
+        return [
+            'total' => $intTotal,
+            'orders' => $arrRetList,
+        ];
+    }
+
+    /**
+     * append sku info to order list
+     * @param array $arrRetList
+     * @return array
+     */
+    public function appendSkusToOrderList($arrRetList) {
+        if (empty($arrRetList)) {
+            return [];
+        }
+        $arrOrderIds = array_column($arrRetList, 'stockout_order_id');
+        $arrOrderSkuList = Model_Orm_StockinOrderSku::getStockoutOrderSkusByOrderIds($arrOrderIds);
+        $arrMapOrderIdToSkus = Order_Util_Util::arrayToKeyValue($arrOrderSkuList, 'stockout_order_id');
+        foreach($arrRetList as $intKey => $arrRetItem) {
+            $intOrderId = $arrRetItem['order_id'];
+            if (!$intOrderId || !isset($arrMapOrderIdToSkus[$intOrderId])) {
+                continue;
+            }
+            $arrRetList[$intKey]['skus'] = $arrMapOrderIdToSkus[$intOrderId];
+        }
+        return $arrRetList; 
     }
 }

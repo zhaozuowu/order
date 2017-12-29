@@ -5,7 +5,7 @@
  * @Author: jinyu02 
  * @Date: 2017-12-26 15:36:39 
  * @Last Modified by: jinyu02
- * @Last Modified time: 2017-12-26 15:45:02
+ * @Last Modified time: 2017-12-27 17:08:46
  */
 
 class Service_Data_BusinessFormOrder
@@ -18,12 +18,16 @@ class Service_Data_BusinessFormOrder
      */
     public function createBusinessFormOrder($arrInput)
     {
-        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrInput) {
+        $this->checkCreateParams($arrInput);
+        $boolCreateFlag = Model_Orm_BusinessFormOrder::getConnection()->transaction(function() use ($arrInput) {
             $arrCreateParams = $this->getCreateParams($arrInput);
             $objBusinessFormOrder = new Model_Orm_BusinessFormOrder();
             $objBusinessFormOrder->create($arrCreateParams, false);
             $this->createBusinessFormOrderSku($arrInput['skus']);
         });
+        if (!$boolCreateFlag) {
+            Order_BusinessError::throwException(NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR);
+        }
     }
 
     /**
@@ -33,11 +37,27 @@ class Service_Data_BusinessFormOrder
      */
     public function createBusinessFormOrderSku($arrSkus)
     {
-        $arrBatchSkuCreateParams = $this->getSkuCreateParams($arrSkus);
+        $arrBatchSkuCreateParams = $this->getBatchSkuCreateParams($arrSkus);
         if (empty($arrBatchSkuCreateParams)) {
             return [];
         }
         return Model_Orm_StockoutOrderSku::batchInsert($arrBatchSkuCreateParams, false);
+    }
+
+    /**
+     * 校验创建参数
+     * @param array $arrInput
+     * @return void
+     */
+    public function checkCreateParams($arrInput) {
+        if ($arrInput['business_form_order_type']
+            && !isset(Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_LIST[$arrInput['business_form_order_type']])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR);
+        }
+        if ($arrInput['order_supply_type']
+            && !isset(Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrInput['order_supply_type']])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_SUPPLY_TYPE_ERROR);
+        }
     }
 
     /**
@@ -51,7 +71,7 @@ class Service_Data_BusinessFormOrder
         if (empty($arrInput)) {
             return $arrCreateParams;
         }
-        $arrCreateParams['business_form_order_id'] = '11111111';
+        $arrCreateParams['business_form_order_id'] = Order_Util_Util::generateBusinessFormOrderId();
         if (!empty($arrInput['business_form_order_type'])) {
             $arrCreateParams['business_form_order_type'] = intval($arrInput['business_form_order_type']);
         }
@@ -122,6 +142,18 @@ class Service_Data_BusinessFormOrder
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
         }
         return $arrBatchSkuCreateParams;
+    }
+
+    /**
+     * 获取出库单创建参数
+     * @param array $arrInput
+     * @return array
+     */
+    public function getStockoutCreateParams($arrInput) {
+        $arrStockoutCreateParams = $this->getCreateParams($arrInput);
+        $arrStockoutCreateParams['skus'] = $this->getBatchSkuCreateParams($arrInput['skus']);
+        $arrStockoutCreateParams['stockout_order_id'] = Order_Util_Util::generateStockoutOrderId();
+        return $arrStockoutCreateParams;
     }
 
 
