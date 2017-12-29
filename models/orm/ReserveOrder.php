@@ -39,14 +39,154 @@
  * @method static Generator|Model_Orm_ReserveOrder[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
-*/
+ */
 
 class Model_Orm_ReserveOrder extends Order_Base_Orm
 {
-
     public static $tableName = 'reserve_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * 查询采购订单列表
+     *
+     * @param $arrReserveOrderStatus
+     * @param $arrWarehouseId
+     * @param $intReserveOrderId
+     * @param $intVendorId
+     * @param $arrCreateTime
+     * @param $arrOrderPlanTime
+     * @param $arrStockinTime
+     * @param $intPageNum
+     * @param $intPageSize
+     * @return array
+     */
+    public static function getReserveOrderList(
+        $arrReserveOrderStatus,
+        $arrWarehouseId,
+        $intReserveOrderId,
+        $intVendorId,
+        $arrCreateTime,
+        $arrOrderPlanTime,
+        $arrStockinTime,
+        $intPageNum,
+        $intPageSize
+    )
+    {
+        // 拼装查询条件
+        if (!empty($arrReserveOrderStatus)) {
+            $arrCondition['reserve_order_status'] = [
+                'in',
+                $arrReserveOrderStatus];
+        }
+
+        if (!empty($arrWarehouseId)) {
+            $arrCondition['warehouse_id'] = [
+                'in',
+                $arrWarehouseId];
+        }
+
+        if (!empty($intReserveOrderId)) {
+            $arrCondition['reserve_order_id'] = $intReserveOrderId;
+        }
+
+        if (!empty($intVendorId)) {
+            $arrCondition['vendor_id'] = $intVendorId;
+        }
+
+        if (!empty($arrCreateTime['start'])
+            && !empty($arrCreateTime['end'])) {
+            $arrCondition['create_time'] = [
+                'between',
+                $arrCreateTime['start'],
+                $arrCreateTime['end']
+            ];
+        }
+
+        if (!empty($arrOrderPlanTime['start'])
+            && !empty($arrOrderPlanTime['end'])) {
+            $arrCondition['reserve_order_plan_time'] = [
+                'between',
+                $arrOrderPlanTime['start'],
+                $arrOrderPlanTime['end']
+            ];
+        }
+
+        if (!empty($arrStockinTime['start'])
+            && !empty($arrStockinTime['end'])) {
+            $arrCondition['stockin_time'] = [
+                'between',
+                $arrStockinTime['start'],
+                $arrStockinTime['end'],
+            ];
+        }
+
+        // 只查询未软删除的
+        $arrCondition['is_delete'] = Order_Define_Const::NOT_DELETE;
+
+        // 排序条件
+        $orderBy = ['id' => 'desc'];
+
+        // 分页条件
+        $offset = (intval($intPageNum) - 1) * intval($intPageSize);
+        $limitCount = intval($intPageSize);
+
+        // 查找满足条件的所有列数据
+        $arrCols = self::getAllColumns();
+
+        // 执行一次性查找
+        $arrRowsAndTotal = self::findRowsAndTotalCount(
+            $arrCols,
+            $arrCondition,
+            $orderBy,
+            $offset,
+            $limitCount);
+
+        $arrResult['total'] = $arrRowsAndTotal['total'];
+        $arrResult['list'] = $arrRowsAndTotal['rows'];
+
+        return $arrResult;
+    }
+
+    /**
+     * 获取采购单状态统计，只查询未软删除的
+     *
+     * @return array
+     */
+    public static function getReserveOrderStatistics()
+    {
+        $arrCond = ['is_delete' => Order_Define_Const::NOT_DELETE];
+        $arrResult = self::find($arrCond)
+            ->select(['reserve_order_status', 'count(*) as reserve_order_status_count'])
+            ->groupBy(['reserve_order_status'])
+            ->orderBy(['reserve_order_status' => 'desc'])
+            ->rows();
+
+        return $arrResult;
+    }
+
+    /**
+     * 根据采购订单编号查询采购订单详情，只查询未软删除的
+     *
+     * @param $intReserveOrderId
+     * @return mixed
+     */
+    public static function getReserveOrderInfoByReserveOrderId($intReserveOrderId)
+    {
+        // 只查询未软删除的
+        $arrCondition = [
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+            'reserve_order_id' => $intReserveOrderId,
+        ];
+
+        // 查找该行所有数据
+        $arrCols = self::getAllColumns();
+
+        // 查找满足条件的所有行数据
+        $arrResult = self::findRow($arrCols, $arrCondition);
+
+        return $arrResult;
+    }
 
     /**
      * update status
@@ -76,7 +216,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     /**
      * create reserve order
      * @param $intReserveOrderId
-     * @param $intReserveOrderId
+     * @param $intPurchaseOrderId
      * @param $intWarehouseId
      * @param $strWarehouseName
      * @param $intReserveOrderPlanTime
@@ -91,9 +231,9 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
      * @return int
      */
     public static function createReserveOrder($intReserveOrderId, $intPurchaseOrderId,
-        $intWarehouseId, $strWarehouseName, $intReserveOrderPlanTime,$intReserveOrderPlanAmount,
-        $intVendorId, $strVendorName, $strVendorContactor,$strVendorMobile, $strVendorEmail,
-        $strVendorAddress, $strReserveOrderRemark
+                                              $intWarehouseId, $strWarehouseName, $intReserveOrderPlanTime, $intReserveOrderPlanAmount,
+                                              $intVendorId, $strVendorName, $strVendorContactor, $strVendorMobile, $strVendorEmail,
+                                              $strVendorAddress, $strReserveOrderRemark
     )
     {
         $arrDb = [
@@ -116,5 +256,26 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
             'reserve_order_remark' => $strReserveOrderRemark,
         ];
         return self::insert($arrDb);
+    }
+
+    /**
+     * 校验输入的采购单状态是否在合法范围内（空值返回true）
+     *
+     * @param $arrReserveOrderStatus
+     * @return bool
+     */
+    public static function isReserveOrderStatusCorrect($arrReserveOrderStatus)
+    {
+        if (empty($arrReserveOrderStatus)) {
+            return true;
+        }
+
+        foreach ($arrReserveOrderStatus as $intStatus) {
+            if (!isset(Order_Define_ReserveOrder::ALL_STATUS[$intStatus])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

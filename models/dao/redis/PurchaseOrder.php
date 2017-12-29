@@ -14,7 +14,11 @@ class Dao_Redis_ReserveOrder extends Order_Base_Redis
 
     /**
      * set reserve order info
+<<<<<<< HEAD
+     * @param $arrPurchaseInfo
+=======
      * @param $arrReserveInfo
+>>>>>>> 3ab3eb8c19f60339b46b311a832fd523378ce9a5
      * @return string
      */
     public function setOrderInfo($arrReserveInfo)
