@@ -12,7 +12,7 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'reserve_order_id' => 'regex|patern[/^(ASN\d{13})?$/]',
+        'reserve_order_id' => 'regex|patern[/^ASN\d{13}$/]',
     ];
 
     /**

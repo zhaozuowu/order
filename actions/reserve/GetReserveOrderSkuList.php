@@ -12,7 +12,7 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'reserve_order_id' => 'regex|patern[/^(ASN\d{13})?$/]',
+        'reserve_order_id' => 'regex|patern[/^ASN\d{13}$/]',
         'page_num' => 'int|default[1]|min[1]',
         'page_size' => 'int|required|min[1]|max[100]',
     ];
