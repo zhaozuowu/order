@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Service_Page_Business_GetBusinessFormOrderList
- * @desc 查询业态订单列表
+ * @name Service_Page_Business_ExportBusinessFormOrderList
+ * @desc 导出业态订单
  * @author zhaozuowu@iwaimai.baidu.com
  */
 
-class Service_Page_Business_GetBusinessFormOrderList
+class Service_Page_Business_ExportBusinessFormOrderList
 {
     /**
      * @var Service_Data_BusinessFormOrder

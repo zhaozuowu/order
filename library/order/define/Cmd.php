@@ -18,6 +18,8 @@ class Order_Define_Cmd
      */
     const CMD_CREATE_STOCKOUT_ORDER = 'cmd_nwms_order_stockout_create';
 
+    const CMD_FINISH_PRICKUP_ORDER  = 'cmd_nwms_order_finish_pickup';
+
     /**
      * wmq使用的默认配置
      * @var array

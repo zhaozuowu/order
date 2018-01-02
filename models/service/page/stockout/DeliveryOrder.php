@@ -5,7 +5,7 @@
  * @desc TMS完成揽收
  * @author zhaozuowu@iwaimai.baidu.com
  */
-class Service_Page_Stockout_DeliveryOrder
+class Service_Page_Stockout_DeliveryOrder implements Order_Base_Page
 {
     /**
      * @var Service_Data_StockoutOrder
@@ -17,7 +17,6 @@ class Service_Page_Stockout_DeliveryOrder
      */
     public function __construct()
     {
-
         $this->objStockoutOrder = new Service_Data_StockoutOrder();
     }
 
@@ -29,8 +28,7 @@ class Service_Page_Stockout_DeliveryOrder
      */
     public function execute($arrInput)
     {
-
-        $strStockoutOrderId = isset($arrInput['stockout_order_id']) ? intval($arrInput['stockout_order_id']) : 0;
+        $strStockoutOrderId = $arrInput['stockout_order_id'];
         return $this->objStockoutOrder->deliveryOrder($strStockoutOrderId);
     }
 }

@@ -178,11 +178,11 @@ class Service_Data_BusinessFormOrder
      */
     public function getBusinessFormOrderList($arrInput)
     {
-
         $arrConditions = $this->getListConditions($arrInput);
         if (false === $arrConditions) {
             return [];
         }
+
         $arrInput['page_num'] = empty($arrInput['page_num']) ? 1 : intval($arrInput['page_num']);
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
@@ -192,13 +192,15 @@ class Service_Data_BusinessFormOrder
         }
         $arrWarehouseIds = array_column($arrBusinessFormOrderList, 'warehouse_id');
         $arrOrderIds = array_column($arrBusinessFormOrderList, 'business_form_order_id');
-        // $arrWarehouseList = $this->getWarehouseList($arrWarehouseIds);
+        $objWarehouseRal = new Dao_Ral_Order_Warehouse();
+        $arrWarehouseList = $objWarehouseRal->getWareHouseList($arrWarehouseIds);
+        $arrWarehouseList = !empty($arrWarehouseList) ? array_column($arrWarehouseList, null, 'warehouse_id') : [];
         $colums = ['business_form_order_id', 'sum(order_amount) as  order_amount', 'sum(distribute_amount) as distribute_amount '];
         $arrSkuConditions['business_form_order_id'] = ['in', $arrOrderIds];
         $arrSkuList = Model_Orm_BusinessFormOrderSku::find($arrSkuConditions)->select($colums)->groupBy(['business_form_order_id'])->rows();
         $arrSkuList = array_column($arrSkuList, null, 'business_form_order_id');
         foreach ($arrBusinessFormOrderList as $key => $item) {
-
+            $arrBusinessFormOrderList[$key]['warehouse_name'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name'] : '';
             $arrBusinessFormOrderList[$key]['order_amount'] = isset($arrSkuList[$item['business_form_order_id']]) ? $arrSkuList[$item['business_form_order_id']]['order_amount'] : 0;
             $arrBusinessFormOrderList[$key]['distribute_amount'] = isset($arrSkuList[$item['business_form_order_id']]) ? $arrSkuList[$item['business_form_order_id']]['distribute_amount'] : 0;
 
@@ -220,6 +222,9 @@ class Service_Data_BusinessFormOrder
         if (!empty($arrInput['warehouse_id	'])) {
             $arrWareHouseIds = explode(',', $arrInput['warehouse_id']);
             $arrConditions['warehouse_id'] = ['in', $arrWareHouseIds];
+        }
+        if (!empty($arrInput['status'])) {
+            $arrConditions['status'] = $arrInput['status'];
         }
         if (!empty($arrInput['business_form_order_id'])) {
 
@@ -254,25 +259,31 @@ class Service_Data_BusinessFormOrder
      */
     public function getBusinessFormOrderByid($strOrderid)
     {
+        $ret = [];
         if (empty($strOrderid)) {
-            return [];
+            return $ret;
         }
-        $condition['business_form_order_id'] = $strOrderid;
-        $arrBusFormOrderList = Model_Orm_BusinessFormOrder::findOne($condition);
-        $arrBusFormOrderList = empty($arrBusFormOrderList) ? [] : $arrBusFormOrderList->toArray();
+        $arrBusFormOrderList = Model_Orm_BusinessFormOrder::getBusinessFormOrderByOrderId($strOrderid);
         if (empty($arrBusFormOrderList)) {
-            return [];
+            return $ret;
         }
-
-        // $arrWarehouseList = $this->getWarehouseList($arrWarehouseIds);
-        $colums = ['sum(order_amount) as  order_amount', 'sum(distribute_amount) as distribute_amount'];
-        $arrSkuConditions = ['business_form_order_id' => $arrBusFormOrderList['business_form_order_id']];
-        $arrSkuList = Model_Orm_BusinessFormOrderSku::find($arrSkuConditions)->select($colums)->groupBy(['business_form_order_id'])->row();
+        $objWarehouseRal = new Dao_Ral_Order_Warehouse();
+        $arrWarehouseList = $objWarehouseRal->getWareHouseList($arrBusFormOrderList['warehouse_id']);
+        $arrWarehouseList =!empty($arrWarehouseList)? array_column($arrWarehouseList, null, 'warehouse_id'):[];
+        $arrBusFormOrderList['warehouse_name'] = isset($arrWarehouseList[$arrBusFormOrderList['warehouse_id']]) ? $arrWarehouseList[$arrBusFormOrderList['warehouse_id']['warehouse_name']] : '';
+        $arrColumns = [
+            'sum(order_amount) as  order_amount',
+            'sum(distribute_amount) as distribute_amount',
+        ];
+        $arrSkuConditions = [
+            'business_form_order_id' => $arrBusFormOrderList['business_form_order_id']
+        ];
+        $arrSkuList = Model_Orm_BusinessFormOrderSku::find($arrSkuConditions)->select($arrColumns)->groupBy(['business_form_order_id'])->row();
         if (empty($arrSkuList)) {
             return $arrBusFormOrderList;
         }
         $arrBusFormOrderList = array_merge($arrBusFormOrderList, $arrSkuList);
-        $skuInfo = Model_Orm_BusinessFormOrderSku::findRows(['*'], $arrSkuConditions);
+        $skuInfo = Model_Orm_BusinessFormOrderSku::getBusSkuListByConditions($arrSkuConditions);
         $arrBusFormOrderList['skus'] = $skuInfo;
         return $arrBusFormOrderList;
 

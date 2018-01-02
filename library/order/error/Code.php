@@ -53,8 +53,6 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const  STOCKOUT_ORDER_STATUS_UPDATE_FAIL = 310007;
 
-<<<<<<< Updated upstream
-=======
     /**
      * 获取彩云系统商品详情信息失败
      * @var integer
@@ -66,8 +64,7 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const  STOCKOUT_ORDER_GET_SKUINFO_ = 320002;
-
->>>>>>> Stashed changes
+    
     /**
      * nscm采购单号已经被接收
      * @var integer
@@ -90,18 +87,18 @@ class Order_Error_Code extends Wm_Error_Code
      * 查询时间范围错误
      */
     const QUERY_TIME_SPAN_ERROR = 340000;
-    
+
     /** 出库单创建失败
      * @var integer
      */
     const NWMS_STOCKOUT_ORDER_CREATE_FAIL = 340001;
-    
+
     /**
      * 出库单类型失败
      * @var integer
      */
     const NWMS_STOCKOUT_ORDER_TYPE_ERROR = 340002;
-    
+
     /**
      * 业态订单类型错误
      * @var integer

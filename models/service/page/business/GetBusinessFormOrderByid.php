@@ -1,10 +1,10 @@
 <?php
-
 /**
  * @name Service_Page_Business_GetBusinessFormOrderByid
  * @desc 查询业态订单明细
  * @author zhaozuowu@iwaimai.baidu.com
  */
+
 class Service_Page_Business_GetBusinessFormOrderByid
 {
     /**
@@ -28,7 +28,7 @@ class Service_Page_Business_GetBusinessFormOrderByid
      */
     public function execute($arrInput)
     {
-        $strId = isset($arrInput['business_form_order_id']) ? intval($arrInput['business_form_order_id']) : 0;
+        $strId = $arrInput['business_form_order_id'];
         return $this->objData->getBusinessFormOrderByid($strId);
     }
 }
