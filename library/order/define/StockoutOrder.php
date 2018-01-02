@@ -24,6 +24,59 @@ class Order_Define_StockoutOrder
         '20' => '待拣货',
         '25' => '待揽收',
         '30' => '已出库',
+        '40' => '审核不通过',
+        '50' => '已作废',
     ];
 
+    /**
+     * 出库单类型
+     * @var array
+     */
+    const STOCKOUT_ORDER_TYPE_List = [
+        '1' => '订单出库',
+        '2' => '采购退货',
+    ];
+
+
+    /**
+     * 出库单来源
+     * @var array
+     */
+    const STOCKOUT_ORDER_SOURCE_LIST = [
+        '1' => '货架补货',
+        '2' => '前置仓',
+        '3' => '便利店'
+    ];
+    /**
+     * 包装单位
+     *@var array
+     */
+    const  UPC_UNIT = [
+        '1' => '箱',
+    ];
+
+    const STOCKOUT_ORDER_TYPE_STOCKOUT = 1;
+    const STOCKOUT_ORDER_TYPE_SUPPLY = 2;
+
+    /**
+     * 出库单类型列表
+     * @var array
+     */
+    const STOCKOUT_ORDER_TYPE_LIST = [
+        self::STOCKOUT_ORDER_TYPE_STOCKOUT => '订单出货',
+        self::STOCKOUT_ORDER_TYPE_SUPPLY => '货架补货',
+    ];
+    /**
+     * 出库单打印状态列表
+     */
+    const STOCKOUT_ORDER_NOT_PRINT = 1;
+    const STOCKOUT_ORDER_IS_PRINT = 2;
+    /**
+     * 出库单打印状态
+     * @var array
+     */
+    const STOCKOUT_PRINT_STATUS = [
+        self::STOCKOUT_ORDER_NOT_PRINT => '未打印',
+        self::STOCKOUT_ORDER_NOT_PRINT => '已打印',
+    ];
 }

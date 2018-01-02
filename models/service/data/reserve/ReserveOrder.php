@@ -1,14 +1,15 @@
 <?php
 /**
- * @name Service_Data_Purchase_PurchaseOrder
+ * @name Service_Data_Reserve_ReserveOrder
  * @desc Service_Data_Purchase_PurchaseOrder
  * @author lvbochao@iwaimai.baidu.com
  */
 
-class Service_Data_Purchase_PurchaseOrder {
+class Service_Data_Reserve_ReserveOrder
+{
 
     /**
-     * destroy purchase order
+     * destroy reserve order
      * @param $intNscmPurchaseOrderId
      * @param $intDestroyType
      */
@@ -27,9 +28,9 @@ class Service_Data_Purchase_PurchaseOrder {
         }
         $objPurchaseOrder->updateStatus($intStatus);
     }
-    
+
     /**
-     * create purchase order by nscm purchase order id
+     * create reserve order by nscm reserve order id
      * @param $intNscmPurchaseOrderId
      */
     public function createPurchaseOrderByNscmPurchaseOrderId($intNscmPurchaseOrderId)
@@ -42,7 +43,7 @@ class Service_Data_Purchase_PurchaseOrder {
             Bd_Log::warning('can`t find nscm purhcase order id: ' . $intNscmPurchaseOrderId);
             return;
         }
-        Model_Orm_PurchaseOrder::getConnection()->transaction(function() use($arrOrderInfo, $intNscmPurchaseOrderId) {
+        Model_Orm_PurchaseOrder::getConnection()->transaction(function () use ($arrOrderInfo, $intNscmPurchaseOrderId) {
             $intPurchaseOrderId = intval($arrOrderInfo['purchase_order_id']);
             $intWarehouseId = intval($arrOrderInfo['warehouse_id']);
             $strWarehouseName = strval($arrOrderInfo['warehouse_name']);
@@ -56,7 +57,7 @@ class Service_Data_Purchase_PurchaseOrder {
             $strVendorAddress = strval($arrOrderInfo['vendor_address']);
             $strPurchaseOrderRemark = strval($arrOrderInfo['purchase_order_remark']);
             Model_Orm_PurchaseOrder::createPurchaseOrder($intPurchaseOrderId, $intNscmPurchaseOrderId, $intWarehouseId, $strWarehouseName, $intPurchaseOrderPlanTime,
-                $intPurchaseOrderPlanAmount, $intVendorId, $strVendorName, $strVendorContactor,$strVendorMobile, $strVendorEmail, $strVendorAddress, $strPurchaseOrderRemark);
+                $intPurchaseOrderPlanAmount, $intVendorId, $strVendorName, $strVendorContactor, $strVendorMobile, $strVendorEmail, $strVendorAddress, $strPurchaseOrderRemark);
             $arrPurchaseOrderSkus = $arrOrderInfo['purchase_order_skus'];
             Model_Orm_PurchaseOrderSku::createPurchaseOrderSku($arrPurchaseOrderSkus, $intPurchaseOrderId);
         });
@@ -64,24 +65,24 @@ class Service_Data_Purchase_PurchaseOrder {
     }
 
     /**
-     * generate purchase order id
+     * generate reserve order id
      * @param int $intNscmPurchaseOrderId
      * @return int
      */
     public function generatePurchaseOrderId($intNscmPurchaseOrderId)
     {
         if ($this->checkNscmPurchaseOrderReceived($intNscmPurchaseOrderId)) {
-            Bd_Log::warning('nscm purchase order has already been received, id: ' . $intNscmPurchaseOrderId);
+            Bd_Log::warning('nscm reserve order has already been received, id: ' . $intNscmPurchaseOrderId);
             Order_BusinessError::throwException(Order_Error_Code::NSCM_PURCHASE_ORDER_HAS_BEEN_RECEIVED);
         }
-        Bd_Log::trace('generate purchase order id by nscm purchase order id: ' . $intNscmPurchaseOrderId);
+        Bd_Log::trace('generate reserve order id by nscm reserve order id: ' . $intNscmPurchaseOrderId);
         $intPurchaseOrderId = Order_Util_Util::generatePurchaseOrderCode();
-        Bd_Log::debug(sprintf('generate purchase order id[%s] by nscm purchase order id[%s]', $intPurchaseOrderId, $intNscmPurchaseOrderId));
+        Bd_Log::debug(sprintf('generate reserve order id[%s] by nscm reserve order id[%s]', $intPurchaseOrderId, $intNscmPurchaseOrderId));
         return $intPurchaseOrderId;
     }
 
     /**
-     * send create purchase order
+     * send create reserve order
      * @param $arrPurchaseOrder
      * @return array
      */
@@ -114,7 +115,7 @@ class Service_Data_Purchase_PurchaseOrder {
     }
 
     /**
-     * check nscm purchase order received
+     * check nscm reserve order received
      * @param $intPurchaseOrderId
      * @return bool
      */
@@ -136,7 +137,7 @@ class Service_Data_Purchase_PurchaseOrder {
     }
 
     /**
-     * send purchase info to wmq
+     * send reserve info to wmq
      * @param $intNscmPurchaseOrderId
      * @return void
      */
@@ -156,5 +157,134 @@ class Service_Data_Purchase_PurchaseOrder {
         if (0 != json_decode($arrRet[Order_Define_Ral::NWMS_ORDER_CREATE_PURCHASE_ORDER_WRITE])['error_no']) {
             Order_Error::throwException(Order_Error_Code::ERR__RAL_ERROR);
         }
+    }
+
+    /**
+     * 查询采购单列表
+     *
+     * @param $strReserveOrderStatus
+     * @param $strWarehouseId
+     * @param $strReserveOrderId
+     * @param $intVendorId
+     * @param $arrCreateTime
+     * @param $arrOrderPlanTime
+     * @param $arrStockinTime
+     * @param $intPageNum
+     * @param $intPageSize
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getReserveOrderList($strReserveOrderStatus,
+                                        $strWarehouseId,
+                                        $strReserveOrderId,
+                                        $intVendorId,
+                                        $arrCreateTime,
+                                        $arrOrderPlanTime,
+                                        $arrStockinTime,
+                                        $intPageNum,
+                                        $intPageSize)
+    {
+        $arrCreateTime['start'] = intval($arrCreateTime['start']);
+        $arrCreateTime['end'] = intval($arrCreateTime['end']);
+
+        $arrOrderPlanTime['start'] = intval($arrOrderPlanTime['start']);
+        $arrOrderPlanTime['end'] = intval($arrOrderPlanTime['end']);
+
+        $arrStockinTime['start'] = intval($arrStockinTime['start']);
+        $arrStockinTime['end'] = intval($arrStockinTime['end']);
+
+        if (false === Order_Util::verifyUnixTimeSpan(
+                $arrCreateTime['start'],
+                $arrCreateTime['end'])) {
+            Order_BusinessError::throwException(
+                Order_Error_Code::QUERY_TIME_SPAN_ERROR);
+        }
+
+        if (false === Order_Util::verifyUnixTimeSpan(
+                $arrOrderPlanTime['start'],
+                $arrOrderPlanTime['end'])) {
+            Order_BusinessError::throwException(
+                Order_Error_Code::QUERY_TIME_SPAN_ERROR);
+        }
+
+        if (false === Order_Util::verifyUnixTimeSpan(
+                $arrStockinTime['start'],
+                $arrStockinTime['end'])) {
+            Order_BusinessError::throwException(
+                Order_Error_Code::QUERY_TIME_SPAN_ERROR);
+        }
+
+        $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
+        $arrReserveOrderStatus = Order_Util::extractIntArray($strReserveOrderStatus);
+
+        // 校验采购单状态参数是否合法
+        if (false === Model_Orm_ReserveOrder::isReserveOrderStatusCorrect($arrReserveOrderStatus)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+
+        $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
+
+        return Model_Orm_ReserveOrder::getReserveOrderList(
+            $arrReserveOrderStatus,
+            $arrWarehouseId,
+            $intReserveOrderId,
+            $intVendorId,
+            $arrCreateTime,
+            $arrOrderPlanTime,
+            $arrStockinTime,
+            $intPageNum,
+            $intPageSize
+        );
+    }
+
+    /**
+     * 查询采购单状态统计
+     *
+     * @return array
+     */
+    public function getReserveOrderStatistics()
+    {
+        return Model_Orm_ReserveOrder::getReserveOrderStatistics();
+    }
+
+    /**
+     * 查询采购订单详情
+     *
+     * @param $strReserveOrderId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getReserveOrderInfoByReserveOrderId($strReserveOrderId)
+    {
+        $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
+
+        if (empty($intReserveOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+
+        return Model_Orm_ReserveOrder::getReserveOrderInfoByReserveOrderId($intReserveOrderId);
+    }
+
+    /**
+     * 查询采购单商品列表（分页）
+     *
+     * @param $strReserveOrderId
+     * @param $intPageNum
+     * @param $intPageSize
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getReserveOrderSkuList(
+        $strReserveOrderId,
+        $intPageNum,
+        $intPageSize)
+    {
+        $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
+
+        if(empty($intReserveOrderId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+
+        return Model_Orm_ReserveOrderSku::getReserveOrderSkuList($intReserveOrderId, $intPageNum, $intPageSize);
     }
 }

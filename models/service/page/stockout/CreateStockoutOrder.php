@@ -1,24 +1,33 @@
 <?php
-/*
- * @file: CreateStockoutOrder.php
- * @Author: jinyu02 
- * @Date: 2017-12-26 15:36:39 
- * @Last Modified by:   jinyu02 
- * @Last Modified time: 2017-12-26 15:36:39 
+/**
+ * @name Service_Page_Stockout_CreateStockoutOrder
+ * @desc 创建出库单
+ * @author jinyu02@iwaimai.baidu.com
  */
-class Service_Page_Business_CreateStockoutOrder{
+class Service_Page_Stockout_CreateStockoutOrder{
 
     /**
      * @var Service_Data_StockoutOrder
      */
     protected $objDsStockoutOrder;
 
+    /**
+     * init
+     */
     public function __construct() {
         $this->objDsStockoutOrder = new Service_Data_StockoutOrder();
     }
 
+    /**
+     * create stockout order
+     * @param array $arrInput
+     * @return array
+     */
     public function execute($arrInput) {
-        return $objDsStockoutOrder->createStockoutOrder($arrInput);
+        if (empty($arrInput['stockout_order_id'])) {
+            $arrInput['stockout_order_id'] = Order_Util_Util::generateStockoutOrderId();
+        }
+        return $this->objDsStockoutOrder->createStockoutOrder($arrInput);
     }
 
 }

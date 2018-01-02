@@ -27,7 +27,7 @@ class Order_Define_BusinessFormOrder
         '3' => '便利店',
     ];
     /**
-     * 业务烈性
+     * 补货类型
      * @var array
      */
     const ORDER_SUPPLY_TYPE = [

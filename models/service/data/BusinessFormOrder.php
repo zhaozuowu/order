@@ -5,7 +5,7 @@
  * @Author: jinyu02 
  * @Date: 2017-12-26 15:36:39 
  * @Last Modified by: jinyu02
- * @Last Modified time: 2017-12-26 15:45:02
+ * @Last Modified time: 2017-12-27 17:08:46
  */
 
 class Service_Data_BusinessFormOrder
@@ -18,12 +18,16 @@ class Service_Data_BusinessFormOrder
      */
     public function createBusinessFormOrder($arrInput)
     {
-        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrInput) {
+        $this->checkCreateParams($arrInput);
+        $boolCreateFlag = Model_Orm_BusinessFormOrder::getConnection()->transaction(function() use ($arrInput) {
             $arrCreateParams = $this->getCreateParams($arrInput);
             $objBusinessFormOrder = new Model_Orm_BusinessFormOrder();
             $objBusinessFormOrder->create($arrCreateParams, false);
             $this->createBusinessFormOrderSku($arrInput['skus']);
         });
+        if (!$boolCreateFlag) {
+            Order_BusinessError::throwException(NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR);
+        }
     }
 
     /**
@@ -33,11 +37,27 @@ class Service_Data_BusinessFormOrder
      */
     public function createBusinessFormOrderSku($arrSkus)
     {
-        $arrBatchSkuCreateParams = $this->getSkuCreateParams($arrSkus);
+        $arrBatchSkuCreateParams = $this->getBatchSkuCreateParams($arrSkus);
         if (empty($arrBatchSkuCreateParams)) {
             return [];
         }
         return Model_Orm_StockoutOrderSku::batchInsert($arrBatchSkuCreateParams, false);
+    }
+
+    /**
+     * 校验创建参数
+     * @param array $arrInput
+     * @return void
+     */
+    public function checkCreateParams($arrInput) {
+        if ($arrInput['business_form_order_type']
+            && !isset(Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_LIST[$arrInput['business_form_order_type']])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR);
+        }
+        if ($arrInput['order_supply_type']
+            && !isset(Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrInput['order_supply_type']])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_SUPPLY_TYPE_ERROR);
+        }
     }
 
     /**
@@ -51,7 +71,7 @@ class Service_Data_BusinessFormOrder
         if (empty($arrInput)) {
             return $arrCreateParams;
         }
-        $arrCreateParams['business_form_order_id'] = '11111111';
+        $arrCreateParams['business_form_order_id'] = Order_Util_Util::generateBusinessFormOrderId();
         if (!empty($arrInput['business_form_order_type'])) {
             $arrCreateParams['business_form_order_type'] = intval($arrInput['business_form_order_type']);
         }
@@ -124,6 +144,18 @@ class Service_Data_BusinessFormOrder
         return $arrBatchSkuCreateParams;
     }
 
+    /**
+     * 获取出库单创建参数
+     * @param array $arrInput
+     * @return array
+     */
+    public function getStockoutCreateParams($arrInput) {
+        $arrStockoutCreateParams = $this->getCreateParams($arrInput);
+        $arrStockoutCreateParams['skus'] = $this->getBatchSkuCreateParams($arrInput['skus']);
+        $arrStockoutCreateParams['stockout_order_id'] = Order_Util_Util::generateStockoutOrderId();
+        return $arrStockoutCreateParams;
+    }
+
 
     /**
      * 获取业态订单总数
@@ -146,11 +178,11 @@ class Service_Data_BusinessFormOrder
      */
     public function getBusinessFormOrderList($arrInput)
     {
-
         $arrConditions = $this->getListConditions($arrInput);
         if (false === $arrConditions) {
             return [];
         }
+
         $arrInput['page_num'] = empty($arrInput['page_num']) ? 1 : intval($arrInput['page_num']);
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
@@ -160,13 +192,15 @@ class Service_Data_BusinessFormOrder
         }
         $arrWarehouseIds = array_column($arrBusinessFormOrderList, 'warehouse_id');
         $arrOrderIds = array_column($arrBusinessFormOrderList, 'business_form_order_id');
-        // $arrWarehouseList = $this->getWarehouseList($arrWarehouseIds);
+        $objWarehouseRal = new Dao_Ral_Order_Warehouse();
+        $arrWarehouseList = $objWarehouseRal->getWareHouseList($arrWarehouseIds);
+        $arrWarehouseList = !empty($arrWarehouseList) ? array_column($arrWarehouseList, null, 'warehouse_id') : [];
         $colums = ['business_form_order_id', 'sum(order_amount) as  order_amount', 'sum(distribute_amount) as distribute_amount '];
         $arrSkuConditions['business_form_order_id'] = ['in', $arrOrderIds];
         $arrSkuList = Model_Orm_BusinessFormOrderSku::find($arrSkuConditions)->select($colums)->groupBy(['business_form_order_id'])->rows();
         $arrSkuList = array_column($arrSkuList, null, 'business_form_order_id');
         foreach ($arrBusinessFormOrderList as $key => $item) {
-
+            $arrBusinessFormOrderList[$key]['warehouse_name'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name'] : '';
             $arrBusinessFormOrderList[$key]['order_amount'] = isset($arrSkuList[$item['business_form_order_id']]) ? $arrSkuList[$item['business_form_order_id']]['order_amount'] : 0;
             $arrBusinessFormOrderList[$key]['distribute_amount'] = isset($arrSkuList[$item['business_form_order_id']]) ? $arrSkuList[$item['business_form_order_id']]['distribute_amount'] : 0;
 
@@ -188,6 +222,9 @@ class Service_Data_BusinessFormOrder
         if (!empty($arrInput['warehouse_id	'])) {
             $arrWareHouseIds = explode(',', $arrInput['warehouse_id']);
             $arrConditions['warehouse_id'] = ['in', $arrWareHouseIds];
+        }
+        if (!empty($arrInput['status'])) {
+            $arrConditions['status'] = $arrInput['status'];
         }
         if (!empty($arrInput['business_form_order_id'])) {
 
@@ -222,25 +259,31 @@ class Service_Data_BusinessFormOrder
      */
     public function getBusinessFormOrderByid($strOrderid)
     {
+        $ret = [];
         if (empty($strOrderid)) {
-            return [];
+            return $ret;
         }
-        $condition['business_form_order_id'] = $strOrderid;
-        $arrBusFormOrderList = Model_Orm_BusinessFormOrder::findOne($condition);
-        $arrBusFormOrderList = empty($arrBusFormOrderList) ? [] : $arrBusFormOrderList->toArray();
+        $arrBusFormOrderList = Model_Orm_BusinessFormOrder::getBusinessFormOrderByOrderId($strOrderid);
         if (empty($arrBusFormOrderList)) {
-            return [];
+            return $ret;
         }
-
-        // $arrWarehouseList = $this->getWarehouseList($arrWarehouseIds);
-        $colums = ['sum(order_amount) as  order_amount', 'sum(distribute_amount) as distribute_amount'];
-        $arrSkuConditions = ['business_form_order_id' => $arrBusFormOrderList['business_form_order_id']];
-        $arrSkuList = Model_Orm_BusinessFormOrderSku::find($arrSkuConditions)->select($colums)->groupBy(['business_form_order_id'])->row();
+        $objWarehouseRal = new Dao_Ral_Order_Warehouse();
+        $arrWarehouseList = $objWarehouseRal->getWareHouseList($arrBusFormOrderList['warehouse_id']);
+        $arrWarehouseList =!empty($arrWarehouseList)? array_column($arrWarehouseList, null, 'warehouse_id'):[];
+        $arrBusFormOrderList['warehouse_name'] = isset($arrWarehouseList[$arrBusFormOrderList['warehouse_id']]) ? $arrWarehouseList[$arrBusFormOrderList['warehouse_id']['warehouse_name']] : '';
+        $arrColumns = [
+            'sum(order_amount) as  order_amount',
+            'sum(distribute_amount) as distribute_amount',
+        ];
+        $arrSkuConditions = [
+            'business_form_order_id' => $arrBusFormOrderList['business_form_order_id']
+        ];
+        $arrSkuList = Model_Orm_BusinessFormOrderSku::find($arrSkuConditions)->select($arrColumns)->groupBy(['business_form_order_id'])->row();
         if (empty($arrSkuList)) {
             return $arrBusFormOrderList;
         }
         $arrBusFormOrderList = array_merge($arrBusFormOrderList, $arrSkuList);
-        $skuInfo = Model_Orm_BusinessFormOrderSku::findRows(['*'], $arrSkuConditions);
+        $skuInfo = Model_Orm_BusinessFormOrderSku::getBusSkuListByConditions($arrSkuConditions);
         $arrBusFormOrderList['skus'] = $skuInfo;
         return $arrBusFormOrderList;
 
