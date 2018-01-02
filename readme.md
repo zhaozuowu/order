@@ -26,10 +26,30 @@ Name : http
 Name : form
 ```
 
-1. create `XXX PATH`
 
-``` shell
-XXX
-```
+
+## wmq confs
+
+1. add a command `cmd_xxx` in `app/order/library/define/Cmd.php`
+2. create `app/order/page/commit/Cmdxxx.php` like `app/order/page/commit/Cmdnwmsorderstockoutcreate.php`
+3. modify `home/map/wmq/pusher/conf/pusher/wmsg-group.yml` add command `cmd_xxx`
+   ``` shell
+        commands:                                                                                                             
+         - send_msg
+         - cmd_nwms_order_stockout_create
+   ```
+4. modify ips and url in `/home/map/wmq/pusher/conf/pusher/wmsg-group.yml`
+   ``` shell
+    service:
+      type: dns
+      tag: gzhxy
+      ips:
+        gzhxy:
+        - 127.0.0.1:9993
+      path: /commit/recv
+      conntimeout: 4s
+      readtimeout: 6s
+      writetimeout: 2s    
+   ```
 
 ## api confs
