@@ -61,4 +61,19 @@ class Model_Orm_StockoutOrderSku extends Wm_Orm_ActiveRecord
         $res = $stockoutOrderInfo->update($updateData);
         return $res;
     }
+    
+    /* 
+     * 根据order_id批量获取商品信息 
+     * @param array $arrOrderIds
+     * @return array
+     */
+    public function getStockoutOrderSkusByOrderIds($arrOrderIds) {
+        if (empty($arrOrderIds)) {
+            return [];
+        }
+        $arrConditions = [];
+        $arrConditions['stockout_order_id'] = ['in', $arrOrderIds];
+        $arrColumns = self::getAllColumns();
+        return Model_Orm_StockoutOrderSku::findRows($arrColumns, $arrConditions, ['id' => 'asc']);
+    }
 }
