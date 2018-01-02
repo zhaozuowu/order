@@ -12,5 +12,6 @@ class Controller_Business extends Ap_Controller_Abstract
         'getbusinessformorderlist' => 'actions/business/GetBusinessFormOrderList.php',//查询业态订单列表（分页）
         'getbusinessformorderbyid' => 'actions/business/GetBusinessFormOrderByid.php',//查询业态订单详情
         'exportbusinessformorderlist' => 'actions/business/ExportBusinessFormOrderList.php',//导出业态订单
+
     );
 }

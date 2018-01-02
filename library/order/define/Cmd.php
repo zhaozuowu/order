@@ -17,6 +17,7 @@ class Order_Define_Cmd
      * @var string
      */
     const CMD_CREATE_STOCKOUT_ORDER = 'cmd_nwms_order_stockout_create';
+
     const CMD_FINISH_PRICKUP_ORDER  = 'cmd_nwms_order_finish_pickup';
 
     /**

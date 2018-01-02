@@ -62,6 +62,7 @@ class Model_Orm_StockoutOrderSku extends Order_Base_Orm
         return $res;
     }
 
+
     /**
      * 根据出库单号获取出库sku信息
      * @param $stockoutOrderId 出库单号
@@ -87,13 +88,16 @@ class Model_Orm_StockoutOrderSku extends Order_Base_Orm
         return $stockoutOrderSkuInfo;
     }
 
+
     /* 
      * 根据order_id批量获取商品信息 
      * @param array $arrOrderIds
      * @return array
      */
+
     public function getStockoutOrderSkusByOrderIds($arrOrderIds)
     {
+
         if (empty($arrOrderIds)) {
             return [];
         }

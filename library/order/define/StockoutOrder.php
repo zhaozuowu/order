@@ -79,4 +79,5 @@ class Order_Define_StockoutOrder
         self::STOCKOUT_ORDER_NOT_PRINT => '未打印',
         self::STOCKOUT_ORDER_NOT_PRINT => '已打印',
     ];
+
 }
