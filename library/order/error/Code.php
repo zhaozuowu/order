@@ -87,18 +87,18 @@ class Order_Error_Code extends Wm_Error_Code
      * 查询时间范围错误
      */
     const QUERY_TIME_SPAN_ERROR = 340000;
-    
+
     /** 出库单创建失败
      * @var integer
      */
     const NWMS_STOCKOUT_ORDER_CREATE_FAIL = 340001;
-    
+
     /**
      * 出库单类型失败
      * @var integer
      */
     const NWMS_STOCKOUT_ORDER_TYPE_ERROR = 340002;
-    
+
     /**
      * 业态订单类型错误
      * @var integer

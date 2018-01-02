@@ -101,7 +101,6 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param $arrWarehouseId
      * @param $intSourceSupplierId
      * @param $arrSourceOrderIdInfo
-     * @param $intVendorId
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
@@ -114,7 +113,6 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrWarehouseId,
         $intSourceSupplierId,
         $arrSourceOrderIdInfo,
-        $intVendorId,
         $arrCreateTime,
         $arrOrderPlanTime,
         $arrStockinTime,
@@ -145,10 +143,6 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
             if (!empty($intSourceSupplierId)) {
                 $arrCondition['source_supplier_id'] = $intSourceSupplierId;
-            }
-
-            if (!empty($intVendorId)) {
-                $arrCondition['vendor_id'] = $intVendorId;
             }
 
             if (!empty($arrCreateTime['start'])

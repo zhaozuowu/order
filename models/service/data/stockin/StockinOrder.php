@@ -174,7 +174,6 @@ class Service_Data_Stockin_StockinOrder
      * @param $strWarehouseId
      * @param $intSourceSupplierId
      * @param $strSourceOrderId
-     * @param $intVendorId
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
@@ -189,7 +188,6 @@ class Service_Data_Stockin_StockinOrder
         $strWarehouseId,
         $intSourceSupplierId,
         $strSourceOrderId,
-        $intVendorId,
         $arrCreateTime,
         $arrOrderPlanTime,
         $arrStockinTime,
@@ -243,7 +241,6 @@ class Service_Data_Stockin_StockinOrder
             $arrWarehouseId,
             $intSourceSupplierId,
             $arrSourceOrderIdInfo,
-            $intVendorId,
             $arrCreateTime,
             $arrOrderPlanTime,
             $arrStockinTime,

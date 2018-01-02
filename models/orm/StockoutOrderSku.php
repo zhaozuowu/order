@@ -38,7 +38,7 @@
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
  */
 
-class Model_Orm_StockoutOrderSku extends Wm_Orm_ActiveRecord
+class Model_Orm_StockoutOrderSku extends Order_Base_Orm
 {
 
     public static $tableName = 'stockout_order_sku';
@@ -61,13 +61,43 @@ class Model_Orm_StockoutOrderSku extends Wm_Orm_ActiveRecord
         $res = $stockoutOrderInfo->update($updateData);
         return $res;
     }
-    
+
+
+    /**
+     * 根据出库单号获取出库sku信息
+     * @param $stockoutOrderId 出库单号
+     * @return array
+     */
+    public function getSkuInfoById($stockoutOrderId, $columns = '')
+    {
+        Bd_Log::debug(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
+        $stockoutOrderId = empty($stockoutOrderId) ? 0 : intval($stockoutOrderId);
+        if (empty($stockoutOrderId)) {
+            return [];
+        }
+
+        if (empty($columns)) {
+            $columns = self::getAllColumns();
+        }
+        $condition = ['stockout_order_id' => $stockoutOrderId];
+        $stockoutOrderSkuInfo = $this->find($condition)->select($columns)->rows();
+        if (empty($stockoutOrderSkuInfo)) {
+            return [];
+        }
+        Bd_Log::debug(__METHOD__ . ' return: ' . json_encode($stockoutOrderSkuInfo));
+        return $stockoutOrderSkuInfo;
+    }
+
+
     /* 
      * 根据order_id批量获取商品信息 
      * @param array $arrOrderIds
      * @return array
      */
-    public function getStockoutOrderSkusByOrderIds($arrOrderIds) {
+
+    public function getStockoutOrderSkusByOrderIds($arrOrderIds)
+    {
+
         if (empty($arrOrderIds)) {
             return [];
         }

@@ -1,11 +1,17 @@
 <?php
-
 /**
  * @name Service_Data_Sku
- * @desc 获取彩云sku信息
- * @author jinyu02@iwaimai.baidu.com　
+ * @desc sku service data
+ * @author wanggang01@iwaimai.baidu.com
  */
-class Service_Data_Sku {
+
+class Service_Data_Sku
+{
+    /**
+     * sku dao
+     * @var Service_Data_Sku
+     */
+    protected $objSkuDao;
 
     /**
      * @var Dao_Rpc
@@ -15,13 +21,35 @@ class Service_Data_Sku {
     /**
      * init
      */
-    public function __contruct() {
+    public function __construct()
+    {
+        $this->objSkuDao = new Dao_Ral_Sku();
         $this->objDaoRpc = new Dao_Rpc();
     }
 
     /**
+     * get sku list
+     * @param  string $strPageSize
+     * @param  string $strSkuId
+     * @param  string $strUpcId
+     * @param  string $strSkuName
+     * @param  string $strSkuCategory1
+     * @param  string $strSkuCategory2
+     * @param  string $strSkuCategory3
+     * @param  string $strPageNum
+     * @return array
+     */
+    public function getSkuList($strPageSize, $strSkuId = '', $strUpcId = '', $strSkuName = '',
+                               $strSkuCategory1 = '', $strSkuCategory2 = '', $strSkuCategory3 = '', $strPageNum = '1')
+    {
+        $ret = $this->objSkuDao->getSkuList($strPageSize, $strSkuId, $strUpcId, $strSkuName,
+            $strSkuCategory1, $strSkuCategory2, $strSkuCategory3, $strPageNum);
+        return $ret;
+    }
+
+    /**
      * 获取彩云sku信息访问参数
-     * @param int $strSkuId
+     * @param  integer $intSkuId
      * @return array
      */
     protected function getSkuInfoApiParams($intSkuId) {
@@ -32,6 +60,7 @@ class Service_Data_Sku {
 
     /**
      * 通过sku_id获取sku信息
+     * @param  integer $intSkuId
      * @return array
      */
     public function getSkuInfoBySkuId($intSkuId) {
