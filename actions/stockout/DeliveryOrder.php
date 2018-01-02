@@ -7,8 +7,7 @@
 
 class Action_DeliveryOrder extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected $boolCheckAuth = false;
+
     /**
      * input params
      * @var array

@@ -123,4 +123,23 @@ class Order_Util
 
         return $strResult;
     }
+
+    /**
+     * 去除出库单号SSO开头部分内容
+     * @param $strStockoutOrderId
+     * @return bool|string
+     */
+    public static function trimStockoutOrderIdPrefix($strStockoutOrderId)
+    {
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strStockoutOrderId)) {
+            return $strResult;
+        }
+
+        $strResult = ltrim($strStockoutOrderId, Nscm_Define_OrderPrefix::SSO);
+
+        return $strResult;
+    }
 }

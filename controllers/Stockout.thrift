@@ -20,7 +20,7 @@ struct finishOrderInfo {
 
 #服务定义
 service StockoutThriftService {
-    Data deliveryOrder(1:i32 stockout_order_id)
+    Data deliveryOrder(1:string stockout_order_id)
         throws (1: StockoutThriftUserException stockoutException),
     Data finishOrder(1:finishOrderInfo objFinishOrderInfo )
             throws (1: StockoutThriftUserException stockoutException)

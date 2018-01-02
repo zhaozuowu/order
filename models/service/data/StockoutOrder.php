@@ -313,6 +313,7 @@ class Service_Data_StockoutOrder
         if (empty($arrOrderList)) {
             return $ret;
         }
+        $arrWarehouseList['stockout_order_id'] = Order_Util::trimStockoutOrderIdPrefix($arrOrderList['stockout_order_id']);
         $objWarehouseRal = new Dao_Ral_Order_Warehouse();
         $arrWarehouseList = $objWarehouseRal->getWareHouseList($arrOrderList['warehouse_id']);
         $arrWarehouseList = !empty($arrWarehouseList) ? array_column($arrWarehouseList, null, 'warehouse_id') : [];
