@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @name Service_Page_DeliveryOrder
- * @desc TMS完成揽收
- * @author nscm
+ * @name Service_Page_Stockout_GetStockoutById
+ * @desc 查询出库单明细
+ * @author zhaozuowu@iwaimai.baidu.com
  */
-class Service_Page_DeliveryOrder implements Order_Base_Page
+class Service_Page_Stockout_GetStockoutById implements Order_Base_Page
 {
     /**
      * @var Service_Data_StockoutOrder
@@ -28,6 +28,7 @@ class Service_Page_DeliveryOrder implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        return $this->objStockoutOrder->deliveryOrder($arrInput);
+        $strStockoutOrderId = $arrInput['stockout_order_id'];
+        return $this->objStockoutOrder->getOrderAndSkuListByStockoutOrderId($strStockoutOrderId);
     }
 }

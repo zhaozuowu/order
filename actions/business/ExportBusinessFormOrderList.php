@@ -1,20 +1,30 @@
 <?php
 /**
- * @name Action_GetBusinessFormOrderList
- * @desc 查询业态订单列表
+ * @name Action_ExportBusinessFormOrderList
+ * @desc 导出业态订单
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
-class Action_GetBusinessFormOrderList extends Order_Base_Action
+class Action_ExportBusinessFormOrderList extends Order_Base_Action
 {
+    /**
+     * 验证登陆
+     * @var bool
+     */
+    protected $boolCheckLogin = false;
+
+    /**
+     * 验证权限
+     * @var bool
+     */
+    protected $boolCheckAuth = false;
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
         'page_num' => 'int|default[1]',
-        'page_size' => 'int|required',
-        'status'    => 'int|required',
+        'page_size' => 'int|required|max[1000]',
         'warehouse_id' => 'int',
         'business_form_order_id' => 'int',
         'business_form_order_status' => 'int',
@@ -36,7 +46,8 @@ class Action_GetBusinessFormOrderList extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Business_GetBusinessFormOrderList();
+
+        $this->objPage = new Service_Page_Business_ExportBusinessFormOrderList();
     }
 
     /**

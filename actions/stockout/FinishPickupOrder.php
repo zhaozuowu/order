@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_DeliveryOrder
- * @desc TMS完成揽收
+ * @name Action_FinishPickupOrder
+ * @desc 仓库完成拣货
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
-class Action_DeliveryOrder extends Order_Base_Action
+class Action_FinishPickupOrder extends Order_Base_Action
 {
     protected $boolCheckLogin = false;
     protected $boolCheckAuth = false;
@@ -15,6 +15,14 @@ class Action_DeliveryOrder extends Order_Base_Action
      */
     protected $arrInputParams = [
         'stockout_order_id' => 'int|required',
+        'pickup_skus' => [
+            'validate' => 'json|required|decode',
+            'type' => 'array',
+            'params' => [
+                'sku_id' => 'int|required',
+                'pickup_amount' => 'int|required',
+            ],
+        ],
     ];
 
     /**
@@ -28,8 +36,9 @@ class Action_DeliveryOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
+        $this->objPage = new Service_Page_Stockout_FinishPickupOrder();
 
-        $this->objPage = new Service_Page_Stockout_DeliveryOrder();
+        
     }
 
     /**
@@ -39,7 +48,6 @@ class Action_DeliveryOrder extends Order_Base_Action
      */
     public function format($data)
     {
-
         return $data;
     }
 
