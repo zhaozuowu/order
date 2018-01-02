@@ -13,10 +13,20 @@ class Service_Data_Stockin_StockinOrder
      * @param array $sourceOrderSkuInfo
      * @param array $arrSkuInfo
      * @throws Order_BusinessError
+     * @throws Order_Error
      * @return array
      */
-    private function calculateStockinOrderSkuInfo($intStockinOrderId, $sourceOrderSkuInfo, $arrSkuInfo)
+    private function formatStockinOrderSkuInfo($intStockinOrderId, $sourceOrderSkuInfo, $arrSkuInfo, $intOrderType = 1)
     {
+        if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intOrderType) {
+            $intSkuPrice = $sourceOrderSkuInfo['sku_price'];
+            $intSkuPriceTax = $sourceOrderSkuInfo['sku_price_tax'];
+            $intPlanAmount =  $sourceOrderSkuInfo['reserve_order_sku_plan_amount'];
+        } else {
+            $intSkuPrice = $sourceOrderSkuInfo['send_price'];
+            $intSkuPriceTax = $sourceOrderSkuInfo['send_price_tax'];
+            $intPlanAmount = $sourceOrderSkuInfo['pickup_amount'];
+        }
         $arrDbStockinOrderSkuExtraInfo = [];
         // amount
         $intTotalAmount = 0;
@@ -33,7 +43,7 @@ class Service_Data_Stockin_StockinOrder
                 Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
             }
         }
-        if ($intTotalAmount > $sourceOrderSkuInfo['reserve_order_sku_plan_amount']) {
+        if ($intTotalAmount > $intPlanAmount) {
             // @todo stock in order sku amount must smaller than reserve order
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
@@ -47,11 +57,11 @@ class Service_Data_Stockin_StockinOrder
             'sku_net' => $sourceOrderSkuInfo['sku_net'],
             'sku_net_unit' => $sourceOrderSkuInfo['sku_net_unit'],
             'sku_net_gram' => $sourceOrderSkuInfo['sku_net_gram'],
-            'sku_price' => $sourceOrderSkuInfo['sku_price'],
-            'sku_price_tax' => $sourceOrderSkuInfo['sku_price_tax'],
-            'stockin_order_sku_total_price' => $intTotalAmount * $sourceOrderSkuInfo['sku_price'],
-            'stockin_order_sku_total_price_tax' => $intTotalAmount * $sourceOrderSkuInfo['sku_price_tax'],
-            'reserve_order_sku_plan_amount' => $sourceOrderSkuInfo['reserve_order_sku_plan_amount'],
+            'sku_price' => $intSkuPrice,
+            'sku_price_tax' => $intSkuPriceTax,
+            'stockin_order_sku_total_price' => $intTotalAmount * $intSkuPrice,
+            'stockin_order_sku_total_price_tax' => $intTotalAmount * $intSkuPriceTax,
+            'reserve_order_sku_plan_amount' => $intPlanAmount,
             'stockin_order_sku_real_amount' => $intTotalAmount,
             'stockin_order_sku_extra_info' => json_encode($arrDbStockinOrderSkuExtraInfo),
         ];
@@ -64,6 +74,7 @@ class Service_Data_Stockin_StockinOrder
      * @param array $arrSkuInfoList
      * @return array
      * @throws Order_BusinessError
+     * @throws Order_Error
      */
     private function getDbStockinSkus($intStockinOrderId, $arrReserveOrderSkus, $arrSkuInfoList)
     {
@@ -79,7 +90,7 @@ class Service_Data_Stockin_StockinOrder
                 Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
             }
             $arrReserveOrderSku = $arrHashReserveOrderSkus[$arrSkuInfo['sku_id']];
-            $arrSkuRow = $this->calculateStockinOrderSkuInfo($intStockinOrderId, $arrReserveOrderSku, $arrSkuInfo);
+            $arrSkuRow = $this->formatStockinOrderSkuInfo($intStockinOrderId, $arrReserveOrderSku, $arrSkuInfo);
             $arrDbSkuInfoList[] = $arrSkuRow;
             unset($arrHashReserveOrderSkus[$arrSkuInfo['sku_id']]);
         }
@@ -88,47 +99,58 @@ class Service_Data_Stockin_StockinOrder
 
     /**
      * calculate total sku amount
-     * @param array $arrSkus
+     * @param array $arrDbSkus
      * @return int
      */
-    private function calculateTotalSkuAmount($arrSkus)
+    private function calculateTotalSkuAmount($arrDbSkus)
     {
         $intResult = 0;
-        foreach ($arrSkus as $arrSkus) {
-            $intResult += intval($arrSkus['stockin_order_sku_real_amount']);
+        foreach ($arrDbSkus as $arrSku) {
+            $intResult += intval($arrSku['stockin_order_sku_real_amount']);
         }
         return $intResult;
     }
 
     /**
-     * @param $arrReserveOrderInfo
-     * @param $arrReserveOrderSkus
+     * @param $arrSourceOrderInfo
+     * @param $arrSourceOrderSkus
      * @param $intWarehouseId
+     * @param $strWarehouseName
      * @param $strStockinOrderRemark
      * @param $arrSkuInfoList
      * @param $intCreatorId
      * @param $strCreatorName
+     * @param $intType
      * @return int
      * @throws Exception
      * @throws Order_BusinessError
+     * @throws Order_Error
      */
-    public function createStockinOrderReserve($arrReserveOrderInfo, $arrReserveOrderSkus, $intWarehouseId, $strStockinOrderRemark, $arrSkuInfoList,
-        $intCreatorId, $strCreatorName)
+    public function createStockinOrder($arrSourceOrderInfo, $arrSourceOrderSkus, $intWarehouseId, $strWarehouseName,
+                                       $strStockinOrderRemark, $arrSkuInfoList,$intCreatorId, $strCreatorName,
+                                       $arrSourceInfo, $intType)
     {
+
+        if (!isset(Order_Define_StockinOrder::STOCKIN_ORDER_TYPES[$intType])) {
+            // @todo order type error
+            Order_Error::throwException(Order_Error_Code::PARAM_ERROR);
+        }
         $intStockinOrderId = Order_Util_Util::generateStockinOrderCode();
-        $arrDbSkuInfoList = $this->getDbStockinSkus($intStockinOrderId, $arrReserveOrderSkus, $arrSkuInfoList);
+        $arrDbSkuInfoList = $this->getDbStockinSkus($intStockinOrderId, $arrSourceOrderSkus, $arrSkuInfoList);
         $intStockinOrderRealAmount = $this->calculateTotalSkuAmount($arrDbSkuInfoList);
-        $intStockinOrderType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE;
-        $intSourceOrderId = intval($arrReserveOrderInfo['reserve_order_id']);
-        //@todo
-        $arrSourceInfo = [];
+        $intStockinOrderType = intval($intType);
+        if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
+            $intSourceOrderId = intval($arrSourceOrderInfo['reserve_order_id']);
+            $intStockinOrderPlanAmount = $arrSourceOrderInfo['reserve_order_plan_amount'];
+        } else {
+            $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
+            $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockout_order_pickup_amount'];
+        }
         $strSourceInfo = json_encode($arrSourceInfo);
         $intStockinOrderStatus = Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH;
         $intWarehouseId = intval($intWarehouseId);
-        //@todo
-        $strWarehouseName = '';
+        $strWarehouseName = strval($strWarehouseName);
         $intStockinTime = time();
-        $intStockinOrderPlanAmount = $arrReserveOrderInfo['reserve_order_plan_amount'];
         $intStockinOrderCreatorId = intval($intCreatorId);
         $strStockinOrderCreatorName = strval($strCreatorName);
         $strStockinOrderRemark = strval($strStockinOrderRemark);
@@ -146,6 +168,7 @@ class Service_Data_Stockin_StockinOrder
             if (!$this->notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $arrDbSkuInfoList)){
                 Order_Error::throwException(Order_Error_Code::ERR__RAL_ERROR);
             }
+            // @todo async notify nscm
             return $intStockinOrderId;
         });
         return $intStockinOrderId;
