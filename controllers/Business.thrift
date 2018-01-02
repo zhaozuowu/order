@@ -8,11 +8,17 @@ exception OrderUserException {
     3: map<string, string> fields,
     4: string type
 }
+#返回商品信息
+struct RetSkuInfo {
+    1:required string sku_id,
+    2:required i32 cost_price_tax,
+    3:required i32 cost_price_untax,
+    4:required bool is_empty
+}
 #返回值
-struct Result {
-    1:required i32 errno,
-    2:required string errmsg,
-    3:required list<i32> data
+struct Data {
+    1:required string stockout_order_id,
+    2:required list<RetSkuInfo> skus
 }
 #业态订单sku信息
 struct BusinessFormOrderSku {
@@ -22,7 +28,7 @@ struct BusinessFormOrderSku {
     4:required i32 display_type,
     5:required i32 display_floor
 } 
-#业态订单信息
+#业态订单信
 struct BusinessFormOrderInfo {
     1:required i32 business_form_order_type,
     2:required i32 order_supply_type,
@@ -42,6 +48,6 @@ struct BusinessFormOrderInfo {
 }
 #服务定义
 service BusinessThriftService {
-    Result createBusinessFormOrder(1:required BusinessFormOrderInfo objBusinessFormOrderInfo)
+    Data createBusinessFormOrder(1:required BusinessFormOrderInfo objBusinessFormOrderInfo)
         throws (1: OrderUserException userException)
 }
