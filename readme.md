@@ -51,5 +51,6 @@ Name : form
       readtimeout: 6s
       writetimeout: 2s    
    ```
+5. use `Wm_Lib_Wmq_Commit::sendCmd` to send wmq command like code in `/home/map/service/page/business/CreateBusinessFormOrder.php`
 
 ## api confs

@@ -16,16 +16,9 @@ struct RetSkuInfo {
     4:required bool is_empty
 }
 #返回值
-<<<<<<< Updated upstream
-struct Result {
-    1:required i32 errno,
-    2:required string errmsg,
-    3:required list<i32> data
-=======
 struct Data {
     1:required string stockout_order_id,
     2:required list<RetSkuInfo> skus
->>>>>>> Stashed changes
 }
 #业态订单sku信息
 struct BusinessFormOrderSku {
