@@ -35,12 +35,190 @@
  * @method static Generator|Model_Orm_StockinOrder[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
-*/
+ */
 
 class Model_Orm_StockinOrder extends Order_Base_Orm
 {
-
     public static $tableName = 'stockin_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * create stock in order
+     * @param int $intStockinOrderId
+     * @param int $intStockinOrderType
+     * @param int $intSourceOrderId
+     * @param string $strSourceInfo
+     * @param int $intStockinOrderStatus
+     * @param int $intWarehouseId
+     * @param $strWarehouseName
+     * @param int $intStockinTime
+     * @param int $intStockinOrderPlanAmount
+     * @param int $intStockinOrderReadAmount
+     * @param int $intStockinOrderCreatorId
+     * @param string $strStockinOrderCreatorName
+     * @param string $strStockinOrderRemark
+     * @return int
+     */
+    public static function createStockinOrder(
+        $intStockinOrderId,
+        $intStockinOrderType,
+        $intSourceOrderId,
+        $strSourceInfo,
+        $intStockinOrderStatus,
+        $intWarehouseId,
+        $strWarehouseName,
+        $intStockinTime,
+        $intStockinOrderPlanAmount,
+        $intStockinOrderReadAmount,
+        $intStockinOrderCreatorId,
+        $strStockinOrderCreatorName,
+        $strStockinOrderRemark
+    )
+    {
+        $arrRow = [
+            'stockin_order_id' => intval($intStockinOrderId),
+            'stockin_order_type' => intval($intStockinOrderType),
+            'source_order_id' => intval($intSourceOrderId),
+            'source_info' => strval($strSourceInfo),
+            'stockin_order_status' => intval($intStockinOrderStatus),
+            'warehouse_id' => intval($intWarehouseId),
+            'warehouse_name' => intval($strWarehouseName),
+            'stockin_time' => $intStockinTime,
+            'stockin_order_plan_amount' => $intStockinOrderPlanAmount,
+            'stockin_order_real_amount' => $intStockinOrderReadAmount,
+            'stockin_order_creator_id' => $intStockinOrderCreatorId,
+            'stockin_order_creator_name' => $strStockinOrderCreatorName,
+            'stockin_order_remark' => $strStockinOrderRemark,
+        ];
+        return self::insert($arrRow);
+    }
+
+    /**
+     * 获取入库单列表（分页）
+     *
+     * @param $arrStockinOrderType
+     * @param $arrWarehouseId
+     * @param $intSourceSupplierId
+     * @param $arrSourceOrderIdInfo
+     * @param $arrCreateTime
+     * @param $arrOrderPlanTime
+     * @param $arrStockinTime
+     * @param $intPageNum
+     * @param $intPageSize
+     * @return mixed
+     */
+    public static function getStockinOrderList(
+        $arrStockinOrderType,
+        $arrWarehouseId,
+        $intSourceSupplierId,
+        $arrSourceOrderIdInfo,
+        $arrCreateTime,
+        $arrOrderPlanTime,
+        $arrStockinTime,
+        $intPageNum,
+        $intPageSize)
+    {
+        // 拼装查询条件
+        if (!empty($arrSourceOrderIdInfo)) {
+            // 如果指定单号则其他条件忽略
+            $arrCondition['source_order_id'] = $arrSourceOrderIdInfo['source_order_id'];
+            // 入库单类型
+            $arrCondition['stockin_order_type'] = $arrSourceOrderIdInfo['source_order_type'];
+        } else {
+            // 未指定单号，进行其他查询场景
+
+            // 必填入库单参数类型
+            if (!empty($arrStockinOrderType)) {
+                $arrCondition['stockin_order_type'] = [
+                    'in',
+                    $arrStockinOrderType];
+            }
+
+            if (!empty($arrWarehouseId)) {
+                $arrCondition['warehouse_id'] = [
+                    'in',
+                    $arrWarehouseId];
+            }
+
+            if (!empty($intSourceSupplierId)) {
+                $arrCondition['source_supplier_id'] = $intSourceSupplierId;
+            }
+
+            if (!empty($arrCreateTime['start'])
+                && !empty($arrCreateTime['end'])) {
+                $arrCondition['create_time'] = [
+                    'between',
+                    $arrCreateTime['start'],
+                    $arrCreateTime['end']
+                ];
+            }
+
+            if (!empty($arrOrderPlanTime['start'])
+                && !empty($arrOrderPlanTime['end'])) {
+                $arrCondition['reserve_order_plan_time'] = [
+                    'between',
+                    $arrOrderPlanTime['start'],
+                    $arrOrderPlanTime['end']
+                ];
+            }
+
+            if (!empty($arrStockinTime['start'])
+                && !empty($arrStockinTime['end'])) {
+                $arrCondition['stockin_time'] = [
+                    'between',
+                    $arrStockinTime['start'],
+                    $arrStockinTime['end'],
+                ];
+            }
+        }
+
+        // 只查询未软删除的
+        $arrCondition['is_delete'] = Order_Define_Const::NOT_DELETE;
+
+        // 排序条件
+        $orderBy = ['id' => 'desc'];
+
+        // 分页条件
+        $offset = (intval($intPageNum) - 1) * intval($intPageSize);
+        $limitCount = intval($intPageSize);
+
+        // 查找满足条件的所有列数据
+        $arrCols = self::getAllColumns();
+
+        // 执行一次性查找
+        $arrRowsAndTotal = self::findRowsAndTotalCount(
+            $arrCols,
+            $arrCondition,
+            $orderBy,
+            $offset,
+            $limitCount);
+
+        $arrResult['total'] = $arrRowsAndTotal['total'];
+        $arrResult['list'] = $arrRowsAndTotal['rows'];
+
+        return $arrResult;
+    }
+
+    /**
+     * 对输入的入库单类型进行校验，为空或者不符合返回false
+     *
+     * @param $arrStockinOrderType
+     * @return bool
+     */
+    public static function isStockinOrderTypeCorrect($arrStockinOrderType)
+    {
+        // 如果为空返回为错误
+        if (empty($arrStockinOrderType)) {
+            return false;
+        }
+
+        foreach ($arrStockinOrderType as $intType) {
+            if (true !== Order_Define_StockinOrder::STOCKIN_ORDER_TYPES[$intType]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

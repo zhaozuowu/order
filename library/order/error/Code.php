@@ -64,7 +64,7 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const  STOCKOUT_ORDER_GET_SKUINFO_ = 320002;
-    
+
     /**
      * nscm采购单号已经被接收
      * @var integer

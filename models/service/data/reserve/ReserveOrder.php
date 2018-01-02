@@ -8,6 +8,11 @@
 class Service_Data_Reserve_ReserveOrder
 {
 
+    public function getReserveOrderAndSku($intReserveOrderId)
+    {
+
+    }
+
     /**
      * destroy reserve order
      * @param $intNscmPurchaseOrderId
@@ -73,7 +78,7 @@ class Service_Data_Reserve_ReserveOrder
     {
         if ($this->checkNscmPurchaseOrderReceived($intNscmPurchaseOrderId)) {
             Bd_Log::warning('nscm reserve order has already been received, id: ' . $intNscmPurchaseOrderId);
-            Order_BusinessError::throwException(Order_Error_Code::NSCM_PURCHASE_ORDER_HAS_BEEN_RECEIVED);
+            Order_BusinessError::throwException(Order_Error_Code::PURCHASE_ORDER_HAS_BEEN_RECEIVED);
         }
         Bd_Log::trace('generate reserve order id by nscm reserve order id: ' . $intNscmPurchaseOrderId);
         $intPurchaseOrderId = Order_Util_Util::generatePurchaseOrderCode();
@@ -160,7 +165,7 @@ class Service_Data_Reserve_ReserveOrder
     }
 
     /**
-     * 查询采购单列表
+     * 查询预约单列表
      *
      * @param $strReserveOrderStatus
      * @param $strWarehouseId
@@ -217,7 +222,7 @@ class Service_Data_Reserve_ReserveOrder
         $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
         $arrReserveOrderStatus = Order_Util::extractIntArray($strReserveOrderStatus);
 
-        // 校验采购单状态参数是否合法
+        // 校验预约单状态参数是否合法
         if (false === Model_Orm_ReserveOrder::isReserveOrderStatusCorrect($arrReserveOrderStatus)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
@@ -238,7 +243,7 @@ class Service_Data_Reserve_ReserveOrder
     }
 
     /**
-     * 查询采购单状态统计
+     * 查询预约单状态统计
      *
      * @return array
      */
@@ -248,7 +253,7 @@ class Service_Data_Reserve_ReserveOrder
     }
 
     /**
-     * 查询采购订单详情
+     * 查询预约订单详情
      *
      * @param $strReserveOrderId
      * @return array
@@ -266,7 +271,7 @@ class Service_Data_Reserve_ReserveOrder
     }
 
     /**
-     * 查询采购单商品列表（分页）
+     * 查询预约单商品列表（分页）
      *
      * @param $strReserveOrderId
      * @param $intPageNum
