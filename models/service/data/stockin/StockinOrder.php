@@ -113,7 +113,7 @@ class Service_Data_Stockin_StockinOrder
      * @throws Order_BusinessError
      */
     public function createStockinOrderReserve($arrReserveOrderInfo, $arrReserveOrderSkus, $intWarehouseId, $strStockinOrderRemark, $arrSkuInfoList,
-        $intCreatorId, $strCreatorName)
+                                              $intCreatorId, $strCreatorName)
     {
         $intStockinOrderId = Order_Util_Util::generateStockinOrderCode();
         $arrDbSkuInfoList = $this->getDbStockinSkus($intStockinOrderId, $arrReserveOrderSkus, $arrSkuInfoList);
@@ -132,10 +132,12 @@ class Service_Data_Stockin_StockinOrder
         $intStockinOrderCreatorId = intval($intCreatorId);
         $strStockinOrderCreatorName = strval($strCreatorName);
         $strStockinOrderRemark = strval($strStockinOrderRemark);
-        Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockinOrderId, $intStockinOrderType,
+        Model_Orm_StockinOrder::getConnection()->transaction(function () use (
+            $intStockinOrderId, $intStockinOrderType,
             $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $strWarehouseName, $intStockinTime,
             $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockinOrderCreatorId, $strStockinOrderCreatorName,
-            $strStockinOrderRemark, $arrDbSkuInfoList) {
+            $strStockinOrderRemark, $arrDbSkuInfoList
+        ) {
             Model_Orm_StockinOrder::createStockinOrder(
                 $intStockinOrderId, $intStockinOrderType,
                 $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $strWarehouseName, $intStockinTime,
@@ -143,7 +145,7 @@ class Service_Data_Stockin_StockinOrder
                 $strStockinOrderRemark);
             Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockinOrderId);
             // @todo event track
-            if (!$this->notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $arrDbSkuInfoList)){
+            if (!$this->notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $arrDbSkuInfoList)) {
                 Order_Error::throwException(Order_Error_Code::ERR__RAL_ERROR);
             }
             return $intStockinOrderId;
@@ -159,7 +161,134 @@ class Service_Data_Stockin_StockinOrder
      * @param array $arrDbSkuInfoList
      * @return bool
      */
-    public function notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $arrDbSkuInfoList){
+    public function notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $arrDbSkuInfoList)
+    {
         return true;
+    }
+
+
+    /**
+     * 获取入库单列表（分页）
+     *
+     * @param $strStockinOrderType
+     * @param $strWarehouseId
+     * @param $intSourceSupplierId
+     * @param $strSourceOrderId
+     * @param $intVendorId
+     * @param $arrCreateTime
+     * @param $arrOrderPlanTime
+     * @param $arrStockinTime
+     * @param $intPageNum
+     * @param $intPageSize
+     * @return mixed
+     * @throws Order_BusinessError
+     * @throws Order_Error
+     */
+    public function getStockinOrderList(
+        $strStockinOrderType,
+        $strWarehouseId,
+        $intSourceSupplierId,
+        $strSourceOrderId,
+        $intVendorId,
+        $arrCreateTime,
+        $arrOrderPlanTime,
+        $arrStockinTime,
+        $intPageNum,
+        $intPageSize)
+    {
+        $arrStockinOrderType = Order_Util::extractIntArray($strStockinOrderType);
+        // 校验入库单类型参数是否合法
+        if (false === Model_Orm_StockinOrder::isStockinOrderTypeCorrect($arrStockinOrderType)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+
+        $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
+
+        // 拆解出关联入库单号,较复杂的订单号ID场景处理，根据入库单类型进行，如果类型和查询入库单类型不匹配抛出参数异常
+        // 订单号ID获取，分解未参数类型及单号[source_order_id, source_order_type]
+        $arrSourceOrderIdInfo = $this->getSourceOrderId($strSourceOrderId, $arrStockinOrderType);
+
+        $arrCreateTime['start'] = intval($arrCreateTime['start']);
+        $arrCreateTime['end'] = intval($arrCreateTime['end']);
+
+        $arrOrderPlanTime['start'] = intval($arrOrderPlanTime['start']);
+        $arrOrderPlanTime['end'] = intval($arrOrderPlanTime['end']);
+
+        $arrStockinTime['start'] = intval($arrStockinTime['start']);
+        $arrStockinTime['end'] = intval($arrStockinTime['end']);
+
+        if (false === Order_Util::verifyUnixTimeSpan(
+                $arrCreateTime['start'],
+                $arrCreateTime['end'])) {
+            Order_BusinessError::throwException(
+                Order_Error_Code::QUERY_TIME_SPAN_ERROR);
+        }
+
+        if (false === Order_Util::verifyUnixTimeSpan(
+                $arrOrderPlanTime['start'],
+                $arrOrderPlanTime['end'])) {
+            Order_BusinessError::throwException(
+                Order_Error_Code::QUERY_TIME_SPAN_ERROR);
+        }
+
+        if (false === Order_Util::verifyUnixTimeSpan(
+                $arrStockinTime['start'],
+                $arrStockinTime['end'])) {
+            Order_BusinessError::throwException(
+                Order_Error_Code::QUERY_TIME_SPAN_ERROR);
+        }
+
+        return Model_Orm_StockinOrder::getStockinOrderList(
+            $arrStockinOrderType,
+            $arrWarehouseId,
+            $intSourceSupplierId,
+            $arrSourceOrderIdInfo,
+            $intVendorId,
+            $arrCreateTime,
+            $arrOrderPlanTime,
+            $arrStockinTime,
+            $intPageNum,
+            $intPageSize);
+    }
+
+    /**
+     * 分解获取关联入库单的单号，只处理ASN和SOO两种订单号，否则返回null
+     * 如果订单号前缀类型不在给定的数组内则抛出参数错误异常
+     * [source_order_id, source_order_type]
+     *
+     * @param $strSourceOrderId
+     * @param $arrStockinOrderType
+     * @return null|array[source_order_id, source_order_type]
+     * @throws Order_Error
+     */
+    private function getSourceOrderId($strSourceOrderId, $arrStockinOrderType)
+    {
+        if(empty($strSourceOrderId)){
+            return null;
+        }
+
+        // preg_match('/^ASN\d{13}$/', $strSourceOrderId)
+        if(!empty(preg_match('/^'. Nscm_Define_OrderPrefix::ASN .'\d{13}$/', $strSourceOrderId))){
+            if(false === Order_Util::valueIsInArray(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE, $arrStockinOrderType)){
+                Order_Error::throwException(Order_Error_Code::PARAMS_ERROR);
+            }
+
+            $arrSourceOrderIdInfo['source_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE;
+            $arrSourceOrderIdInfo['source_order_id'] = intval(Order_Util::trimReserveOrderIdPrefix($strSourceOrderId));
+            return $arrSourceOrderIdInfo;
+        }
+
+        // preg_match('/^SOO\d{13}$/', $strSourceOrderId)
+        if(!empty(preg_match('/^' . Nscm_Define_OrderPrefix::SOO . '\d{13}$/', $strSourceOrderId))){
+            if(false === Order_Util::valueIsInArray(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT, $arrStockinOrderType)){
+                Order_Error::throwException(Order_Error_Code::PARAMS_ERROR);
+            }
+
+            $arrSourceOrderIdInfo['source_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
+            $arrSourceOrderIdInfo['source_order_id'] = intval(Order_Util::trimStockoutOrderIdPrefix($strSourceOrderId));
+            return $arrSourceOrderIdInfo;
+        }
+
+        return null;
     }
 }

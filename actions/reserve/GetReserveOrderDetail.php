@@ -1,7 +1,7 @@
 <?php
 /**
  * @name Action_GeReserveOrderDetail
- * @desc 查询采购单详情
+ * @desc 查询预约单详情
  * @author chenwende@iwaimai.baidu.com
  */
 
