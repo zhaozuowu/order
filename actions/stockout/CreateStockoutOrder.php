@@ -7,15 +7,14 @@
 
 class Action_CreateStockoutOrder extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected $boolCheckAuth = false;
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
+        'stockout_order_id' => 'int',
         'stockout_order_type' => 'int|required',
-        'warehouse_name' => 'str|required',
+        'warehouse_id' => 'str|required',
         'stockout_order_remark' => 'str|required',
         'customer_id' => 'int|required',
         'customer_name' => 'str|required',
@@ -50,7 +49,7 @@ class Action_CreateStockoutOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objCreateStockoutOrder = new Service_Page_CreateStockoutOrder();
+        $this->objPage = new Service_Page_Stockout_CreateStockoutOrder();
     }
     
     /**

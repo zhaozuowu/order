@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Service_Page_Stockout_CreateStockoutOrder
- * @desc 创建出库单
+ * @name Service_Page_Order_Commit_Cmdnwmsorderstockoutcreate
+ * @desc 异步创建出库单
  * @author jinyu02@iwaimai.baidu.com
  */
-class Service_Page_Stockout_CreateStockoutOrder{
-
+class Service_Page_Order_Commit_Cmdnwmsorderstockoutcreate extends Wm_Lib_Wmq_CommitPageService {
+    
     /**
      * @var Service_Data_StockoutOrder
      */
@@ -24,10 +24,6 @@ class Service_Page_Stockout_CreateStockoutOrder{
      * @return array
      */
     public function execute($arrInput) {
-        if (empty($arrInput['stockout_order_id'])) {
-            $arrInput['stockout_order_id'] = Order_Util_Util::generateStockoutOrderId();
-        }
         return $this->objDsStockoutOrder->createStockoutOrder($arrInput);
     }
-
 }

@@ -5,6 +5,7 @@
  * @property int $stockin_order_id
  * @property int $stockin_order_type
  * @property int $source_order_id
+ * @property int $source_supplier_id
  * @property string $source_info
  * @property int $stockin_order_status
  * @property int $warehouse_id
@@ -65,6 +66,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intStockinOrderId,
         $intStockinOrderType,
         $intSourceOrderId,
+        $intSourceSupplierId,
         $strSourceInfo,
         $intStockinOrderStatus,
         $intWarehouseId,
@@ -81,6 +83,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_id' => intval($intStockinOrderId),
             'stockin_order_type' => intval($intStockinOrderType),
             'source_order_id' => intval($intSourceOrderId),
+            'source_supplier_id' => intval($intSourceSupplierId),
             'source_info' => strval($strSourceInfo),
             'stockin_order_status' => intval($intStockinOrderStatus),
             'warehouse_id' => intval($intWarehouseId),

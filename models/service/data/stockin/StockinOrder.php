@@ -112,6 +112,35 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
+     * get source info
+     * @param array $arrSourceOrderInfo
+     * @param int $intType
+     * @return array
+     */
+    private function getSourceInfo($arrSourceOrderInfo, $intType)
+    {
+        if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intType) {
+            $arrSourceInfo = [
+                'vendor_id' => $arrSourceOrderInfo['vendor_id'],
+                'vendor_name' => $arrSourceOrderInfo['vendor_name'],
+                'vendor_contactor' => $arrSourceOrderInfo['vendor_contactor'],
+                'vendor_mobile' => $arrSourceOrderInfo['vendor_mobile'],
+                'vendor_email' => $arrSourceOrderInfo['vendor_email'],
+                'vendor_address' => $arrSourceOrderInfo['vendor_address'],
+            ];
+        } else {
+            $arrSourceInfo = [
+                'customer_id' => $arrSourceOrderInfo['customer_id'],
+                'customer_name' => $arrSourceOrderInfo['customer_name'],
+                'customer_contactor' => $arrSourceOrderInfo['customer_contactor'],
+                'customer_contact' => $arrSourceOrderInfo['customer_contact'],
+                'customer_address' => $arrSourceOrderInfo['customer_address'],
+            ];
+        }
+        return $arrSourceInfo;
+    }
+
+    /**
      * @param $arrSourceOrderInfo
      * @param $arrSourceOrderSkus
      * @param $intWarehouseId
@@ -127,8 +156,7 @@ class Service_Data_Stockin_StockinOrder
      * @throws Order_Error
      */
     public function createStockinOrder($arrSourceOrderInfo, $arrSourceOrderSkus, $intWarehouseId, $strWarehouseName,
-                                       $strStockinOrderRemark, $arrSkuInfoList,$intCreatorId, $strCreatorName,
-                                       $arrSourceInfo, $intType)
+                                       $strStockinOrderRemark, $arrSkuInfoList, $intCreatorId, $strCreatorName, $intType)
     {
 
         if (!isset(Order_Define_StockinOrder::STOCKIN_ORDER_TYPES[$intType])) {
@@ -142,10 +170,13 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
             $intSourceOrderId = intval($arrSourceOrderInfo['reserve_order_id']);
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['reserve_order_plan_amount'];
+            $intSourceSupplierId = $arrSourceOrderInfo['vendor_id'];
         } else {
             $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockout_order_pickup_amount'];
+            $intSourceSupplierId = $arrSourceOrderInfo['customer_id'];
         }
+        $arrSourceInfo = $this->getSourceInfo($arrSourceOrderInfo, $intType);
         $strSourceInfo = json_encode($arrSourceInfo);
         $intStockinOrderStatus = Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH;
         $intWarehouseId = intval($intWarehouseId);
@@ -155,12 +186,12 @@ class Service_Data_Stockin_StockinOrder
         $strStockinOrderCreatorName = strval($strCreatorName);
         $strStockinOrderRemark = strval($strStockinOrderRemark);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockinOrderId, $intStockinOrderType,
-            $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $strWarehouseName, $intStockinTime,
+            $intSourceOrderId, $intSourceSupplierId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $strWarehouseName, $intStockinTime,
             $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockinOrderCreatorId, $strStockinOrderCreatorName,
             $strStockinOrderRemark, $arrDbSkuInfoList) {
             Model_Orm_StockinOrder::createStockinOrder(
                 $intStockinOrderId, $intStockinOrderType,
-                $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $strWarehouseName, $intStockinTime,
+                $intSourceOrderId, $intSourceSupplierId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $strWarehouseName, $intStockinTime,
                 $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockinOrderCreatorId, $strStockinOrderCreatorName,
                 $strStockinOrderRemark);
             Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockinOrderId);
