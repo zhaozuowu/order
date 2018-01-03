@@ -1,7 +1,7 @@
 <?php
 /**
  * @name Action_GetReserveOrderList
- * @desc 获取采购订单列表（分页）
+ * @desc 获取预约订单列表（分页）
  * @author chenwende@iwaimai.baidu.com
  */
 

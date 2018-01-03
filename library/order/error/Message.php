@@ -19,6 +19,10 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::PURCHASE_ORDER_HAS_BEEN_RECEIVED => 'nscm采购单号已经被接收',
         Order_Error_Code::PURCHASE_ORDER_NOT_EXIST => '采购单不存在',
         Order_Error_Code::PURCHASE_ORDER_NOT_ALLOW_DESTROY => '订单状态不允许作废',
+        Order_Error_Code::NWMS_STOCKOUT_ORDER_CREATE_FAIL => '出库单创建失败',
+        Order_Error_Code::NWMS_STOCKOUT_ORDER_TYPE_ERROR => '出库单类型错误',
+        Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_SUPPLY_TYPE_ERROR => '业态订单补货类型错误',
+        Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR => '业态订单类型错误',
     ];
 
 }

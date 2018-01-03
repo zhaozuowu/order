@@ -1,14 +1,12 @@
 <?php
 /**
- * @name Action_DeliveryOrder
+ * @name Action_GetBusinessFormOrderList
  * @desc 查询业态订单列表
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
 class Action_GetBusinessFormOrderList extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected $boolCheckAuth = false;
     /**
      * input params
      * @var array
@@ -16,6 +14,7 @@ class Action_GetBusinessFormOrderList extends Order_Base_Action
     protected $arrInputParams = [
         'page_num' => 'int|default[1]',
         'page_size' => 'int|required',
+        'status'    => 'int|required',
         'warehouse_id' => 'int',
         'business_form_order_id' => 'int',
         'business_form_order_status' => 'int',
@@ -33,19 +32,12 @@ class Action_GetBusinessFormOrderList extends Order_Base_Action
     protected $intMethod = Order_Define_Const::METHOD_GET;
 
     /**
-     * page service
-     * @var Service_Page_GetBusinessFormOrderList
-     */
-    protected $objPage;
-
-    /**
      * init object
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_GetBusinessFormOrderList();
+        $this->objPage = new Service_Page_Business_GetBusinessFormOrderList();
     }
-
 
     /**
      * format result

@@ -1,14 +1,12 @@
 <?php
 /**
- * @name Action_DeliveryOrder
- * @desc 查询业态订单列表
+ * @name Action_GetBusinessFormOrderByid
+ * @desc 查询业态订单明细
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
 class Action_GetBusinessFormOrderByid extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected $boolCheckAuth = false;
     /**
      * input params
      * @var array
@@ -24,12 +22,6 @@ class Action_GetBusinessFormOrderByid extends Order_Base_Action
     protected $intMethod = Order_Define_Const::METHOD_GET;
 
     /**
-     * page service
-     * @var Service_Page_Business_GetBusinessFormOrderByid
-     */
-    protected $objPage;
-
-    /**
      * init object
      */
     public function myConstruct()
@@ -38,7 +30,6 @@ class Action_GetBusinessFormOrderByid extends Order_Base_Action
         $this->objPage = new Service_Page_Business_GetBusinessFormOrderByid();
     }
 
-
     /**
      * format result
      * @param array $arrRet
@@ -46,8 +37,9 @@ class Action_GetBusinessFormOrderByid extends Order_Base_Action
      */
     public function format($arrRet)
     {
+        $ret = [];
         if (empty($arrRet)) {
-            return $arrRet;
+            return $ret;
         }
         $arrFormatRet = [
             'business_form_order_id' => empty($arrRet['business_form_order_id']) ? 0 : intval($arrRet['business_form_order_id']),

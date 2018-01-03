@@ -16,6 +16,7 @@ class Action_FinishOrder extends Order_Base_Action
     protected $arrInputParams = [
         'stockout_order_id' => 'int|required',
         'signup_status' => 'int|required',
+        'signup_upcs' => 'str',
     ];
 
     /**
@@ -23,12 +24,6 @@ class Action_FinishOrder extends Order_Base_Action
      * @var int
      */
     protected $intMethod = Order_Define_Const::METHOD_POST;
-
-    /**
-     * page service
-     * @var Service_Page_Stockout_FinishOrder
-     */
-    protected $objPage;
 
     /**
      * init object

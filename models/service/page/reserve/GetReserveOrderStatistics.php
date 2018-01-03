@@ -25,7 +25,7 @@ class Service_Page_Reserve_GetReserveOrderStatistics implements Order_Base_Page
     }
 
     /**
-     * 获取采购单状态统计
+     * 获取预约单状态统计
      *
      * @param array $arrInput = []
      * @return array

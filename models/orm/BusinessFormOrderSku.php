@@ -42,11 +42,27 @@
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
  */
 
-class Model_Orm_BusinessFormOrderSku extends Wm_Orm_ActiveRecord
+class Model_Orm_BusinessFormOrderSku extends Order_Base_Orm
 {
 
     public static $tableName = 'business_form_order_sku';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * 获取业态订单sku信息
+     * @param $arrConditions
+     * @param array $arrColumns
+     * @param null $intOffset
+     * @param null $intLimit
+     * @return array
+     */
+    public static function getBusSkuListByConditions($arrConditions, $arrColumns = [], $intOffset = null, $intLimit = null)
+    {
+        if (empty($arrColumns)) {
+            $arrColumns = self::getAllColumns();
+        }
+        return self::findRows($arrColumns, $arrConditions, ['create_time' => 'desc'], $intOffset, $intLimit);
+    }
 
 }

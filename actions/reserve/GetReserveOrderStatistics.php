@@ -1,7 +1,7 @@
 <?php
 /**
  * @name Action_GetReserveOrderStatistics
- * @desc 获取采购单状态统计
+ * @desc 获取预约单状态统计
  * @author chenwende@iwaimai.baidu.com
  */
 
