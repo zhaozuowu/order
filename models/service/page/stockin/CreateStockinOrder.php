@@ -21,6 +21,8 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
      */
     private $objDataReserve;
 
+    private $objWarehouse;
+
     /**
      * Service_Page_Stockin_CreateStockinOrder constructor.
      */
@@ -36,28 +38,39 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
      * @param array $arrInput
      * @return int
      * @throws Order_BusinessError
+     * @throws Wm_Orm_Error
+     * @throws Exception
      */
     public function execute($arrInput)
     {
-        $intType = intval($arrInput['stockin_order_type']);
-        if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intType) {
-            $arrSourceOrderInfo = $this->objDataReserve->getReserveOrderInfoByReserveOrderId($arrInput['source_order_id']);
-            if (empty($arrSourceOrderInfo)) {
-                // @todo source order id not exist
-                Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        if (preg_match('/^(SOO|ASN)(\d{13})$/', $arrInput['source_order_id'], $matches)) {
+            if (Nscm_Define_OrderPrefix::ASN == $matches[1]) {
+                $intType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE;
+            } else {
+                $intType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
             }
-            $arrSourceOrderSkus = $this->objDataReserve->getReserveOrderSkuListAll(
-                Order_Util::trimReserveOrderIdPrefix($arrInput['source_order_id']));
+            $intSourceOrderId = intval($matches[2]);
+        } else {
+            Order_Error::throwException(Order_Error_Code::SOURCE_ORDER_TYPE_ERROR);
+        }
+        if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intType) {
+            $arrSourceOrderInfo = $this->objDataReserve->getReserveOrderInfoByPurchaseOrderId($intSourceOrderId);
+            $arrSourceOrderSkus = $this->objDataReserve->getReserveOrderSkuListAll($arrSourceOrderInfo['reserve_order_id']);
 
         } else {
-
+            $arrRet = $this->objDataStockout->getOrderAndSkuListByStockoutOrderId($intSourceOrderId);
+            $arrSourceOrderInfo = $arrRet['stockout_order_info'];
+            $arrSourceOrderSkus = $arrRet['stockout_order_sku'];
+        }
+        if (empty($arrSourceOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
         }
         $intWarehouseId = $arrInput['warehouse_id'];
-        // @todo
-        $strWarehouseName = '';
         $strStockinOrderRemark = $arrInput['stockin_order_remark'];
         $arrSkuInfoList = $arrInput['sku_info_list'];
-        $this->objDataStockin->createStockinOrder($arrSourceOrderInfo, $arrSourceOrderSkus, $intWarehouseId, $strWarehouseName,
+        $intCreatorId = $arrInput['_session']['user_id'];
+        $strCreatorName = $arrInput['_session']['user_name'];
+        $this->objDataStockin->createStockinOrder($arrSourceOrderInfo, $arrSourceOrderSkus, $intWarehouseId,
             $strStockinOrderRemark, $arrSkuInfoList, $intCreatorId, $strCreatorName, $intType);
     }
 }

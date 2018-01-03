@@ -16,6 +16,8 @@
  * @property int $stockin_order_creator_id
  * @property string $stockin_order_creator_name
  * @property string $stockin_order_remark
+ * @property int $stockin_order_total_price
+ * @property int $stockin_order_total_price_tax
  * @property int $is_delete
  * @property int $create_time
  * @property int $update_time
@@ -76,7 +78,9 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intStockinOrderReadAmount,
         $intStockinOrderCreatorId,
         $strStockinOrderCreatorName,
-        $strStockinOrderRemark
+        $strStockinOrderRemark,
+        $intStockinOrderTotalPrice,
+        $intStockinOrderTotalPriceTax
     )
     {
         $arrRow = [
@@ -94,6 +98,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_creator_id' => $intStockinOrderCreatorId,
             'stockin_order_creator_name' => $strStockinOrderCreatorName,
             'stockin_order_remark' => $strStockinOrderRemark,
+            'stockin_order_total_price' => $intStockinOrderTotalPrice,
+            'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
         ];
         return self::insert($arrRow);
     }

@@ -52,7 +52,7 @@ class Service_Data_Reserve_ReserveOrder
             return;
         }
         Model_Orm_ReserveOrder::getConnection()->transaction(function () use ($arrOrderInfo, $intPurchaseOrderId) {
-            $intReserveOrderId = intval($arrOrderInfo['purchase_order_id']);
+            $intReserveOrderId = intval($arrOrderInfo['reserve_order_id']);
             $intWarehouseId = intval($arrOrderInfo['warehouse_id']);
             $strWarehouseName = strval($arrOrderInfo['warehouse_name']);
             $intReserveOrderPlanTime = intval($arrOrderInfo['purchase_order_plan_time']);
@@ -67,6 +67,7 @@ class Service_Data_Reserve_ReserveOrder
             Model_Orm_ReserveOrder::createReserveOrder($intReserveOrderId, $intPurchaseOrderId, $intWarehouseId, $strWarehouseName, $intReserveOrderPlanTime,
                 $intReserveOrderPlanAmount, $intVendorId, $strVendorName, $strVendorContactor, $strVendorMobile, $strVendorEmail, $strVendorAddress, $strReserveOrderRemark);
             $arrReserveOrderSkus = $arrOrderInfo['purchase_order_skus'];
+            Bd_Log::debug('ORDER_SKUS:' . json_encode($arrReserveOrderSkus));
             Model_Orm_ReserveOrderSku::createReserveOrderSku($arrReserveOrderSkus, $intReserveOrderId);
         });
         $objRedis->dropOrderInfo($intPurchaseOrderId);
@@ -101,8 +102,8 @@ class Service_Data_Reserve_ReserveOrder
         $intPurchaseOrderId = intval($arrReserveOrder['purchase_order_id']);
         $intReserveOrderId = $this->generateReserveOrderId($intPurchaseOrderId);
         $arrReserve = [
-            'purchase_order_id' => $intReserveOrderId,
-            'nscm_purchase_order_id' => $intPurchaseOrderId,
+            'reserve_order_id' => $intReserveOrderId,
+            'purchase_order_id' => $intPurchaseOrderId,
             'warehouse_id' => intval($arrReserveOrder['warehouse_id']),
             'warehouse_name' => strval($arrReserveOrder['warehouse_name']),
             'purchase_order_plan_time' => intval($arrReserveOrder['purchase_order_plan_time']),
@@ -135,7 +136,7 @@ class Service_Data_Reserve_ReserveOrder
         // check redis
         $objRedis = new Dao_Redis_ReserveOrder();
         $arrRedisOrderInfo = $objRedis->getOrderInfo($strReserveOrderId);
-        if (!empty($arrDataInfo)) {
+        if (!empty($arrRedisOrderInfo)) {
             return true;
         }
         // check database
@@ -158,7 +159,7 @@ class Service_Data_Reserve_ReserveOrder
         $objDao = new Dao_Rpc();
         $arrReq = [
             Order_Define_Ral::NWMS_ORDER_CREATE_RESERVE_ORDER_WRITE => [
-                'nscm_purchase_order_id' => $intPurchaseOrderId,
+                'purchase_order_id' => $intPurchaseOrderId,
             ]
         ];
         Bd_Log::debug('rpc call input info: ' . json_encode($arrReq));
@@ -267,7 +268,6 @@ class Service_Data_Reserve_ReserveOrder
     public function getReserveOrderInfoByReserveOrderId($strReserveOrderId)
     {
         $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
-
         if (empty($intReserveOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
@@ -282,7 +282,7 @@ class Service_Data_Reserve_ReserveOrder
     public function getReserveOrderSkuListAll($intReserveOrderId)
     {
         $intReserveOrderId = intval($intReserveOrderId);
-        return Model_Orm_ReserveOrderSku::getReserveOrderSkusByReserveOrderId($intReserveOrderId);
+        return Model_Orm_ReserveOrderSku::getReserveOrderSkusByReserveOrderId($intReserveOrderId)['rows'];
     }
 
     /**
@@ -306,5 +306,19 @@ class Service_Data_Reserve_ReserveOrder
         }
 
         return Model_Orm_ReserveOrderSku::getReserveOrderSkuList($intReserveOrderId, $intPageNum, $intPageSize);
+    }
+
+    /**
+     * get reserve order info by purchase order id
+     * @param int $intPurchaseOrderId
+     * @return array
+     */
+    public function getReserveOrderInfoByPurchaseOrderId($intPurchaseOrderId)
+    {
+        $arrRet = Model_Orm_ReserveOrder::getReserveInfoByPurchaseOrderId($intPurchaseOrderId);
+        if (empty($arrRet)) {
+            return [];
+        }
+        return $arrRet->toArray();
     }
 }
