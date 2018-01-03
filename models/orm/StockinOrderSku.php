@@ -80,4 +80,55 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
         }
         return self::batchInsert($arrDb);
     }
+
+    /**
+     * 获取入库单商品列表（分页）
+     *
+     * @param $intStockinOrderId
+     * @param $intPageNum
+     * @param $intPageSize
+     * @return array
+     */
+    public static function getStockinOrderSkuList(
+        $intStockinOrderId,
+        $intPageNum,
+        $intPageSize)
+    {
+        $arrResult = [
+            'total' => '0',
+            'list' => [],
+        ];
+
+        if (empty($intStockinOrderId)) {
+            return $arrResult;
+        }
+
+        // 只查询未软删除的
+        $arrCondition = [
+            'stockin_order_id' => $intStockinOrderId,
+            'is_delete'  => Order_Define_Const::NOT_DELETE,
+        ];
+
+        // 排序条件
+        $orderBy = ['sku_id' => 'asc'];
+
+        // 分页条件
+        $offset = (intval($intPageNum) - 1) * intval($intPageSize);
+        $limitCount = intval($intPageSize);
+
+        // 查找满足条件的所有列数据
+        $arrCols = self::getAllColumns();
+
+        // 执行一次性查找
+        $arrRowsAndTotal = self::findRowsAndTotalCount(
+            $arrCols,
+            $arrCondition,
+            $orderBy,
+            $offset,
+            $limitCount);
+
+        $arrResult['total'] = $arrRowsAndTotal['total'];
+        $arrResult['list'] = $arrRowsAndTotal['rows'];
+        return $arrResult;
+    }
 }
