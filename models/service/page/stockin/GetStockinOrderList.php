@@ -2,7 +2,7 @@
 
 /**
  * @name Service_Page_Stockin_GetStockinOrderList
- * @desc page service, 和action对应，组织页面逻辑，组合调用data service
+ * @desc 获取入库单列表（分页）page service, 和action对应，组织页面逻辑，组合调用data service
  * @author nscm
  */
 
@@ -17,7 +17,7 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
     private $objServiceData;
 
     /**
-     * Service_Page_Reserve_GetStockinOrderList constructor.
+     * Service_Page_Stockin_GetStockinOrderList constructor.
      */
     public function __construct()
     {
