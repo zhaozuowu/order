@@ -5,6 +5,7 @@
  * @property int $stockin_order_id
  * @property int $stockin_order_type
  * @property int $source_order_id
+ * @property int $source_supplier_id
  * @property string $source_info
  * @property int $stockin_order_status
  * @property int $warehouse_id
@@ -15,6 +16,8 @@
  * @property int $stockin_order_creator_id
  * @property string $stockin_order_creator_name
  * @property string $stockin_order_remark
+ * @property int $stockin_order_total_price
+ * @property int $stockin_order_total_price_tax
  * @property int $is_delete
  * @property int $create_time
  * @property int $update_time
@@ -64,6 +67,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intStockinOrderId,
         $intStockinOrderType,
         $intSourceOrderId,
+        $intSourceSupplierId,
         $strSourceInfo,
         $intStockinOrderStatus,
         $intWarehouseId,
@@ -73,13 +77,16 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intStockinOrderReadAmount,
         $intStockinOrderCreatorId,
         $strStockinOrderCreatorName,
-        $strStockinOrderRemark
+        $strStockinOrderRemark,
+        $intStockinOrderTotalPrice,
+        $intStockinOrderTotalPriceTax
     )
     {
         $arrRow = [
             'stockin_order_id' => intval($intStockinOrderId),
             'stockin_order_type' => intval($intStockinOrderType),
             'source_order_id' => intval($intSourceOrderId),
+            'source_supplier_id' => intval($intSourceSupplierId),
             'source_info' => strval($strSourceInfo),
             'stockin_order_status' => intval($intStockinOrderStatus),
             'warehouse_id' => intval($intWarehouseId),
@@ -90,6 +97,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_creator_id' => $intStockinOrderCreatorId,
             'stockin_order_creator_name' => $strStockinOrderCreatorName,
             'stockin_order_remark' => $strStockinOrderRemark,
+            'stockin_order_total_price' => $intStockinOrderTotalPrice,
+            'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
         ];
         return self::insert($arrRow);
     }

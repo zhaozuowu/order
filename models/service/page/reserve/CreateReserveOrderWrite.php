@@ -1,10 +1,10 @@
 <?php
 /**
- * @name Service_Page_Purchase_CreatePurchaseOrderWrite
- * @desc Service_Page_Purchase_CreatePurchaseOrderWrite
+ * @name Service_Page_Reserve_CreateReserveOrderWrite
+ * @desc Service_Page_Reserve_CreateReserveOrderWrite
  * @author lvbochao@iwaimai.baidu.com
  */
-class Service_Page_Purchase_CreatePurchaseOrderWrite implements Order_Base_Page
+class Service_Page_Reserve_CreateReserveOrderWrite implements Order_Base_Page
 {
     /**
      * @var Service_Data_Reserve_ReserveOrder
@@ -22,11 +22,13 @@ class Service_Page_Purchase_CreatePurchaseOrderWrite implements Order_Base_Page
     /**
      * @param array $arrInput
      * @return array
+     * @throws Exception
+     * @throws Wm_Orm_Error
      */
     public function execute($arrInput)
     {
-        $intNscmPurchaseOrderId = intval($arrInput['nscm_purchase_order_id']);
-        $this->objDataPurchase->createPurchaseOrderByNscmPurchaseOrderId($intNscmPurchaseOrderId);
+        $intPurchaseOrderId = intval($arrInput['purchase_order_id']);
+        $this->objDataPurchase->createReserveOrderByPurchaseOrderId($intPurchaseOrderId);
         return [];
     }
 }
