@@ -416,6 +416,23 @@ class Service_Data_StockoutOrder
         return $arrRetList;
     }
 
+    public function deleteStockoutOrder($strStockoutOrderId) {
+
+        $res = [];
+        $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
+        if (empty($stockoutOrderInfo)) {
+            Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
+        }
+
+        $status = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
+        if ($stockoutOrderInfo['stockout_order_status'] != $status) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
+        }
+
+
+
+    }
     /**
      * 过滤出库单前缀
      * @param $strStockoutOrderId
