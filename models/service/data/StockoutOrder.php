@@ -313,7 +313,7 @@ class Service_Data_StockoutOrder
         if (empty($arrOrderList)) {
             return $ret;
         }
-        $arrOrderList['stockout_order_id'] = ltrim($arrOrderList['stockout_order_id'], 'SSO');
+        $arrWarehouseList['stockout_order_id'] = ltrim(['stockout_order_id'], 'SSO');
         $objWarehouseRal = new Dao_Ral_Order_Warehouse();
         $arrWarehouseList = $objWarehouseRal->getWareHouseList($arrOrderList['warehouse_id']);
         $arrWarehouseList = !empty($arrWarehouseList) ? array_column($arrWarehouseList, null, 'warehouse_id') : [];
@@ -341,6 +341,7 @@ class Service_Data_StockoutOrder
         $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
         if (empty($stockoutOrderInfo)) {
             Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
         }
 
         $status = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
@@ -361,10 +362,10 @@ class Service_Data_StockoutOrder
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
             }
             $res = [];
-            if (empty($signupUpcs)) {
+            if (empty($pickupSkus)) {
                 return $res;
             }
-            foreach ($signupUpcs as $item) {
+            foreach ($pickupSkus as $item) {
                 $condition = ['stockout_order_id' => $strStockoutOrderId, 'sku_id' => $item['sku_id']];
                 $skuUpdata = ['pickup_amount' => $item['pickup_amount']];
                 $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
