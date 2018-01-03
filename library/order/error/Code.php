@@ -84,6 +84,36 @@ class Order_Error_Code extends Wm_Error_Code
     const PURCHASE_ORDER_NOT_ALLOW_DESTROY = 330003;
 
     /**
+     * 订单不存在
+     * @var int
+     */
+    const SOURCE_ORDER_ID_NOT_EXIST = 330004;
+
+    /**
+     * 同一sku最多只能有两个效期
+     * @var int
+     */
+    const SKU_TOO_MUCH = 330005;
+
+    /**
+     * 入库数量不能多于源订单数量
+     * @var int
+     */
+    const STOCKIN_ORDER_AMOUNT_TOO_MUCH = 330006;
+
+    /**
+     * sku id 不存在或输入的sku id重复
+     * @var int
+     */
+    const SKU_ID_NOT_EXIST_OR_SKU_ID_REPEAT = 330007;
+
+    /**
+     * source order type error
+     * @var int
+     */
+    const SOURCE_ORDER_TYPE_ERROR = 330008;
+
+    /**
      * 查询时间范围错误
      */
     const QUERY_TIME_SPAN_ERROR = 340000;

@@ -13,6 +13,8 @@
  * @property string $sku_net_gram
  * @property int $sku_price
  * @property int $sku_price_tax
+ * @property int $sku_effect_type
+ * @property int $sku_effect_day
  * @property int $stockin_order_sku_total_price
  * @property int $stockin_order_sku_total_price_tax
  * @property int $reserve_order_sku_plan_amount

@@ -13,6 +13,8 @@
  * @property string $sku_net_gram
  * @property int $sku_price
  * @property int $sku_price_tax
+ * @property int $sku_effect_type
+ * @property int $sku_effect_day
  * @property int $reserve_order_sku_total_price
  * @property int $reserve_order_sku_total_price_tax
  * @property int $reserve_order_sku_plan_amount
@@ -69,6 +71,8 @@ class Model_Orm_ReserveOrderSku extends Order_Base_Orm
                 'sku_net_gram' => $arrInputRow['sku_net_gram'],
                 'sku_price' => $arrInputRow['sku_price'],
                 'sku_price_tax' => $arrInputRow['sku_price_tax'],
+                'sku_effect_type' => $arrInputRow['sku_effect_type'],
+                'sku_effect_day' => $arrInputRow['sku_effect_day'],
                 'reserve_order_sku_total_price' => $arrInputRow['reserve_order_sku_total_price'],
                 'reserve_order_sku_total_price_tax' => $arrInputRow['reserve_order_sku_total_price_tax'],
                 'reserve_order_sku_plan_amount' => $arrInputRow['reserve_order_sku_plan_amount'],

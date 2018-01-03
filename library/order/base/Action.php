@@ -41,6 +41,12 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
     protected $arrInputParams;
 
     /**
+     * session info
+     * @var array
+     */
+    protected $arrSession;
+
+    /**
      * add general validate
      */
     public function beforeValidate()
@@ -53,6 +59,7 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
      * @param array $arrFormat
      * @param array $arrContent
      * @return array
+     * @throws Wm_Error
      */
     public function validate($arrFormat, $arrContent)
     {
@@ -83,6 +90,7 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
 
     /**
      * add validate
+     * @throws Wm_Error
      */
     public function beforeMyExecute()
     {
@@ -104,6 +112,9 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
             $this->arrFilterResult = array_merge($arrValidateResult, $this->arrFilterResult);
         } else{
             $this->arrFilterResult = $this->validate($this->arrInputParams, $arrInput);
+        }
+        if ($this->boolCheckLogin) {
+            $this->arrFilterResult['_session'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info');
         }
     }
 
