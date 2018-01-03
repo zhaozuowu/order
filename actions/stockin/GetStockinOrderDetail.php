@@ -46,15 +46,16 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
             $intStockInType = intval($arrRet['stockin_order_type']);
             if(!empty($intStockInType)) {
                 if(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockInType){
-                    $strSourceOrderId = empty($arrRet['source_order_id']) ? '' : Nscm_Define_OrderPrefix::ASN . intval($arrListItem['source_order_id']);
+                    $strSourceOrderId = empty($arrRet['source_order_id']) ? '' : Nscm_Define_OrderPrefix::ASN . intval($arrRet['source_order_id']);
                 }else if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RETURN == $intStockInType){
-                    $strSourceOrderId = empty($arrRet['source_order_id']) ? '' : Nscm_Define_OrderPrefix::SOO . intval($arrListItem['source_order_id']);
+                    $strSourceOrderId = empty($arrRet['source_order_id']) ? '' : Nscm_Define_OrderPrefix::SOO . intval($arrRet['source_order_id']);
                 }
             }
             $arrRoundResult['source_order_id'] = $strSourceOrderId;
 
             $arrRoundResult['stockin_order_id'] = empty($arrRet['stockin_order_id']) ? '' : Nscm_Define_OrderPrefix::SIO . strval($arrRet['stockin_order_id']);
             $arrRoundResult['warehouse_name'] = empty($arrRet['warehouse_name']) ? '' : strval($arrRet['warehouse_name']);
+            $arrRoundResult['reserve_order_plan_time'] = empty($arrRet['reserve_order_plan_time']) ? '' : strval($arrRet['reserve_order_plan_time']);
             $arrRoundResult['stockin_order_total_price'] = empty($arrRet['stockin_order_total_price']) ? '' : intval($arrRet['stockin_order_total_price']);
             $arrRoundResult['stockin_order_total_price_tax'] = empty($arrRet['stockin_order_total_price_tax']) ? '' : intval($arrRet['stockin_order_total_price_tax']);
             $arrRoundResult['stockin_order_plan_amount'] = empty($arrRet['stockin_order_plan_amount']) ? '' : intval($arrRet['stockin_order_plan_amount']);
