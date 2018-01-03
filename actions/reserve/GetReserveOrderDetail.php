@@ -49,9 +49,6 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
             $arrRoundResult['reserve_order_status'] = empty($arrRet['reserve_order_status']) ? '' : intval($arrRet['reserve_order_status']);
             $arrRoundResult['reserve_order_remark'] = empty($arrRet['reserve_order_remark']) ? '' : strval($arrRet['reserve_order_remark']);
             $arrRoundResult['vendor_name'] = empty($arrRet['vendor_name']) ? '' : strval($arrRet['vendor_name']);
-            $arrRoundResult['vendor_contactor'] = empty($arrRet['vendor_contactor']) ? '' : strval($arrRet['vendor_contactor']);
-            $arrRoundResult['vendor_mobile'] = empty($arrRet['vendor_mobile']) ? '' : strval($arrRet['vendor_mobile']);
-            $arrRoundResult['vendor_address'] = empty($arrRet['vendor_address']) ? '' : strval($arrRet['vendor_address']);
 
             $arrFormatResult = $arrRoundResult;
         }

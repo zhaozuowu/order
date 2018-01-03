@@ -267,6 +267,26 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
+     * 查询入库单商品列表（分页）
+     *
+     * @param $strStockinOrderId
+     * @param $intPageNum
+     * @param $intPageSize
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockinOrderSkuList($strStockinOrderId, $intPageNum, $intPageSize)
+    {
+        $intStockinOrderId = intval(Order_Util::trimStockinOrderIdPrefix($strStockinOrderId));
+
+        if (empty($intStockinOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+
+        return Model_Orm_StockinOrderSku::getStockinOrderSkuList($intStockinOrderId, $intPageNum, $intPageSize);
+    }
+
+    /**
      * 分解获取关联入库单的单号，只处理ASN和SOO两种订单号，否则返回null
      * 如果订单号前缀类型不在给定的数组内则抛出参数错误异常
      * [source_order_id, source_order_type]
@@ -278,13 +298,13 @@ class Service_Data_Stockin_StockinOrder
      */
     private function getSourceOrderId($strSourceOrderId, $arrStockinOrderType)
     {
-        if(empty($strSourceOrderId)){
+        if (empty($strSourceOrderId)) {
             return null;
         }
 
         // preg_match('/^ASN\d{13}$/', $strSourceOrderId)
-        if(!empty(preg_match('/^'. Nscm_Define_OrderPrefix::ASN .'\d{13}$/', $strSourceOrderId))){
-            if(false === Order_Util::valueIsInArray(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE, $arrStockinOrderType)){
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::ASN . '\d{13}$/', $strSourceOrderId))) {
+            if (false === Order_Util::valueIsInArray(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE, $arrStockinOrderType)) {
                 Order_Error::throwException(Order_Error_Code::PARAMS_ERROR);
             }
 
@@ -294,8 +314,8 @@ class Service_Data_Stockin_StockinOrder
         }
 
         // preg_match('/^SOO\d{13}$/', $strSourceOrderId)
-        if(!empty(preg_match('/^' . Nscm_Define_OrderPrefix::SOO . '\d{13}$/', $strSourceOrderId))){
-            if(false === Order_Util::valueIsInArray(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT, $arrStockinOrderType)){
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::SOO . '\d{13}$/', $strSourceOrderId))) {
+            if (false === Order_Util::valueIsInArray(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT, $arrStockinOrderType)) {
                 Order_Error::throwException(Order_Error_Code::PARAMS_ERROR);
             }
 
