@@ -64,9 +64,9 @@ Class Order_Base_Orm extends Wm_Orm_ActiveRecord{
             if (!isset($row['version'])) {
                 $row['version'] = 0;
             }
-            $arrNewRows[] = $rows;
+            $arrNewRows[] = $row;
         }
-        return parent::batchInsert($rows, $ignore, $onDuplicateUpdateFields);
+        return parent::batchInsert($arrNewRows, $ignore, $onDuplicateUpdateFields);
     }
 
     /**
