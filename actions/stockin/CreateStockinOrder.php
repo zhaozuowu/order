@@ -32,9 +32,9 @@ class Action_CreateStockinOrder extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'source_order_id' => 'regex|patern[/^((PUR|STI)\d{13})?$/]',
+        'source_order_id' => 'regex|patern[/^((ASN|SOO)\d{13})?$/]',
         'warehouse_id' => 'int|required',
-        'stockin_order_type' => 'int|min[1]|max[3]',
+        //'stockin_order_type' => 'int|min[1]|max[3]',
         'stockin_order_remark' => 'strutf8',
         'sku_info_list' => [
             'validate' => 'json|required|decode',

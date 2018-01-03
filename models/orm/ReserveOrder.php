@@ -207,7 +207,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     public static function getReserveInfoByPurchaseOrderId($intPurchaseOrderId)
     {
         $arrCondition = [
-            'reserve_order_id' => $intPurchaseOrderId,
+            'purchase_order_id' => $intPurchaseOrderId,
             'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
         return self::findOne($arrCondition);

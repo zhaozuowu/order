@@ -32,7 +32,7 @@ class Action_CreateReserveOrder extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'reserve_order_id' => 'int|required',
+        'purchase_order_id' => 'int|required',
         'warehouse_id' => 'int|required',
         'warehouse_name' => 'strutf8|required|min[1]|len[16]',
         'reserve_order_plan_time' => 'int|required',
@@ -42,8 +42,8 @@ class Action_CreateReserveOrder extends Order_Base_Action
         'vendor_contactor' => 'strutf8|required|min[1]|max[64]',
         'vendor_mobile' => 'phone|required',
         'vendor_email' => 'str|required',
-        'reserve_order_remark' => 'strutf8',
-        'reserve_order_skus' => [
+        'purchase_order_remark' => 'strutf8',
+        'purchase_order_skus' => [
             'validate' => 'json|required|decode',
             'type' => 'array',
             'params' => [
