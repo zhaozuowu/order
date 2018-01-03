@@ -201,6 +201,29 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     }
 
     /**
+     * 查询入库单详情
+     *
+     * @param $intStockinOrderId
+     * @return mixed
+     */
+    public static function getStockinOrderInfoByStockinOrderId($intStockinOrderId)
+    {
+        // 只查询未软删除的
+        $arrCondition = [
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+            'stockin_order_id' => $intStockinOrderId,
+        ];
+
+        // 查找该行所有数据
+        $arrCols = self::getAllColumns();
+
+        // 查找满足条件的所有行数据
+        $arrResult = self::findRow($arrCols, $arrCondition);
+
+        return $arrResult;
+    }
+
+    /**
      * 对输入的入库单类型进行校验，为空或者不符合返回false
      *
      * @param $arrStockinOrderType

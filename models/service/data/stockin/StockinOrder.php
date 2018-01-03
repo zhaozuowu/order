@@ -249,6 +249,24 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
+     * 查询入库单详情
+     *
+     * @param $strStockinOrderId
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function getStockinOrderInfoByStockinOrderId($strStockinOrderId)
+    {
+        $intStockinOrderId = intval(Order_Util::trimStockinOrderIdPrefix($strStockinOrderId));
+
+        if (empty($intStockinOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+
+        return Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intStockinOrderId);
+    }
+
+    /**
      * 分解获取关联入库单的单号，只处理ASN和SOO两种订单号，否则返回null
      * 如果订单号前缀类型不在给定的数组内则抛出参数错误异常
      * [source_order_id, source_order_type]
