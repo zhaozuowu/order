@@ -106,7 +106,7 @@ class Order_Util
     }
 
     /**
-     * 去除预约入库单开头的ASN开头部分内容
+     * 去除预约单开头的ASN开头部分内容
      * @param $strReserveOrderId
      * @return bool|string
      */
@@ -122,5 +122,72 @@ class Order_Util
         $strResult = ltrim($strReserveOrderId, Nscm_Define_OrderPrefix::ASN);
 
         return $strResult;
+    }
+
+    /**
+     * 去除入库单开头的SIO开头部分内容
+     *
+     * @param $strStockinOrderId
+     * @return string
+     */
+    public static function trimStockinOrderIdPrefix($strStockinOrderId)
+    {
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strStockinOrderId)) {
+            return $strResult;
+        }
+
+        $strResult = ltrim($strStockinOrderId, Nscm_Define_OrderPrefix::SIO);
+
+        return $strResult;
+    }
+
+    /**
+     * 去除出库单开头的SOO开头部分内容
+     *
+     * @param $strStockoutOrderId
+     * @return string
+     */
+    public static function trimStockoutOrderIdPrefix($strStockoutOrderId)
+    {
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strStockoutOrderId)) {
+            return $strResult;
+        }
+
+        $strResult = ltrim($strStockoutOrderId, Nscm_Define_OrderPrefix::SOO);
+
+        return $strResult;
+    }
+
+    /**
+     * 判断value的值是否在数组中
+     * 遇到空参数返回错误
+     *
+     * @param $value
+     * @param $arr
+     * @return bool
+     */
+    public static function valueIsInArray($value, $arr)
+    {
+        if(empty($value)){
+            return false;
+        }
+
+        if(empty($arr)){
+            return false;
+        }
+
+        foreach ($arr as $item){
+            if($value === $item){
+                return true;
+            }
+        }
+
+        return false;
     }
 }
