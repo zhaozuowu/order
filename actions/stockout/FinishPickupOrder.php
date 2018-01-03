@@ -7,14 +7,13 @@
 
 class Action_FinishPickupOrder extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected $boolCheckAuth = false;
+
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
-        'stockout_order_id' => 'int|required',
+        'stockout_order_id' => 'str|required',
         'pickup_skus' => [
             'validate' => 'json|required|decode',
             'type' => 'array',

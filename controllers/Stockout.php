@@ -18,5 +18,6 @@ class Controller_Stockout extends Ap_Controller_Abstract
 
         'createstockoutorder' => 'actions/stockout/CreateStockoutOrder.php',
         'getstockoutlist' => 'actions/stockout/getstockoutorderlist.php',
+        'deletestockoutorder' => 'actions/stockout/DeleteStockoutOrder.php'//作废出库单
     );
 }

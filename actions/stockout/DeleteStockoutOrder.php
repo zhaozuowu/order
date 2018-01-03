@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_DeliveryOrder
- * @desc TMS完成揽收
+ * @name Action_DeleteStockoutOrder
+ * @desc 作废出库单
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
-class Action_DeliveryOrder extends Order_Base_Action
+class Action_DeleteStockoutOrder extends Order_Base_Action
 {
 
     /**
@@ -27,8 +27,9 @@ class Action_DeliveryOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
+        $this->objPage = new Service_Page_Stockout_DeleteStockoutOrder();
 
-        $this->objPage = new Service_Page_Stockout_DeliveryOrder();
+        
     }
 
     /**
@@ -38,7 +39,6 @@ class Action_DeliveryOrder extends Order_Base_Action
      */
     public function format($data)
     {
-
         return $data;
     }
 

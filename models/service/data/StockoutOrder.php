@@ -56,6 +56,7 @@ class Service_Data_StockoutOrder
      */
     public function deliveryOrder($strStockoutOrderId)
     {
+        $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         if (empty($strStockoutOrderId)) {
             Bd_Log::warning(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
@@ -235,6 +236,7 @@ class Service_Data_StockoutOrder
     public function finishorder($strStockoutOrderId, $signupStatus, $signupUpcs)
     {
         $res = [];
+        $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
         if (empty($stockoutOrderInfo)) {
             Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
@@ -305,6 +307,7 @@ class Service_Data_StockoutOrder
      */
     public function getOrderAndSkuListByStockoutOrderId($strStockoutOrderId)
     {
+        $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         $ret = [];
         if (empty($strStockoutOrderId)) {
             return $ret;
@@ -337,9 +340,11 @@ class Service_Data_StockoutOrder
     public function finishPickup($strStockoutOrderId, $pickupSkus)
     {
         $res = [];
+        $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
         if (empty($stockoutOrderInfo)) {
             Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
         }
 
         $status = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
@@ -360,10 +365,10 @@ class Service_Data_StockoutOrder
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
             }
             $res = [];
-            if (empty($signupUpcs)) {
+            if (empty($pickupSkus)) {
                 return $res;
             }
-            foreach ($signupUpcs as $item) {
+            foreach ($pickupSkus as $item) {
                 $condition = ['stockout_order_id' => $strStockoutOrderId, 'sku_id' => $item['sku_id']];
                 $skuUpdata = ['pickup_amount' => $item['pickup_amount']];
                 $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
@@ -409,6 +414,33 @@ class Service_Data_StockoutOrder
             $arrRetList[$intKey]['skus'] = $arrMapOrderIdToSkus[$intOrderId];
         }
         return $arrRetList;
+    }
+
+    public function deleteStockoutOrder($strStockoutOrderId) {
+
+        $res = [];
+        $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
+        if (empty($stockoutOrderInfo)) {
+            Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
+        }
+
+        $status = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
+        if ($stockoutOrderInfo['stockout_order_status'] != $status) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
+        }
+
+
+
+    }
+    /**
+     * 过滤出库单前缀
+     * @param $strStockoutOrderId
+     * @return string
+     */
+    private function trimStockoutOrderIdPrefix($strStockoutOrderId)
+    {
+        return ltrim($strStockoutOrderId, 'SSO');
     }
 
 }

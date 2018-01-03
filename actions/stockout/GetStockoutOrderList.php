@@ -7,8 +7,6 @@
 
 class Action_GetStockoutOrderList extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected $boolCheckAuth = false;
     /**
      * input params
      * @var array
@@ -18,7 +16,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         'page_size' => 'int|required|max[100]',
         'status' => 'int|required',
         'warehouse_id' => 'int',
-        'stockout_order_id' => 'int',
+        'stockout_order_id' => 'str',
         'business_form_order_id' => 'int',
         'customer_name' => 'str',
         'customer_id' => 'int',
@@ -53,7 +51,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         $arrFormatRet['total'] = $arrRet['total'];
         foreach((array)$arrRet['orders'] as $arrRetItem) {
             $arrFormatRetItem = [];
-            $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ? 0 : $arrRetItem['stockout_order_id'];
+            $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  : 'SSO'.$arrRetItem['stockout_order_id'];
             $arrFormatRetItem['stockout_order_type'] = empty($arrRetItem['stockout_order_type']) ? 0 : $arrRetItem['stockout_order_type'];
             $arrFormatRetItem['stockout_order_type_text'] = empty($arrRetItem['stockout_order_type']) ? 
                                                                 '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrRetItem['stockout_order_type']];

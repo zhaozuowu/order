@@ -9,26 +9,39 @@
 class Dao_Ral_Order_Warehouse
 {
     /**
+     * api raler
+     * @var Order_ApiRaler
+     */
+    protected $objApiRal;
+
+    /**
+     * get sku list
+     * @var string
+     */
+    const API_RALER_GET_Warehouse_LIST = 'getwarehouselist';
+
+    /**
+     * init
+     */
+    public function __construct()
+    {
+        $this->objApiRal = new Order_ApiRaler();
+    }
+
+    /**
      * 根据仓库id，获取仓库信息
      * @return mixed
      */
     public function getWareHouseList($arrWarehouseIds)
     {
+
         $strWarehouseId = is_array($arrWarehouseIds) ? implode(',', $arrWarehouseIds) : $arrWarehouseIds;
-        $header = array(
-            "pathinfo" => "/warehouse/api/getwarehousebyid?warehouse_id=" . $strWarehouseId,
-        );
-        $ret = ral('order', "get", $input, rand(), $header);
-        if ($ret === false) {
-            Bd_Log::warning(__METHOD__ . 'ral error service_' . ral_get_error());
-            return $ret;
-        }
-        $result = json_decode($ret, true);
-        if ($result['code'] != 0) {
-            Bd_Log::warning(__METHOD__ . 'ral result service_' . $ret);
-            return [];
-        }
-        return $result['result'];
+        $req[self::API_RALER_GET_Warehouse_LIST] = [
+            'warehouse_id' => $strWarehouseId,
+        ];
+        $ret = $this->objApiRal->getData($req);
+        $ret = !empty($ret[self::API_RALER_GET_Warehouse_LIST]) ? $ret[self::API_RALER_GET_Warehouse_LIST] : [];
+        return $ret;
 
     }
 
