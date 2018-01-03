@@ -56,6 +56,7 @@ class Service_Data_StockoutOrder
      */
     public function deliveryOrder($strStockoutOrderId)
     {
+        $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         if (empty($strStockoutOrderId)) {
             Bd_Log::warning(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
@@ -235,6 +236,7 @@ class Service_Data_StockoutOrder
     public function finishorder($strStockoutOrderId, $signupStatus, $signupUpcs)
     {
         $res = [];
+        $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
         if (empty($stockoutOrderInfo)) {
             Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
@@ -305,6 +307,7 @@ class Service_Data_StockoutOrder
      */
     public function getOrderAndSkuListByStockoutOrderId($strStockoutOrderId)
     {
+        $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         $ret = [];
         if (empty($strStockoutOrderId)) {
             return $ret;
@@ -313,7 +316,6 @@ class Service_Data_StockoutOrder
         if (empty($arrOrderList)) {
             return $ret;
         }
-        $arrWarehouseList['stockout_order_id'] = ltrim(['stockout_order_id'], 'SSO');
         $objWarehouseRal = new Dao_Ral_Order_Warehouse();
         $arrWarehouseList = $objWarehouseRal->getWareHouseList($arrOrderList['warehouse_id']);
         $arrWarehouseList = !empty($arrWarehouseList) ? array_column($arrWarehouseList, null, 'warehouse_id') : [];
@@ -338,6 +340,7 @@ class Service_Data_StockoutOrder
     public function finishPickup($strStockoutOrderId, $pickupSkus)
     {
         $res = [];
+        $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
         if (empty($stockoutOrderInfo)) {
             Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
@@ -411,6 +414,16 @@ class Service_Data_StockoutOrder
             $arrRetList[$intKey]['skus'] = $arrMapOrderIdToSkus[$intOrderId];
         }
         return $arrRetList;
+    }
+
+    /**
+     * 过滤出库单前缀
+     * @param $strStockoutOrderId
+     * @return string
+     */
+    private function trimStockoutOrderIdPrefix($strStockoutOrderId)
+    {
+        return ltrim($strStockoutOrderId, 'SSO');
     }
 
 }

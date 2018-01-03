@@ -12,7 +12,7 @@ class Action_FinishOrder extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'stockout_order_id' => 'int|required',
+        'stockout_order_id' => 'str|required',
         'signup_status' => 'int|required',
         'signup_upcs' => 'str',
     ];

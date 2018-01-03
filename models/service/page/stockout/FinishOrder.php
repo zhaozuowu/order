@@ -28,7 +28,7 @@ class Service_Page_Stockout_FinishOrder
      */
     public function execute($arrInput)
     {
-        $strStockoutOrderId = isset($arrInput['stockout_order_id']) ? intval($arrInput['stockout_order_id']) : 0;
+        $strStockoutOrderId = isset($arrInput['stockout_order_id']) ? $arrInput['stockout_order_id'] : '';
         $signupStatus = isset($arrInput['signup_status']) ? intval($arrInput['signup_status']) : 0;
         $signupUpcs = isset($arrInput['signup_upcs']) ? json_decode($arrInput['signup_upcs'], true) : [];
         return $this->objStockoutOrder->finishorder($strStockoutOrderId, $signupStatus, $signupUpcs);

@@ -13,7 +13,7 @@ class Action_GetStockoutById extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'stockout_order_id' => 'int|required',
+        'stockout_order_id' => 'str|required',
     ];
 
     /**
@@ -45,7 +45,7 @@ class Action_GetStockoutById extends Order_Base_Action
         }
         $arrRet = $data['stockout_order_info'];
         $arrFormatRet['stockoutinfo'] = [
-            'stockout_order_id' => empty($arrRet['stockout_order_id']) ? 0 : intval($arrRet['stockout_order_id']),
+            'stockout_order_id' => empty($arrRet['stockout_order_id']) ? '' : 'SSO'.$arrRet['stockout_order_id'],
             'stockout_order_status' => empty($arrRet['stockout_order_status']) ? '' : Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST[$arrRet['stockout_order_status']],
             'business_form_order_id' => empty($arrRet['business_form_order_id']) ? 0 : intval($arrRet['business_form_order_id']),
             'warehouse_name' => empty($arrRet['warehouse_name']) ? '' : intval($arrRet['warehouse_name']),
