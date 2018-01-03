@@ -8,7 +8,7 @@ class Service_Data_Vendor
 {
     /**
      * vendor data service
-     * @var Service_Data_Vendor
+     * @var Dao_Ral_Vendor
      */
     protected $objVendor;
 
@@ -24,6 +24,7 @@ class Service_Data_Vendor
      * get vendor name suggestion by name
      * @param  string $strVendorName
      * @return array
+     * @throws Nscm_Exception_Error
      */
     public function getVendorSugByName($strVendorName)
     {

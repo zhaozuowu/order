@@ -302,7 +302,7 @@ class Service_Data_StockoutOrder
 
     /**
      * 根据出库单号获取出库单信息及商品信息
-     * @param $strStockoutOrderId 出库单id
+     * @param int $strStockoutOrderId 出库单id
      * @return array
      */
     public function getOrderAndSkuListByStockoutOrderId($strStockoutOrderId)

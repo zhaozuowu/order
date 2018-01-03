@@ -48,7 +48,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     public static $clusterName = 'nwms_order_cluster';
 
     /**
-     * 查询采购订单列表
+     * 查询预约订单列表
      *
      * @param $arrReserveOrderStatus
      * @param $arrWarehouseId
@@ -149,7 +149,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     }
 
     /**
-     * 获取采购单状态统计，只查询未软删除的
+     * 获取预约单状态统计，只查询未软删除的
      *
      * @return array
      */
@@ -166,7 +166,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     }
 
     /**
-     * 根据采购订单编号查询采购订单详情，只查询未软删除的
+     * 根据预约订单编号查询预约单详情，只查询未软删除的
      *
      * @param $intReserveOrderId
      * @return mixed
@@ -207,7 +207,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     public static function getReserveInfoByPurchaseOrderId($intPurchaseOrderId)
     {
         $arrCondition = [
-            'reserve_order_id' => $intPurchaseOrderId,
+            'purchase_order_id' => $intPurchaseOrderId,
             'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
         return self::findOne($arrCondition);
@@ -259,7 +259,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     }
 
     /**
-     * 校验输入的采购单状态是否在合法范围内（空值返回true）
+     * 校验输入的预约单状态是否在合法范围内（空值返回true）
      *
      * @param $arrReserveOrderStatus
      * @return bool
