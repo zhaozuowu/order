@@ -27,16 +27,13 @@ class Service_Page_Statistics_GetStockinReserveDetailForm implements Order_Base_
      * @param array $arrInput
      * @return array
      * @throws Order_BusinessError
-     * @throws Order_Error
      */
     public function execute($arrInput)
     {
-        $intOutputType = $arrInput['output_type'];
         $strWarehouseId = $arrInput['warehouse_id'];
         $strStockinOrderId = $arrInput['stockin_order_id'];
         $strSourceOrderId = $arrInput['source_order_id'];
         $intSkuId = $arrInput['sku_id'];
-        $intSkuCategory3 = $arrInput['sku_category_3'];
         $intVendorId = $arrInput['vendor_id'];
 
         $arrOrderPlanTime = [
@@ -53,12 +50,10 @@ class Service_Page_Statistics_GetStockinReserveDetailForm implements Order_Base_
         $intPageSize = $arrInput['page_size'];
 
         return $this->objServiceData->getStockinReserveDetailForm(
-            $intOutputType,
             $strWarehouseId,
             $strStockinOrderId,
             $strSourceOrderId,
             $intSkuId,
-            $intSkuCategory3,
             $intVendorId,
             $arrOrderPlanTime,
             $arrStockinTime,

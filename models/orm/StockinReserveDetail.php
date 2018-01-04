@@ -71,12 +71,25 @@ class Model_Orm_StockinReserveDetail extends Order_Base_Orm
     public static $dbName = 'nwms_statistics';
     public static $clusterName = 'nwms_statistics_cluster';
 
+    /**
+     * 报表-采购入库明细（分页）
+     *
+     * @param $arrWarehouseId
+     * @param $intStockinOrderId
+     * @param $intSourceOrderId
+     * @param $intSkuId
+     * @param $intVendorId
+     * @param $arrOrderPlanTime
+     * @param $arrStockinTime
+     * @param $intPageNum
+     * @param $intPageSize
+     * @return mixed
+     */
     public static function getStockinReserveDetail(
         $arrWarehouseId,
         $intStockinOrderId,
         $intSourceOrderId,
         $intSkuId,
-        $intSkuCategory3,
         $intVendorId,
         $arrOrderPlanTime,
         $arrStockinTime,
@@ -100,10 +113,6 @@ class Model_Orm_StockinReserveDetail extends Order_Base_Orm
 
         if (!empty($intSkuId)) {
             $arrCondition['sku_id'] = $intSkuId;
-        }
-
-        if (!empty($intSkuCategory3)) {
-            $arrCondition['sku_category_3'] = $intSkuCategory3;
         }
 
         if (!empty($intVendorId)) {
