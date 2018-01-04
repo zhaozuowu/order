@@ -42,12 +42,61 @@
  * @method static Generator|Model_Orm_StockoutOrder[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
-*/
+ */
 
-class Model_Orm_StockoutOrder extends Wm_Orm_ActiveRecord
+class Model_Orm_StockoutOrder extends Order_Base_Orm
 {
 
     public static $tableName = 'stockout_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+
+    /**
+     * 根据出库单号获取出库单信息
+     * @param $stockoutOrderId 出库单号
+     * @return array
+     */
+    public function getStockoutOrderInfoById($stockoutOrderId)
+    {
+        Bd_Log::debug(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
+        $stockoutOrderId = empty($stockoutOrderId) ? 0 : intval($stockoutOrderId);
+        if (empty($stockoutOrderId)) {
+            return [];
+        }
+
+        $condition = ['stockout_order_id' => $stockoutOrderId];
+        $stockoutOrderInfo = $this->findOne($condition);
+        if (empty($stockoutOrderInfo)) {
+            return [];
+        }
+        $stockoutOrderInfo = $stockoutOrderInfo->toArray();
+
+        Bd_Log::debug(__METHOD__ . ' return: ' . json_encode($stockoutOrderInfo));
+        return $stockoutOrderInfo;
+
+
+    }
+
+    /**
+     * 根据出库单号更新出库单状态
+     * @param $stockoutOrderId
+     * @param $updateData
+     * @return bool|int|mysqli|null
+     */
+    public function updateStockoutOrderStatusById($stockoutOrderId, $updateData)
+    {
+        Bd_Log::debug(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
+        $stockoutOrderId = empty($stockoutOrderId) ? 0 : intval($stockoutOrderId);
+        if (empty($stockoutOrderId)) {
+            return false;
+        }
+        $condition = ['stockout_order_id' => $stockoutOrderId];
+        $stockoutOrderInfo = $this->findOne($condition);
+        if (empty($stockoutOrderInfo)) {
+            return false;
+        }
+        $res = $stockoutOrderInfo->update($updateData);
+        return $res;
+    }
 }

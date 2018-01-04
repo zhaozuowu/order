@@ -4,8 +4,13 @@
  * @desc Order_Base_Action
  * @author lvbochao@iwaimai.baidu.com
  */
+
 abstract class Order_Base_Action extends Nscm_Base_Action {
 
+    /**
+     * constructor
+     * @return mixed
+     */
     abstract function myConstruct();
 
     /**
@@ -36,10 +41,60 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
     protected $arrInputParams;
 
     /**
+     * session info
+     * @var array
+     */
+    protected $arrSession;
+
+    /**
      * add general validate
      */
     public function beforeValidate()
     {
+        // do nothing, drop off NscmBaseAction beforeValidate
+    }
+
+    /**
+     * validate
+     * @param array $arrFormat
+     * @param array $arrContent
+     * @return array
+     * @throws Wm_Error
+     */
+    public function validate($arrFormat, $arrContent)
+    {
+        $objValidator = new Wm_Validator();
+        $arrArrayKeys = [];
+        foreach ($arrFormat as $key => $value) {
+            if (is_string($value)) {
+                $objValidator->addValidator($key, $arrContent[$key], $value, $key . ' param invalid');
+            } else {
+                $objValidator->addValidator($key, $arrContent[$key], $value['validate'], $key . ' param invalid');
+                $arrArrayKeys[] = $key;
+            }
+        }
+        $arrRet = $objValidator->validate();
+        foreach ($arrArrayKeys as $key) {
+            if ('map' == $arrFormat[$key]['type']) {
+                $arrAfterValidate = $this->validate($arrFormat[$key]['params'], $arrRet[$key]);
+            } else {
+                $arrAfterValidate = [];
+                foreach ($arrRet[$key] as $row) {
+                    $arrAfterValidate[] = $this->validate($arrFormat[$key]['params'], $row);
+                }
+            }
+            $arrRet[$key] = $arrAfterValidate;
+        }
+        return $arrRet;
+    }
+
+    /**
+     * add validate
+     * @throws Wm_Error
+     */
+    public function beforeMyExecute()
+    {
+        parent::beforeMyExecute();
         if ($this->intMethod == Order_Define_Const::METHOD_GET) {
             $arrInput = $this->arrReqGet;
         } else if ($this->intMethod == Order_Define_Const::METHOD_POST) {
@@ -52,8 +107,14 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
             trigger_error('must rewrite arrInputParams in class Action', E_ERROR );
             exit(-1);
         }
-        foreach ($this->arrInputParams as $key => $value) {
-            $this->objValidator->addValidator($key, $arrInput[$key], $value);
+        $arrValidateResult = $this->validate($this->arrInputParams, $arrInput);
+        if (is_array($this->arrFilterResult)) {
+            $this->arrFilterResult = array_merge($arrValidateResult, $this->arrFilterResult);
+        } else{
+            $this->arrFilterResult = $this->validate($this->arrInputParams, $arrInput);
+        }
+        if ($this->boolCheckLogin) {
+            $this->arrFilterResult['_session'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info');
         }
     }
 

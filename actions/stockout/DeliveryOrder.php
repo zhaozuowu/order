@@ -7,14 +7,13 @@
 
 class Action_DeliveryOrder extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected $boolCheckAuth = false;
+
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
-        'stockout_order_id' => 'int|required',
+        'stockout_order_id' => 'str|required',
     ];
 
     /**
@@ -24,19 +23,14 @@ class Action_DeliveryOrder extends Order_Base_Action
     protected $intMethod = Order_Define_Const::METHOD_POST;
 
     /**
-     * page service
-     * @var Service_Page_DeliveryOrder
-     */
-    private $objDeliveryOrder;
-
-    /**
      * init object
      */
     public function myConstruct()
     {
-        $this->objDeliveryOrder = new Service_Page_DeliveryOrder();
+
+        $this->objPage = new Service_Page_Stockout_DeliveryOrder();
     }
-    
+
     /**
      * format result
      * @param array $data
@@ -44,6 +38,7 @@ class Action_DeliveryOrder extends Order_Base_Action
      */
     public function format($data)
     {
+
         return $data;
     }
 
