@@ -20,6 +20,7 @@ class Controller_StockoutThriftService
     {
         $this->objDeliveryOrderService = new Service_Page_Stockout_DeliveryOrder();
         $this->objFinishOrderService = new Service_Page_Stockout_FinishOrder();
+        $this->objGetCancelStatus = new Service_Page_Stockout_GetCancelStatus();
     }
 
 
@@ -51,5 +52,14 @@ class Controller_StockoutThriftService
             'signup_upcs' => $signupUpcs,
         ];
         return $this->objFinishOrderService->execute($arrInput);
+    }
+
+    /**
+     * 获取出库单取消状态
+     * @param string $strStockoutOrderId
+     * @return integer
+     */
+    public function getCancelStatus($strStockoutOrderId) {
+        return $this->getCancelStatus($strStockoutOrderId);
     }
 }

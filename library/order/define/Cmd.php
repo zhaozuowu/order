@@ -10,7 +10,7 @@ class Order_Define_Cmd
      * 默认topic名称
      * @var string
      */
-    const CMD_TOPIC = 'wmsg';
+    const CMD_TOPIC = 'order';
 
     /**
      * 命令点名称定义

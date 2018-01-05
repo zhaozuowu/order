@@ -1,48 +1,50 @@
 <?php
-
-/*
- * @file: Business.php
- * @Author: jinyu02 
- * @Date: 2017-12-26 15:36:39 
- * @Last Modified by: jinyu02
- * @Last Modified time: 2017-12-27 17:08:46
+/**
+ * @name Service_Data_BusinessFormOrder
+ * @desc business form order service data
+ * @author jinyu02@iwaimai.baidu.com
  */
 
 class Service_Data_BusinessFormOrder
 {
 
     /**
+     * @var Dao_Ral_Stock
+     */
+    protected $objDaoStock;
+    
+    /**
+     * init
+     */
+    public function __construct() {
+        $this->objDaoStock = new Dao_Ral_Stock();
+    }
+    
+    /**
      * 创建业态订单
      * @param array $arrInput
-     * @return bool
+     * @return void
      */
     public function createBusinessFormOrder($arrInput)
     {
+        //参数校验并拼接参数
         $this->checkCreateParams($arrInput);
-        $boolCreateFlag = Model_Orm_BusinessFormOrder::getConnection()->transaction(function() use ($arrInput) {
-            $arrCreateParams = $this->getCreateParams($arrInput);
+        $arrCreateParams = $this->getCreateParams($arrInput);
+        $arrBatchSkuCreateParams = $this->getBatchSkuCreateParams($arrCreateParams['business_form_order_id'], $arrInput['skus']);
+        if (empty($arrCreateParams) || empty($arrBatchSkuCreateParams)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_PARAMS_ERROR);
+        }
+        //锁定库存
+        list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $this->getFreezeStockParams($arrInput);
+        //$this->objDaoStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
+        //创建业态订单和关联商品
+        Model_Orm_BusinessFormOrder::getConnection()->transaction(function() use ($arrCreateParams, $arrBatchSkuCreateParams) {
             $objBusinessFormOrder = new Model_Orm_BusinessFormOrder();
             $objBusinessFormOrder->create($arrCreateParams, false);
-            $this->createBusinessFormOrderSku($arrInput['skus']);
+            Model_Orm_BusinessFormOrderSku::batchInsert($arrBatchSkuCreateParams, false);
         });
-        if (!$boolCreateFlag) {
-            Order_BusinessError::throwException(NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR);
-        }
     }
 
-    /**
-     * 创建业态订单商品关联
-     * @param array $arrSkus
-     * @return void
-     */
-    public function createBusinessFormOrderSku($arrSkus)
-    {
-        $arrBatchSkuCreateParams = $this->getBatchSkuCreateParams($arrSkus);
-        if (empty($arrBatchSkuCreateParams)) {
-            return [];
-        }
-        return Model_Orm_StockoutOrderSku::batchInsert($arrBatchSkuCreateParams, false);
-    }
 
     /**
      * 校验创建参数
@@ -58,6 +60,29 @@ class Service_Data_BusinessFormOrder
             && !isset(Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrInput['order_supply_type']])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_SUPPLY_TYPE_ERROR);
         }
+    }
+
+    /**
+     * 拼接冻结库存参数
+     * @param array $arrSkus
+     * @return array
+     */
+    public function getFreezeStockParams($arrInput) {
+        $intStockoutOrderId = 0;
+        $intWarehouseId = 0;
+        $arrFreezeStockDetail = [];
+        if (empty($arrInput) || empty($arrInput['skus'])) {
+            return [$intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail];
+        }
+        $intStockoutOrderId = $arrInput['stockout_order_id'];
+        $intWarehouseId = $arrInput['warehouse_id'];
+        foreach((array)$arrInput['skus'] as $arrSkuItem) {
+            $arrFreezeStockItem = [];
+            $arrFreezeStockItem['sku_id'] = $arrSkuItem['sku_id'];
+            $arrFreezeStockItem['frozen_amount'] = $arrSkuItem['order_amount'];
+            $arrFreezeStockDetail[] = $arrSkuDetailItem;
+        }
+        return [$intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail];
     }
 
     /**
@@ -116,29 +141,21 @@ class Service_Data_BusinessFormOrder
      * @param array $arrInput
      * @return array
      */
-    public function getBatchSkuCreateParams($arrSkus)
+    public function getBatchSkuCreateParams($intBusinessFormOrderId, $arrSkus)
     {
         $arrBatchSkuCreateParams = [];
         if (empty($arrSkus)) {
             return $arrBatchSkuCreateParams;
         }
-        foreach ($arrSkus as $arrItem) {
+        foreach ((array)$arrSkus as $arrItem) {
             $arrSkuCreateParams = [];
             if (!empty($arrItem['sku_id'])) {
                 $arrSkuCreateParams['sku_id'] = intval($arrItem['sku_id']);
             }
-            if (!empty($arrItem['upc_id'])) {
-                $arrSkuCreateParams['upc_id'] = strval($arrItem['upc_id']);
-            }
             if (!empty($arrItem['order_amount'])) {
                 $arrSkuCreateParams['order_amount'] = intval($arrItem['order_amount']);
             }
-            if (!empty($arrItem['display_type'])) {
-                $arrSkuCreateParams['display_type'] = intval($arrItem['display_type']);
-            }
-            if (!empty($arrItem['display_floor'])) {
-                $arrSkuCreateParams['display_floor'] = intval($arrItem['display_floor']);
-            }
+            $arrSkuCreateParams['business_form_order_id'] = $intBusinessFormOrderId;
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
         }
         return $arrBatchSkuCreateParams;
@@ -151,8 +168,8 @@ class Service_Data_BusinessFormOrder
      */
     public function getStockoutCreateParams($arrInput) {
         $arrStockoutCreateParams = $this->getCreateParams($arrInput);
-        $arrStockoutCreateParams['skus'] = $this->getBatchSkuCreateParams($arrInput['skus']);
         $arrStockoutCreateParams['stockout_order_id'] = Order_Util_Util::generateStockoutOrderId();
+        $arrStockoutCreateParams['stockout_order_type'] = Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_RETURN;
         return $arrStockoutCreateParams;
     }
 
@@ -233,7 +250,6 @@ class Service_Data_BusinessFormOrder
         if (!empty($arrInput['business_form_order_status'])) {
             $arrConditions['status'] = $arrInput['business_form_order_status'];
         }
-
         if (!empty($arrInput['business_form_order_type'])) {
             $arrConditions['business_form_order_type'] = $arrInput['business_form_order_type'];
         }
@@ -244,10 +260,10 @@ class Service_Data_BusinessFormOrder
             $arrConditions['customer_id'] = $arrInput['customer_id'];
         }
         if (!empty($arrInput['start_time'])) {
-            $arrConditions['quotation_end_time'] = ['>=', $arrInput['start_time']];
+            $arrConditions['create_time'][] = ['>=', $arrInput['start_time']];
         }
         if (!empty($arrInput['end_time'])) {
-            $arrConditions['quotation_start_time'] = ['<=', $arrInput['end_time']];
+            $arrConditions['create_time'][] = ['<=', $arrInput['end_time']];
         }
         return $arrConditions;
     }

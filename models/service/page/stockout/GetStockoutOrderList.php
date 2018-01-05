@@ -1,10 +1,8 @@
 <?php
-/*
- * @file: CreateStockoutOrder.php
- * @Author: jinyu02 
- * @Date: 2017-12-26 15:36:39 
- * @Last Modified by: jinyu02
- * @Last Modified time: 2017-12-27 19:46:55
+/**
+ * @name Service_Page_Stockout_GetStockoutOrderList
+ * @desc 查询出库单分页列表
+ * @author jinyu02@iwaimai.baidu.com
  */
 class Service_Page_Stockout_GetStockoutOrderList {
 
@@ -18,7 +16,12 @@ class Service_Page_Stockout_GetStockoutOrderList {
     }
 
     public function execute($arrInput) {
-        return $this->objDsStockoutOrder->getStockoutOrderListAndCount($arrInput);
+        $arrRetList = $this->objDsStockoutOrder->getStockoutOrderList($arrInput);
+        $intCount = $this->objDsStockoutOrder->getStockoutOrderCount($arrInput);
+        return [
+            'total' => $intCount,
+            'orders' => $arrRetList,
+        ];
     }
 
 }
