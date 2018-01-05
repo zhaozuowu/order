@@ -61,6 +61,7 @@ class Action_GetReserveOrderList extends Order_Base_Action
 
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
+            $arrRoundResult['vendor_id'] = empty($arrListItem['vendor_id']) ? '' : intval($arrListItem['vendor_id']);
             $arrRoundResult['vendor_name'] = empty($arrListItem['vendor_name']) ? '' : strval($arrListItem['vendor_name']);
             $arrRoundResult['reserve_order_id'] = empty($arrListItem['reserve_order_id']) ? '' : Nscm_Define_OrderPrefix::ASN . intval($arrListItem['reserve_order_id']);
             $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? '' : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
