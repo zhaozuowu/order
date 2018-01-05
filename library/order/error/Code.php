@@ -155,4 +155,40 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_BUSINESS_FORM_ORDER_SUPPLY_TYPE_ERROR = 340004;
+    
+    /**
+     * 业态订单创建sku_id不能为空
+     * @var integer
+     */
+    const NWMS_BUSINESS_FORM_ORDER_SKU_ID_EMPTY = 340005;
+
+    /**
+     * 创建出库单锁库存失败
+     * @var integer
+     */
+    const NWMS_STOCKOUT_FREEZE_STOCK_FAIL = 340006;
+
+    /**
+     * 创建出库单解冻库存失败
+     * @var integer
+     */
+    const NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL = 340007;
+
+    /**
+     * 创建业态订单失败
+     * @var integer
+     */
+    const NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR = 340008;
+
+    /**
+     * 创建业态订单参数错误
+     * @var integer
+     */
+    const NWMS_BUSINESS_FORM_ORDER_PARAMS_ERROR = 340009;
+
+    /**
+     * 打印列表ID错误
+     * @var integer
+     */
+    const NWMS_ORDER_PRINT_LIST_ORDER_IDS_ERROR = 340010;
 }

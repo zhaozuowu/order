@@ -14,17 +14,11 @@ class Service_Data_Sku
     protected $objSkuDao;
 
     /**
-     * @var Dao_Rpc
-     */
-    protected $objDaoRpc;
-
-    /**
      * init
      */
     public function __construct()
     {
         $this->objSkuDao = new Dao_Ral_Sku();
-        $this->objDaoRpc = new Dao_Rpc();
     }
 
     /**
@@ -48,29 +42,14 @@ class Service_Data_Sku
     }
 
     /**
-     * 获取彩云sku信息访问参数
-     * @param  integer $intSkuId
-     * @return array
-     */
-    protected function getSkuInfoApiParams($intSkuId) {
-        $req['getskuinfo'] = [];
-        $req['getskuinfo']['sku_id'] = intval($intSkuId);
-        return $req;
-    }
-
-    /**
      * 通过sku_id获取sku信息
      * @param  integer $intSkuId
      * @return array
      */
     public function getSkuInfoBySkuId($intSkuId) {
         if (empty($intSkuId)) {
-            
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_SKU_ID_EMPTY);    
         }
-        $arrReq = $this->getSkuInfoApiParams($intSkuId);
-        if (empty($arrReq)) {
-
-        }
-        return $this->objDaoRpc->getData($arrReq);
+        return $this->objSkuDao->getSkuInfo($intSkuId);
     } 
 }
