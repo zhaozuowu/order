@@ -31,11 +31,9 @@ class Service_Page_Stockout_FinishPickupOrder
 
         $strStockoutOrderId = $arrInput['stockout_order_id'];
         $pickupSkus = is_array($arrInput['pickup_skus']) ? $arrInput['pickup_skus'] : json_decode($arrInput['pickup_skus'], true);
-        $arrWmqConfig = Order_Define_Cmd::DEFAULT_WMQ_CONFIG;
-        $arrWmqConfig['Key'] = $strStockoutOrderId;
         $arrStockoutParams = ['stockout_order_id' => $strStockoutOrderId, 'pickup_skus' => $pickupSkus];
         $strCmd = Order_Define_Cmd::CMD_FINISH_PRICKUP_ORDER;
-        $ret = Wm_Lib_Wmq_Commit::sendCmd($strCmd, $arrStockoutParams, $arrWmqConfig);
+        $ret = Order_Wmq_Commit::sendCmd($strCmd, $arrStockoutParams, $strStockoutOrderId);
         if (false === $ret) {
             Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
         }

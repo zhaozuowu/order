@@ -54,6 +54,21 @@ class Order_Error_Code extends Wm_Error_Code
     const  STOCKOUT_ORDER_STATUS_UPDATE_FAIL = 310007;
 
     /**
+     * 库存调整失败
+     */
+    const NWMS_STOCKOUT_ADJUST_SKU_STOCK_FAIL = 310008;
+
+    /**
+     * 出库单sku信息不存在
+     */
+    const NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS = 310009;
+
+    /**
+     * 签收数量不存在
+     */
+    const NWMS_STOCKOUT_ORDER_SIGNUP_SKUS_NOT_EXISTS = 310010;
+
+    /**
      * 获取彩云系统商品详情信息失败
      * @var integer
      */
