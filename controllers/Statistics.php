@@ -7,5 +7,6 @@
 class Controller_Statistics extends Ap_Controller_Abstract {
     public $actions = array(
         'getstockinreservedetailform' => 'actions/statistics/GetStockinReserveDetailForm.php',
+        'getstockoutstockindetailform' => 'actions/statistics/GetStockoutStockinDetailForm.php',
     );
 }

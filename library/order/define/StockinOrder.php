@@ -32,7 +32,7 @@ class Order_Define_StockinOrder
     const STOCKIN_ORDER_TYPES = [
         self::STOCKIN_ORDER_TYPE_RESERVE => true,
         self::STOCKIN_ORDER_TYPE_STOCKOUT => true,
-        self::STOCKIN_ORDER_TYPE_RETURN => true,
+//        self::STOCKIN_ORDER_TYPE_RETURN => true,
     ];
 
     /**
