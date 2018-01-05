@@ -174,20 +174,52 @@ class Order_Util
      */
     public static function valueIsInArray($value, $arr)
     {
-        if(empty($value)){
+        if (empty($value)) {
             return false;
         }
 
-        if(empty($arr)){
+        if (empty($arr)) {
             return false;
         }
 
-        foreach ($arr as $item){
-            if($value === $item){
+        foreach ($arr as $item) {
+            if ($value === $item) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * 分解获取关联入库单的单号，只处理ASN和SOO两种订单号，否则返回null
+     * 根据单号前缀判断输入单类型
+     * 如果订单号前缀类型不在给定的数组内则抛出参数错误异常
+     * [source_order_id, source_order_type]
+     *
+     * @param $strSourceOrderId
+     * @return null|array[source_order_id, source_order_type]
+     */
+    public static function parseSourceOrderId($strSourceOrderId)
+    {
+        if (empty($strSourceOrderId)) {
+            return null;
+        }
+
+        // preg_match('/^ASN\d{13}$/', $strSourceOrderId)
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::ASN . '\d{13}$/', $strSourceOrderId))) {
+            $arrSourceOrderIdInfo['source_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE;
+            $arrSourceOrderIdInfo['source_order_id'] = intval(Order_Util::trimReserveOrderIdPrefix($strSourceOrderId));
+            return $arrSourceOrderIdInfo;
+        }
+
+        // preg_match('/^SOO\d{13}$/', $strSourceOrderId)
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::SOO . '\d{13}$/', $strSourceOrderId))) {
+            $arrSourceOrderIdInfo['source_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
+            $arrSourceOrderIdInfo['source_order_id'] = intval(Order_Util::trimStockoutOrderIdPrefix($strSourceOrderId));
+            return $arrSourceOrderIdInfo;
+        }
+
+        return null;
     }
 }

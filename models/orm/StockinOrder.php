@@ -11,6 +11,7 @@
  * @property int $warehouse_id
  * @property string $warehouse_name
  * @property int $stockin_time
+ * @property int $reserve_order_plan_time
  * @property int $stockin_order_plan_amount
  * @property int $stockin_order_real_amount
  * @property int $stockin_order_creator_id
