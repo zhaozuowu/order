@@ -7,8 +7,6 @@
 
 class Action_CreateBusinessFormOrder extends Order_Base_Action
 {
-    protected $boolCheckAuth = false;
-    protected $boolCheckLogin = false;
     /**
      * input params
      * @var array
@@ -24,10 +22,10 @@ class Action_CreateBusinessFormOrder extends Order_Base_Action
         'customer_contactor' => 'str|required',
         'customer_contact' => 'str|required',
         'customer_address' => 'str|required',
-        //'customer_location' => 'str|required',
-        //'customer_location_source' => 'int|required',
-        //'customer_city_id' => 'int|required',
-        //'customer_city_name' => 'str|required',
+        'customer_location' => 'str|required',
+        'customer_location_source' => 'int|required',
+        'customer_city_id' => 'int|required',
+        'customer_city_name' => 'str|required',
         'expect_arrive_time' => [
             'validate' => 'json|decode',
             'type' => 'array',
