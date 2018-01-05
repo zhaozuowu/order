@@ -18,6 +18,8 @@ class Controller_Stockout extends Ap_Controller_Abstract
 
         'createstockoutorder' => 'actions/stockout/CreateStockoutOrder.php',
         'getstockoutlist' => 'actions/stockout/getstockoutorderlist.php',
-        'deletestockoutorder' => 'actions/stockout/DeleteStockoutOrder.php'//作废出库单
+        'deletestockoutorder' => 'actions/stockout/DeleteStockoutOrder.php',//作废出库单
+        'statistical' => 'actions/stockout/Statistical.php',//出库单状态统计
+        'getloglist'  => 'actions/stockout/GetLogList.php',//查询出库单日志
     );
 }
