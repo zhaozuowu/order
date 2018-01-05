@@ -52,6 +52,30 @@ Name : form
       writetimeout: 2s    
    ```
 5. use `Wm_Lib_Wmq_Commit::sendCmd` to send wmq command like code in `/home/map/service/page/business/CreateBusinessFormOrder.php`
+6. create `conf/ral/services/wmqproxy.conf` 
+    ``` shell
+      [CamelConfig]
+        [.ServiceConfig]
+
+
+        [..Local]
+        [...@Service]
+        Name  :  wmqproxy
+        DefaultPort : 
+        DefaultRetry : 1
+        DefaultConnectType  :  SHORT
+        DefaultConnectTimeOut : 100
+        DefaultReadTimeOut  :  1000
+        DefaultWriteTimeOut  :  1000
+        [....@Server]
+
+        IP : 127.0.0.1
+        Port : 9092
+        [....Protocol]
+        Name : http
+        [....Converter]
+        Name : form
+    ```
 6. restart wmq conf 
 
 ## api confs

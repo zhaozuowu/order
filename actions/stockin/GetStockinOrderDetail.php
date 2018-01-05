@@ -52,17 +52,14 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
                 }
             }
             $arrRoundResult['source_order_id'] = $strSourceOrderId;
-
-            $arrRoundResult['stockin_order_id'] = empty($arrRet['stockin_order_id']) ? '' : Nscm_Define_OrderPrefix::SIO . strval($arrRet['stockin_order_id']);
+            $arrRoundResult['stockin_order_id'] = empty($arrRet['stockin_order_id']) ? '' : Nscm_Define_OrderPrefix::SIO . intval($arrRet['stockin_order_id']);
             $arrRoundResult['warehouse_name'] = empty($arrRet['warehouse_name']) ? '' : strval($arrRet['warehouse_name']);
-            $arrRoundResult['reserve_order_plan_time'] = empty($arrRet['reserve_order_plan_time']) ? '' : strval($arrRet['reserve_order_plan_time']);
+            $arrRoundResult['reserve_order_plan_time'] = empty($arrRet['reserve_order_plan_time']) ? '' : intval($arrRet['reserve_order_plan_time']);
             $arrRoundResult['stockin_order_total_price'] = empty($arrRet['stockin_order_total_price']) ? '' : intval($arrRet['stockin_order_total_price']);
             $arrRoundResult['stockin_order_total_price_tax'] = empty($arrRet['stockin_order_total_price_tax']) ? '' : intval($arrRet['stockin_order_total_price_tax']);
             $arrRoundResult['stockin_order_plan_amount'] = empty($arrRet['stockin_order_plan_amount']) ? '' : intval($arrRet['stockin_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrRet['stockin_order_real_amount']) ? '' : intval($arrRet['stockin_order_real_amount']);
             $arrRoundResult['stockin_order_remark'] = empty($arrRet['stockin_order_remark']) ? '' : strval($arrRet['stockin_order_remark']);
-            // source_supplier_id即vendor_id（数据库结构，业务决定）
-            $arrRoundResult['vendor_id'] = empty($arrRet['source_supplier_id']) ? '' : intval($arrRet['source_supplier_id']);
             $arrFormatResult = $arrRoundResult;
         }
 

@@ -15,6 +15,18 @@ class Order_Define_StockoutOrder
     const STAY_PICKING_STOCKOUT_ORDER_STATUS = 20;//待拣货
     const STAY_RECEIVED_STOCKOUT_ORDER_STATUS = 25;//待揽收
     const STOCKOUTED_STOCKOUT_ORDER_STATUS = 30;//已出库
+    const AUDIT_NOT_THROUGH_STOCKOUT_ORDER_STATUS = 40;//审核不通过
+    const INVALID_STOCKOUT_ORDER_STATUS = 50;//已作废
+    
+
+    /**
+     * 签收状态
+     */
+    const  SIGNUP_STATUS_LIST = [
+      '1' => '签收',
+      '3' => '部分签收',
+    ];
+
     /**
      * 出库单状态列表
      * @var array
@@ -79,5 +91,8 @@ class Order_Define_StockoutOrder
         self::STOCKOUT_ORDER_NOT_PRINT => '未打印',
         self::STOCKOUT_ORDER_NOT_PRINT => '已打印',
     ];
+
+    const  APP_NWMS_ORDER_APP_ID = 6;//日志app_id
+    const  APP_NWMS_ORDER_LOG_TYPE = 6;//业务类型
 
 }

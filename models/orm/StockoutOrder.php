@@ -50,8 +50,6 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
     public static $tableName = 'stockout_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
-
-
     /**
      * 根据出库单号获取出库单信息
      * @param $stockoutOrderId 出库单号
