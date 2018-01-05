@@ -37,7 +37,7 @@ class Service_Data_Statistics_GetStockinReserveDetailForm
 
         // 解析整形单号部分
         $intStockinOrderId = intval(Order_Util::trimStockinOrderIdPrefix($strStockinOrderId));
-        $intSourceOrderId = Order_Util::parseSourceOrderId($strSourceOrderId);
+        $intSourceOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strSourceOrderId));
 
         $arrOrderPlanTime['start'] = intval($arrOrderPlanTime['start']);
         $arrOrderPlanTime['end'] = intval($arrOrderPlanTime['end']);
