@@ -17,7 +17,7 @@ class Order_Define_StockoutOrder
     const STOCKOUTED_STOCKOUT_ORDER_STATUS = 30;//已出库
     const AUDIT_NOT_THROUGH_STOCKOUT_ORDER_STATUS = 40;//审核不通过
     const INVALID_STOCKOUT_ORDER_STATUS = 50;//已作废
-    
+
 
     /**
      * 签收状态

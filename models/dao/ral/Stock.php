@@ -99,6 +99,7 @@ class Dao_Ral_Stock
         return $ret;
     }
 
+
     /**
      * 库存调整（扣减）
      * @param $intStockoutOrderId
@@ -131,5 +132,5 @@ class Dao_Ral_Stock
         return $ret;
 
     }
-
+    
 }
