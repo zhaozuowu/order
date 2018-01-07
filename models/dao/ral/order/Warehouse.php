@@ -21,6 +21,12 @@ class Dao_Ral_Order_Warehouse
     const API_RALER_GET_Warehouse_LIST = 'getwarehouselist';
 
     /**
+     * get warehouse info by city id
+     * @var string
+     */
+    const API_RALER_GET_WAREHOUSE_BY_CITY = 'getwarehousebycityid';
+
+    /**
      * init
      */
     public function __construct()
@@ -43,6 +49,22 @@ class Dao_Ral_Order_Warehouse
         $ret = !empty($ret[self::API_RALER_GET_Warehouse_LIST]) ? $ret[self::API_RALER_GET_Warehouse_LIST] : [];
         return $ret;
 
+    }
+
+    /**
+     * get warehouse info by city id
+     * @param integer $intCityId
+     * @return void
+     */
+    public function getWareHouseInfoByCityId($intCityId) {
+        $ret = [];
+        if (empty($intCityId)) {
+            return $ret;
+        }
+        $req[self::API_RALER_GET_WAREHOUSE_BY_CITY]['city_id'] = $intCityId;
+        $ret = $this->objApiRal->getData($req);
+        $ret = !empty($ret[self::API_RALER_GET_WAREHOUSE_BY_CITY]) ? $ret[self::API_RALER_GET_WAREHOUSE_BY_CITY] : [];
+        return $ret;        
     }
 
 

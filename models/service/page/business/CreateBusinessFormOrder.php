@@ -27,7 +27,7 @@ class Service_Page_Business_CreateBusinessFormOrder {
         $this->objDsBusinessFormOrder->createBusinessFormOrder($arrInput);
         //发送订单创建命令
         $arrStockoutParams = $this->objDsBusinessFormOrder->getStockoutCreateParams($arrInput);
-        Order_Wmq_Commit::sendCmd(Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER, $arrStockoutParams);
+        Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER, $arrStockoutParams, strval($arrStockoutParams['stockout_order_id']));
         if (false === $ret) {
             Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
         }

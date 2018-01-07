@@ -1,35 +1,34 @@
 <?php
 /**
- * @name Action_DeliveryOrder
- * @desc TMS完成揽收
+ * @name Action_Statistical
+ * @desc 出库单状态统计
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
-class Action_FinishOrder extends Order_Base_Action
+class Action_Statistical extends Order_Base_Action
 {
+
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
-        'stockout_order_id' => 'str|required',
-        'signup_status' => 'int|required',
-        'signup_skus' => 'str',
-
+        'warehouse_ids' => 'str|required',
     ];
 
     /**
      * method
      * @var int
      */
-    protected $intMethod = Order_Define_Const::METHOD_POST;
+    protected $intMethod = Order_Define_Const::METHOD_GET;
 
     /**
      * init object
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Stockout_FinishOrder();
+
+        $this->objPage = new Service_Page_Stockout_Statistical();
     }
 
     /**
@@ -39,7 +38,14 @@ class Action_FinishOrder extends Order_Base_Action
      */
     public function format($data)
     {
+
+        $ret = [];
+        if (empty($data)) {
+            return $ret;
+        }
         return $data;
+        //$arrFormatRet
+
     }
 
 }

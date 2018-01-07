@@ -14,7 +14,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
     protected $arrInputParams = [
         'page_num' => 'int|default[1]',
         'page_size' => 'int|required|max[100]',
-        'status' => 'int|required',
+        'status' => 'int|default[0]',
         'warehouse_id' => 'int',
         'stockout_order_id' => 'str',
         'business_form_order_id' => 'int',
@@ -51,7 +51,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         $arrFormatRet['total'] = $arrRet['total'];
         foreach((array)$arrRet['orders'] as $arrRetItem) {
             $arrFormatRetItem = [];
-            $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  : 'SSO'.$arrRetItem['stockout_order_id'];
+            $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : 'SSO'.$arrRetItem['stockout_order_id'];
             $arrFormatRetItem['stockout_order_type'] = empty($arrRetItem['stockout_order_type']) ? 0 : $arrRetItem['stockout_order_type'];
             $arrFormatRetItem['stockout_order_type_text'] = empty($arrRetItem['stockout_order_type']) ? 
                                                                 '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrRetItem['stockout_order_type']];
@@ -68,7 +68,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
             $arrFormatRetItem['stockout_order_amount'] = empty($arrRetItem['stockout_order_amount']) ? '' : $arrRetItem['stockout_order_amount'];
             $arrFormatRetItem['distribute_amount'] = empty($arrRetItem['distribute_amount']) ? 0 : $arrRetItem['distribute_amount'];
             $arrFormatRetItem['pickup_amount'] = empty($arrRetItem['pickup_amount']) ? 0 : $arrRetItem['pickup_amount'];
-            $arrFormatRetItem['create_time'] = empty($arrRetItem['create_time']) ? 0 : date("Y:m:d H:i:s", $arrRetItem['create_time']);
+            $arrFormatRetItem['create_time'] = empty($arrRetItem['create_time']) ? '' : date("Y-m-d H:i:s", $arrRetItem['create_time']);
             $arrFormatRet['orders'][] = $arrFormatRetItem;
         }
         return $arrFormatRet;

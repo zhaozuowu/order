@@ -69,4 +69,89 @@ class Model_Orm_StockinStockoutDetail extends Order_Base_Orm
     public static $tableName = 'stockin_stockout_detail';
     public static $dbName = 'nwms_statistics';
     public static $clusterName = 'nwms_statistics_cluster';
+
+    /**
+     * 获取销退入库明细（分页）
+     *
+     * @param $arrWarehouseId
+     * @param $intStockinOrderId
+     * @param $intSourceOrderId
+     * @param $intSkuId
+     * @param $intClientId
+     * @param $arrStockinTime
+     * @param $intPageNum
+     * @param $intPageSize
+     * @return mixed
+     */
+    public static function getStockoutStockinDetail(
+            $arrWarehouseId,
+            $intStockinOrderId,
+            $intSourceOrderId,
+            $intSkuId,
+            $intClientId,
+            $arrStockinTime,
+            $intPageNum,
+            $intPageSize)
+    {
+        // 拼装查询条件
+        if (!empty($arrWarehouseId)) {
+            $arrCondition['warehouse_id'] = [
+                'in',
+                $arrWarehouseId];
+        }
+
+        // 固定添加条件，只查询入库类型为 销退入库 的数据
+        $arrCondition['stockin_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
+
+        if (!empty($intStockinOrderId)) {
+            $arrCondition['stockin_order_id'] = $intStockinOrderId;
+        }
+
+        if (!empty($intSourceOrderId)) {
+            $arrCondition['source_order_id'] = $intSourceOrderId;
+        }
+
+        if (!empty($intSkuId)) {
+            $arrCondition['sku_id'] = $intSkuId;
+        }
+
+        if (!empty($intClientId)) {
+            $arrCondition['client_id'] = $intClientId;
+        }
+
+        if (!empty($arrStockinTime['start'])
+            && !empty($arrStockinTime['end'])) {
+            $arrCondition['stockin_time'] = [
+                'between',
+                $arrStockinTime['start'],
+                $arrStockinTime['end'],
+            ];
+        }
+
+        // 只查询未软删除的
+        $arrCondition['is_delete'] = Order_Define_Const::NOT_DELETE;
+
+        // 排序条件
+        $orderBy = ['id' => 'desc'];
+
+        // 分页条件
+        $offset = (intval($intPageNum) - 1) * intval($intPageSize);
+        $limitCount = intval($intPageSize);
+
+        // 查找满足条件的所有列数据
+        $arrCols = self::getAllColumns();
+
+        // 执行一次性查找
+        $arrRowsAndTotal = self::findRowsAndTotalCount(
+            $arrCols,
+            $arrCondition,
+            $orderBy,
+            $offset,
+            $limitCount);
+
+        $arrResult['total'] = $arrRowsAndTotal['total'];
+        $arrResult['list'] = $arrRowsAndTotal['rows'];
+
+        return $arrResult;
+    }
 }

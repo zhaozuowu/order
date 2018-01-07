@@ -18,6 +18,11 @@ class Dao_Ral_Sku
      * @var string
      */
     const API_RALER_GET_SKU_LIST = 'getskulist';
+    /**
+     * get sku info
+     * @var string
+     */
+    const API_RALER_GET_SKU_INFO = 'getskuinfo';
 
     /**
      * init
@@ -73,6 +78,24 @@ class Dao_Ral_Sku
         }
         $ret = $this->objApiRal->getData($req);
         $ret = !empty($ret[self::API_RALER_GET_SKU_LIST])?$ret[self::API_RALER_GET_SKU_LIST]:[];
+        return $ret;
+    }
+
+    /**
+     * get sku info 
+     * @param integer $intSkuId
+     * @return array
+     */
+    public function getSkuInfo($intSkuId) {
+        $ret = [];
+        if (empty($intSkuId)) {
+            return $ret;
+        }
+        if (!empty($intSkuId)) {
+            $req[self::API_RALER_GET_SKU_INFO]['sku_id'] = $intSkuId;
+        }
+        $ret = $this->objApiRal->getData($req);
+        $ret = empty($ret[self::API_RALER_GET_SKU_INFO]) ? [] : $ret[self::API_RALER_GET_SKU_INFO];
         return $ret;
     }
 }
