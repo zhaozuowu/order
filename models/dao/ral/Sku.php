@@ -76,7 +76,9 @@ class Dao_Ral_Sku
         if (!empty($strSkuCategory3)) {
             $req[self::API_RALER_GET_SKU_LIST]['sku_category_3'] = $strSkuCategory3;
         }
+        Bd_Log::debug('ral getSkuList input params: ' . json_encode($req));
         $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug('ral getSkuList out params: ' . json_encode($ret));
         $ret = !empty($ret[self::API_RALER_GET_SKU_LIST])?$ret[self::API_RALER_GET_SKU_LIST]:[];
         return $ret;
     }

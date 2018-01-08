@@ -21,6 +21,8 @@ class Order_Define_Cmd
     const CMD_FINISH_PRICKUP_ORDER  = 'cmd_nwms_order_finish_pickup';
     const CMD_DELETE_STOCKOUT_ORDER  = 'cmd_nwms_stockout_order_delete';
 
+    const CMD_SYNC_FORM_STATISTICS = 'order_statistics_operate';
+
     /**
      * wmq使用的默认配置
      * @var array
