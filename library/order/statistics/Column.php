@@ -291,20 +291,117 @@ class Order_Statistics_Column
      * stockout order
      * @var array
      */
+    /**
+     * stockout order
+     * @var array
+     */
     const STOCKOUT_ORDER = [
         'master' => [
             'stockout_order_id',
             'business_form_order_id',
-            'stockout_order_status',
-            ''
+            'stockout_order_status' => [
+                'type' => Order_Statistics_Type::ARRAY,
+                'array' => 'Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_STATUS_MAP',
+            ],
+            'stockout_order_status_describle' => [
+                'type' => Order_Statistics_Type::ARRAY,
+                'array' => 'Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_STATUS_TEXT_MAP',
+                'replace' => 'stockout_order_status',
+            ],
+            'city_name' => 'customer_city_name',
+            'city_id' => 'customer_city_id',
+            'warehouse_id',
+            'warehouse_name',
+            'stockout_order_type' => '',
+            'stockout_order_type_describle' => [
+                'type' => Order_Statistics_Type::ARRAY,
+                'array' => 'Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_TYPE_MAP',
+                'replace' => 'stockout_order_type',
+            ],
+            'logistics_order_id'=>'',
+            'stockout_order_source',
+            'stockout_order_source_describle' => [
+                'type' => Order_Statistics_Type::ARRAY,
+                'array' => 'Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_SOURCE_MAP',
+                'replace' => 'stockout_order_source',
+            ],
+            'order_create_time' => 'create_time',
+            'expect_arrive_start_time' => '', //暂定
+            'expect_arrive_end_time' => '', //暂定
+            'customer_name',//
+            'customer_id',
+            'customer_contactor',
+            'customer_contact',
+
         ],
         'slave' => [
-
             'sku_id',
+            'upc_id',
+            'sku_name',
+            'import',
+            'import_describle' => [
+                'type' => Order_Statistics_Type::ARRAY,
+                'array' => 'Order_Define_StockoutOrderDetail::IMPORT_MAP',
+                'replace' => 'import',
+            ],
+            'sku_net',
+            'upc_unit',
+            'upc_unit_text' => [
+                'type' => Order_Statistics_Type::ARRAY,
+                'array' => 'Order_Define_Sku::UPC_UNIT_MAP',
+                'replace' => 'upc_unit',
+            ],
+            'sku_effect_type',
+            'sku_effect_day',
+            'order_amount',
+            'distribute_amount',
+            'pickup_amount',
+            'effect_date',//暂定
+            'cost_price',
+            'cost_price_tax',
+            'cost_total_price',
+            'cost_total_price_tax',
+            'send_price',
+            'send_price_tax',
+            'send_total_price',
+            'send_total_price_tax',
+
         ],
         'sku' => [
+            'category_1',
+            'category_2',
+            'category_3',
+            'category_1_text' => [
+                'type' => Order_Statistics_Type::FUNCTION_ARRAY,
+                'function' => 'explode',
+                'params' => [
+                    ',',
+                    self::REPLACE,
+                ],
+                'key' => 0,
+                'replace' => 'sku_category_text',
+            ],
+            'sku_category_2_text' => [
+                'type' => Order_Statistics_Type::FUNCTION_ARRAY,
+                'function' => 'explode',
+                'params' => [
+                    ',',
+                    self::REPLACE,
+                ],
+                'key' => 1,
+                'replace' => 'sku_category_text',
+            ],
+            'sku_category_3_text' => [
+                'type' => Order_Statistics_Type::FUNCTION_ARRAY,
+                'function' => 'explode',
+                'params' => [
+                    ',',
+                    self::REPLACE,
+                ],
+                'key' => 2,
+                'replace' => 'sku_category_text',
+            ],
 
-            'category_1' => 'sku_category_1',
         ],
     ];
 }
