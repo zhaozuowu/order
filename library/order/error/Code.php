@@ -68,6 +68,12 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_STOCKOUT_ORDER_SIGNUP_SKUS_NOT_EXISTS = 310010;
 
+
+    /**
+     * 拣货失败
+     */
+    const NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL = 310011;
+
     /**
      * 获取彩云系统商品详情信息失败
      * @var integer
