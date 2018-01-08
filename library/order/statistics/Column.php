@@ -302,6 +302,7 @@ class Order_Statistics_Column
             'stockout_order_status' => [
                 'type' => Order_Statistics_Type::ARRAY,
                 'array' => 'Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_STATUS_MAP',
+                'replace'=>'stockout_order_status',
             ],
             'stockout_order_status_describle' => [
                 'type' => Order_Statistics_Type::ARRAY,
@@ -326,9 +327,9 @@ class Order_Statistics_Column
                 'replace' => 'stockout_order_source',
             ],
             'order_create_time' => 'create_time',
-            'expect_arrive_start_time' => '', //暂定
-            'expect_arrive_end_time' => '', //暂定
-            'customer_name',//
+            'expect_arrive_start_time',
+            'expect_arrive_end_time',
+            'customer_name',
             'customer_id',
             'customer_contactor',
             'customer_contact',
@@ -356,7 +357,6 @@ class Order_Statistics_Column
             'order_amount',
             'distribute_amount',
             'pickup_amount',
-            'effect_date',//暂定
             'cost_price',
             'cost_price_tax',
             'cost_total_price',
