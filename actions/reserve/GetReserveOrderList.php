@@ -22,7 +22,7 @@ class Action_GetReserveOrderList extends Order_Base_Action
         'reserve_order_plan_time_end' => 'int|min[0]',
         'stockin_time_start' => 'int|min[0]',
         'stockin_time_end' => 'int|min[0]',
-        'page_num' => 'int|default[1]|min[1]',
+        'page_num' => 'int|default[1]|min[1]|optional',
         'page_size' => 'int|required|min[1]|max[100]',
     ];
 

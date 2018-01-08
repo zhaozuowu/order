@@ -114,7 +114,9 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
 
         // 分页条件
         $offset = (intval($intPageNum) - 1) * intval($intPageSize);
-        $limitCount = intval($intPageSize);
+
+        // 查询所有情况的条件page_size = 0
+        $limitCount = empty($intPageSize) ? null : $intPageSize;
 
         // 查找满足条件的所有列数据
         $arrCols = self::getAllColumns();
