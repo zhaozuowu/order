@@ -230,6 +230,7 @@ class Service_Data_Stockin_StockinOrder
             if (!$this->notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $arrDbSkuInfoList)) {
                 Order_Error::throwException(Order_Error_Code::ERR__RAL_ERROR);
             }
+            // @todo update reserve
             // @todo async notify nscm
             return $intStockinOrderId;
         });
