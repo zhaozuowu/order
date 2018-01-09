@@ -77,4 +77,21 @@ class Model_Orm_StockoutOrderDetail extends Order_Base_Orm
     public static $tableName = 'stockout_order_detail';
     public static $dbName = 'nwms_statistics';
     public static $clusterName = 'nwms_statistics_cluster';
+
+    /**
+     * 获取销售出库明细
+     * @param $arrConditions
+     * @param array $arrColumns
+     * @param null $intOffset
+     * @param null $intLimit
+     * @return array
+     */
+    public static function getStockoutDetailByConditions($arrConditions, $arrColumns = [], $intOffset = null, $intLimit = null)
+    {
+        if (empty($arrColumns)) {
+            $arrColumns = self::getAllColumns();
+        }
+        $list =  self::findRows($arrColumns, $arrConditions, ['create_time' => 'desc'], $intOffset, $intLimit);
+        return $list;
+    }
 }
