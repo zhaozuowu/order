@@ -23,5 +23,6 @@ class Order_Wmq_Commit extends Wm_Lib_Wmq_Commit {
             $arrWmqConfig['Topic'] = $strTopic;
         }
         $ret = self::sendCmd($strCmd, $arrParams, $arrWmqConfig);
+        return $ret;
     }
 }

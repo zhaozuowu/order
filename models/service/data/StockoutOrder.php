@@ -231,7 +231,7 @@ class Service_Data_StockoutOrder
     }
 
     /**
-     * 完成揽收
+     * 完成签收 
      * @param $strStockoutOrderId 出库单号
      * @param $signupStatus 签收状态
      * @param $signupUpcs 签收数量
@@ -268,7 +268,7 @@ class Service_Data_StockoutOrder
             }
             foreach ($signupUpcs as $item) {
                 $condition = ['stockout_order_id' => $strStockoutOrderId, 'sku_id' => $item['sku_id']];
-                $skuUpdata = ['upc_accept_amont' => $item['sku_accept_amount'], 'upc_reject_amount' => $item['sku_reject_amount']];
+                $skuUpdata = ['upc_accept_amount' => $item['sku_accept_amount'], 'upc_reject_amount' => $item['sku_reject_amount']];
                 $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
             }
         });
