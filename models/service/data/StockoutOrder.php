@@ -231,7 +231,7 @@ class Service_Data_StockoutOrder
     }
 
     /**
-     * 完成签收
+     * 完成签收 
      * @param $strStockoutOrderId 出库单号
      * @param $signupStatus 签收状态
      * @param $signupUpcs 签收数量
