@@ -93,6 +93,7 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
             $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? '' : intval($arrListItem['upc_unit']);
             $arrRoundResult['upc_unit_text'] = empty($arrListItem['upc_unit_text']) ? '' : strval($arrListItem['upc_unit_text']);
             $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? '' : intval($arrListItem['upc_unit_num']);
+            $arrRoundResult['sku_effect_type'] = empty($arrListItem['sku_effect_type']) ? '' : strval($arrListItem['sku_effect_type']);
             $arrRoundResult['expire_date'] = empty($arrListItem['expire_date']) ? '' : strval($arrListItem['expire_date']);
             $arrRoundResult['reserve_order_plan_amount'] = empty($arrListItem['reserve_order_plan_amount']) ? '' : intval($arrListItem['reserve_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? '' : intval($arrListItem['stockin_order_real_amount']);
