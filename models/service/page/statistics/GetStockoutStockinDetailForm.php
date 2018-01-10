@@ -35,6 +35,7 @@ class Service_Page_Statistics_GetStockoutStockinDetailForm implements Order_Base
         $strSourceOrderId = $arrInput['source_order_id'];
         $intSkuId = $arrInput['sku_id'];
         $intClientId = $arrInput['client_id'];
+        $strClientName = $arrInput['client_name'];
 
         $arrStockinTime = [
             'start' => $arrInput['stockin_time_start'],
@@ -50,6 +51,7 @@ class Service_Page_Statistics_GetStockoutStockinDetailForm implements Order_Base
             $strSourceOrderId,
             $intSkuId,
             $intClientId,
+            $strClientName,
             $arrStockinTime,
             $intPageNum,
             $intPageSize);
