@@ -1,17 +1,21 @@
 <?php
 /**
- * @name
- * @desc
+ * @name Service_Page_Adjust_CreateOrder
+ * @desc 新建调整单
  * @author sunzhixin@iwaimai.baidu.com
  */
 
 class Service_Page_Adjust_CreateOrder
 {
     /**
-     * commodity data service
-     * @var Service_Data_Commodity_Category
+     * @var Service_Data_StockAdjustOrder
      */
     protected $objStockAdjustOrder;
+
+    /**
+     * @var Service_Data_StockAdjustOrderDetail
+     */
+    protected $objStockAdjustOrderDetail;
 
     /**
      * init
@@ -19,6 +23,7 @@ class Service_Page_Adjust_CreateOrder
     public function __construct()
     {
         $this->objStockAdjustOrder = new Service_Data_StockAdjustOrder();
+        $this->objStock = new Service_Data_Stock();
     }
 
     /**
@@ -28,12 +33,11 @@ class Service_Page_Adjust_CreateOrder
      */
     public function execute($arrInput)
     {
-        $arrFormatInput = [
-            'warehouse_id'   => strval($arrInput['warehouse_id']),
-            'warehouse_name' => strval($arrInput['warehouse_name']),
-        ];
+        // 生成一个调整单号
+        $arrInput['stock_adjust_order_id'] = Order_Util_Util::generateStockAdjustOrderId();
 
-        $arrOutput = $this->objStockAdjustOrder->create($arrFormatInput);
+        // 创建调整单
+        $arrOutput = $this->objStockAdjustOrder->createAdjustOrder($arrInput);
         return $arrOutput;
     }
 }

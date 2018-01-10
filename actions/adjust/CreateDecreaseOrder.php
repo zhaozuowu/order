@@ -1,12 +1,11 @@
 <?php
 /**
- * @name Action_Createincreaseorder
- * @desc 创建库存调整单-调增
+ * @name Action_Createdecreaseorder
+ * @desc 创建库存调整单-调减
  * @author sunzhixin@iwaimai.baidu.com
  */
 
-
-class Action_Createincreaseorder extends Order_Base_Action
+class Action_Createdecreaseorder extends Order_Base_Action
 {
     protected $boolCheckLogin = false;
     protected $boolCheckAuth = false;
@@ -27,7 +26,6 @@ class Action_Createincreaseorder extends Order_Base_Action
                 'sku_id'                    => 'int|required',
                 'unit_price'                => 'int|required',
                 'unit_price_tax'            => 'int|required',
-                'production_or_expire_time' => 'int|required',
                 'adjust_amount'             => 'int|required',
             ],
         ]
@@ -61,7 +59,7 @@ class Action_Createincreaseorder extends Order_Base_Action
     public function format($data)
     {
         $arrFormatResult = [];
-        $arrFormatResult['stock_adjust_order_id']   = empty($data['stock_adjust_order_id']) ? '' : Nscm_Define_OrderPrefix::SAO . intval($data['stock_adjust_order_id']);
+        $arrFormatResult['stock_adjust_order_id']    = empty($data['stock_adjust_order_id']) ? '' : Nscm_Define_OrderPrefix::SAO . intval($data['stock_adjust_order_id']);
 
         return $arrFormatResult;
     }

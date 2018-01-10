@@ -3,6 +3,8 @@
 /**
  * @property int $id
  * @property int $stock_adjust_order_id
+ * @property int $warehouse_id
+ * @property int $adjust_type
  * @property int $sku_id
  * @property string $sku_name
  * @property int $adjust_amount
@@ -37,7 +39,7 @@
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
 */
 
-class Model_Orm_StockAdjustOrderDetail extends Wm_Orm_ActiveRecord
+class Model_Orm_StockAdjustOrderDetail extends Order_Base_Orm
 {
 
     public static $tableName = 'stock_adjust_order_detail';
