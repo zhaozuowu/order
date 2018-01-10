@@ -11,12 +11,17 @@ class Service_Page_Business_CreateBusinessFormOrder {
      * @var Service_Data_BusinessFormOrder
      */
     private $objDsBusinessFormOrder;
-    
+
+    /**
+     * @var Service_Data_StockoutOrder
+     */
+    private $objDsStockoutFormOrder;
     /**
      * init
      */
     public function __construct() {
         $this->objDsBusinessFormOrder = new Service_Data_BusinessFormOrder();
+        $this->objDsStockoutFormOrder = new Service_Data_StockoutOrder();
     }
     
     /**
@@ -24,12 +29,17 @@ class Service_Page_Business_CreateBusinessFormOrder {
      * @return array
      */
     public function execute($arrInput) {
-        $this->objDsBusinessFormOrder->createBusinessFormOrder($arrInput);
-        //发送订单创建命令
-        $arrStockoutParams = $this->objDsBusinessFormOrder->getStockoutCreateParams($arrInput);
-        Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER, $arrStockoutParams, strval($arrStockoutParams['stockout_order_id']));
+        //同步创建业态订单
+        $intBusinessFormOrderId = $this->objDsBusinessFormOrder->createBusinessFormOrder($arrInput);
+        //异步创建出库单
+        $arrInput['business_form_order_id'] = $intBusinessFormOrderId;
+        $arrInput['stockout_order_id'] = Order_Util_Util::generateStockoutOrderId();
+        $arrInput['stockout_order_type'] = Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_STOCK;
+        $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER, $arrInput,
+                                            strval($arrInput['stockout_order_id']));
         if (false === $ret) {
-            Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
+            Bd_Log::warning(sprintf("method[%s] cmd[%s] error",
+                                    __METHOD__, Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER));
         }
         return $ret;
     }
