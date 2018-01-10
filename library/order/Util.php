@@ -165,6 +165,26 @@ class Order_Util
     }
 
     /**
+     * 去除库存调整单开头的SAO前缀
+     *
+     * @param $strStockAdjustOrderId
+     * @return string
+     */
+    public static function trimStockAdjustOrderIdPrefix($strStockAdjustOrderId)
+    {
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strStockAdjustOrderId)) {
+            return $strResult;
+        }
+
+        $strResult = ltrim($strStockAdjustOrderId, Nscm_Define_OrderPrefix::SAO);
+
+        return $strResult;
+    }
+
+    /**
      * 判断value的值是否在数组中
      * 遇到空参数返回错误
      *
