@@ -197,4 +197,10 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_PRINT_LIST_ORDER_IDS_ERROR = 340010;
+
+    /**
+     * 重复创建订单
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT = 340011;
 }

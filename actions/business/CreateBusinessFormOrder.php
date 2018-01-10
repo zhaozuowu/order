@@ -7,14 +7,23 @@
 
 class Action_CreateBusinessFormOrder extends Order_Base_Action
 {
+    protected $boolCheckLogin = false;
+    protected $boolCheckAuth = false;
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
         'business_form_order_type' => 'int|required',
-        'order_supply_type' => 'int|required',
         'business_form_order_price' => 'int|required',
+        'shelf_info' => [
+            'validate' => 'json|decode|required',
+            'type' => 'map',
+            'params' => [
+                'supply_type' => 'int',
+                'devices' => 'json|decode',
+            ]
+        ],
         'business_form_order_remark' => 'str|required',
         'warehouse_id' => 'str|required',
         'customer_id' => 'str|required',
@@ -26,16 +35,19 @@ class Action_CreateBusinessFormOrder extends Order_Base_Action
         'customer_location_source' => 'int|required',
         'customer_city_id' => 'int|required',
         'customer_city_name' => 'str|required',
+        'customer_region_id' => 'int|required',
+        'customer_region_name' => 'str|required',
         'expect_arrive_time' => [
-            'validate' => 'json|decode',
-            'type' => 'array',
+            'validate' => 'json|decode|required',
+            'type' => 'map',
             'params' => [
                 'start' => 'int|required',
                 'end' => 'int|required',
             ],
         ],
+
         'skus' => [
-           'validate' => 'json|decode',
+           'validate' => 'json|decode|required',
            'type' => 'array',
            'params' => [
                 'sku_id' => 'int|required',

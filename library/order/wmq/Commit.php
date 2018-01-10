@@ -12,7 +12,7 @@ class Order_Wmq_Commit extends Wm_Lib_Wmq_Commit {
      * @param array $arrParams
      * @param string $key
      * @param string $Topic
-     * @return void
+     * @return integer
      */
     public static function sendWmqCmd($strCmd, $arrParams, $strKey = '', $strTopic = '') {
         $arrWmqConfig = Order_Define_Cmd::DEFAULT_WMQ_CONFIG;
@@ -22,7 +22,6 @@ class Order_Wmq_Commit extends Wm_Lib_Wmq_Commit {
         if (!empty($strTopic)) {
             $arrWmqConfig['Topic'] = $strTopic;
         }
-        $ret = self::sendCmd($strCmd, $arrParams, $arrWmqConfig);
-        return $ret;
+        return self::sendCmd($strCmd, $arrParams, $arrWmqConfig);
     }
 }

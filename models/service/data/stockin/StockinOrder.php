@@ -253,7 +253,6 @@ class Service_Data_Stockin_StockinOrder
 
     /**
      * 获取入库单列表（分页）
-     *
      * @param $strStockinOrderType
      * @param $strWarehouseId
      * @param $intSourceSupplierId
@@ -334,7 +333,6 @@ class Service_Data_Stockin_StockinOrder
 
     /**
      * 查询入库单详情
-     *
      * @param $strStockinOrderId
      * @return mixed
      * @throws Order_BusinessError
@@ -352,7 +350,6 @@ class Service_Data_Stockin_StockinOrder
 
     /**
      * 查询入库单商品列表（分页）
-     *
      * @param $strStockinOrderId
      * @param $intPageNum
      * @param $intPageSize
@@ -374,7 +371,6 @@ class Service_Data_Stockin_StockinOrder
      * 分解获取关联入库单的单号，只处理ASN和SOO两种订单号，否则返回null
      * 如果订单号前缀类型不在给定的数组内则抛出参数错误异常
      * [source_order_id, source_order_type]
-     *
      * @param $strSourceOrderId
      * @param $arrStockinOrderType
      * @return null|array[source_order_id, source_order_type]
@@ -382,8 +378,9 @@ class Service_Data_Stockin_StockinOrder
      */
     private function getSourceOrderId($strSourceOrderId, $arrStockinOrderType)
     {
+        $arrSourceOrderIdInfo = [];
         if (empty($strSourceOrderId)) {
-            return null;
+            return $arrSourceOrderIdInfo;
         }
 
         // preg_match('/^ASN\d{13}$/', $strSourceOrderId)
@@ -408,7 +405,7 @@ class Service_Data_Stockin_StockinOrder
             return $arrSourceOrderIdInfo;
         }
 
-        return null;
+        return $arrSourceOrderIdInfo;
     }
 
 
