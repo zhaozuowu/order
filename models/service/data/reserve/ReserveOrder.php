@@ -301,7 +301,7 @@ class Service_Data_Reserve_ReserveOrder
     {
         $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
 
-        if(empty($intReserveOrderId)){
+        if (empty($intReserveOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
 
@@ -320,5 +320,91 @@ class Service_Data_Reserve_ReserveOrder
             return [];
         }
         return $arrRet->toArray();
+    }
+
+    /**
+     * 获取预约入库单打印列表
+     * @param $arrOrderIds
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getReserveOrderPrintList($arrOrderIds)
+    {
+        if (empty($arrOrderIds)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+        $ret = [];
+        $arrConditions = $this->getPrintConditions($arrOrderIds);
+        $arrColumns = ['reserve_order_id','purchase_order_id','vendor_name','vendor_id','warehouse_name','reserve_order_remark','warehouse_id','stockin_order_real_amount'];
+        $arrRetList = Model_Orm_ReserveOrder::findRows($arrColumns, $arrConditions);
+        if (empty($arrRetList)) {
+            return $ret;
+        }
+        $arrWarehouseIds = array_column($arrRetList,'warehouse_id');
+        $objDao = new Dao_Ral_Order_Warehouse();
+        $arrWarehouseList = $objDao->getWareHouseList($arrWarehouseIds);
+        $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
+        $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
+        $arrSkuColumns = ['reserve_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount'];
+        $arrReserveSkuList = Model_Orm_ReserveOrderSku::findRows($arrSkuColumns, $arrConditions);
+        //$arrReserveSkuList = array_column($arrReserveSkuList,null,'reserve_order_id');
+        $arrReserveSkuList = $this->arrayToKeyValue($arrReserveSkuList, 'reserve_order_id');
+        foreach ($arrRetList as $key=>$item) {
+            $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):empty($item['warehouse_name']);
+            $arrRetList[$key]['warehouse_contact'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact']:'';
+            $arrRetList[$key]['warehouse_contact_phone'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact_phone']:'';
+            $arrRetList[$key]['skus'] = isset($arrReserveSkuList[$item['reserve_order_id']]) ? $arrReserveSkuList[$item['reserve_order_id']]:[];
+        }
+        return $arrRetList;
+
+    }
+
+    /**
+     * 获取预约入库单打印条件
+     * @param $arrOrderIds
+     * @return array
+     */
+    private function getPrintConditions($arrOrderIds)
+    {
+
+        $arrOrderIds = $this->batchTrimReserveOrderIdPrefix($arrOrderIds);
+        // 只查询未软删除的
+        $arrConditions = [
+            'reserve_order_id' => ['in', $arrOrderIds],
+            'is_delete'  => Order_Define_Const::NOT_DELETE,
+        ];
+        return $arrConditions;
+    }
+
+    /**
+     * 批次去除预约单开头的ASN开头部分内容
+     * @param $arrReserveOrderIds
+     */
+    private function batchTrimReserveOrderIdPrefix($arrReserveOrderIds)
+    {
+        foreach ($arrReserveOrderIds as $intKey => $strReserveOrderId) {
+            $arrReserveOrderIds[$intKey] = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
+        }
+        return $arrReserveOrderIds;
+    }
+
+    /**
+     * transfer array to key value pair
+     * @param array $arr
+     * @param string $primary_key
+     * @return array
+     */
+    private function arrayToKeyValue($arr, $primary_key)
+    {
+        if (empty($arr) || empty($primary_key)) {
+            return array();
+        }
+        $arrKeyValue = array();
+        foreach ($arr as $key=>$item) {
+            if (isset($item[$primary_key])) {
+                $arrKeyValue[$item[$primary_key]][] = $item;
+            }
+        }
+        return $arrKeyValue;
     }
 }

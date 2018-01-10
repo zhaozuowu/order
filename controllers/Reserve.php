@@ -13,5 +13,6 @@ class Controller_Reserve extends Ap_Controller_Abstract {
         'getreserveorderstatistics' => 'actions/reserve/GetReserveOrderStatistics.php',
         'getreserveorderdetail' => 'actions/reserve/GetReserveOrderDetail.php',
         'getreserveorderskulist' => 'actions/reserve/GetReserveOrderSkuList.php',
+        'getreserveorderprintlist' => 'actions/reserve/GetReserveOrderPrintList.php', //预约入库单打印
     );
 }

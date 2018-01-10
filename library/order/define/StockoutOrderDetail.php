@@ -50,9 +50,20 @@ class Order_Define_StockoutOrderDetail
         '3'=>'便利店',
     ];
 
+    /**
+     * 是否进口
+     */
     const  IMPORT_MAP = [
         '1' => '否',
         '2' =>'是',
+    ];
+
+    /**
+     * 效期类型
+     */
+    const  SKU_EFFECT_TYPE = [
+        '1' => '生产日期',
+        '2' =>'失效日期',
     ];
 
 
