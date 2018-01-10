@@ -17,7 +17,6 @@ class Action_GetBusinessFormOrderList extends Order_Base_Action
         'status'    => 'int|required',
         'warehouse_id' => 'int',
         'business_form_order_id' => 'int',
-        'business_form_order_status' => 'int',
         'business_form_order_type' => 'int',
         'customer_name' => 'str',
         'customer_id' => 'int',

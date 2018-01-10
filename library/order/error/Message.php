@@ -17,6 +17,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE => '出库单状态不允许修改',
         Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL => '出库订单更新失败',
         Order_Error_Code::NWMS_STOCKOUT_ADJUST_SKU_STOCK_FAIL=> '库存扣减失败',
+        Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL=>'仓库完成拣货失败',
         Order_Error_Code::QUERY_TIME_SPAN_ERROR => '查询时间范围错误',
         Order_Error_Code::PURCHASE_ORDER_HAS_BEEN_RECEIVED => 'nscm采购单号已经被接收',
         Order_Error_Code::PURCHASE_ORDER_NOT_EXIST => '采购单不存在',
@@ -36,6 +37,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR => '创建业态订单失败',
         Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_PARAMS_ERROR => '创建业态订单参数错误',
         Order_Error_Code::NWMS_ORDER_PRINT_LIST_ORDER_IDS_ERROR => '打印列表无法获取数据ID',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT => '重复创建出库单',
     ];
 
 }
