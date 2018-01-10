@@ -32,9 +32,7 @@ class Service_Page_Business_CreateBusinessFormOrder {
         //同步创建业态订单
         $intBusinessFormOrderId = $this->objDsBusinessFormOrder->createBusinessFormOrder($arrInput);
         //异步创建出库单
-        $arrInput['business_form_order_id'] = $intBusinessFormOrderId;
-        $arrInput['stockout_order_id'] = Order_Util_Util::generateStockoutOrderId();
-        $arrInput['stockout_order_type'] = Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_STOCK;
+        $this->objDsStockoutFormOrder->assembleStockoutOrder($arrInput, $intBusinessFormOrderId);
         $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER, $arrInput,
                                             strval($arrInput['stockout_order_id']));
         if (false === $ret) {
