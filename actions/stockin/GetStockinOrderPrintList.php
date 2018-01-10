@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_GetReserveOrderPrintList
- * @desc 预约入库单打印
+ * @name Action_GetStockinOrderPrintList
+ * @desc 入库单打印
  * @author zhaozuowu@iwaimai.baidu.com
  */
 
-class Action_GetReserveOrderPrintList extends Order_Base_Action
+class Action_GetStockinOrderPrintList extends Order_Base_Action
 {
     /**
      * 是否验证登陆
@@ -45,7 +45,7 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Reserve_GetReserveOrderPrintList();
+        $this->objPage = new Service_Page_Stockin_GetStockinOrderPrintList();
     }
 
     /**
@@ -57,17 +57,19 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
         $arrFormatRet = [];
         foreach($arrRet as $arrRetItem) {
             $arrFormatRetItem = [];
-            $arrFormatRetItem['reserve_order_id'] = empty($arrRetItem['reserve_order_id']) ?  '' : Nscm_Define_OrderPrefix::ASN.$arrRetItem['reserve_order_id'];
-            $arrFormatRetItem['purchase_order_id'] = empty($arrRetItem['purchase_order_id']) ? 0 : Nscm_Define_OrderPrefix::PUR.$arrRetItem['purchase_order_id'];
-            $arrFormatRetItem['vendor_name'] = empty($arrRetItem['vendor_name']) ? '' : $arrRetItem['vendor_name'];
+            $arrFormatRetItem['stockin_order_id'] = empty($arrRetItem['stockin_order_id']) ?  '' : Nscm_Define_OrderPrefix::SIO.$arrRetItem['stockin_order_id'];
+            $arrFormatRetItem['stockin_order_type'] = empty($arrRetItem['stockin_order_type']) ?  '' : Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$arrRetItem['stockin_order_type']];
+            $arrFormatRetItem['source_order_id'] = empty($arrRetItem['source_order_id']) ? '' : $arrRetItem['source_order_id'];
+            $arrFormatRetItem['warehouse_name'] = empty($arrRetItem['warehouse_name']) ? '' : $arrRetItem['warehouse_name'];
             $arrFormatRetItem['vendor_id'] = empty($arrRetItem['vendor_id']) ? 0 : $arrRetItem['vendor_id'];
+            $arrFormatRetItem['vendor_name'] = empty($arrRetItem['vendor_name']) ? '' : $arrRetItem['vendor_name'];
             $arrFormatRetItem['warehouse_name'] = empty($arrRetItem['warehouse_name']) ? '' : $arrRetItem['warehouse_name'];
             $arrFormatRetItem['warehouse_contact'] = empty($arrRetItem['warehouse_contact']) ? '' : $arrRetItem['warehouse_contact'];
             $arrFormatRetItem['warehouse_contact_phone'] = empty($arrRetItem['warehouse_contact_phone']) ? '' : $arrRetItem['warehouse_contact_phone'];
-            $arrFormatRetItem['reserve_order_remark'] = empty($arrRetItem['reserve_order_remark']) ? '' : $arrRetItem['reserve_order_remark'];
+            $arrFormatRetItem['stockin_order_remark'] = empty($arrRetItem['stockin_order_remark']) ? '' : $arrRetItem['stockin_order_remark'];
             $arrFormatRetItem['stockin_order_real_amount'] = empty($arrRetItem['stockin_order_real_amount']) ? 0 : $arrRetItem['stockin_order_real_amount'];
+            $arrFormatRetItem['sign_name'] = empty($arrRetItem['sign_name']) ? '' : $arrRetItem['sign_name'];
             $arrFormatRetItem['sign_date'] = empty($arrRetItem['sign_date']) ? '' : $arrRetItem['sign_date'];
-            $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $this->formatSku($arrRetItem['skus']);
             $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $this->formatSku($arrRetItem['skus']);
             $arrFormatRet['list'][] = $arrFormatRetItem;
         }
