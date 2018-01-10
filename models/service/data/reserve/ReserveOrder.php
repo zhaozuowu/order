@@ -29,29 +29,71 @@ class Service_Data_Reserve_ReserveOrder
         if (empty($objReserveOrder)) {
             Order_BusinessError::throwException(Order_Error_Code::PURCHASE_ORDER_NOT_EXIST);
         }
-        if (!isset(Order_Define_ReserveOrder::ALLOW_DESTROY[$objReserveOrder->purchase_order_status])) {
+        if (!isset(Order_Define_ReserveOrder::ALLOW_DESTROY[$objReserveOrder->reserve_order_status])) {
             Order_BusinessError::throwException(Order_Error_Code::PURCHASE_ORDER_NOT_ALLOW_DESTROY);
         }
         $objReserveOrder->updateStatus($intStatus);
     }
 
     /**
+     * assemble sku
+     * @param array $arrSourceSku
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_Error
+     */
+    private function assembleSku($arrSourceSku)
+    {
+        $arrSkuId = [];
+        foreach ($arrSourceSku as $row)
+        {
+            $arrSkuId[] = $row['sku_id'];
+        }
+        $daoRalSku = new Dao_Ral_Sku();
+        $arrSkuInfo = $daoRalSku->getSkuInfos($arrSkuId);
+        $arrRes = [];
+        foreach ($arrSourceSku as $row)
+        {
+            $arrRes[] = [
+                'sku_id' => $row['sku_id'],
+                'upc_id' => $row['upc_id'],
+                'upc_unit' => $row['upc_unit'],
+                'upc_unit_num' => $row['upc_unit_num'],
+                'sku_name' => $arrSkuInfo[$row['sku_id']]['sku_name'],
+                'sku_net' => $arrSkuInfo[$row['sku_id']]['sku_net'],
+                'sku_net_unit' => $arrSkuInfo[$row['sku_id']]['sku_net_unit'],
+                'sku_net_gram' => $arrSkuInfo[$row['sku_id']]['sku_weight'],
+                'sku_price' => $row['sku_price'],
+                'sku_price_tax' => $row['sku_price_tax'],
+                'sku_effect_type' => $arrSkuInfo[$row['sku_id']]['sku_effect_type'],
+                'sku_effect_day' => $arrSkuInfo[$row['sku_id']]['sku_effect_day'],
+                'reserve_order_sku_total_price' => $row['reserve_order_sku_total_price'],
+                'reserve_order_sku_total_price_tax' => $row['reserve_order_sku_total_price_tax'],
+                'reserve_order_sku_plan_amount' => $row['reserve_order_sku_plan_amount'],
+            ];
+        }
+        return $arrRes;
+    }
+
+    /**
      * create reserve order by nscm reserve order id
-     * @param $intPurchaseOrderId
-     * @throws Wm_Orm_Error
+     * @param int $intPurchaseOrderId
+     * @throws Nscm_Exception_Error
+     * @throws Order_Error
      * @throws Exception
      */
     public function createReserveOrderByPurchaseOrderId($intPurchaseOrderId)
     {
         $objRedis = new Dao_Redis_ReserveOrder();
         $arrOrderInfo = $objRedis->getOrderInfo($intPurchaseOrderId);
+        $arrSkus = $this->assembleSku($arrOrderInfo['purchase_order_skus']);
         Bd_Log::debug('order info: ' . json_encode($arrOrderInfo));
         if (empty($arrOrderInfo)) {
             // @alarm
             Bd_Log::warning('can`t find nscm purhcase order id: ' . $intPurchaseOrderId);
             return;
         }
-        Model_Orm_ReserveOrder::getConnection()->transaction(function () use ($arrOrderInfo, $intPurchaseOrderId) {
+        Model_Orm_ReserveOrder::getConnection()->transaction(function () use ($arrOrderInfo, $intPurchaseOrderId, $arrSkus) {
             $intReserveOrderId = intval($arrOrderInfo['reserve_order_id']);
             $intWarehouseId = intval($arrOrderInfo['warehouse_id']);
             $strWarehouseName = strval($arrOrderInfo['warehouse_name']);
@@ -59,16 +101,17 @@ class Service_Data_Reserve_ReserveOrder
             $intReserveOrderPlanAmount = intval($arrOrderInfo['purchase_order_plan_amount']);
             $intVendorId = intval($arrOrderInfo['vendor_id']);
             $strVendorName = strval($arrOrderInfo['vendor_name']);
-            $strVendorContactor = strval($arrOrderInfo['vendor_contactor']);
-            $strVendorMobile = strval($arrOrderInfo['vendor_mobile']);
-            $strVendorEmail = strval($arrOrderInfo['vendor_email']);
-            $strVendorAddress = strval($arrOrderInfo['vendor_address']);
+            // following 4 params are not used.  from pm liang yubiao
+            $strVendorContactor = '';
+            $strVendorMobile = '';
+            $strVendorEmail = '';
+            $strVendorAddress = '';
             $strReserveOrderRemark = strval($arrOrderInfo['purchase_order_remark']);
-            Model_Orm_ReserveOrder::createReserveOrder($intReserveOrderId, $intPurchaseOrderId, $intWarehouseId, $strWarehouseName, $intReserveOrderPlanTime,
-                $intReserveOrderPlanAmount, $intVendorId, $strVendorName, $strVendorContactor, $strVendorMobile, $strVendorEmail, $strVendorAddress, $strReserveOrderRemark);
-            $arrReserveOrderSkus = $arrOrderInfo['purchase_order_skus'];
-            Bd_Log::debug('ORDER_SKUS:' . json_encode($arrReserveOrderSkus));
-            Model_Orm_ReserveOrderSku::createReserveOrderSku($arrReserveOrderSkus, $intReserveOrderId);
+            Model_Orm_ReserveOrder::createReserveOrder($intReserveOrderId, $intPurchaseOrderId, $intWarehouseId,
+                $strWarehouseName, $intReserveOrderPlanTime, $intReserveOrderPlanAmount, $intVendorId, $strVendorName,
+                $strVendorContactor, $strVendorMobile, $strVendorEmail, $strVendorAddress, $strReserveOrderRemark);
+            Bd_Log::debug('ORDER_SKUS:' . json_encode($arrSkus));
+            Model_Orm_ReserveOrderSku::createReserveOrderSku($arrSkus, $intReserveOrderId);
         });
         $objRedis->dropOrderInfo($intPurchaseOrderId);
     }
@@ -87,7 +130,8 @@ class Service_Data_Reserve_ReserveOrder
         }
         Bd_Log::trace('generate reserve order id by nscm reserve order id: ' . $intPurchaseOrderId);
         $intReserveOrderId = Order_Util_Util::generateReserveOrderCode();
-        Bd_Log::debug(sprintf('generate reserve order id[%s] by nscm reserve order id[%s]', $intReserveOrderId, $intPurchaseOrderId));
+        Bd_Log::debug(sprintf('generate reserve order id[%s] by nscm reserve order id[%s]',
+            $intReserveOrderId, $intPurchaseOrderId));
         return $intReserveOrderId;
     }
 
@@ -110,10 +154,11 @@ class Service_Data_Reserve_ReserveOrder
             'purchase_order_plan_amount' => intval($arrReserveOrder['purchase_order_plan_amount']),
             'vendor_id' => intval($arrReserveOrder['vendor_id']),
             'vendor_name' => strval($arrReserveOrder['vendor_name']),
-            'vendor_contactor' => strval($arrReserveOrder['vendor_contactor']),
-            'vendor_mobile' => strval($arrReserveOrder['vendor_mobile']),
-            'vendor_email' => strval($arrReserveOrder['vendor_email']),
-            'purchase_order_remark' => strval($arrReserveOrder['purchase_order_remark']),
+//            'vendor_contactor' => strval($arrReserveOrder['vendor_contactor']),
+//            'vendor_mobile' => strval($arrReserveOrder['vendor_mobile']),
+//            'vendor_email' => strval($arrReserveOrder['vendor_email']),
+//            'vendor_address' => strval($arrReserveOrder['vendor_address']),
+            'reserve_order_remark' => strval($arrReserveOrder['reserve_order_remark']),
             'purchase_order_skus' => $arrReserveOrder['purchase_order_skus'],
         ];
         $objRedis = new Dao_Redis_ReserveOrder();
@@ -154,20 +199,7 @@ class Service_Data_Reserve_ReserveOrder
      */
     public function sendReserveInfoToWmq($intPurchaseOrderId)
     {
-        //sync mode
-        //@todo need change to wmq
-        $objDao = new Dao_Rpc();
-        $arrReq = [
-            Order_Define_Ral::NWMS_ORDER_CREATE_RESERVE_ORDER_WRITE => [
-                'purchase_order_id' => $intPurchaseOrderId,
-            ]
-        ];
-        Bd_Log::debug('rpc call input info: ' . json_encode($arrReq));
-        $arrRet = $objDao->getData($arrReq);
-        Bd_log::debug('rpc call output info: ' . json_encode($arrRet));
-        if (0 != json_decode($arrRet[Order_Define_Ral::NWMS_ORDER_CREATE_RESERVE_ORDER_WRITE])['error_no']) {
-            Order_Error::throwException(Order_Error_Code::ERR__RAL_ERROR);
-        }
+        Dao_Ral_Reserve::writeReserveOrderDb($intPurchaseOrderId);
     }
 
     /**

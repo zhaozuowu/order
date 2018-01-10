@@ -31,7 +31,7 @@ class Dao_Redis_ReserveOrder extends Order_Base_Redis
     /**
      * get order by key
      * @param $strKey
-     * @return mixed
+     * @return array
      */
     public function getOrderInfo($strKey)
     {

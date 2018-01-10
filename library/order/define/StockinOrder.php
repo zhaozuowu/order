@@ -26,6 +26,12 @@ class Order_Define_StockinOrder
     const STOCKIN_ORDER_TYPE_RETURN = 3;
 
     /**
+     * nscm sure stock in
+     * @var int
+     */
+    const NSCM_SURE_STOCKIN = 1;
+
+    /**
      * type reserve
      * @var array
      */
