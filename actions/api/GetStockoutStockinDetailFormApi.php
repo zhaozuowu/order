@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_GetStockoutStockinDetailForm
- * @desc 报表-获取销退入库明细（分页），注释：接口只查询入库类型为 销退入库 的数据
+ * @name Action_GetStockoutStockinDetailFormApi
+ * @desc 报表-获取销退入库明细（分页）Api，注释：接口只查询入库类型为 销退入库 的数据
  * @author chenwende@iwaimai.baidu.com
  */
 
-class Action_GetStockoutStockinDetailForm extends Order_Base_Action
+class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
 {
     /**
      * input params

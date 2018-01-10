@@ -89,6 +89,7 @@ class Model_Orm_StockinStockoutDetail extends Order_Base_Orm
             $intSourceOrderId,
             $intSkuId,
             $intClientId,
+            $strClientName,
             $arrStockinTime,
             $intPageNum,
             $intPageSize)
@@ -117,6 +118,13 @@ class Model_Orm_StockinStockoutDetail extends Order_Base_Orm
 
         if (!empty($intClientId)) {
             $arrCondition['client_id'] = $intClientId;
+        }
+
+        if (!empty($strClientName)) {
+            $arrCondition['client_name'] = [
+                'like',
+                $strClientName . '%',
+            ];
         }
 
         if (!empty($arrStockinTime['start'])

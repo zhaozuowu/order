@@ -59,4 +59,13 @@ class Order_Define_StockinOrder
     const STOCKIN_STATUS_MAP = [
         self::STOCKIN_ORDER_STATUS_FINISH => '已完成',
     ];
+
+    /**
+     * 采购单类型
+     * @var
+     */
+    const  STOCKIN_ORDER_TYPE_MAP = [
+      '1' =>'采购入库',
+      '2' => '销退入库'
+    ];
 }

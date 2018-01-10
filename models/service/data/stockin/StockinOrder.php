@@ -538,4 +538,99 @@ class Service_Data_Stockin_StockinOrder
 
         return $arrSourceOrderIdInfo;
     }
+
+
+    /**
+     * 获取入库单打印列表
+     * @param $arrOrderIds
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockinOrderPrintList($arrOrderIds)
+    {
+        if (empty($arrOrderIds)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+        $ret = [];
+        $arrConditions = $this->getPrintConditions($arrOrderIds);
+        $arrColumns = ['stockin_order_id','stockin_order_type','source_order_id','warehouse_id','warehouse_name','stockin_order_remark','stockin_order_real_amount','source_info'];
+        $arrRetList = Model_Orm_StockinOrder::findRows($arrColumns, $arrConditions);
+        if (empty($arrRetList)) {
+            return $ret;
+        }
+
+        $arrWarehouseIds = array_column($arrRetList,'warehouse_id');
+        $objDao = new Dao_Ral_Order_Warehouse();
+        $arrWarehouseList = $objDao->getWareHouseList($arrWarehouseIds);
+        $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
+        $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
+        $arrSkuColumns = ['stockin_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount'];
+        $arrReserveSkuList = Model_Orm_StockinOrderSku::findRows($arrSkuColumns, $arrConditions);
+        $arrReserveSkuList = $this->arrayToKeyValue($arrReserveSkuList, 'stockin_order_id');
+        foreach ($arrRetList as $key=>$item) {
+            $arrSourceInfo =empty($item['source_info']) ? []:json_decode($item['source_info'],true);
+            $arrRetList[$key]['vendor_id'] = isset($arrSourceInfo['vendor_id']) ? $arrSourceInfo['vendor_id']:0;
+            $arrRetList[$key]['vendor_name'] = isset($arrSourceInfo['vendor_name']) ? $arrSourceInfo['vendor_name']:'';
+            $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):empty($item['warehouse_name']);
+            $arrRetList[$key]['warehouse_contact'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact']:'';
+            $arrRetList[$key]['warehouse_contact_phone'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact_phone']:'';
+            $arrRetList[$key]['skus'] = isset($arrReserveSkuList[$item['stockin_order_id']]) ? $arrReserveSkuList[$item['stockin_order_id']]:[];
+            if(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE === $item['stockin_order_type']){
+                $arrRetList[$key]['source_order_id'] = empty($item['source_order_id']) ? '' : Nscm_Define_OrderPrefix::ASN . intval($item['source_order_id']);
+            }else if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT === $item['stockin_order_type']){
+                $arrRetList[$key]['source_order_id'] = empty($item['source_order_id']) ? '' : Nscm_Define_OrderPrefix::SOO . intval($item['source_order_id']);
+            }
+        }
+        return $arrRetList;
+
+    }
+
+    /**
+     * 获取预约入库单打印条件
+     * @param $arrOrderIds
+     * @return array
+     */
+    private function getPrintConditions($arrOrderIds)
+    {
+
+        $arrOrderIds = $this->batchTrimStockinOrderIdPrefix($arrOrderIds);
+        // 只查询未软删除的
+        $arrConditions = [
+            'stockin_order_id' => ['in', $arrOrderIds],
+            'is_delete'  => Order_Define_Const::NOT_DELETE,
+        ];
+        return $arrConditions;
+    }
+
+    /**
+     * 批次去除预约单开头的ASN开头部分内容
+     * @param $arrOrderIds
+     */
+    private function batchTrimStockinOrderIdPrefix($arrStockinOrderIds)
+    {
+        foreach ($arrStockinOrderIds as $intKey => $strStockinOrderId) {
+            $arrStockinOrderIds[$intKey] = intval(Order_Util::trimStockinOrderIdPrefix($strStockinOrderId));
+        }
+        return $arrStockinOrderIds;
+    }
+
+    /**
+     * transfer array to key value pair
+     * @param array $arr
+     * @param string $primary_key
+     * @return array
+     */
+    private function arrayToKeyValue($arr, $primary_key)
+    {
+        if (empty($arr) || empty($primary_key)) {
+            return array();
+        }
+        $arrKeyValue = array();
+        foreach ($arr as $key=>$item) {
+            if (isset($item[$primary_key])) {
+                $arrKeyValue[$item[$primary_key]][] = $item;
+            }
+        }
+        return $arrKeyValue;
+    }
 }
