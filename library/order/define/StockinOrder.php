@@ -45,4 +45,21 @@ class Order_Define_StockinOrder
      * stock in sku exp date max
      */
     const STOCKIN_SKU_EXP_DATE_MAX = 2;
+
+    /**
+     * status map
+     * @var
+     */
+    const STOCKIN_STATUS_MAP = [
+        self::STOCKIN_ORDER_STATUS_FINISH => '已完成',
+    ];
+
+    /**
+     * 采购单类型
+     * @var
+     */
+    const  STOCKIN_ORDER_TYPE_MAP = [
+      '1' =>'采购入库',
+      '2' => '销退入库'
+    ];
 }

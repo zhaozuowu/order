@@ -21,13 +21,19 @@ class Service_Data_StockoutOrder
     protected $objOrmSku;
 
     /**
+     * stockout order redis
+     * @var Dao_Redis_StockoutOrder
+     */
+    protected $objDaoRedisStockoutOrder;
+
+    /**
      * init
      */
     public function __construct()
     {
         $this->objOrmStockoutOrder = new Model_Orm_StockoutOrder();
         $this->objOrmSku = new Model_Orm_StockoutOrderSku();
-
+        $this->objDaoRedisStockoutOrder = new Dao_Redis_StockoutOrder();
     }
 
 
@@ -97,16 +103,15 @@ class Service_Data_StockoutOrder
     {
         $this->checkCreateParams($arrInput);
         $boolDuplicateFlag = $this->checkDuplicateOrder($arrInput['stockout_order_id']);
-        Bd_Log::trace(sprintf("method[%s] stockout_order_id[%s]", __METHOD__, $arrInput['stockout_order_id']));
         if (false === $boolDuplicateFlag) {
-            return [];
+            return false;
         }
         $boolCreateFlag = Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrInput) {
             $arrCreateParams = $this->getCreateParams($arrInput);
             Bd_Log::trace(sprintf("method[%s] arrCreateParams[%s]", __METHOD__, json_encode($arrCreateParams)));
             $objStockoutOrder = new Model_Orm_StockoutOrder();
             $objStockoutOrder->create($arrCreateParams, false);
-            $this->createStockoutOrderSku($arrInput['skus']);
+            $this->createStockoutOrderSku($arrInput['skus'], $arrCreateParams['stockout_order_id']);
         });
         if (!$boolCreateFlag) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_CREATE_FAIL);
@@ -117,11 +122,12 @@ class Service_Data_StockoutOrder
     /**
      * 创建出货单商品信息
      * @param array $arrSkus
+     * @param integer $intStockoutOrderId
      * @return bool
      */
-    public function createStockoutOrderSku($arrSkus)
+    public function createStockoutOrderSku($arrSkus, $intStockoutOrderId)
     {
-        $arrBatchSkuCreateParams = $this->getBatchSkuCreateParams($arrSkus);
+        $arrBatchSkuCreateParams = $this->getBatchSkuCreateParams($arrSkus, $intStockoutOrderId);
         if (empty($arrBatchSkuCreateParams)) {
             return false;
         }
@@ -131,7 +137,7 @@ class Service_Data_StockoutOrder
     /**
      * 校验订单是否已创建
      * @param integer $intOrderId
-     * @return void
+     * @return bool
      */
     public function checkDuplicateOrder($intOrderId)
     {
@@ -159,6 +165,24 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     * @param array $arrInput
+     * @param integer $intBusinessFormOrderId
+     * @return $arrInput
+     */
+    public function assembleStockoutOrder($arrInput, $intBusinessFormOrderId) {
+        //校验重复提交的问题
+        $intStockoutOrderId = Order_Util_Util::generateStockoutOrderId();
+        if ($this->objDaoRedisStockoutOrder->getValByOrderId($intStockoutOrderId)) {
+            Order_BusinessError::throwException();
+        }
+        $this->objDaoRedisStockoutOrder->setOrderId($intStockoutOrderId);
+        $arrInput['stockout_order_id'] = $intStockoutOrderId;
+        $arrInput['stockout_order_type'] = Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_STOCK;
+        $arrInput['business_form_order_id'] = $intBusinessFormOrderId;
+        return $arrInput;
+    }
+
+    /**
      * 获取出库单创建参数
      * @param array $arrInput
      * @return array
@@ -172,6 +196,11 @@ class Service_Data_StockoutOrder
         $arrCreateParams['stockout_order_status'] = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
         if (!empty($arrInput['stockout_order_id'])) {
             $arrCreateParams['stockout_order_id'] = intval($arrInput['stockout_order_id']);
+        } else {
+            $arrCreateParams['stockout_order_id'] = Order_Util_Util::generateStockoutOrderId();
+        }
+        if (!empty($arrInput['shelf_info'])) {
+            $arrCreateParams['shelf_info'] = json_encode($arrInput['shelf_info']);
         }
         if (!empty($arrInput['business_form_order_id'])) {
             $arrCreateParams['business_form_order_id'] = intval($arrInput['business_form_order_id']);
@@ -200,15 +229,38 @@ class Service_Data_StockoutOrder
         if (!empty($arrInput['customer_address'])) {
             $arrCreateParams['customer_address'] = strval($arrInput['customer_address']);
         }
+        if (!empty($arrInput['customer_location'])) {
+            $arrCreateParams['customer_location'] = strval($arrInput['customer_location']);
+        }
+        if (!empty($arrInput['customer_location_source'])) {
+            $arrCreateParams['customer_location_source'] = intval($arrInput['customer_location_source']);
+        }
+        if (!empty($arrInput['customer_city_id'])) {
+            $arrCreateParams['customer_city_id'] = intval($arrInput['customer_city_id']);
+        }
+        if (!empty($arrInput['customer_name'])) {
+            $arrCreateParams['customer_name'] = strval($arrInput['customer_name']);
+        }
+        if (!empty($arrInput['customer_region_id'])) {
+            $arrCreateParams['customer_region_id'] = intval($arrInput['customer_region_id']);
+        }
+        if (!empty($arrInput['customer_region_name'])) {
+            $arrCreateParams['customer_region_name'] = strval($arrInput['customer_region_name']);
+        }
+        if (!empty($arrInput['expect_arrive_time'])) {
+            $arrCreateParams['expect_arrive_start_time'] = intval($arrInput['expect_arrive_time']['start']);
+            $arrCreateParams['expect_arrive_end_time'] = intval($arrInput['expect_arrive_time']['end']);
+        }
         return $arrCreateParams;
     }
 
     /**
      * 获取出库单商品创建参数
      * @param  array $arrSkus
+     * @param  integer $intStockoutOrderId
      * @return array
      */
-    public function getBatchSkuCreateParams($arrSkus)
+    public function getBatchSkuCreateParams($arrSkus, $intStockoutOrderId)
     {
         $arrBatchSkuCreateParams = [];
         if (empty($arrSkus)) {
@@ -225,13 +277,14 @@ class Service_Data_StockoutOrder
             if (!empty($arrItem['order_amount'])) {
                 $arrSkuCreateParams['order_amount'] = intval($arrItem['order_amount']);
             }
+            $arrSkuCreateParams['stockout_order_id'] = $intStockoutOrderId;
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
         }
         return $arrBatchSkuCreateParams;
     }
 
     /**
-     * 完成揽收
+     * 完成签收 
      * @param $strStockoutOrderId 出库单号
      * @param $signupStatus 签收状态
      * @param $signupUpcs 签收数量
@@ -268,7 +321,7 @@ class Service_Data_StockoutOrder
             }
             foreach ($signupUpcs as $item) {
                 $condition = ['stockout_order_id' => $strStockoutOrderId, 'sku_id' => $item['sku_id']];
-                $skuUpdata = ['upc_accept_amont' => $item['sku_accept_amount'], 'upc_reject_amount' => $item['sku_reject_amount']];
+                $skuUpdata = ['upc_accept_amount' => $item['sku_accept_amount'], 'upc_reject_amount' => $item['sku_reject_amount']];
                 $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
             }
         });
