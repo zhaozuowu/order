@@ -17,6 +17,7 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
         'source_order_id' => 'regex|patern[/^(SOO\d{13})?$/]',
         'sku_id' => 'int',
         'client_id' => 'int',
+        'client_name' => 'str',
         'stockin_time_start' => 'int',
         'stockin_time_end' => 'int',
         'page_num' => 'int|default[1]|min[1]',
