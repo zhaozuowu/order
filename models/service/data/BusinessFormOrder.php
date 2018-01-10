@@ -23,7 +23,7 @@ class Service_Data_BusinessFormOrder
     /**
      * 创建业态订单
      * @param array $arrInput
-     * @return void
+     * @return integer
      */
     public function createBusinessFormOrder($arrInput)
     {
@@ -43,6 +43,7 @@ class Service_Data_BusinessFormOrder
             $objBusinessFormOrder->create($arrCreateParams, false);
             Model_Orm_BusinessFormOrderSku::batchInsert($arrBatchSkuCreateParams, false);
         });
+        return $arrCreateParams['business_form_order_id'];
     }
 
 
@@ -80,7 +81,7 @@ class Service_Data_BusinessFormOrder
             $arrFreezeStockItem = [];
             $arrFreezeStockItem['sku_id'] = $arrSkuItem['sku_id'];
             $arrFreezeStockItem['frozen_amount'] = $arrSkuItem['order_amount'];
-            $arrFreezeStockDetail[] = $arrSkuDetailItem;
+            $arrFreezeStockDetail[] = $arrFreezeStockItem;
         }
         return [$intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail];
     }
@@ -121,18 +122,6 @@ class Service_Data_BusinessFormOrder
         if (!empty($arrInput['customer_address'])) {
             $arrCreateParams['customer_address'] = strval($arrInput['customer_address']);
         }
-        if (!empty($arrInput['customer_location'])) {
-            $arrCreateParams['customer_location'] = strval($arrInput['customer_location']);
-        }
-        if (!empty($arrInput['location_source'])) {
-            $arrCreateParams['location_source'] = intval($arrInput['location_source']);
-        }
-        if (!empty($arrInput['customer_city_id'])) {
-            $arrCreateParams['customer_city_id'] = intval($arrInput['customer_city_id']);
-        }
-        if (!empty($arrInput['customer_city_name'])) {
-            $arrCreateParams['customer_city_name'] = strval($arrInput['customer_city_name']);
-        }
         return $arrCreateParams;
     }
 
@@ -160,19 +149,6 @@ class Service_Data_BusinessFormOrder
         }
         return $arrBatchSkuCreateParams;
     }
-
-    /**
-     * 获取出库单创建参数
-     * @param array $arrInput
-     * @return array
-     */
-    public function getStockoutCreateParams($arrInput) {
-        $arrStockoutCreateParams = $this->getCreateParams($arrInput);
-        $arrStockoutCreateParams['stockout_order_id'] = Order_Util_Util::generateStockoutOrderId();
-        $arrStockoutCreateParams['stockout_order_type'] = Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_RETURN;
-        return $arrStockoutCreateParams;
-    }
-
 
     /**
      * 获取业态订单总数

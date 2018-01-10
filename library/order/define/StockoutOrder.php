@@ -17,6 +17,18 @@ class Order_Define_StockoutOrder
     const STOCKOUTED_STOCKOUT_ORDER_STATUS = 30;//已出库
     const STOCKOUT_ORDER_AUDIT_FAILED = 40;//审核不通过
     const STOCKOUT_ORDER_DESTORYED = 50;//已作废
+    const AUDIT_NOT_THROUGH_STOCKOUT_ORDER_STATUS = 40;//审核不通过
+    const INVALID_STOCKOUT_ORDER_STATUS = 50;//已作废
+
+
+    /**
+     * 签收状态
+     */
+    const  SIGNUP_STATUS_LIST = [
+      '1' => '签收',
+      '3' => '部分签收',
+    ];
+
     /**
      * 出库单状态列表
      * @var array
@@ -48,9 +60,9 @@ class Order_Define_StockoutOrder
         '1' => '箱',
     ];
 
-    const STOCKOUT_ORDER_TYPE_STOCKOUT = 1;
+    const STOCKOUT_ORDER_TYPE_ORDER = 1;
     const STOCKOUT_ORDER_TYPE_RETURN = 2;
-
+    const STOCKOUT_ORDER_TYPE_STOCK = 3;
     /**
      * 出库单类型列表
      * @var array
@@ -58,6 +70,7 @@ class Order_Define_StockoutOrder
     const STOCKOUT_ORDER_TYPE_LIST = [
         self::STOCKOUT_ORDER_TYPE_STOCKOUT => '订单出货',
         self::STOCKOUT_ORDER_TYPE_RETURN => '采购退款',
+        self::STOCKOUT_ORDER_TYPE_STOCK => '配货出库',
     ];
     /**
      * 出库单打印状态列表
@@ -76,5 +89,6 @@ class Order_Define_StockoutOrder
     const STOCKOUT_ORDER_IS_CANCEL = 1;
     const STOCKOUT_ORDER_NOT_CANCEL = 2;
 
-
+    const  APP_NWMS_ORDER_APP_ID = 6;//日志app_id
+    const  APP_NWMS_ORDER_LOG_TYPE = 6;//业务类型
 }
