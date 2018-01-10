@@ -31,12 +31,55 @@
  * @method static Generator|Model_Orm_BusinessFormOrder[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
-*/
+ */
 
-class Model_Orm_BusinessFormOrder extends Wm_Orm_ActiveRecord
+class Model_Orm_BusinessFormOrder extends Order_Base_Orm
 {
 
     public static $tableName = 'business_form_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * 获取业态订单信息
+     * @param $arrConditions
+     * @param array $arrColumns
+     * @param null $intOffset
+     * @param null $intLimit
+     * @return array
+     */
+    public static function getBusinessFormOrderListByConditions($arrConditions, $arrColumns = [], $intOffset = null, $intLimit = null)
+    {
+        if (empty($arrColumns)) {
+            $arrColumns = self::getAllColumns();
+        }
+        return self::findRows($arrColumns, $arrConditions, ['create_time' => 'desc'], $intOffset, $intLimit);
+    }
+
+
+    /**
+     * 根据出库单号获取出库单信息
+     * @param $strOrderId 业态订单号
+     * @return array
+     */
+    public static function getBusinessFormOrderByOrderId($strOrderId)
+    {
+        Bd_Log::debug(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
+        $strOrderId = empty($strOrderId) ? 0 : intval($strOrderId);
+        if (empty($strOrderId)) {
+            return [];
+        }
+        $condition = ['business_form_order_id' => $strOrderId];
+        $arrList = self::findOne($condition);
+        if (empty($arrList)) {
+            return [];
+        }
+        $arrList = $arrList->toArray();
+        Bd_Log::debug(__METHOD__ . ' return: ' . json_encode($arrList));
+        return $arrList;
+
+
+    }
+
+
 }
