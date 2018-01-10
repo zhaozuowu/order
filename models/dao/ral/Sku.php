@@ -25,6 +25,12 @@ class Dao_Ral_Sku
     const API_RALER_GET_SKU_INFO = 'getskuinfo';
 
     /**
+     * get sku infos
+     * @var string
+     */
+    const API_RALER_GET_SKU_INFOS = 'getskuinfos';
+
+    /**
      * init
      */
     public function __construct()
@@ -88,7 +94,8 @@ class Dao_Ral_Sku
      * @param integer $intSkuId
      * @return array
      */
-    public function getSkuInfo($intSkuId) {
+    public function getSkuInfo($intSkuId)
+    {
         $ret = [];
         if (empty($intSkuId)) {
             return $ret;
@@ -99,5 +106,30 @@ class Dao_Ral_Sku
         $ret = $this->objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_GET_SKU_INFO]) ? [] : $ret[self::API_RALER_GET_SKU_INFO];
         return $ret;
+    }
+
+    /**
+     * get sku infos
+     * @param int[] $arrSkuIds
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_Error
+     */
+    public function getSkuInfos($arrSkuIds)
+    {
+        $arrSkus = implode(',', $arrSkuIds);
+        $req = [
+            self::API_RALER_GET_SKU_INFOS => [
+                'sku_ids' => $arrSkus,
+            ],
+        ];
+        Bd_Log::debug('ral getSkuInfos input params: ' . json_encode($req));
+        $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug('ral getSkuInfos out params: ' . json_encode($ret));
+        $arrSkuInfos = [];
+        foreach ($ret[self::API_RALER_GET_SKU_INFOS]['skus'] as $row) {
+            $arrSkuInfos[$row['sku_id']] = $row;
+        }
+        return $arrSkuInfos;
     }
 }

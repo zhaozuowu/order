@@ -159,4 +159,27 @@ class Model_Orm_ReserveOrderSku extends Order_Base_Orm
         $arrResult['list'] = $arrRowsAndTotal['rows'];
         return $arrResult;
     }
+
+    /**
+     * sync stockin sku info
+     * @param $intStockinOrderSkuRealAmount
+     * @param $strStockinOrderSkuExtraInfo
+     * @return bool
+     */
+    public function syncStockinSkuInfo($intStockinOrderSkuRealAmount, $strStockinOrderSkuExtraInfo)
+    {
+        $this->stockin_order_sku_real_amount = $intStockinOrderSkuRealAmount;
+        $this->stockin_order_sku_extra_info = $strStockinOrderSkuExtraInfo;
+        return $this->update();
+    }
+
+    /**
+     * find all stock in sku
+     * @param $intStockinOrderId
+     * @return Model_Orm_ReserveOrderSku[]
+     */
+    public static function findAllStockinSku($intStockinOrderId)
+    {
+        return static::findAll(['reserve_order_id' => $intStockinOrderId, 'is_delete' => Order_Define_Const::NOT_DELETE]);
+    }
 }

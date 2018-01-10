@@ -82,4 +82,8 @@ class Order_Define_Sku
         11 => "杯",
         12 => "根",
     ];
+
+    const SKU_EFFECT_TYPE_PRODUCT = 1;
+
+    const SKU_EFFECT_TYPE_EXPIRE = 2;
 }

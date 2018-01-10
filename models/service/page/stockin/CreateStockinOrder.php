@@ -54,7 +54,7 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
             Order_Error::throwException(Order_Error_Code::SOURCE_ORDER_TYPE_ERROR);
         }
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intType) {
-            $arrSourceOrderInfo = $this->objDataReserve->getReserveOrderInfoByPurchaseOrderId($intSourceOrderId);
+            $arrSourceOrderInfo = $this->objDataReserve->getReserveOrderInfoByReserveOrderId($intSourceOrderId);
             $arrSourceOrderSkus = $this->objDataReserve->getReserveOrderSkuListAll($arrSourceOrderInfo['reserve_order_id']);
 
         } else {

@@ -52,30 +52,41 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param int $intStockinOrderId
      * @param int $intStockinOrderType
      * @param int $intSourceOrderId
+     * @param int $intStockinBatchId
+     * @param int $intSourceSupplierId
      * @param string $strSourceInfo
      * @param int $intStockinOrderStatus
+     * @param int $intCityId
+     * @param string $strCityName
      * @param int $intWarehouseId
-     * @param $strWarehouseName
+     * @param string $strWarehouseName
      * @param int $intStockinTime
+     * @param int $intReserveOrderPlanTime
      * @param int $intStockinOrderPlanAmount
-     * @param int $intStockinOrderReadAmount
+     * @param int $intStockinOrderRealAmount
      * @param int $intStockinOrderCreatorId
      * @param string $strStockinOrderCreatorName
      * @param string $strStockinOrderRemark
+     * @param int $intStockinOrderTotalPrice
+     * @param  int$intStockinOrderTotalPriceTax
      * @return int
      */
     public static function createStockinOrder(
         $intStockinOrderId,
         $intStockinOrderType,
         $intSourceOrderId,
+        $intStockinBatchId,
         $intSourceSupplierId,
         $strSourceInfo,
         $intStockinOrderStatus,
+        $intCityId,
+        $strCityName,
         $intWarehouseId,
         $strWarehouseName,
         $intStockinTime,
+        $intReserveOrderPlanTime,
         $intStockinOrderPlanAmount,
-        $intStockinOrderReadAmount,
+        $intStockinOrderRealAmount,
         $intStockinOrderCreatorId,
         $strStockinOrderCreatorName,
         $strStockinOrderRemark,
@@ -87,14 +98,18 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_id' => intval($intStockinOrderId),
             'stockin_order_type' => intval($intStockinOrderType),
             'source_order_id' => intval($intSourceOrderId),
+            'stockin_batch_id' => intval($intStockinBatchId),
             'source_supplier_id' => intval($intSourceSupplierId),
             'source_info' => strval($strSourceInfo),
             'stockin_order_status' => intval($intStockinOrderStatus),
+            'city_id' => intval($intCityId),
+            'city_name' => strval($strCityName),
             'warehouse_id' => intval($intWarehouseId),
             'warehouse_name' => intval($strWarehouseName),
             'stockin_time' => $intStockinTime,
+            'reserve_order_plan_time' => $intReserveOrderPlanTime,
             'stockin_order_plan_amount' => $intStockinOrderPlanAmount,
-            'stockin_order_real_amount' => $intStockinOrderReadAmount,
+            'stockin_order_real_amount' => $intStockinOrderRealAmount,
             'stockin_order_creator_id' => $intStockinOrderCreatorId,
             'stockin_order_creator_name' => $strStockinOrderCreatorName,
             'stockin_order_remark' => $strStockinOrderRemark,
