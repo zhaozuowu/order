@@ -122,4 +122,12 @@ class Order_Statistics_Type
         self::ACTION_UPDATE => true,
     ];
 
+    /**
+     * stockin map
+     * @var array
+     */
+    const STOCKIN_MAP = [
+        Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE => self::TABLE_STOCKIN_RESERVE,
+        Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT => self::TABLE_STOCKIN_STOCKOUT,
+    ];
 }

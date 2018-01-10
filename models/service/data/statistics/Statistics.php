@@ -76,7 +76,7 @@ class Service_Data_Statistics_Statistics
      * @param int $intType
      * @param bool $boolSplit
      * @return array
-     * @throws Order_BusinessError
+     * @throws Order_Error
      * @throws Nscm_Exception_Error
      */
     private function getDbRow($intOrderId, $intType, $boolSplit = true)
@@ -174,7 +174,7 @@ class Service_Data_Statistics_Statistics
      * @param int $intType
      * @param bool $boolSplit
      * @return array
-     * @throws Order_BusinessError
+     * @throws Order_Error
      */
     private function assemble($arrMaster, $arrSlave, $arrSku, $intType, $boolSplit = true)
     {
@@ -202,13 +202,12 @@ class Service_Data_Statistics_Statistics
      * get columns
      * @param int $intTableType
      * @return array
-     * @throws Order_BusinessError
+     * @throws Order_Error
      */
     private function getColumns($intTableType) {
         $strConst = 'Order_Statistics_Column::' . Order_Statistics_Type::TABLE_MAP[$intTableType];
         if (!defined($strConst)) {
-            // @todo not in table
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+            Order_Error::throwException(Order_Error_Code::TABLE_NOT_EXIST);
         }
         return constant($strConst);
     }
@@ -237,14 +236,13 @@ class Service_Data_Statistics_Statistics
      * @param int $intSourceId
      * @param int $intType
      * @return array
-     * @throws Order_BusinessError
+     * @throws Order_Error
      */
     private function getMaster($intSourceId, $intType)
     {
         $arrOrm = Order_Statistics_Table::ORM_TABLE[$intType];
         if (empty($arrOrm)) {
-            // @todo not in orm
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+            Order_Error::throwException(Order_Error_Code::ORM_NOT_EXIST);
         }
         $arrCondition = [
             $arrOrm['master_key'] => $intSourceId,
@@ -263,14 +261,13 @@ class Service_Data_Statistics_Statistics
      * @param int $intSourceId
      * @param int $intType
      * @return array
-     * @throws Order_BusinessError
+     * @throws Order_Error
      */
     private function getSlave($intSourceId, $intType)
     {
         $arrOrm = Order_Statistics_Table::ORM_TABLE[$intType];
         if (empty($arrOrm)) {
-            // @todo not in orm
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+            Order_Error::throwException(Order_Error_Code::ORM_NOT_EXIST);
         }
         $arrCondition = [
             $arrOrm['slave_key'] => $intSourceId,
