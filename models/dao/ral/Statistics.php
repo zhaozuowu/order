@@ -8,8 +8,6 @@
 class Dao_Ral_Statistics
 {
 
-    const TOPIC = 'nwmsorderstatistics';
-
     /**
      * @param int $intTable <p>
      * table：表，1-采购入库，2-销退入库，3-出库
@@ -39,7 +37,7 @@ class Dao_Ral_Statistics
         ];
         Bd_Log::trace('send wmq cmd, req: ' . json_encode($arrInput));
         Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_SYNC_FORM_STATISTICS, $arrInput,
-            strval($intType . $intKey), self::TOPIC);
+            strval($intType . $intKey), Order_Define_Cmd::NWMS_ORDER_TOPIC);
         return true;
     }
 }

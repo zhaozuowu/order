@@ -27,6 +27,12 @@ class Dao_Ral_Order_Warehouse
     const API_RALER_GET_WAREHOUSE_BY_CITY = 'getwarehousebycityid';
 
     /**
+     * get warehouse info by id
+     * @var string
+     */
+    const API_RALER_GET_WAREHOUSE_INFO_BY_ID = 'getwarehousebyid';
+
+    /**
      * init
      */
     public function __construct()
@@ -67,6 +73,24 @@ class Dao_Ral_Order_Warehouse
         return $ret;        
     }
 
+    /**
+     * get warehouse info by warehouse id
+     * @param int $intWarehouseId
+     * @return array
+     * @throws Nscm_Exception_Error
+     */
+    public function getWarehouseInfoByWarehouseId($intWarehouseId)
+    {
+        $req = [
+            self::API_RALER_GET_WAREHOUSE_INFO_BY_ID => [
+                'warehouse_id' => strval($intWarehouseId),
+            ],
+        ];
+        Bd_Log::debug('ral get warehouse info request params: ' . json_encode($req));
+        $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug('ral get warehouse info response params: ' . json_encode($ret));
+        return $ret[self::API_RALER_GET_WAREHOUSE_INFO_BY_ID]['query_result'][0] ?? [];
+    }
 
 }
 
