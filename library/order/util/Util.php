@@ -35,6 +35,15 @@ class Order_Util_Util
     }
 
     /**
+     * generate stock adjust order id
+     * @return void
+     */
+    public static function generateStockAdjustOrderId()
+    {
+        return Nscm_Lib_IdGenerator::sequenceDateNumber();
+    }
+
+    /**
      * geenerate business form order id
      * @return void
      */
