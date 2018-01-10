@@ -66,10 +66,33 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
             $arrFormatRetItem['warehouse_contact_phone'] = empty($arrRetItem['warehouse_contact_phone']) ? '' : $arrRetItem['warehouse_contact_phone'];
             $arrFormatRetItem['reserve_order_remark'] = empty($arrRetItem['reserve_order_remark']) ? '' : $arrRetItem['reserve_order_remark'];
             $arrFormatRetItem['stockin_order_real_amount'] = empty($arrRetItem['stockin_order_real_amount']) ? 0 : $arrRetItem['stockin_order_real_amount'];
-            $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $arrRetItem['skus'];
+            $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $this->formatSku($arrRetItem['skus']);
             $arrFormatRet['list'][] = $arrFormatRetItem;
         }
         return $arrFormatRet;        
+    }
+
+    /**
+     *format sku result
+     * @param array $arrSkus
+     * @return array
+     */
+    public function formatSku($arrSkus) {
+        $arrFormatSkus = [];
+        if (empty($arrSkus)) {
+            return $arrFormatSkus;
+        }
+        foreach($arrSkus as $arrSkuItem) {
+            $arrFormatSkuItem = [];
+            $arrFormatSkuItem['upc_id'] = empty($arrSkuItem['upc_id']) ? '' : $arrSkuItem['upc_id'];
+            $arrFormatSkuItem['sku_name'] = empty($arrSkuItem['sku_name']) ? '' : $arrSkuItem['sku_name'];
+            $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ? '' : $arrSkuItem['sku_net'];
+            $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
+            $arrFormatSkuItem['plan_amount'] = empty($arrSkuItem['reserve_order_sku_plan_amount']) ? 0 : $arrSkuItem['reserve_order_sku_plan_amount'];
+            $arrFormatSkuItem['real_amount'] = empty($arrSkuItem['stockin_order_sku_real_amount']) ? 0 : $arrSkuItem['stockin_order_sku_real_amount'];
+            $arrFormatSkus[] = $arrFormatSkuItem;
+        }
+        return $arrFormatSkus;
     }
 
 

@@ -347,7 +347,8 @@ class Service_Data_Reserve_ReserveOrder
         $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
         $arrSkuColumns = ['reserve_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount'];
         $arrReserveSkuList = Model_Orm_ReserveOrderSku::findRows($arrSkuColumns, $arrConditions);
-        $arrReserveSkuList = array_column($arrReserveSkuList,null,'reserve_order_id');
+        //$arrReserveSkuList = array_column($arrReserveSkuList,null,'reserve_order_id');
+        $arrReserveSkuList = $this->arrayToKeyValue($arrReserveSkuList, 'reserve_order_id');
         foreach ($arrRetList as $key=>$item) {
             $arrRetList[$key]['warehouse_contact'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact']:'';
             $arrRetList[$key]['warehouse_contact_phone'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact_phone']:'';
@@ -384,5 +385,25 @@ class Service_Data_Reserve_ReserveOrder
             $arrReserveOrderIds[$intKey] = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
         }
         return $arrReserveOrderIds;
+    }
+
+    /**
+     * transfer array to key value pair
+     * @param array $arr
+     * @param string $primary_key
+     * @return array
+     */
+    private function arrayToKeyValue($arr, $primary_key)
+    {
+        if (empty($arr) || empty($primary_key)) {
+            return array();
+        }
+        $arrKeyValue = array();
+        foreach ($arr as $key=>$item) {
+            if (isset($item[$primary_key])) {
+                $arrKeyValue[$item[$primary_key]][] = $item;
+            }
+        }
+        return $arrKeyValue;
     }
 }
