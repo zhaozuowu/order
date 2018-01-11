@@ -98,9 +98,13 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
             $arrRoundResult['reserve_order_plan_amount'] = empty($arrListItem['reserve_order_plan_amount']) ? '' : intval($arrListItem['reserve_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? '' : intval($arrListItem['stockin_order_real_amount']);
             $arrRoundResult['sku_price'] = empty($arrListItem['sku_price']) ? '' : intval($arrListItem['sku_price']);
+            $arrRoundResult['sku_price_yuan'] = empty($arrListItem['sku_price']) ? '' : sprintf('%0.2f', intval($arrListItem['sku_price'])/100);
             $arrRoundResult['sku_price_tax'] = empty($arrListItem['sku_price_tax']) ? '' : intval($arrListItem['sku_price_tax']);
+            $arrRoundResult['sku_price_tax_yuan'] = empty($arrListItem['sku_price_tax']) ? '' : sprintf('%0.2f', intval($arrListItem['sku_price_tax'])/100);
             $arrRoundResult['stockin_order_sku_total_price'] = empty($arrListItem['stockin_order_sku_total_price']) ? '' : intval($arrListItem['stockin_order_sku_total_price']);
+            $arrRoundResult['stockin_order_sku_total_price_yuan'] = empty($arrListItem['stockin_order_sku_total_price']) ? '' : sprintf('%0.2f', intval($arrListItem['stockin_order_sku_total_price'])/100);
             $arrRoundResult['stockin_order_sku_total_price_tax'] = empty($arrListItem['stockin_order_sku_total_price_tax']) ? '' : intval($arrListItem['stockin_order_sku_total_price_tax']);
+            $arrRoundResult['stockin_order_sku_total_price_tax_yuan'] = empty($arrListItem['stockin_order_sku_total_price_tax']) ? '' : sprintf('%0.2f', intval($arrListItem['stockin_order_sku_total_price_tax'])/100);
 
             $arrFormatResult['list'][] = $arrRoundResult;
         }
