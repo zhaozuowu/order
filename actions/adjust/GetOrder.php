@@ -7,15 +7,13 @@
 
 class Action_GetOrder extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected $boolCheckAuth = false;
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
         'warehouse_ids'             => 'arr|required|arr_min[1]|type[int]',
-        'stock_adjust_order_id'     => 'regex|patern[/^(SAO\d{13})?$/]|optional',
+        'stock_adjust_order_id'     => 'regex|patern[/^(SAO\d{13})?$/]',
         'adjust_type'               => 'int|optional',
         'begin_date'                => 'int|optional',
         'end_date'                  => 'int|optional',
@@ -40,7 +38,20 @@ class Action_GetOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
+        $this->convertWarehouseIds2Array();
         $this->objPage = new Service_Page_Adjust_GetOrder();
+    }
+
+    protected function convertWarehouseIds2Array() {
+        if ($this->intMethod == Order_Define_Const::METHOD_GET) {
+            if(!empty($this->arrReqGet['warehouse_ids'])) {
+                $this->arrReqGet['warehouse_ids'] = explode(',', $this->arrReqGet['warehouse_ids']);
+            }
+        } else if ($this->intMethod == Order_Define_Const::METHOD_POST) {
+            if(!empty($this->arrReqPost['warehouse_ids'])) {
+                $this->arrReqPost['warehouse_ids'] = explode(',', $this->arrReqPost['warehouse_ids']);
+            }
+        }
     }
 
     /**

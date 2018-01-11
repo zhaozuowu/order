@@ -219,41 +219,41 @@ class Order_Error_Code extends Wm_Error_Code
      * 库存调整-出库失败
      * @var integer
      */
-    const NWMS_ADJUST_STOCKOUT_FAIL = 340012;
+    const NWMS_ADJUST_STOCKOUT_FAIL = 350012;
 
     /**
      * 库存调整-sku效期类型不识别
      * @var integer
      */
-    const NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR = 340013;
+    const NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR = 350013;
 
     /**
      * 库存调整-sku id 不存在
      * @var integer
      */
-    const NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR = 340014;
+    const NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR = 350014;
 
     /**
      * 库存调整-调整类型不正确
      * @var integer
      */
-    const NWMS_ADJUST_TYPE_ERROR = 340015;
+    const NWMS_ADJUST_TYPE_ERROR = 350015;
 
     /**
      * 库存调整-调整类型数量不正确
      * @var integer
      */
-    const NWMS_ADJUST_AMOUNT_ERROR = 340016;
+    const NWMS_ADJUST_AMOUNT_ERROR = 350016;
 
     /**
      * 库存调整-获取用户信息（用户名、用户ID）失败
      * @var integer
      */
-    const NWMS_ADJUST_GET_USER_ERROR = 340017;
+    const NWMS_ADJUST_GET_USER_ERROR = 350017;
 
     /**
      * 查询商品库存信息失败
      * @var integer
      */
-    const NWMS_ADJUST_GET_STOCK_INTO_FAIL = 340018;
+    const NWMS_ADJUST_GET_STOCK_INTO_FAIL = 350018;
 }

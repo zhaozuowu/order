@@ -50,41 +50,10 @@ class Service_Data_StockAdjustOrder
             return [];
         }
         $arrSkuIds = array_unique($arrSkuIds);
-        //todo 等待接口
-        return [
-            '1000001' => [
-                'sku_id' => 1000001,
-                'sku_name' => 'skuname1',
-                'sku_category_1_name' => '水果1',
-                'sku_category_2_name' => '水果2',
-                'sku_category_3_name' => '苹果',
-                'sku_from_country' => '进口',
-                'sku_effect_alarm_day' => 5,
-                'sku_effect_type' => 1,
-                'sku_effect_day' => 1000,
-                'upc_id' => 1000,
-                'upc_unit' => 1,
-                'upc_unit_num' => 1000,
-                'sku_net' => 1000,
-                'sku_net_unit' => 1,
-            ],
-            '1000002' => [
-                'sku_id' => 1000002,
-                'sku_name' => 'skuname2',
-                'sku_category_1_name' => '饮料1',
-                'sku_category_2_name' => '饮料2',
-                'sku_category_3_name' => '矿泉水',
-                'sku_from_country' => '国产',
-                'sku_effect_alarm_day' => 10,
-                'sku_effect_type' => 2,
-                'sku_effect_day' => 0,
-                'upc_id' => 1000,
-                'upc_unit' => 2,
-                'upc_unit_num' => 1000,
-                'sku_net' => 1000,
-                'sku_net_unit' => 2,
-            ],
-        ];
+
+        $daoRalSku = new Dao_Ral_Sku();
+        $arrSkuInfos = $daoRalSku->getSkuInfos($arrSkuIds);
+        return $arrSkuInfos;
     }
 
     /**
@@ -278,9 +247,9 @@ class Service_Data_StockAdjustOrder
                 'sku_id'                    => $arrDetail['sku_id'],
                 'sku_name'                  => $arrSkuInfo['sku_name'],
                 'adjust_amount'             => $arrDetail['adjust_amount'],
-                'upc_id'                    => $arrSkuInfo['upc_id'],
-                'upc_unit'                  => $arrSkuInfo['upc_unit'],
-                'upc_unit_num'              => $arrSkuInfo['upc_unit_num'],
+                'upc_id'                    => $arrSkuInfo['min_upc']['upc_id'],
+                'upc_unit'                  => $arrSkuInfo['min_upc']['upc_unit'],
+                'upc_unit_num'              => $arrSkuInfo['min_upc']['upc_unit_num'],
                 'sku_net'                   => $arrSkuInfo['sku_net'],
                 'sku_net_unit'              => $arrSkuInfo['sku_net_unit'],
                 'unit_price'                => $arrDetail['unit_price'],
@@ -452,6 +421,8 @@ class Service_Data_StockAdjustOrder
         if(empty($intSkuEffectType)) {
             return $arrDetail;
         }
+
+        $intSkuEffectType = intval($intSkuEffectType);
 
         // 如果是生产日期型的，有效期天数必传
         if(Nscm_Define_Sku::SKU_EFFECT_FROM === $intSkuEffectType) {
