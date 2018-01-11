@@ -48,6 +48,16 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     public static $clusterName = 'nwms_order_cluster';
 
     /**
+     * find reserve order
+     * @param int $intReserveOrderId
+     * @return Model_Orm_ReserveOrder
+     */
+    public static function findReserveOrder($intReserveOrderId)
+    {
+        return static::findOne(['reserve_order_id' => $intReserveOrderId, 'is_delete' => Order_Define_Const::NOT_DELETE]);
+    }
+
+    /**
      * 查询预约订单列表
      *
      * @param $arrReserveOrderStatus
@@ -277,5 +287,22 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
         }
 
         return true;
+    }
+
+    /**
+     * sync stockin information to reserve info
+     * @param int $intStockinOrderId
+     * @param int $intStockinTime
+     * @param int $intStockinOrderRealAmount
+     * @param int $intReserveOrderStatus
+     * @return bool
+     */
+    public function syncStockinInfo($intStockinOrderId, $intStockinTime, $intStockinOrderRealAmount, $intReserveOrderStatus)
+    {
+        $this->stockin_order_id = $intStockinOrderId;
+        $this->stockin_time = $intStockinTime;
+        $this->stockin_order_real_amount = $intStockinOrderRealAmount;
+        $this->reserve_order_status = $intReserveOrderStatus;
+        return $this->update();
     }
 }

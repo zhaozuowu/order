@@ -1,10 +1,10 @@
 <?php
 /**
- * @name Service_Page_Purchase_DestroyPurchaseOrder
+ * @name Service_Page_Reserve_DestroyReserveOrder
  * @desc Service_Page_Purchase_DestroyPurchaseOrder
  * @author lvbochao@iwaimai.baidu.com
  */
-class Service_Page_Purchase_DestroyPurchaseOrder implements Order_Base_Page
+class Service_Page_Reserve_DestroyReserveOrder implements Order_Base_Page
 {
     /**
      * @var Service_Data_Reserve_ReserveOrder
@@ -20,14 +20,16 @@ class Service_Page_Purchase_DestroyPurchaseOrder implements Order_Base_Page
     }
 
     /**
+     * do execute
      * @param array $arrInput
      * @return array
+     * @throws Order_BusinessError
      */
     public function execute($arrInput)
     {
         $intNscmPurchaseOrderId = intval($arrInput['purchase_order_id']);
         $intDestroyType = intval($arrInput['destroy_type']);
-        $this->objDataReserve->destroyPurchaseOrder($intNscmPurchaseOrderId, $intDestroyType);
+        $this->objDataReserve->destroyReserveOrder($intNscmPurchaseOrderId, $intDestroyType);
         return [];
     }
 }

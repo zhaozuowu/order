@@ -8,26 +8,6 @@
 class Action_CreateStockinOrder extends Order_Base_Action
 {
     /**
-     * 是否验证登陆
-     * @var boolean
-     */
-    protected $boolCheckLogin = false;
-
-    /**
-     * 判断是否有权限
-     *
-     * @var boolean
-     */
-    protected $boolCheckAuth = false;
-
-    /**
-     * 是否校内网IP
-     *
-     * @var boolean
-     */
-    protected $boolCheckIp = true;
-
-    /**
      * input params
      * @var array
      */
@@ -46,7 +26,7 @@ class Action_CreateStockinOrder extends Order_Base_Action
                     'type' => 'array',
                     'params' => [
                         'amount' => 'int|required',
-                        'expire_date' => 'regex|patern[/^\d{4}-\d{2}-\d{2}$/]',
+                        'expire_date' => 'int|required',
                     ]
                 ],
             ],
