@@ -68,7 +68,7 @@ class Order_Define_StockoutOrder
      * @var array
      */
     const STOCKOUT_ORDER_TYPE_LIST = [
-        self::STOCKOUT_ORDER_TYPE_STOCKOUT => '订单出货',
+        self::STOCKOUT_ORDER_TYPE_ORDER => '订单出货',
         self::STOCKOUT_ORDER_TYPE_RETURN => '采购退款',
         self::STOCKOUT_ORDER_TYPE_STOCK => '配货出库',
     ];
