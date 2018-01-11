@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_ExportOrderDetail
+ * @name Action_GetOrderDetailFormApi
  * @desc 导出库存调整单SKU
  * @author sunzhixin@iwaimai.baidu.com
  */
 
-class Action_ExportOrderDetail extends Order_Base_Action
+class Action_GetOrderDetailFormApi extends Order_Base_Action
 {
     protected $boolCheckLogin = false;
     protected $boolCheckAuth = false;
@@ -15,7 +15,7 @@ class Action_ExportOrderDetail extends Order_Base_Action
      */
     protected $arrInputParams = [
         'warehouse_ids'             => 'arr|required|arr_min[1]|type[int]',
-        'stock_adjust_order_id'     => 'regex|patern[/^(SAO\d{13})?$/]|optional',
+        'stock_adjust_order_id'     => 'regex|patern[/^(SAO\d{13})?$/]',
         'adjust_type'               => 'int|optional',
         'begin_date'                => 'int|required',
         'end_date'                  => 'int|required',
@@ -43,9 +43,21 @@ class Action_ExportOrderDetail extends Order_Base_Action
      */
     public function myConstruct()
     {
+        $this->convertWarehouseIds2Array();
         $this->objPage = new Service_Page_Adjust_ExportOrderDetail();
     }
 
+    protected function convertWarehouseIds2Array() {
+        if ($this->intMethod == Order_Define_Const::METHOD_GET) {
+            if(!empty($this->arrReqGet['warehouse_ids'])) {
+                $this->arrReqGet['warehouse_ids'] = explode(',', $this->arrReqGet['warehouse_ids']);
+            }
+        } else if ($this->intMethod == Order_Define_Const::METHOD_POST) {
+            if(!empty($this->arrReqPost['warehouse_ids'])) {
+                $this->arrReqPost['warehouse_ids'] = explode(',', $this->arrReqPost['warehouse_ids']);
+            }
+        }
+    }
     /**
      * format result
      * @param array $data

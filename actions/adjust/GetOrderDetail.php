@@ -7,15 +7,13 @@
 
 class Action_GetOrderDetail extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected $boolCheckAuth = false;
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
         'warehouse_id'              => 'int|required',
-        'stock_adjust_order_id'     => 'regex|patern[/^(SAO\d{13})?$/]|required',
+        'stock_adjust_order_id'     => 'regex|patern[/^(SAO\d{13})?$/]',
         'page_num'                  => 'int|default[1]',
         'page_size'                 => 'int|required',
     ];
