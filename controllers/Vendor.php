@@ -11,6 +11,6 @@ class Controller_Vendor extends Ap_Controller_Abstract {
      * @var array
      */
     public $actions = array(
-        'getvendorsugbyname' => 'actions/vendor/GetVendorSugByName.php',
+        'getvendorsugbyname' => 'actions/vendor/GetVendorSugByName.php', #供货商名称sug(彩云支持沧海跨域访问)#
     );
 }
