@@ -111,41 +111,38 @@ class Service_Page_Adjust_ExportOrderDetail
         return $arrRet;
     }
 
+    /**
+     * 获取sku详情
+     * @param array $arrSkuIds sku id 数组
+     * @return array
+     */
+    protected function getSkuInfos($arrSkuIds) {
+        if(empty($arrSkuIds)) {
+            return [];
+        }
+        $arrSkuIds = array_unique($arrSkuIds);
 
-    protected function getSkuInfos($skuIds)
-    {
-        //todo 等待接口
-        return [
-            '1238' => [
-                'sku_category_1_name' => '水果1',
-                'sku_category_2_name' => '水果2',
-                'sku_category_3_name' => '苹果',
-                'sku_from_country' => '是',
-            ],
-            '1239' => [
-                'sku_category_1_name' => '饮料1',
-                'sku_category_2_name' => '饮料2',
-                'sku_category_3_name' => '矿泉水',
-                'sku_from_country' => '否',
-            ],
-        ];
+        $daoRalSku = new Dao_Ral_Sku();
+        $arrSkuInfos = $daoRalSku->getSkuInfos($arrSkuIds);
+        return $arrSkuInfos;
     }
 
+    /**
+     * 获取仓库信息
+     * @param $warehouseIds
+     * @return mixed
+     */
     protected function getWarehouseInfos($warehouseIds)
     {
-        //todo 等待接口
-        return [
-            '1' => ['warehouse_id' => '1',
-                'warehouse_name' => 'wh1',
-                'city_name' => 'bj',
-                'city_id' => '1001',
-            ],
-            '2' => ['warehouse_id' => '2',
-                'warehouse_name' => 'wh2',
-                'city_name' => 'bj',
-                'city_id' => '1001',
-            ],
-        ];
+        if(empty($warehouseIds)) {
+            return [];
+        }
+
+        $warehouseIds = array_unique($warehouseIds);
+
+        $ralWarehouse = new Dao_Ral_Order_Warehouse();
+        $arrWarehouseInfos = $ralWarehouse->getWareHouseList($warehouseIds);
+        return $arrWarehouseInfos;
     }
 
     protected function getOrderInfos($orderList)
