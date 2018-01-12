@@ -9,10 +9,10 @@ class Controller_Reserve extends Ap_Controller_Abstract {
         'createreserveorder' => 'actions/reserve/CreateReserveOrder.php',
         'createreserveorderwrite' => 'actions/reserve/CreateReserveOrderWrite.php',
         'destroyreserveorder' => 'actions/reserve/DestroyReserveOrder.php',
-        'getreserveorderlist' => 'actions/reserve/GetReserveOrderList.php',
-        'getreserveorderstatistics' => 'actions/reserve/GetReserveOrderStatistics.php',
-        'getreserveorderdetail' => 'actions/reserve/GetReserveOrderDetail.php',
-        'getreserveorderskulist' => 'actions/reserve/GetReserveOrderSkuList.php',
-        'getreserveorderprintlist' => 'actions/reserve/GetReserveOrderPrintList.php', //预约入库单打印
+        'getreserveorderlist' => 'actions/reserve/GetReserveOrderList.php', #获取采购订单列表（分页）#
+        'getreserveorderstatistics' => 'actions/reserve/GetReserveOrderStatistics.php', #查询采购单状态统计#
+        'getreserveorderdetail' => 'actions/reserve/GetReserveOrderDetail.php', #查询采购单详情#
+        'getreserveorderskulist' => 'actions/reserve/GetReserveOrderSkuList.php', #查询采购单商品（分页）#
+        'getreserveorderprintlist' => 'actions/reserve/GetReserveOrderPrintList.php', #预约入库单打印#
     );
 }
