@@ -10,6 +10,12 @@ class Service_Data_StockoutOrder
 
     /**
      * orm obj
+     * @var Dao_Ral_Order_Warehouse
+     */
+    protected  $objWarehouseRal;
+
+    /**
+     * orm obj
      * @var Model_Orm_StockoutOrder
      */
     protected $objOrmStockoutOrder;
@@ -35,6 +41,7 @@ class Service_Data_StockoutOrder
         $this->objOrmSku = new Model_Orm_StockoutOrderSku();
         $this->objDaoRedisStockoutOrder = new Dao_Redis_StockoutOrder();
         $this->objRalStock = new Dao_Ral_Stock();
+        $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
     }
 
 
@@ -416,10 +423,12 @@ class Service_Data_StockoutOrder
         if (empty($arrOrderList)) {
             return $ret;
         }
-        $objWarehouseRal = new Dao_Ral_Order_Warehouse();
-        $arrWarehouseList = $objWarehouseRal->getWareHouseList($arrOrderList['warehouse_id']);
+
+        $arrWarehouseList = $this->objWarehouseRal->getWareHouseList($arrOrderList['warehouse_id']);
+        $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
+        $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
         $arrWarehouseList = !empty($arrWarehouseList) ? array_column($arrWarehouseList, null, 'warehouse_id') : [];
-        $arrOrderList['warehouse_name'] = isset($arrWarehouseList[$arrOrderList['warehouse_id']]) ? $arrWarehouseList[$arrOrderList['warehouse_id']['warehouse_name']] : '';
+        $arrOrderList['warehouse_name'] = isset($arrWarehouseList[$arrOrderList['warehouse_id']]) ? $arrWarehouseList[$arrOrderList['warehouse_id']]['warehouse_name']: '';
         $skuList = $this->objOrmSku->getSkuInfoById($strStockoutOrderId);
         return [
             'stockout_order_info' => $arrOrderList,

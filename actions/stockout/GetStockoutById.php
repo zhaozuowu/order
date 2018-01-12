@@ -48,7 +48,7 @@ class Action_GetStockoutById extends Order_Base_Action
             'stockout_order_id' => empty($arrRet['stockout_order_id']) ? '' : 'SSO'.$arrRet['stockout_order_id'],
             'stockout_order_status' => empty($arrRet['stockout_order_status']) ? '' : Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST[$arrRet['stockout_order_status']],
             'business_form_order_id' => empty($arrRet['business_form_order_id']) ? 0 : intval($arrRet['business_form_order_id']),
-            'warehouse_name' => empty($arrRet['warehouse_name']) ? '' : intval($arrRet['warehouse_name']),
+            'warehouse_name' => empty($arrRet['warehouse_name']) ? '' : $arrRet['warehouse_name'],
             'stockout_order_type' => empty($arrRet['stockout_order_type']) ? '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrRet['stockout_order_type']],
             'stockout_order_source' => empty($arrRet['stockout_order_source']) ? '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_SOURCE_LIST[$arrRet['stockout_order_source']],
             'stockout_create_time' => empty($arrRet['stockout_create_time']) ? 0 : date('Y-m-d H:i:s', $arrRet['stockout_create_time']),
