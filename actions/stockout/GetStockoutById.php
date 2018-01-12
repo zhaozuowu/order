@@ -39,7 +39,7 @@ class Action_GetStockoutById extends Order_Base_Action
     public function format($data)
     {
 
-        $ret = [];
+        $ret = ['stockoutinfo'=>(object)[],'customerinfo'=>(object)[],'stockout_order_skuinfo'=>[]];
         if (empty($data)) {
             return $ret;
         }

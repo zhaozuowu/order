@@ -16,7 +16,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
         'end_time'=>'int|required',
         'page_size' => 'int|required',
         'page_num' => 'int|default[1]',
-        'warehouse_id'=>'str',
+        'warehouse_ids'=>'str',
         'stockout_order_id'=>'str',
         'business_form_order_id'=>'int',
         'sku_name'=>'str',
@@ -30,7 +30,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
      * method
      * @var int
      */
-    protected $intMethod = Order_Define_Const::METHOD_GET;
+    protected $intMethod = Order_Define_Const::METHOD_POST;
 
     /**
      * init object

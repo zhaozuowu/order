@@ -131,8 +131,8 @@ class Service_Data_StockoutOrder
         $skuList = [];
         foreach ($arrStockoutDetail as $key => $item) {
             $row['sku_id'] = $item['sku_id'];
-            $row['frozen_amount'] = $item['order_amount'];
-            $row['stockout_amount'] = $item['pickup_amount'];
+            $row['frozen_amount'] = intval($item['distribute_amount']);
+            $row['stockout_amount'] =intval($item['pickup_amount']);
             $skuList[] = $row;
         }
         return $skuList;
@@ -568,7 +568,7 @@ class Service_Data_StockoutOrder
 
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
-                Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
             }
             //释放库存(已出库不释放库存)
             if ($stockoutOrderInfo['stockout_order_status'] >= Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS) {
@@ -579,9 +579,9 @@ class Service_Data_StockoutOrder
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS);
             }
             $arrStockoutDetail = $this->formatDeleteStockoutOrder($arrStockoutDetail);
-            $rs = $this->objRalStock->unfreezeSkuStock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id'], $arrStockoutDetail);
+            $rs = $this->objRalStock->cancelfreezeskustock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id']);
             if (empty($rs)) {
-                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
             }
         });
 

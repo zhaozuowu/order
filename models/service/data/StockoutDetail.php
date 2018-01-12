@@ -70,6 +70,10 @@ class Service_Data_StockoutDetail
             $arrWareHouseIds = explode(',', $arrInput['warehouse_id']);
             $arrConditions['warehouse_id'] = ['in', $arrWareHouseIds];
         }
+        if (!empty($arrInput['warehouse_ids'])) {
+            $arrWareHouseIds = explode(',', $arrInput['warehouse_ids']);
+            $arrConditions['warehouse_id'] = ['in', $arrWareHouseIds];
+        }
         if (!empty($arrInput['stockout_order_id'])) {
             $arrInput['stockout_order_id'] = ltrim($arrInput['stockout_order_id'], 'SSO');
             $arrConditions['stockout_order_id'] = $arrInput['stockout_order_id'];

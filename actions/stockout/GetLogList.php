@@ -36,12 +36,12 @@ class Action_GetLogList extends Order_Base_Action
      */
     public function format($data)
     {
-        $ret = [];
+        $ret = ['log_list'=>[]];
         if (empty($data)) {
             return $ret;
         }
         $arrFormatRet = [];
-        foreach((array)$data['log_list'] as $arrRetItem) {
+        foreach((array)$data as $arrRetItem) {
             $arrFormatRetItem = [];
             $arrFormatRetItem['create_time'] = empty($arrRetItem['create_time']) ?  '': date('Y-m-d H:i:s',$arrRetItem['create_time']);
             $arrFormatRetItem['operator'] = empty($arrRetItem['operator_name']) ? '' : $arrRetItem['operator_name'];
