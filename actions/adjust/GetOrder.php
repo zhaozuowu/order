@@ -25,7 +25,7 @@ class Action_GetOrder extends Order_Base_Action
      * method
      * @var int
      */
-    protected $intMethod = Order_Define_Const::METHOD_POST;
+    protected $intMethod = Order_Define_Const::METHOD_GET;
 
     /**
      * page service
