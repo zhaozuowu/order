@@ -71,6 +71,7 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
                 'sku_net_gram' => strval(floatval($arrRow['sku_net_gram'])),
                 'sku_price' => intval($arrRow['sku_price']),
                 'sku_price_tax' => intval($arrRow['sku_price_tax']),
+                'sku_tax_rate' => intval($arrRow['sku_tax_rate'] ?? 0),
                 'stockin_order_sku_total_price' => intval($arrRow['stockin_order_sku_total_price']),
                 'stockin_order_sku_total_price_tax' => intval($arrRow['stockin_order_sku_total_price_tax']),
                 'reserve_order_sku_plan_amount' => intval($arrRow['reserve_order_sku_plan_amount']),
