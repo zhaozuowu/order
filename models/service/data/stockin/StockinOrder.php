@@ -385,6 +385,7 @@ class Service_Data_Stockin_StockinOrder
     /**
      * 获取入库单列表（分页）
      * @param $strStockinOrderType
+     * @param $strStockinOrderId,
      * @param $strWarehouseId
      * @param $intSourceSupplierId
      * @param $strSourceOrderId
@@ -399,6 +400,7 @@ class Service_Data_Stockin_StockinOrder
      */
     public function getStockinOrderList(
         $strStockinOrderType,
+        $strStockinOrderId,
         $strWarehouseId,
         $intSourceSupplierId,
         $strSourceOrderId,
@@ -414,6 +416,7 @@ class Service_Data_Stockin_StockinOrder
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
 
+        $intStockinOrderId = Order_Util::trimStockinOrderIdPrefix($strStockinOrderId);
         $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
 
         // 拆解出关联入库单号,较复杂的订单号ID场景处理，根据入库单类型进行，如果类型和查询入库单类型不匹配抛出参数异常
@@ -452,6 +455,7 @@ class Service_Data_Stockin_StockinOrder
 
         return Model_Orm_StockinOrder::getStockinOrderList(
             $arrStockinOrderType,
+            $intStockinOrderId,
             $arrWarehouseId,
             $intSourceSupplierId,
             $arrSourceOrderIdInfo,

@@ -101,15 +101,15 @@ class Dao_Ral_Stock
         if (!empty($intWarehouseId)) {
             $req[self::API_RALER_UNFREEZE_SKU_STOCK]['warehouse_id'] = $intWarehouseId;
         }
-        if (!empty($arrSkuDetail)) {
-            $req[self::API_RALER_UNFREEZE_SKU_STOCK]['stockout_detail'] = $arrStockoutDetail;
+        if (!empty($arrStockoutDetail)) {
+            $req[self::API_RALER_UNFREEZE_SKU_STOCK]['stockout_details'] = $arrStockoutDetail;
         }
         $ret = $this->objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_UNFREEZE_SKU_STOCK]) ? [] : $ret[self::API_RALER_UNFREEZE_SKU_STOCK];
         if (empty($ret) || !empty($ret['error_no'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
         }
-        return $ret;
+        return true;
     }
 
     /**
@@ -136,7 +136,7 @@ class Dao_Ral_Stock
         if (empty($ret) || !empty($ret['error_no'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
         }
-        return $ret;
+        return $ret['result'];
     }
 
     /**

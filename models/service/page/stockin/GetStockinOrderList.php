@@ -33,6 +33,7 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
     public function execute($arrInput)
     {
         $strStockinOrderType = $arrInput['stockin_order_type'];
+        $strStockinOrderId = $arrInput['stockin_order_id'];
         $strWarehouseId = $arrInput['warehouse_id'];
         // source_supplier_id即vendor_id（数据库结构，业务决定）
         $intSourceSupplierId = $arrInput['vendor_id'];
@@ -58,6 +59,7 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
 
         return $this->objServiceData->getStockinOrderList(
             $strStockinOrderType,
+            $strStockinOrderId,
             $strWarehouseId,
             $intSourceSupplierId,
             $strSourceOrderId,

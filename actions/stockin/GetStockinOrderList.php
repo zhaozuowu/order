@@ -13,6 +13,7 @@ class Action_GetStockinOrderList extends Order_Base_Action
      */
     protected $arrInputParams = [
         'stockin_order_type' => 'str|required',
+        'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
         'warehouse_id' => 'str',
         'source_supplier_id' => 'int|min[0]',
         'source_order_id' => 'regex|patern[/^((ASN|SOO)\d{13})?$/]',
@@ -76,12 +77,12 @@ class Action_GetStockinOrderList extends Order_Base_Action
                 }
             }
             $arrRoundResult['source_order_id'] = $strSourceOrderId;
-
             $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? '' : Nscm_Define_OrderPrefix::SIO . intval($arrListItem['stockin_order_id']);
             $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? '' : intval($arrListItem['stockin_order_status']);
             $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? '' : strval($arrListItem['warehouse_name']);
             $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? '' : intval($arrListItem['stockin_time']);
             $arrRoundResult['stockin_order_plan_amount'] = empty($arrListItem['stockin_order_plan_amount']) ? '' : intval($arrListItem['stockin_order_plan_amount']);
+            $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? '' : intval($arrListItem['stockin_order_real_amount']);
             $arrRoundResult['stockin_order_remark'] = empty($arrListItem['stockin_order_remark']) ? '' : strval($arrListItem['stockin_order_remark']);
             $arrRoundResult['create_time'] = empty($arrListItem['create_time']) ? '' : intval($arrListItem['create_time']);
             $arrRoundResult['stockin_order_creator_name'] = empty($arrListItem['stockin_order_creator_name']) ? '' : strval($arrListItem['stockin_order_creator_name']);
