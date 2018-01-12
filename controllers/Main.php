@@ -6,6 +6,6 @@
  */
 class Controller_Main extends Ap_Controller_Abstract {
 	public $actions = array(
-		'getprintlist' => 'actions/GetPrintList.php',
+		'getprintlist' => 'actions/GetPrintList.php',#打印（action不存在）#@skipped#
 	);
 }
