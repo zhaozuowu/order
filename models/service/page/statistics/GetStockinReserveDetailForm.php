@@ -30,7 +30,7 @@ class Service_Page_Statistics_GetStockinReserveDetailForm implements Order_Base_
      */
     public function execute($arrInput)
     {
-        $strWarehouseId = $arrInput['warehouse_id'];
+        $strWarehouseId = $arrInput['warehouse_ids'];
         $strStockinOrderId = $arrInput['stockin_order_id'];
         $strSourceOrderId = $arrInput['source_order_id'];
         $intSkuId = $arrInput['sku_id'];
