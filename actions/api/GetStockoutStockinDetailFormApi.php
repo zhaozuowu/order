@@ -12,7 +12,7 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_id' => 'str',
+        'warehouse_ids' => 'str',
         'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
         'source_order_id' => 'regex|patern[/^(SOO\d{13})?$/]',
         'sku_id' => 'int',
@@ -28,7 +28,7 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
      * method
      * @var int
      */
-    protected $intMethod = Order_Define_Const::METHOD_GET;
+    protected $intMethod = Order_Define_Const::METHOD_POST;
 
     /**
      * construct function

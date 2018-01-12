@@ -12,7 +12,7 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_id' => 'str',
+        'warehouse_ids' => 'str',
         'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
         'source_order_id' => 'regex|patern[/^(ASN\d{13})?$/]',
         'sku_id' => 'int',
@@ -29,7 +29,7 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
      * method
      * @var int
      */
-    protected $intMethod = Order_Define_Const::METHOD_GET;
+    protected $intMethod = Order_Define_Const::METHOD_POST;
 
     /**
      * construct function
@@ -108,6 +108,8 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
 
             $arrFormatResult['list'][] = $arrRoundResult;
         }
+
+
 
         $arrFormatResult['total'] = $arrRet['total'];
 
