@@ -13,6 +13,7 @@ class Action_GetStockinOrderList extends Order_Base_Action
      */
     protected $arrInputParams = [
         'stockin_order_type' => 'str|required',
+        'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
         'warehouse_id' => 'str',
         'source_supplier_id' => 'int|min[0]',
         'source_order_id' => 'regex|patern[/^((ASN|SOO)\d{13})?$/]',

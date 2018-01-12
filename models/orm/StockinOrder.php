@@ -123,6 +123,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * 获取入库单列表（分页）
      *
      * @param $arrStockinOrderType
+     * @param $intStockinOrderId
      * @param $arrWarehouseId
      * @param $intSourceSupplierId
      * @param $arrSourceOrderIdInfo
@@ -135,6 +136,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      */
     public static function getStockinOrderList(
         $arrStockinOrderType,
+        $intStockinOrderId,
         $arrWarehouseId,
         $intSourceSupplierId,
         $arrSourceOrderIdInfo,
@@ -158,6 +160,10 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
                 $arrCondition['stockin_order_type'] = [
                     'in',
                     $arrStockinOrderType];
+            }
+
+            if (!empty($intStockinOrderId)) {
+                $arrCondition['stockin_order_id'] = $intStockinOrderId;
             }
 
             if (!empty($arrWarehouseId)) {
