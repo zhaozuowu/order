@@ -8,6 +8,18 @@
 class Service_Data_StockAdjustOrder
 {
     /**
+     * @var Dao_Ral_Stock
+     */
+    protected $objDaoStock;
+
+    /**
+     * init
+     */
+    public function __construct() {
+        $this->objDaoStock = new Dao_Ral_Stock();
+    }
+
+    /**
      * 新建调整单
      * @param $arrInput
      * @return array
@@ -27,6 +39,7 @@ class Service_Data_StockAdjustOrder
         $this->adjustStock($arrInput, $arrSkuInfos);
 
         $arrRet = $this->insert($arrOrderArg, $arrOrderDetailArg);
+
         return $arrRet;
     }
 
@@ -150,7 +163,6 @@ class Service_Data_StockAdjustOrder
             $arrFormatInput['adjust_type'] = $arrInput['adjust_type'];
         }
 
-        //todo 是否需要判断最大查询时间间隔
         if(!empty($arrInput['begin_date'])) {
             $arrFormatInput['create_time'][] = ['>=', $arrInput['begin_date']];
         }
@@ -187,6 +199,7 @@ class Service_Data_StockAdjustOrder
 
         $intCreator = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
         $strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
+
         if(empty($intCreator) || empty($strCreatorName)) {
             Bd_Log::warning('获取用户信息失败', Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR, $arrInput);
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR);
@@ -199,10 +212,8 @@ class Service_Data_StockAdjustOrder
             'total_adjust_amount'   => $intTotalAmount,
             'adjust_type'           => $arrInput['adjust_type'],
             'remark'                => $arrInput['remark'],
-            'creator'               => '123456',
-            'creator_name'          => 'szx'
-            //'creator'               => $intCreator,
-            //'creator_name'          => $strCreatorName,
+            'creator'               => $intCreator,
+            'creator_name'          => $strCreatorName,
         ];
 
         return $arrOrderArg;
@@ -237,8 +248,13 @@ class Service_Data_StockAdjustOrder
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR);
             }
 
-            // 根据商品效期类型，计算生产日期和有效期
-            $arrDetail = $this->getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+            if(in_array($arrInput['adjust_type'], Nscm_Define_Stock::STOCK_IN_TYPE)) {
+                // 根据商品效期类型，计算生产日期和有效期
+                $arrDetail = $this->getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+            } else {
+                $arrDetail['production_time'] = '';
+                $arrDetail['expire_time'] = '';
+            }
 
             $arrDetail = [
                 'stock_adjust_order_id'     => $arrInput['stock_adjust_order_id'],
@@ -400,7 +416,8 @@ class Service_Data_StockAdjustOrder
         $arrRet = [];
         Bd_Log::debug('调用库存模块参数 ' . print_r($arrStockOut,true));
 
-        $arrRet =  $this->objStock->adjustStockout($arrStockOut['stockin_order_id'],
+        $arrRet =  $this->objDaoStock->adjustStockout(
+            $arrStockOut['stockin_order_id'],
             $arrStockOut['warehouse_id'],
             $arrStockOut['inventory_type'],
             $arrStockOut['stockout_details']);

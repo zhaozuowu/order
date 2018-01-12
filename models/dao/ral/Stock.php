@@ -115,18 +115,20 @@ class Dao_Ral_Stock
     /**
      * 查询商品库存信息
      * @param $intWarehouseId
-     * @param $intSkuIds
+     * @param $arrSkuIds
      * @return array
      */
-    public function getStockInfo($intWarehouseId, $intSkuIds)
+    public function getStockInfo($intWarehouseId, $arrSkuIds)
     {
         $ret = [];
-        if(empty($intWarehouseId) || empty($intSkuIds)) {
+        if(empty($intWarehouseId) || empty($arrSkuIds)) {
             return $ret;
         }
 
+        $strSkuIds = implode(',', $arrSkuIds);
+
         $req[self::API_RALER_STOCK_DETAIL]['warehouse_id'] = $intWarehouseId;
-        $req[self::API_RALER_STOCK_DETAIL]['sku_ids'] = $intSkuIds;
+        $req[self::API_RALER_STOCK_DETAIL]['sku_ids'] = $strSkuIds;
 
 
         $ret = $this->objApiRal->getData($req);

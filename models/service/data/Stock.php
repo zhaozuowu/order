@@ -71,17 +71,4 @@ class Service_Data_Stock
 
         return $arrRet;
     }
-
-    /**
-     * 库存调整-出库
-     * @param $intStockoutOrderId
-     * @param $intWarehouseId
-     * @param $intAdjustType
-     * @param $arrDetails
-     * @return array
-     */
-    public function adjustStockout($intStockoutOrderId, $intWarehouseId, $intAdjustType, $arrDetails)
-    {
-        return $this->objDaoStock->adjustStockout($intStockoutOrderId, $intWarehouseId, $intAdjustType, $arrDetails);
-    }
 }
