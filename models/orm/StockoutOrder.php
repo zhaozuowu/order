@@ -77,6 +77,22 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
     }
 
     /**
+     * 更新数据
+     * @param $arrConditions
+     * @param $updateData
+     * @return bool|int|mysqli|null
+     */
+    public  function updateDataByConditions($arrConditions, $updateData)
+    {
+        Bd_Log::debug(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
+        if (empty($arrConditions)) {
+            return false;
+        }
+        $res  = $this->find($arrConditions)->update($updateData);
+        return $res;
+    }
+
+    /**
      * 根据出库单号更新出库单状态
      * @param $stockoutOrderId
      * @param $updateData
