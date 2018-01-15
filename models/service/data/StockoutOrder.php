@@ -33,6 +33,11 @@ class Service_Data_StockoutOrder
     protected $objDaoRedisStockoutOrder;
 
     /**
+     * stockout order log
+     * @var Dao_Ral_Log
+     */
+
+    /**
      * init
      */
     public function __construct()
@@ -42,6 +47,7 @@ class Service_Data_StockoutOrder
         $this->objDaoRedisStockoutOrder = new Dao_Redis_StockoutOrder();
         $this->objRalStock = new Dao_Ral_Stock();
         $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
+        $this->objRalLog = new Dao_Ral_Log();
     }
 
 
@@ -156,6 +162,12 @@ class Service_Data_StockoutOrder
             $objStockoutOrder = new Model_Orm_StockoutOrder();
             $objStockoutOrder->create($arrCreateParams, false);
             $this->createStockoutOrderSku($arrInput['skus'], $arrCreateParams['stockout_order_id']);
+            $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_INSERT_SUCCESS;
+            $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE;
+            $userName = empty($arrInput['user_info']['user_name']) ? '系统':$arrInput['user_info']['user_name'];
+            $operatorId =empty($arrInput['user_info']['user_id']) ? 0 :intval($arrInput['user_info']['user_id']);
+            var_dump($userName,$operatorId);exit();
+            $this->objRalLog->addLog($logType,$arrCreateParams['stockout_order_id'],$operationType,$userName,$operatorId,'创建出库单');
         });
         if (!$boolCreateFlag) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_CREATE_FAIL);
@@ -380,6 +392,10 @@ class Service_Data_StockoutOrder
     protected function getListConditions($arrInput)
     {
         $arrListConditions = [];
+        if (!empty($arrInput['warehouse_id'])) {
+            $arrWareHouseIds = explode(',', $arrInput['warehouse_id']);
+            $arrConditions['warehouse_id'] = ['in', $arrWareHouseIds];
+        }
         if (!empty($arrInput['stockout_order_id'])) {
             $arrListConditions['stockout_order_id'] = intval($arrInput['stockout_order_id']);
         }
@@ -737,6 +753,7 @@ class Service_Data_StockoutOrder
         $result = $this->objOrmStockoutOrder->updateDataByConditions($arrConditions,$updateData);
         return $arrRet;
     }
+
 
 
 }
