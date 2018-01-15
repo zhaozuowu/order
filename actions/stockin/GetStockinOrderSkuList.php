@@ -14,7 +14,7 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
     protected $arrInputParams = [
         'stockin_order_id' => 'regex|patern[/^SIO\d{13}$/]',
         'page_num' => 'int|default[1]|min[1]|optional',
-        'page_size' => 'int|required|min[0]|max[100]',
+        'page_size' => 'int|required|min[0]|max[200]',
     ];
 
     /**
