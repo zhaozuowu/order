@@ -231,7 +231,7 @@ class Service_Data_BusinessFormOrder
             $arrConditions['business_form_order_type'] = $arrInput['business_form_order_type'];
         }
         if (!empty($arrInput['customer_name'])) {
-            $arrConditions['customer_name'] = ['like', $arrInput['customer_name'] . '%'];
+            $arrConditions['customer_name'] = $arrInput['customer_name'];
         }
         if (!empty($arrInput['customer_id'])) {
             $arrConditions['customer_id'] = $arrInput['customer_id'];

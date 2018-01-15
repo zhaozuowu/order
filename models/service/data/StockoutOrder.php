@@ -402,7 +402,7 @@ class Service_Data_StockoutOrder
             $arrListConditions['business_form_order_id'] = intval($arrInput['business_form_order_id']);
         }
         if (!empty($arrInput['customer_name'])) {
-            $arrListConditions['customer_name'] = ['like', $arrInput['customer_name'] . '%'];
+            $arrListConditions['customer_name'] = $arrInput['customer_name'];
         }
         if (!empty($arrInput['customer_id'])) {
             $arrListConditions['customer_id'] = intval($arrInput['customer_id']);

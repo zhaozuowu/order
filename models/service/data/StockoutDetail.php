@@ -92,7 +92,7 @@ class Service_Data_StockoutDetail
             $arrConditions['customer_id'] = $arrInput['customer_id'];
         }
         if (!empty($arrInput['customer_name'])) {
-            $arrConditions['customer_name'] = ['like', $arrInput['customer_name'] . '%'];
+            $arrConditions['customer_name'] = $arrInput['customer_name'];
         }
         if (!empty($arrInput['start_time'])) {
             $arrConditions['create_time'][] = ['>=', $arrInput['start_time']];
