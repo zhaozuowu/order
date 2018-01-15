@@ -14,6 +14,7 @@ class Action_DeleteStockoutOrder extends Order_Base_Action
      */
     protected $arrInputParams = [
         'stockout_order_id' => 'str|required',
+        'mark' => 'str',
     ];
 
     /**

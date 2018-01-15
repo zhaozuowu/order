@@ -14,9 +14,9 @@ class Action_GetOrder extends Order_Base_Action
     protected $arrInputParams = [
         'warehouse_ids'             => 'arr|required|arr_min[1]|type[int]',
         'stock_adjust_order_id'     => 'regex|patern[/^(SAO\d{13})?$/]',
-        'adjust_type'               => 'int|optional',
-        'begin_date'                => 'int|optional',
-        'end_date'                  => 'int|optional',
+        'adjust_type'               => 'int|default[0]',
+        'begin_date'                => 'int|default[0]',
+        'end_date'                  => 'int|default[0]',
         'page_num'                  => 'int|default[1]',
         'page_size'                 => 'int|required',
     ];
@@ -25,7 +25,7 @@ class Action_GetOrder extends Order_Base_Action
      * method
      * @var int
      */
-    protected $intMethod = Order_Define_Const::METHOD_POST;
+    protected $intMethod = Order_Define_Const::METHOD_GET;
 
     /**
      * page service
@@ -38,18 +38,22 @@ class Action_GetOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->convertWarehouseIds2Array();
+        $this->convertString2Array('warehouse_ids');
         $this->objPage = new Service_Page_Adjust_GetOrder();
     }
 
-    protected function convertWarehouseIds2Array() {
+    /**
+     * 将逗号分隔字符串转换为数组
+     * @param string $strKey
+     */
+    protected function convertString2Array($strKey) {
         if ($this->intMethod == Order_Define_Const::METHOD_GET) {
-            if(!empty($this->arrReqGet['warehouse_ids'])) {
-                $this->arrReqGet['warehouse_ids'] = explode(',', $this->arrReqGet['warehouse_ids']);
+            if(!empty($this->arrReqGet[$strKey])) {
+                $this->arrReqGet[$strKey] = explode(',', $this->arrReqGet[$strKey]);
             }
         } else if ($this->intMethod == Order_Define_Const::METHOD_POST) {
-            if(!empty($this->arrReqPost['warehouse_ids'])) {
-                $this->arrReqPost['warehouse_ids'] = explode(',', $this->arrReqPost['warehouse_ids']);
+            if(!empty($this->arrReqPost[$strKey])) {
+                $this->arrReqPost[$strKey] = explode(',', $this->arrReqPost[$strKey]);
             }
         }
     }

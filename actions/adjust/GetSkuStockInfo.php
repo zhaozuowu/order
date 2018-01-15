@@ -33,6 +33,9 @@ class Action_GetSkuStockInfo extends Order_Base_Action
      */
     public function myConstruct()
     {
+        if(!empty($this->arrReqPost['sku_ids'])) {
+            $this->arrReqPost['sku_ids'] = explode(',', $this->arrReqPost['sku_ids']);
+        }
         $this->objPage = new Service_Page_adjust_GetStockInfo();
     }
 

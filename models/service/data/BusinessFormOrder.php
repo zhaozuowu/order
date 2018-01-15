@@ -30,6 +30,7 @@ class Service_Data_BusinessFormOrder
         $this->objDaoStock = new Dao_Ral_Stock();
         $this->objDaoSku = new Dao_Ral_Sku();
         $this->objDaoWarehouse = new Dao_Ral_Order_Warehouse();
+        $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
     }
 
     /**
@@ -329,9 +330,9 @@ class Service_Data_BusinessFormOrder
         }
         $arrWarehouseIds = array_column($arrBusinessFormOrderList, 'warehouse_id');
         $arrOrderIds = array_column($arrBusinessFormOrderList, 'business_form_order_id');
-        $objWarehouseRal = new Dao_Ral_Order_Warehouse();
-        $arrWarehouseList = $objWarehouseRal->getWareHouseList($arrWarehouseIds);
-        $arrWarehouseList = !empty($arrWarehouseList) ? array_column($arrWarehouseList, null, 'warehouse_id') : [];
+        $arrWarehouseList = $this->objWarehouseRal->getWareHouseList($arrWarehouseIds);
+        $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
+        $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
         $colums = ['business_form_order_id', 'sum(order_amount) as  order_amount', 'sum(distribute_amount) as distribute_amount '];
         $arrSkuConditions['business_form_order_id'] = ['in', $arrOrderIds];
         $arrSkuList = Model_Orm_BusinessFormOrderSku::find($arrSkuConditions)->select($colums)->groupBy(['business_form_order_id'])->rows();
@@ -403,10 +404,10 @@ class Service_Data_BusinessFormOrder
         if (empty($arrBusFormOrderList)) {
             return $ret;
         }
-        $objWarehouseRal = new Dao_Ral_Order_Warehouse();
-        $arrWarehouseList = $objWarehouseRal->getWareHouseList($arrBusFormOrderList['warehouse_id']);
-        $arrWarehouseList =!empty($arrWarehouseList)? array_column($arrWarehouseList, null, 'warehouse_id'):[];
-        $arrBusFormOrderList['warehouse_name'] = isset($arrWarehouseList[$arrBusFormOrderList['warehouse_id']]) ? $arrWarehouseList[$arrBusFormOrderList['warehouse_id']['warehouse_name']] : '';
+        $arrWarehouseList = $this->objWarehouseRal->getWareHouseList($arrBusFormOrderList['warehouse_id']);
+        $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
+        $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
+        $arrBusFormOrderList['warehouse_name'] = isset($arrWarehouseList[$arrBusFormOrderList['warehouse_id']]) ? $arrWarehouseList[$arrBusFormOrderList['warehouse_id']]['warehouse_name'] : '';
         $arrColumns = [
             'sum(order_amount) as  order_amount',
             'sum(distribute_amount) as distribute_amount',

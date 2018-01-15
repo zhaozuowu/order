@@ -37,6 +37,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL => '锁库存失败',
         Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL => '解冻库存失败',
         Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR => '创建业态订单失败',
+        Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL => '作废出库单失败',
         Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_PARAMS_ERROR => '创建业态订单参数错误',
         Order_Error_Code::NWMS_ORDER_PRINT_LIST_ORDER_IDS_ERROR => '打印列表无法获取数据ID',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT => '重复创建出库单',

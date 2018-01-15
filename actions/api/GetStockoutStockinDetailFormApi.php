@@ -12,7 +12,7 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_id' => 'str',
+        'warehouse_ids' => 'str',
         'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
         'source_order_id' => 'regex|patern[/^(SOO\d{13})?$/]',
         'sku_id' => 'int',
@@ -21,14 +21,14 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
         'stockin_time_start' => 'int',
         'stockin_time_end' => 'int',
         'page_num' => 'int|default[1]|min[1]',
-        'page_size' => 'int|required|min[1]|max[100]',
+        'page_size' => 'int|required|min[1]|max[200]',
     ];
 
     /**
      * method
      * @var int
      */
-    protected $intMethod = Order_Define_Const::METHOD_GET;
+    protected $intMethod = Order_Define_Const::METHOD_POST;
 
     /**
      * construct function

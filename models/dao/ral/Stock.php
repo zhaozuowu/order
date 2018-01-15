@@ -40,6 +40,11 @@ class Dao_Ral_Stock
      */
     const  API_RALER_ADJUST_SKU_STOCK = 'adjustskustock';
 
+    /**
+     * 作废出库单
+     */
+    const  API_RALER_CANCEL_FREEZESKU_STOCK = 'cancelfreezeskustock';
+
 
     /**
      * 获取仓库某商品当前库存详情
@@ -119,18 +124,20 @@ class Dao_Ral_Stock
     /**
      * 查询商品库存信息
      * @param $intWarehouseId
-     * @param $intSkuIds
+     * @param $arrSkuIds
      * @return array
      */
-    public function getStockInfo($intWarehouseId, $intSkuIds)
+    public function getStockInfo($intWarehouseId, $arrSkuIds)
     {
         $ret = [];
-        if(empty($intWarehouseId) || empty($intSkuIds)) {
+        if(empty($intWarehouseId) || empty($arrSkuIds)) {
             return $ret;
         }
 
+        $strSkuIds = implode(',', $arrSkuIds);
+
         $req[self::API_RALER_STOCK_DETAIL]['warehouse_id'] = $intWarehouseId;
-        $req[self::API_RALER_STOCK_DETAIL]['sku_ids'] = $intSkuIds;
+        $req[self::API_RALER_STOCK_DETAIL]['sku_ids'] = $strSkuIds;
 
 
         $ret = $this->objApiRal->getData($req);
@@ -138,7 +145,7 @@ class Dao_Ral_Stock
         if (empty($ret) || !empty($ret['error_no'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
         }
-        return $ret;
+        return $ret['result'];
     }
 
     /**
@@ -214,5 +221,32 @@ class Dao_Ral_Stock
         return $ret;
 
     }
-    
+
+    /**
+     * @param $intStockoutOrderId
+     * @param $warehouse_id
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function cancelfreezeskustock($intStockoutOrderId, $intWarehouseId)
+    {
+        $ret = [];
+        if (empty($intStockoutOrderId) || empty($intWarehouseId)) {
+            return $ret;
+        }
+        if (!empty($intStockoutOrderId)) {
+            $req[self::API_RALER_CANCEL_FREEZESKU_STOCK]['stockout_order_id'] = $intStockoutOrderId;
+        }
+        if (!empty($intWarehouseId)) {
+            $req[self::API_RALER_CANCEL_FREEZESKU_STOCK]['warehouse_id'] = $intWarehouseId;
+        }
+        $ret = $this->objApiRal->getData($req);
+        $ret = empty($ret[self::API_RALER_CANCEL_FREEZESKU_STOCK]) ? [] : $ret[self::API_RALER_CANCEL_FREEZESKU_STOCK];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
+        }
+        return $ret;
+    }
+
 }

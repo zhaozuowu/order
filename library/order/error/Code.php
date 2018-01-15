@@ -192,6 +192,13 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL = 340007;
 
     /**
+     * 作废出库单失败
+     * @var integer
+     *
+     */
+    const NWMS_STOCKOUT_CANCEL_STOCK_FAIL = 340008;
+
+    /**
      * 创建业态订单失败
      * @var integer
      */

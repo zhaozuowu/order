@@ -14,7 +14,7 @@ class Action_GetOrderDetailForm extends Order_Base_Action
     protected $arrInputParams = [
         'warehouse_ids'             => 'arr|required|arr_min[1]|type[int]',
         'stock_adjust_order_id'     => 'str|optional',
-        'adjust_type'               => 'int|optional',
+        'adjust_type'               => 'int|default[0]',
         'begin_date'                => 'int|required',
         'end_date'                  => 'int|required',
         'page_num'                  => 'int|default[1]',
