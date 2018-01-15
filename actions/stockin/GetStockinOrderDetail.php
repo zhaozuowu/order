@@ -61,6 +61,9 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
             $arrRoundResult['stockin_order_total_price_tax'] = empty($arrRet['stockin_order_total_price_tax']) ? '' : strval($arrRet['stockin_order_total_price_tax']);
             $arrRoundResult['stockin_order_plan_amount'] = empty($arrRet['stockin_order_plan_amount']) ? '' : strval($arrRet['stockin_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrRet['stockin_order_real_amount']) ? '' : strval($arrRet['stockin_order_real_amount']);
+            $arrRoundResult['source_supplier_id'] = empty($arrRet['source_supplier_id']) ? '' : strval($arrRet['source_supplier_id']);
+            $arrRoundResult['stockin_order_creator_name'] = empty($arrRet['stockin_order_creator_name']) ? '' : strval($arrRet['stockin_order_creator_name']);
+            $arrRoundResult['source_info'] = empty($arrRet['source_info']) ? '' : strval($arrRet['source_info']);
             $arrRoundResult['stockin_order_remark'] = empty($arrRet['stockin_order_remark']) ? '' : strval($arrRet['stockin_order_remark']);
             $arrFormatResult = $arrRoundResult;
         }
