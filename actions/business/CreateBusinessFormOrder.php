@@ -23,7 +23,7 @@ class Action_CreateBusinessFormOrder extends Order_Base_Action {
 				'devices' => 'json|decode',
 			],
 		],
-		'business_form_order_remark' => 'str|required',
+		'business_form_order_remark' => 'str',
 		'warehouse_id' => 'str|required',
 		'customer_id' => 'str|required',
 		'customer_name' => 'str|required',
