@@ -166,7 +166,6 @@ class Service_Data_StockoutOrder
             $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE;
             $userName = empty($arrInput['user_info']['user_name']) ? '系统':$arrInput['user_info']['user_name'];
             $operatorId =empty($arrInput['user_info']['user_id']) ? 0 :intval($arrInput['user_info']['user_id']);
-            var_dump($userName,$operatorId);exit();
             $this->objRalLog->addLog($logType,$arrCreateParams['stockout_order_id'],$operationType,$userName,$operatorId,'创建出库单');
         });
         if (!$boolCreateFlag) {
