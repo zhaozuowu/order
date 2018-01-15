@@ -166,7 +166,6 @@ class Service_Data_StockoutOrder
             $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE;
             $userName = empty($arrInput['user_info']['user_name']) ? '系统':$arrInput['user_info']['user_name'];
             $operatorId =empty($arrInput['user_info']['user_id']) ? 0 :intval($arrInput['user_info']['user_id']);
-            var_dump($userName,$operatorId);exit();
             $this->objRalLog->addLog($logType,$arrCreateParams['stockout_order_id'],$operationType,$userName,$operatorId,'创建出库单');
         });
         if (!$boolCreateFlag) {
@@ -663,7 +662,7 @@ class Service_Data_StockoutOrder
      * @param $strStockoutOrderId
      * @return string
      */
-    private function trimStockoutOrderIdPrefix($strStockoutOrderId)
+    public function trimStockoutOrderIdPrefix($strStockoutOrderId)
     {
         return ltrim($strStockoutOrderId, 'SSO');
     }
@@ -673,7 +672,7 @@ class Service_Data_StockoutOrder
      * @param array $arrStockoutOrderIds
      * @return array
      */
-    private function batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds)
+    public function batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds)
     {
         foreach ((array)$arrStockoutOrderIds as $intKey => $strStockoutOrderId) {
             $arrStockoutOrderIds[$intKey] = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
