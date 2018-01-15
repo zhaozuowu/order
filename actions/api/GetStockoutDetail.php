@@ -8,6 +8,12 @@
 class Action_GetStockoutDetail extends Order_Base_ApiAction
 {
     /**
+     * 是否校内网IP
+     *
+     * @var boolean
+     */
+    protected $boolCheckIp = false;
+    /**
      * input params
      * @var array
      */
@@ -17,7 +23,7 @@ class Action_GetStockoutDetail extends Order_Base_ApiAction
         'page_size' => 'int|required',
         'page_num' => 'int|default[1]',
         'warehouse_ids'=>'str',
-        'stockout_order_id'=>'str',
+        'stockout_order_ids'=>'str',
         'business_form_order_id'=>'int',
         'sku_name'=>'str',
         'sku_id'=>'int',

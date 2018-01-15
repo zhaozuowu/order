@@ -663,7 +663,7 @@ class Service_Data_StockoutOrder
      * @param $strStockoutOrderId
      * @return string
      */
-    private function trimStockoutOrderIdPrefix($strStockoutOrderId)
+    public function trimStockoutOrderIdPrefix($strStockoutOrderId)
     {
         return ltrim($strStockoutOrderId, 'SSO');
     }
@@ -673,7 +673,7 @@ class Service_Data_StockoutOrder
      * @param array $arrStockoutOrderIds
      * @return array
      */
-    private function batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds)
+    public function batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds)
     {
         foreach ((array)$arrStockoutOrderIds as $intKey => $strStockoutOrderId) {
             $arrStockoutOrderIds[$intKey] = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
