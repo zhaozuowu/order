@@ -8,9 +8,20 @@
 class Service_Data_Reserve_ReserveOrder
 {
 
-    public function getReserveOrderAndSku($intReserveOrderId)
+    /**
+     * get order stocking count
+     * @param int[] $arrWarehouseIds
+     * return int
+     */
+    public function getOrderStockingCount($arrWarehouseIds)
     {
-
+        $arrIntWarehouseIds = [];
+        foreach ((array)$arrWarehouseIds as $intWarehouseId)
+        {
+            $arrIntWarehouseIds[] = intval($intWarehouseId);
+        }
+        $intCount = Model_Orm_ReserveOrder::getWarehouseStatusCount($arrIntWarehouseIds, Order_Define_ReserveOrder::STATUS_STOCKING);
+        return $intCount;
     }
 
     /**

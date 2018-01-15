@@ -25,13 +25,17 @@ class Service_Page_Stockin_GetStockinOrderDetail implements Order_Base_Page
 
     /**
      * @param array $arrInput
-     * @return array
+     * @return array|mixed
      * @throws Order_BusinessError
      */
     public function execute($arrInput)
     {
         $strStockinOrderId = strval($arrInput['stockin_order_id']);
+        $ret = $this->objServiceData->getStockinOrderInfoByStockinOrderId($strStockinOrderId);
+        if(empty($ret)){
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_QUERY_RESULT_EMPTY);
+        }
 
-        return $this->objServiceData->getStockinOrderInfoByStockinOrderId($strStockinOrderId);
+        return $ret;
     }
 }
