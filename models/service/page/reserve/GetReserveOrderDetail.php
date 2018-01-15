@@ -31,7 +31,11 @@ class Service_Page_Reserve_GetReserveOrderDetail implements Order_Base_Page
     public function execute($arrInput)
     {
         $strReserveOrderId = strval($arrInput['reserve_order_id']);
+        $ret = $this->objServiceData->getReserveOrderInfoByReserveOrderId($strReserveOrderId);
+        if(empty($ret)){
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_QUERY_RESULT_EMPTY);
+        }
 
-        return $this->objServiceData->getReserveOrderInfoByReserveOrderId($strReserveOrderId);
+        return $ret;
     }
 }

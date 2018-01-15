@@ -7,8 +7,6 @@
  */
 class Order_Error_Message extends Wm_Error_Message
 {
-
-
     protected $_disp_app_err_msg = [
         Order_Error_Code::SUCCESS => '',
         Order_Error_Code::RAL_ERROR => 'X',
@@ -41,6 +39,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_PARAMS_ERROR => '创建业态订单参数错误',
         Order_Error_Code::NWMS_ORDER_PRINT_LIST_ORDER_IDS_ERROR => '打印列表无法获取数据ID',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT => '重复创建出库单',
+        Order_Error_Code::NWMS_ORDER_QUERY_RESULT_EMPTY => '查询结果为空',
 
         // 库存调整错误码
         Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL => '库存调整-出库失败',
