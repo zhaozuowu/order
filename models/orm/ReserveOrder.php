@@ -305,4 +305,20 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
         $this->reserve_order_status = $intReserveOrderStatus;
         return $this->update();
     }
+
+    /**
+     * get warehouse status count
+     * @param int[] $arrWarehouseIds
+     * @param int $intStatus
+     * @return int
+     */
+    public static function getWarehouseStatusCount($arrWarehouseIds, $intStatus)
+    {
+        $arrCond = [
+            'warehouse_id' => ['in', $arrWarehouseIds],
+            'reserve_order_status' => $intStatus,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        return static::find($arrCond)->count();
+    }
 }
