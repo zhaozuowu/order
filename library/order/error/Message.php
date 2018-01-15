@@ -40,8 +40,6 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_PARAMS_ERROR => '创建业态订单参数错误',
         Order_Error_Code::NWMS_ORDER_PRINT_LIST_ORDER_IDS_ERROR => '打印列表无法获取数据ID',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT => '重复创建出库单',
-
-        // 库存调整错误码
         Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL => '库存调整-出库失败',
         Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR => '库存调整-sku效期类型不识别',
         Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR => '库存调整-sku id 不存在',
@@ -49,6 +47,9 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR => '库存调整-调整类型数量不正确',
         Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR => '库存调整-获取用户信息（用户名、用户ID）失败',
         Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL => '查询商品库存信息失败',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_SKU_FAILED => '获取商品信息失败',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED => '获取仓储信息失败',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_CUSTOMER_REGION_ID_ERROR => '客户区域编号错误',
     ];
 
 }

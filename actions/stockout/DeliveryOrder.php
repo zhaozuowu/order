@@ -28,6 +28,7 @@ class Action_DeliveryOrder extends Order_Base_Action
     public function myConstruct()
     {
 
+
         $this->objPage = new Service_Page_Stockout_DeliveryOrder();
     }
 
