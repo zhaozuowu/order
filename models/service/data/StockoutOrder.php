@@ -33,9 +33,18 @@ class Service_Data_StockoutOrder
     protected $objDaoRedisStockoutOrder;
 
     /**
+<<<<<<< Updated upstream
      * stockout order log
      * @var Dao_Ral_Log
      */
+
+    /**
+=======
+>>>>>>> Stashed changes
+     * dao ral stock
+     * @var Dao_Ral_Stock
+     */
+    protected $objRalStock;
 
     /**
      * init
@@ -548,6 +557,56 @@ class Service_Data_StockoutOrder
             $arrRetList[$intKey]['skus'] = $arrMapOrderIdToSkus[$intOrderId];
         }
         return $arrRetList;
+    }
+
+    /**
+     * 获取出库单sku列表
+     * @param array $arrInput
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockoutOrderSkus($arrInput)
+    {
+        if (empty($arrInput['stockout_order_id'])) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        $arrConditions = $this->getOrderSkuConditions($arrInput);
+        return Model_Orm_StockoutOrderSku::getListByConditions($arrConditions, $arrInput['page_size'], $arrInput['page_num']);
+    }
+
+    /**
+     * @param array $arrInput
+     * @return integer
+     * @throws Order_BusinessError
+     */
+    public function getStockoutOrderSkusCount($arrInput) {
+        if (empty($arrInput['stockout_order_id'])) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        $arrConditions = $this->getOrderSkuConditions($arrInput);
+        return Model_Orm_StockoutOrderSku::count($arrConditions);
+    }
+
+    /**
+     * 获取出库单sku列表的查询条件
+     * @param array $arrInput
+     * @return array
+     */
+    protected function getOrderSkuConditions($arrInput) {
+        $arrConditions = [];
+        if (!empty($arrInput['stockout_order_id'])) {
+            $arrConditions['stockout_order_id'] = $arrInput['stockout_order_id'];
+        }
+        if (!empty($arrInput['sku_id'])) {
+            $arrConditions['sku_id'] = $arrInput['sku_id'];
+        }
+        if (!empty($arrInput['upc_id'])) {
+            $arrConditions['upc_id'] = $arrInput['upc_id'];
+        }
+        if (!empty($arrInput['sku_name'])) {
+            $arrConditions['sku_name'] = ['like', $arrInput['sku_name'] . '%'];
+        }
+        return $arrConditions;
     }
 
 
