@@ -15,7 +15,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         'page_num' => 'int|default[1]',
         'page_size' => 'int|required|max[100]',
         'status' => 'int|default[0]',
-        'warehouse_id' => 'int',
+        'warehouse_id' => 'int|required',
         'stockout_order_id' => 'str',
         'business_form_order_id' => 'int',
         'customer_name' => 'str',

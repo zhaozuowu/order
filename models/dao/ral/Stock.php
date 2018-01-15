@@ -40,6 +40,11 @@ class Dao_Ral_Stock
      */
     const  API_RALER_ADJUST_SKU_STOCK = 'adjustskustock';
 
+    /**
+     * 作废出库单
+     */
+    const  API_RALER_CANCEL_FREEZESKU_STOCK = 'cancelfreezeskustock';
+
 
     /**
      * 获取仓库某商品当前库存详情
@@ -212,5 +217,32 @@ class Dao_Ral_Stock
         return $ret;
 
     }
-    
+
+    /**
+     * @param $intStockoutOrderId
+     * @param $warehouse_id
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function cancelfreezeskustock($intStockoutOrderId, $intWarehouseId)
+    {
+        $ret = [];
+        if (empty($intStockoutOrderId) || empty($intWarehouseId)) {
+            return $ret;
+        }
+        if (!empty($intStockoutOrderId)) {
+            $req[self::API_RALER_CANCEL_FREEZESKU_STOCK]['stockout_order_id'] = $intStockoutOrderId;
+        }
+        if (!empty($intWarehouseId)) {
+            $req[self::API_RALER_CANCEL_FREEZESKU_STOCK]['warehouse_id'] = $intWarehouseId;
+        }
+        $ret = $this->objApiRal->getData($req);
+        $ret = empty($ret[self::API_RALER_CANCEL_FREEZESKU_STOCK]) ? [] : $ret[self::API_RALER_CANCEL_FREEZESKU_STOCK];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
+        }
+        return $ret;
+    }
+
 }

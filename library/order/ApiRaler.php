@@ -28,11 +28,7 @@ class Order_ApiRaler extends Nscm_lib_ApiRaler
         }
         return $data;
     }
-    /**
-     * stock adjuststockout接口格式化返回值
-     * @param $data
-     * @return mixed
-     */
+
     /**
      * stock adjuststockout接口格式化返回值
      * @param $data
@@ -52,6 +48,25 @@ class Order_ApiRaler extends Nscm_lib_ApiRaler
         return $data;
     }
 
+
+    /**
+     * stock cancelfreezeskustock接口格式化返回值
+     * @param $data
+     * @return mixed
+     */
+    protected  function cancelfreezeskustock($data)
+    {
+        if (empty($data) || ($data['error_no'] != 0)) {
+            Bd_Log::warning(sprintf(
+                '[%s] request service exception req_info[%s] error[%s] msg[%s]',
+                __METHOD__,
+                json_encode($this->arrCurrentReq),
+                $data['error_no'],
+                $data['error_msg']
+            ));
+        }
+        return $data;
+    }
     /**
      * stockdetail接口格式化返回值
      * @param $data
