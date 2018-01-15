@@ -523,7 +523,7 @@ class Service_Data_StockoutOrder
             return [];
         }
         $arrOrderIds = array_column($arrRetList, 'stockout_order_id');
-        $arrOrderSkuList = Model_Orm_StockoutOrderSku::getStockoutOrderSkusByOrderIds($arrOrderIds);
+        $arrOrderSkuList = $this->objOrmSku->getStockoutOrderSkusByOrderIds($arrOrderIds);
         $arrMapOrderIdToSkus = Order_Util_Util::arrayToKeyValue($arrOrderSkuList, 'stockout_order_id');
         foreach ($arrRetList as $intKey => $arrRetItem) {
             $intOrderId = $arrRetItem['order_id'];
@@ -707,9 +707,11 @@ class Service_Data_StockoutOrder
         if (empty($arrStockoutOrderIds)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_PRINT_LIST_ORDER_IDS_ERROR);
         }
-        $arrColumns = Model_Orm_StockoutOrder::getAllColumns();
+        $arrColumns = $this->objOrmStockoutOrder->getAllColumns();
         $arrConditions = $this->getPrintConditions($arrStockoutOrderIds);
-        $arrRetList = Model_Orm_StockoutOrder::findRows($arrColumns, $arrConditions);
+        $arrRetList = $this->objOrmStockoutOrder->findRows($arrColumns, $arrConditions);
+        $updateData = ['stockout_order_is_print'=>Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRINT];
+        $result = $this->objOrmStockoutOrder->updateDataByConditions($arrConditions,$updateData);
         return $this->appendSkusToOrderList($arrRetList);
     }
 
@@ -731,7 +733,10 @@ class Service_Data_StockoutOrder
             ->groupBy(['sku_id'])
             ->orderBy(['id' => 'asc'])
             ->rows();
+        $updateData = ['stockout_order_is_print'=>Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRINT];
+        $result = $this->objOrmStockoutOrder->updateDataByConditions($arrConditions,$updateData);
         return $arrRet;
     }
+
 
 }

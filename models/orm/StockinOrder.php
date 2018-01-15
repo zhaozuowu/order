@@ -275,4 +275,5 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
         return true;
     }
+
 }

@@ -83,7 +83,7 @@ class Order_Define_StockoutOrder
      */
     const STOCKOUT_PRINT_STATUS = [
         self::STOCKOUT_ORDER_NOT_PRINT => '未打印',
-        self::STOCKOUT_ORDER_NOT_PRINT => '已打印',
+        self::STOCKOUT_ORDER_IS_PRINT => '已打印',
     ];
 
     const STOCKOUT_ORDER_IS_CANCEL = 1;
