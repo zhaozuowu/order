@@ -33,6 +33,17 @@ class Service_Data_StockoutOrder
     protected $objDaoRedisStockoutOrder;
 
     /**
+     * stockout order log
+     * @var Dao_Ral_Log
+     */
+
+    /**
+     * dao ral stock
+     * @var Dao_Ral_Stock
+     */
+    protected $objRalStock;
+
+    /**
      * init
      */
     public function __construct()
@@ -42,6 +53,7 @@ class Service_Data_StockoutOrder
         $this->objDaoRedisStockoutOrder = new Dao_Redis_StockoutOrder();
         $this->objRalStock = new Dao_Ral_Stock();
         $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
+        $this->objRalLog = new Dao_Ral_Log();
     }
 
 
@@ -158,6 +170,11 @@ class Service_Data_StockoutOrder
             $objStockoutOrder = new Model_Orm_StockoutOrder();
             $objStockoutOrder->create($arrCreateParams, false);
             $this->createStockoutOrderSku($arrInput['skus'], $arrCreateParams['stockout_order_id']);
+            $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_INSERT_SUCCESS;
+            $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE;
+            $userName = empty($arrInput['user_info']['user_name']) ? '系统':$arrInput['user_info']['user_name'];
+            $operatorId =empty($arrInput['user_info']['user_id']) ? 0 :intval($arrInput['user_info']['user_id']);
+            $this->objRalLog->addLog($logType,$arrCreateParams['stockout_order_id'],$operationType,$userName,$operatorId,'创建出库单');
         });
     }
 
@@ -407,6 +424,10 @@ class Service_Data_StockoutOrder
     protected function getListConditions($arrInput)
     {
         $arrListConditions = [];
+        if (!empty($arrInput['warehouse_id'])) {
+            $arrWareHouseIds = explode(',', $arrInput['warehouse_id']);
+            $arrConditions['warehouse_id'] = ['in', $arrWareHouseIds];
+        }
         if (!empty($arrInput['stockout_order_id'])) {
             $arrListConditions['stockout_order_id'] = intval($arrInput['stockout_order_id']);
         }
@@ -551,7 +572,7 @@ class Service_Data_StockoutOrder
             return [];
         }
         $arrOrderIds = array_column($arrRetList, 'stockout_order_id');
-        $arrOrderSkuList = Model_Orm_StockoutOrderSku::getStockoutOrderSkusByOrderIds($arrOrderIds);
+        $arrOrderSkuList = $this->objOrmSku->getStockoutOrderSkusByOrderIds($arrOrderIds);
         $arrMapOrderIdToSkus = Order_Util_Util::arrayToKeyValue($arrOrderSkuList, 'stockout_order_id');
         foreach ($arrRetList as $intKey => $arrRetItem) {
             $intOrderId = $arrRetItem['order_id'];
@@ -561,6 +582,56 @@ class Service_Data_StockoutOrder
             $arrRetList[$intKey]['skus'] = $arrMapOrderIdToSkus[$intOrderId];
         }
         return $arrRetList;
+    }
+
+    /**
+     * 获取出库单sku列表
+     * @param array $arrInput
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockoutOrderSkus($arrInput)
+    {
+        if (empty($arrInput['stockout_order_id'])) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        $arrConditions = $this->getOrderSkuConditions($arrInput);
+        return Model_Orm_StockoutOrderSku::getListByConditions($arrConditions, $arrInput['page_size'], $arrInput['page_num']);
+    }
+
+    /**
+     * @param array $arrInput
+     * @return integer
+     * @throws Order_BusinessError
+     */
+    public function getStockoutOrderSkusCount($arrInput) {
+        if (empty($arrInput['stockout_order_id'])) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        $arrConditions = $this->getOrderSkuConditions($arrInput);
+        return Model_Orm_StockoutOrderSku::count($arrConditions);
+    }
+
+    /**
+     * 获取出库单sku列表的查询条件
+     * @param array $arrInput
+     * @return array
+     */
+    protected function getOrderSkuConditions($arrInput) {
+        $arrConditions = [];
+        if (!empty($arrInput['stockout_order_id'])) {
+            $arrConditions['stockout_order_id'] = $arrInput['stockout_order_id'];
+        }
+        if (!empty($arrInput['sku_id'])) {
+            $arrConditions['sku_id'] = $arrInput['sku_id'];
+        }
+        if (!empty($arrInput['upc_id'])) {
+            $arrConditions['upc_id'] = $arrInput['upc_id'];
+        }
+        if (!empty($arrInput['sku_name'])) {
+            $arrConditions['sku_name'] = ['like', $arrInput['sku_name'] . '%'];
+        }
+        return $arrConditions;
     }
 
 
@@ -675,7 +746,7 @@ class Service_Data_StockoutOrder
      * @param $strStockoutOrderId
      * @return string
      */
-    private function trimStockoutOrderIdPrefix($strStockoutOrderId)
+    public function trimStockoutOrderIdPrefix($strStockoutOrderId)
     {
         return ltrim($strStockoutOrderId, 'SSO');
     }
@@ -685,7 +756,7 @@ class Service_Data_StockoutOrder
      * @param array $arrStockoutOrderIds
      * @return array
      */
-    private function batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds)
+    public function batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds)
     {
         foreach ((array)$arrStockoutOrderIds as $intKey => $strStockoutOrderId) {
             $arrStockoutOrderIds[$intKey] = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
@@ -735,9 +806,11 @@ class Service_Data_StockoutOrder
         if (empty($arrStockoutOrderIds)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_PRINT_LIST_ORDER_IDS_ERROR);
         }
-        $arrColumns = Model_Orm_StockoutOrder::getAllColumns();
+        $arrColumns = $this->objOrmStockoutOrder->getAllColumns();
         $arrConditions = $this->getPrintConditions($arrStockoutOrderIds);
-        $arrRetList = Model_Orm_StockoutOrder::findRows($arrColumns, $arrConditions);
+        $arrRetList = $this->objOrmStockoutOrder->findRows($arrColumns, $arrConditions);
+        $updateData = ['stockout_order_is_print'=>Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRINT];
+        $result = $this->objOrmStockoutOrder->updateDataByConditions($arrConditions,$updateData);
         return $this->appendSkusToOrderList($arrRetList);
     }
 
@@ -759,7 +832,11 @@ class Service_Data_StockoutOrder
             ->groupBy(['sku_id'])
             ->orderBy(['id' => 'asc'])
             ->rows();
+        $updateData = ['stockout_order_is_print'=>Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRINT];
+        $result = $this->objOrmStockoutOrder->updateDataByConditions($arrConditions,$updateData);
         return $arrRet;
     }
+
+
 
 }

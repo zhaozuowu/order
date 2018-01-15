@@ -223,6 +223,12 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT = 340011;
 
     /**
+     * 查询返回结果为空
+     * @var integer
+     */
+    const NWMS_ORDER_QUERY_RESULT_EMPTY = 340012;
+
+    /**
      * 库存调整-出库失败
      * @var integer
      */

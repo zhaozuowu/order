@@ -106,4 +106,23 @@ class Model_Orm_StockoutOrderSku extends Order_Base_Orm
         $arrColumns = self::getAllColumns();
         return Model_Orm_StockoutOrderSku::findRows($arrColumns, $arrConditions, ['id' => 'asc']);
     }
+
+    /**
+     * @param array $arrConditions
+     * @param $intPageSize
+     * @param $intPageNum
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public static function getListByConditions($arrConditions, $intPageSize, $intPageNum)
+    {
+        $intLimit = intval($intPageSize);
+        $intOffset = ($intPageNum - 1)*$intLimit;
+        if ($intOffset < 0 || $intLimit < 0) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $arrColumns = self::getAllColumns();
+        return Model_Orm_StockoutOrderSku::findRows($arrColumns, $arrConditions, ['id' => 'asc'],
+                                                    $intOffset, $intLimit);
+    }
 }

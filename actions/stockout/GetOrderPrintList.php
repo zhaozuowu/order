@@ -38,7 +38,7 @@ class Action_GetOrderPrintList extends Order_Base_Action
      */
     public function format($arrRet) {
         $arrFormatRet = [];
-        foreach((array)$arrRet['list'] as $arrRetItem) {
+        foreach((array)$arrRet as $arrRetItem) {
             $arrFormatRetItem = [];
             $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : 'SSO'.$arrRetItem['stockout_order_id'];
             $arrFormatRetItem['stockout_order_type'] = empty($arrRetItem['stockout_order_type']) ? 0 : $arrRetItem['stockout_order_type'];

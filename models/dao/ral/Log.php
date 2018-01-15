@@ -92,4 +92,16 @@ class Dao_Ral_Log
         }
         return $ret;
     }
+
+    public function addLog($logType,$quotaIdxInt1,$operationType,$operatorName='',$operatorId=0,$content='')
+    {
+        $ret = [];
+        if (empty($logType) || empty($quotaIdxInt1) || empty($operationType)) {
+            return $ret;
+        }
+        $appId = Order_Define_StockoutOrder::APP_NWMS_ORDER_APP_ID;
+        $list = Nscm_Service_OperationLog::addLog($appId,$logType,$operationType,$operatorName,$operatorId,$content,$quotaIdxInt1);
+        return $list;
+
+    }
 }
