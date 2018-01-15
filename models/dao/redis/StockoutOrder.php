@@ -11,7 +11,7 @@ class Dao_Redis_StockoutOrder extends Order_Base_Redis
      * stockout order id key prefix
      * @var string
      */
-    const REDIS_STOCKOUT_ORDER_ID_KEY_PREFIX = 'nwms:order:stockoutorderid:';
+    const REDIS_STOCKOUT_CUSTOMER_ID_KEY_PREFIX = 'nwms:order:stockout:customerid:';
 
     /**
      * stockout order id key expire time
@@ -20,22 +20,23 @@ class Dao_Redis_StockoutOrder extends Order_Base_Redis
     const EXPIRE_TIME = 120;
 
     /**
-     * set stockout order id key
-     * @param integer $intStockoutOrderId
+     * set stockout customer id key
+     * @param array $strCustomerId
      * @return void
      */
-    public function setOrderId($intStockoutOrderId) {
-        $strRedisKey = self::REDIS_STOCKOUT_ORDER_ID_KEY_PREFIX . $intStockoutOrderId;
+    public function setCustomerId($strCustomerId) {
+        $strRedisKey = self::REDIS_STOCKOUT_CUSTOMER_ID_KEY_PREFIX . $strCustomerId;
         $this->objRedisConn->incr($strRedisKey);
         $this->objRedisConn->expire($strRedisKey, self::EXPIRE_TIME);
     }
 
     /**
-     * get val by order id
-     * @param $intStockoutOrderId
+     * get val by customer id
+     * @param string $strCustomerId
+     * @return integer
      */
-    public function getValByOrderId($intStockoutOrderId) {
-        $strRedisKey = self::REDIS_STOCKOUT_ORDER_ID_KEY_PREFIX . $intStockoutOrderId;
+    public function getValByCustomerId($strCustomerId) {
+        $strRedisKey = self::REDIS_STOCKOUT_CUSTOMER_ID_KEY_PREFIX . $strCustomerId;
         return $this->objRedisConn->get($strRedisKey);
     }
 }

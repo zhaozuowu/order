@@ -43,6 +43,7 @@ class Dao_Ral_Order_Warehouse
     /**
      * 根据仓库id，获取仓库信息
      * @return mixed
+     * @throws Nscm_Exception_Error
      */
     public function getWareHouseList($arrWarehouseIds)
     {
@@ -61,6 +62,7 @@ class Dao_Ral_Order_Warehouse
      * get warehouse info by city id
      * @param integer $intCityId
      * @return void
+     * @throws Nscm_Exception_Error
      */
     public function getWareHouseInfoByCityId($intCityId) {
         $ret = [];
@@ -71,6 +73,24 @@ class Dao_Ral_Order_Warehouse
         $ret = $this->objApiRal->getData($req);
         $ret = !empty($ret[self::API_RALER_GET_WAREHOUSE_BY_CITY]) ? $ret[self::API_RALER_GET_WAREHOUSE_BY_CITY] : [];
         return $ret;        
+    }
+
+    /**
+     * get warehouse info by conds
+     * @param $intDistrictId
+     * @return array
+     * @throws Nscm_Exception_Error
+     */
+    public function getWarehouseInfoByDistrictId($intDistrictId) {
+        $ret = [];
+        if (empty($intDistrictId)) {
+            return $ret;
+        }
+        $req[self::API_RALER_GET_Warehouse_LIST]['district_id'] = $intDistrictId;
+        $ret = $this->objApiRal->getData($req);
+        $ret = !empty($ret[self::API_RALER_GET_Warehouse_LIST]['query_result']) ?
+                $ret[self::API_RALER_GET_Warehouse_LIST]['query_result'] : [];
+        return $ret;
     }
 
     /**

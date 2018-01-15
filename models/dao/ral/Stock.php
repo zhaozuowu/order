@@ -62,12 +62,14 @@ class Dao_Ral_Stock
      * freeze sku stock
      * @param integer $intStockoutOrderId
      * @param integer $intWarehouseId
-     * @param integer $arrSkuDetail
+     * @param $arrFreezeDetail
      * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
      */
-    public function freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrSkuDetail) {
+    public function freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeDetail) {
         $ret = [];
-        if (empty($intStockoutOrderId) ||empty($intWarehouseId) || empty($arrSkuDetail)) {
+        if (empty($intStockoutOrderId) ||empty($intWarehouseId) || empty($arrFreezeDetail)) {
             return $ret;
         }
         if (!empty($intStockoutOrderId)) {
@@ -75,13 +77,14 @@ class Dao_Ral_Stock
         }
         if (!empty($intWarehouseId)) {
             $req[self::API_RALER_FREEZE_SKU_STOCK]['warehouse_id'] = $intWarehouseId;
+            $req[self::API_RALER_FREEZE_SKU_STOCK]['warehouse_id'] = 1992111308551234;
         }
-        if (!empty($arrSkuDetail)) {
-            $req[self::API_RALER_FREEZE_SKU_STOCK]['freeze_details'] = $arrSkuDetail;
+        if (!empty($arrFreezeDetail)) {
+            $req[self::API_RALER_FREEZE_SKU_STOCK]['freeze_details'] = $arrFreezeDetail;
         }
         $ret = $this->objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_FREEZE_SKU_STOCK]) ? [] : $ret[self::API_RALER_FREEZE_SKU_STOCK];
-        
+        var_dump($ret);
         if (empty($ret) || !empty($ret['error_no'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
         }
@@ -93,7 +96,9 @@ class Dao_Ral_Stock
      * @param array $intStockoutOrderId
      * @param array $intWarehouseId
      * @param array $arrStockoutDetail
-     * @return void
+     * @return array
+     * @throws Order_BusinessError
+     * @throws Nscm_Exception_Error
      */
     public function unfreezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrStockoutDetail) {
         $ret = [];

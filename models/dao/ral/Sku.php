@@ -18,6 +18,7 @@ class Dao_Ral_Sku
      * @var string
      */
     const API_RALER_GET_SKU_LIST = 'getskulist';
+
     /**
      * get sku info
      * @var string
@@ -93,6 +94,7 @@ class Dao_Ral_Sku
      * get sku info 
      * @param integer $intSkuId
      * @return array
+     * @throws
      */
     public function getSkuInfo($intSkuId)
     {
@@ -113,7 +115,6 @@ class Dao_Ral_Sku
      * @param int[] $arrSkuIds
      * @return array
      * @throws Nscm_Exception_Error
-     * @throws Order_Error
      */
     public function getSkuInfos($arrSkuIds)
     {
