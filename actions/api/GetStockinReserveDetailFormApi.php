@@ -22,7 +22,7 @@ class Action_GetStockinReserveDetailFormApi extends Order_Base_ApiAction
         'stockin_time_start' => 'int',
         'stockin_time_end' => 'int',
         'page_num' => 'int|default[1]|min[1]',
-        'page_size' => 'int|required|min[1]|max[100]',
+        'page_size' => 'int|required|min[1]|max[200]',
     ];
 
     /**
