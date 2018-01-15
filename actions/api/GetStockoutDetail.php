@@ -5,7 +5,7 @@
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
-class Action_GetStockoutDetail extends Order_Base_Action
+class Action_GetStockoutDetail extends Order_Base_ApiAction
 {
     /**
      * input params
