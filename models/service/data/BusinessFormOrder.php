@@ -21,7 +21,7 @@ class Service_Data_BusinessFormOrder
     /**
      * @var Dao_Ral_Order_Warehouse
      */
-    protected $objDaoWarehouse;
+    protected $objWarehouseRal;
     
     /**
      * init
@@ -29,7 +29,6 @@ class Service_Data_BusinessFormOrder
     public function __construct() {
         $this->objDaoStock = new Dao_Ral_Stock();
         $this->objDaoSku = new Dao_Ral_Sku();
-        $this->objDaoWarehouse = new Dao_Ral_Order_Warehouse();
         $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
     }
 
@@ -127,7 +126,7 @@ class Service_Data_BusinessFormOrder
         if (empty($arrInput['customer_region_id'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_CUSTOMER_REGION_ID_ERROR);
         }
-        $arrRet = $this->objDaoWarehouse->getWarehouseInfoByDistrictId($arrInput['customer_region_id']);
+        $arrRet = $this->objWarehouseRal->getWarehouseInfoByDistrictId($arrInput['customer_region_id']);
         if (empty($arrRet)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED);
         }
