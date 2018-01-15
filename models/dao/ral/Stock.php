@@ -238,7 +238,7 @@ class Dao_Ral_Stock
         $ret = $this->objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_CANCEL_FREEZESKU_STOCK]) ? [] : $ret[self::API_RALER_CANCEL_FREEZESKU_STOCK];
         if (empty($ret) || !empty($ret['error_no'])) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
         }
         return $ret;
     }

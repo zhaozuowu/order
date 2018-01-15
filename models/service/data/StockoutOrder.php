@@ -92,7 +92,7 @@ class Service_Data_StockoutOrder
             if (empty($result)) {
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
             }
-            $arrStockoutDetail = $this->objOrmSku->getSkuInfoById($strStockoutOrderId, ['sku_id', 'order_amount', 'pickup_amount']);
+            $arrStockoutDetail = $this->objOrmSku->getSkuInfoById($strStockoutOrderId, ['sku_id', 'distribute_amount', 'pickup_amount']);
             if (empty($arrStockoutDetail)) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS);
             }
@@ -539,10 +539,11 @@ class Service_Data_StockoutOrder
     /**
      * 作废出库单
      * @param $strStockoutOrderId
+     * @param $mark
      * @return array
      * @throws Order_BusinessError
      */
-    public function deleteStockoutOrder($strStockoutOrderId)
+    public function deleteStockoutOrder($strStockoutOrderId,$mark)
     {
 
         $res = [];
