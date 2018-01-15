@@ -7,7 +7,6 @@
 
 class Action_GetStockoutDetail extends Order_Base_ApiAction
 {
-    
     /**
      * input params
      * @var array

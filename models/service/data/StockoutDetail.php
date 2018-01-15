@@ -51,7 +51,6 @@ class Service_Data_StockoutDetail
         if (empty($arrBusinessFormOrderList)) {
             return [];
         }
-
         return $arrBusinessFormOrderList;
 
     }
