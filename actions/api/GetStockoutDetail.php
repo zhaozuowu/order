@@ -7,12 +7,7 @@
 
 class Action_GetStockoutDetail extends Order_Base_ApiAction
 {
-    /**
-     * 是否校内网IP
-     *
-     * @var boolean
-     */
-    protected $boolCheckIp = false;
+    
     /**
      * input params
      * @var array
