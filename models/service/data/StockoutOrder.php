@@ -10,6 +10,12 @@ class Service_Data_StockoutOrder
 
     /**
      * orm obj
+     * @var Dao_Ral_Order_Warehouse
+     */
+    protected  $objWarehouseRal;
+
+    /**
+     * orm obj
      * @var Model_Orm_StockoutOrder
      */
     protected $objOrmStockoutOrder;
@@ -35,6 +41,7 @@ class Service_Data_StockoutOrder
         $this->objOrmSku = new Model_Orm_StockoutOrderSku();
         $this->objDaoRedisStockoutOrder = new Dao_Redis_StockoutOrder();
         $this->objRalStock = new Dao_Ral_Stock();
+        $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
     }
 
 
@@ -85,7 +92,7 @@ class Service_Data_StockoutOrder
             if (empty($result)) {
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
             }
-            $arrStockoutDetail = $this->objOrmSku->getSkuInfoById($strStockoutOrderId, ['sku_id', 'order_amount', 'pickup_amount']);
+            $arrStockoutDetail = $this->objOrmSku->getSkuInfoById($strStockoutOrderId, ['sku_id', 'distribute_amount', 'pickup_amount']);
             if (empty($arrStockoutDetail)) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS);
             }
@@ -124,8 +131,8 @@ class Service_Data_StockoutOrder
         $skuList = [];
         foreach ($arrStockoutDetail as $key => $item) {
             $row['sku_id'] = $item['sku_id'];
-            $row['frozen_amount'] = $item['order_amount'];
-            $row['stockout_amount'] = $item['pickup_amount'];
+            $row['frozen_amount'] = intval($item['distribute_amount']);
+            $row['stockout_amount'] =intval($item['pickup_amount']);
             $skuList[] = $row;
         }
         return $skuList;
@@ -416,10 +423,12 @@ class Service_Data_StockoutOrder
         if (empty($arrOrderList)) {
             return $ret;
         }
-        $objWarehouseRal = new Dao_Ral_Order_Warehouse();
-        $arrWarehouseList = $objWarehouseRal->getWareHouseList($arrOrderList['warehouse_id']);
+
+        $arrWarehouseList = $this->objWarehouseRal->getWareHouseList($arrOrderList['warehouse_id']);
+        $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
+        $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
         $arrWarehouseList = !empty($arrWarehouseList) ? array_column($arrWarehouseList, null, 'warehouse_id') : [];
-        $arrOrderList['warehouse_name'] = isset($arrWarehouseList[$arrOrderList['warehouse_id']]) ? $arrWarehouseList[$arrOrderList['warehouse_id']['warehouse_name']] : '';
+        $arrOrderList['warehouse_name'] = isset($arrWarehouseList[$arrOrderList['warehouse_id']]) ? $arrWarehouseList[$arrOrderList['warehouse_id']]['warehouse_name']: '';
         $skuList = $this->objOrmSku->getSkuInfoById($strStockoutOrderId);
         return [
             'stockout_order_info' => $arrOrderList,
@@ -530,10 +539,11 @@ class Service_Data_StockoutOrder
     /**
      * 作废出库单
      * @param $strStockoutOrderId
+     * @param $mark
      * @return array
      * @throws Order_BusinessError
      */
-    public function deleteStockoutOrder($strStockoutOrderId)
+    public function deleteStockoutOrder($strStockoutOrderId,$mark)
     {
 
         $res = [];
@@ -559,7 +569,7 @@ class Service_Data_StockoutOrder
 
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
-                Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
             }
             //释放库存(已出库不释放库存)
             if ($stockoutOrderInfo['stockout_order_status'] >= Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS) {
@@ -570,9 +580,9 @@ class Service_Data_StockoutOrder
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS);
             }
             $arrStockoutDetail = $this->formatDeleteStockoutOrder($arrStockoutDetail);
-            $rs = $this->objRalStock->unfreezeSkuStock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id'], $arrStockoutDetail);
+            $rs = $this->objRalStock->cancelfreezeskustock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id']);
             if (empty($rs)) {
-                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
             }
         });
 

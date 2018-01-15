@@ -29,7 +29,8 @@ class Service_Page_Order_Commit_Cmdnwmsstockoutorderdelete extends Wm_Lib_Wmq_Co
     public function myExecute($arrInput)
     {
         $strStockoutOrderId = $arrInput['stockout_order_id'];
-        return $this->objStockoutOrder->deleteStockoutOrder($strStockoutOrderId);
+        $mark = $arrInput['mark'];
+        return $this->objStockoutOrder->deleteStockoutOrder($strStockoutOrderId,$mark);
     }
 
 

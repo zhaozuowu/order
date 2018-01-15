@@ -39,6 +39,6 @@ class Service_Page_Stockout_FinishPickupOrder
         }
         return [];
 
-        //return $this->objStockoutOrder->finishPickup($strStockoutOrderId, $pickupSkus);
+       // return $this->objStockoutOrder->finishPickup($strStockoutOrderId, $pickupSkus);
     }
 }
