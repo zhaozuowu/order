@@ -115,7 +115,8 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
             $this->arrFilterResult = $this->validate($this->arrInputParams, $arrInput);
         }
         if ($this->boolCheckLogin) {
-            $this->arrFilterResult['_session'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info');
+            $this->arrSession = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info');
+            $this->arrFilterResult['_session'] = $this->arrSession;
         }
         Bd_Log::debug('validator output: ' . json_encode($this->arrFilterResult));
     }

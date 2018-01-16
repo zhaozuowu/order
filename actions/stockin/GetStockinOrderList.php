@@ -65,14 +65,13 @@ class Action_GetStockinOrderList extends Order_Base_Action
                 : intval($arrListItem['stockin_order_type']);
             $arrRoundResult['source_info'] = empty($arrListItem['source_info']) ? ''
                 : strval($arrListItem['source_info']);
-
             // 不同的入库单类型对应的前缀
             $intStockInType = intval($arrListItem['stockin_order_type']);
-            if (!empty($intStockInType)) {
-                if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE === $intStockInType) {
+            if(!empty($intStockInType)) {
+                if(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockInType){
                     $strSourceOrderId = empty($arrListItem['source_order_id']) ? ''
                         : Nscm_Define_OrderPrefix::ASN . intval($arrListItem['source_order_id']);
-                } else if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RETURN === $intStockInType) {
+                }else if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT == $intStockInType){
                     $strSourceOrderId = empty($arrListItem['source_order_id']) ? ''
                         : Nscm_Define_OrderPrefix::SOO . intval($arrListItem['source_order_id']);
                 }

@@ -118,6 +118,7 @@ class Dao_Ral_Sku
      */
     public function getSkuInfos($arrSkuIds)
     {
+        $intCountInput = count($arrSkuIds);
         $arrSkus = implode(',', $arrSkuIds);
         $req = [
             self::API_RALER_GET_SKU_INFOS => [
@@ -130,6 +131,10 @@ class Dao_Ral_Sku
         $arrSkuInfos = [];
         foreach ($ret[self::API_RALER_GET_SKU_INFOS]['skus'] as $row) {
             $arrSkuInfos[$row['sku_id']] = $row;
+        }
+        $intCountOutput = count($arrSkuInfos);
+        if ($intCountInput != $intCountOutput) {
+            Bd_Log::warning('io sku count not equal');
         }
         return $arrSkuInfos;
     }

@@ -38,7 +38,7 @@ class Service_Page_Adjust_ExportOrderDetail
         // 去掉SAO前缀
         if(!empty($arrInput['stock_adjust_order_id'])) {
             $arrInput['stock_adjust_order_id'] =
-                intval(Order_Util::trimStockAdjustOrderIdPrefix(stock_adjust_order_id));
+                intval(Order_Util::trimStockAdjustOrderIdPrefix($arrInput['stock_adjust_order_id']));
         }
 
         $intOrderDetailCount = $this->objStockAdjustOrderDetail->getCount($arrInput);
@@ -89,16 +89,31 @@ class Service_Page_Adjust_ExportOrderDetail
 
             if(!empty($arrSkuList[$intSkuId])) {
                 $arrSkuInfo = $arrSkuList[$intSkuId];
-                $detail['sku_category_1_name']  = $arrSkuInfo['sku_category_1_name'];
-                $detail['sku_category_2_name']  = $arrSkuInfo['sku_category_2_name'];
-                $detail['sku_category_3_name']  = $arrSkuInfo['sku_category_3_name'];
-                $detail['sku_from_country']     = $arrSkuInfo['sku_from_country'];
+
+                if(!empty($arrSkuInfo['sku_category_text'])) {
+                    list($detail['sku_category_1_name'],
+                        $detail['sku_category_2_name'],
+                        $detail['sku_category_3_name']) = explode(',', $arrSkuInfo['sku_category_text']);
+                }
+
+                if(!empty($arrSkuInfo['sku_from_country'])) {
+                    $detail['sku_from_country_str'] = Order_Define_Sku::SKU_FROM_COUNTRY_MAP[$arrSkuInfo['sku_from_country']];
+                }
+
+                if(!empty($arrSkuInfo['sku_net_unit'])) {
+                    $detail['sku_net_unit_str'] = Order_Define_Sku::SKU_NET_MAP[$arrSkuInfo['sku_net_unit']];
+                }
+
+                if(!empty($arrSkuInfo['min_upc'])) {
+                    $detail['upc_id'] = $arrSkuInfo['min_upc']['upc_id'];
+                    $detail['upc_unit_str'] = Order_Define_Sku::UPC_UNIT_MAP[$arrSkuInfo['min_upc']['upc_unit']];
+                }
             }
             if(!empty($arrWarehouse[$intWarehouseId])) {
                 $arrWarehouseInfo = $arrWarehouse[$intWarehouseId];
                 $detail['warehouse_name'] = $arrWarehouseInfo['warehouse_name'];
-                $detail['city_name'] = $arrWarehouseInfo['city_name'];
-                $detail['city_id'] = $arrWarehouseInfo['city_id'];
+                $detail['city_name'] = $arrWarehouseInfo['city']['name'];
+                $detail['city_id'] = $arrWarehouseInfo['city']['id'];
             }
             if(!empty($orderList[$intOrderId])) {
                 $arrOrder = $orderList[$intOrderId];
@@ -124,6 +139,10 @@ class Service_Page_Adjust_ExportOrderDetail
 
         $daoRalSku = new Dao_Ral_Sku();
         $arrSkuInfos = $daoRalSku->getSkuInfos($arrSkuIds);
+        if(empty($arrSkuInfos)) {
+            Bd_Log::warning('获取SKU结果为空', Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED, $arrSkuIds);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED);
+        }
         return $arrSkuInfos;
     }
 
@@ -134,6 +153,7 @@ class Service_Page_Adjust_ExportOrderDetail
      */
     protected function getWarehouseInfos($warehouseIds)
     {
+        Bd_Log::trace(__METHOD__ . ' param ' . print_r($warehouseIds, true));
         if(empty($warehouseIds)) {
             return [];
         }
@@ -142,7 +162,15 @@ class Service_Page_Adjust_ExportOrderDetail
 
         $ralWarehouse = new Dao_Ral_Order_Warehouse();
         $arrWarehouseInfos = $ralWarehouse->getWareHouseList($warehouseIds);
-        return $arrWarehouseInfos;
+
+        Bd_Log::trace(__METHOD__ . ' ret ' . print_r($arrWarehouseInfos, true));
+
+        if(empty($arrWarehouseInfos) || empty($arrWarehouseInfos['query_result'])) {
+            Bd_Log::warning('查询仓库信息为空' . print_r($warehouseIds, true));
+            return [];
+        }
+
+        return $this->getMap($arrWarehouseInfos['query_result'], 'warehouse_id');
     }
 
     protected function getOrderInfos($orderList)

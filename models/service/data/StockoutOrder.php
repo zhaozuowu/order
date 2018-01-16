@@ -429,7 +429,7 @@ class Service_Data_StockoutOrder
             $arrListConditions['warehouse_id'] = ['in', $arrWareHouseIds];
         }
         if (!empty($arrInput['stockout_order_id'])) {
-            $arrListConditions['stockout_order_id'] = intval($arrInput['stockout_order_id']);
+            $arrListConditions['stockout_order_id'] = $this->trimStockoutOrderIdPrefix($arrInput['stockout_order_id']);
         }
         if (!empty($arrInput['business_form_order_id'])) {
             $arrListConditions['business_form_order_id'] = intval($arrInput['business_form_order_id']);
@@ -441,7 +441,7 @@ class Service_Data_StockoutOrder
             $arrListConditions['customer_id'] = intval($arrInput['customer_id']);
         }
         if (!empty($arrInput['is_print'])) {
-            $arrListConditions['is_print'] = intval($arrInput['is_print']);
+            $arrListConditions['stockout_order_is_print'] = intval($arrInput['is_print']);
         }
         if (!empty($arrInput['stockout_order_status'])) {
             $arrListConditions['stockout_order_status'] = intval($arrInput['stockout_order_status']);

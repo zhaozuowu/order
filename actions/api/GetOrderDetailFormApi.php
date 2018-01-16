@@ -15,7 +15,8 @@ class Action_GetOrderDetailFormApi extends Order_Base_Action
      */
     protected $arrInputParams = [
         'warehouse_ids'             => 'arr|required|arr_min[1]|type[int]',
-        'stock_adjust_order_id'     => 'regex|patern[/^(SAO\d{13})?$/]',
+        'stock_adjust_order_id'     => 'str',
+        'sku_id'                    => 'int|default[0]',
         'adjust_type'               => 'int|default[0]',
         'start_time'                => 'int|required',
         'end_time'                  => 'int|required',
@@ -55,6 +56,7 @@ class Action_GetOrderDetailFormApi extends Order_Base_Action
             }
         }
     }
+
     /**
      * format result
      * @param array $data
@@ -72,21 +74,22 @@ class Action_GetOrderDetailFormApi extends Order_Base_Action
         }
 
         foreach ($data['list'] as $detail) {
-            $arrFormatDetail['city_id']    = empty($detail['city_id']) ? '' : intval($detail['city_id']);
+            $arrFormatDetail['city_id']    = empty($detail['city_id']) ? '' : strval($detail['city_id']);
             $arrFormatDetail['city_name']    = empty($detail['city_name']) ? '' : strval($detail['city_name']);
             $arrFormatDetail['warehouse_name']    = empty($detail['warehouse_name']) ? '' : strval($detail['warehouse_name']);
-            $arrFormatDetail['warehouse_id']    = empty($detail['warehouse_id']) ? '' : intval($detail['warehouse_id']);
+            $arrFormatDetail['warehouse_id']    = empty($detail['warehouse_id']) ? '' : strval($detail['warehouse_id']);
             $arrFormatDetail['stock_adjust_order_id']    = empty($detail['stock_adjust_order_id']) ? '' : Nscm_Define_OrderPrefix::SAO . intval($detail['stock_adjust_order_id']);
             $arrFormatDetail['adjust_type']    = empty($detail['adjust_type']) ? '' : Nscm_Define_Stock::ADJUST_TYPE_MAP[intval($detail['adjust_type'])];
-            $arrFormatDetail['sku_id']    = empty($detail['sku_id']) ? '' : intval($detail['sku_id']);
+            $arrFormatDetail['sku_id']    = empty($detail['sku_id']) ? '' : strval($detail['sku_id']);
             $arrFormatDetail['upc_id']    = empty($detail['upc_id']) ? '' : strval($detail['upc_id']);
             $arrFormatDetail['sku_name']    = empty($detail['sku_name']) ? '' : strval($detail['sku_name']);
             $arrFormatDetail['sku_category_1_name']    = empty($detail['sku_category_1_name']) ? '' : strval($detail['sku_category_1_name']);
             $arrFormatDetail['sku_category_2_name']    = empty($detail['sku_category_2_name']) ? '' : strval($detail['sku_category_2_name']);
             $arrFormatDetail['sku_category_3_name']    = empty($detail['sku_category_3_name']) ? '' : strval($detail['sku_category_3_name']);
-            $arrFormatDetail['sku_from_country']    = empty($detail['sku_from_country']) ? '' : strval($detail['sku_from_country']);
-            $arrFormatDetail['sku_net']    = empty($detail['sku_net']) ? '' : intval($detail['sku_net']);
-            $arrFormatDetail['adjust_amount']    = empty($detail['adjust_amount']) ? '' : intval($detail['adjust_amount']);
+            $arrFormatDetail['sku_from_country']    = empty($detail['sku_from_country_str']) ? '' : strval($detail['sku_from_country_str']);
+            $arrFormatDetail['sku_net']    = empty($detail['sku_net']) ? '' : strval($detail['sku_net']);
+            $arrFormatDetail['sku_net_unit']    = empty($detail['sku_net_unit_str']) ? '' : strval($detail['sku_net_unit_str']);
+            $arrFormatDetail['adjust_amount']    = empty($detail['adjust_amount']) ? '' : strval($detail['adjust_amount']);
             $arrFormatDetail['unit_price']    = empty($detail['unit_price']) ? '' : strval($detail['unit_price'] / 100) ;
             $arrFormatDetail['unit_price_tax']    = empty($detail['unit_price_tax']) ? '' : strval($detail['unit_price_tax'] / 100);
 
