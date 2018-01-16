@@ -16,14 +16,11 @@ class Action_GetOrderDetailFormApi extends Order_Base_Action
     protected $arrInputParams = [
         'warehouse_ids'             => 'arr|required|arr_min[1]|type[int]',
         'stock_adjust_order_id'     => 'regex|patern[/^(SAO\d{13})?$/]',
-        'adjust_type'               => 'int|optional',
-        'begin_date'                => 'int|required',
-        'end_date'                  => 'int|required',
+        'adjust_type'               => 'int|default[0]',
+        'start_time'                => 'int|required',
+        'end_time'                  => 'int|required',
         'page_num'                  => 'int|default[1]',
         'page_size'                 => 'int|required',
-        'user_id'                   => 'int|optional',
-        'user_name'                 => 'string|optional',
-        'system'                    => 'string|optional',
     ];
 
     /**
