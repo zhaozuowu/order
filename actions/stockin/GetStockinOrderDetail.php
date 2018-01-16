@@ -67,9 +67,9 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
             $arrRoundResult['stockin_order_remark'] = empty($arrRet['stockin_order_remark']) ? '' : strval($arrRet['stockin_order_remark']);
             $arrFormatResult = $arrRoundResult;
         }
-        $userId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
-        $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
-        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $userId, $appId);
+        $intUserId = $this->arrSession['user_id'];
+        $intAppId = $this->arrSession['system'];
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $intUserId, $intAppId);
 
         return $arrFormatResult;
     }
