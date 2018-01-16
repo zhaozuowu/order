@@ -13,7 +13,7 @@ class Action_GetReserveOrderList extends Order_Base_Action
      */
     protected $arrInputParams = [
         'reserve_order_status' => 'str|default[10,20,30,31]',
-        'warehouse_id' => 'str',
+        'warehouse_ids' => 'str|required',
         'reserve_order_id' => 'regex|patern[/^(ASN\d{13})?$/]',
         'vendor_id' => 'int|min[0]',
         'create_time_start' => 'int|min[0]',
@@ -73,9 +73,9 @@ class Action_GetReserveOrderList extends Order_Base_Action
         }
 
         $arrFormatResult['total'] = $arrRet['total'];
-        $userId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
-        $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
-        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $userId, $appId);
+        $intUserId = $this->arrSession['user_id'];
+        $intAppId = $this->arrSession['system'];
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $intUserId, $intAppId);
 
         return $arrFormatResult;
     }

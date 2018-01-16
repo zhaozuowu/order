@@ -14,7 +14,7 @@ class Action_GetStockinOrderList extends Order_Base_Action
     protected $arrInputParams = [
         'stockin_order_type' => 'str|required',
         'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
-        'warehouse_id' => 'str',
+        'warehouse_ids' => 'str|required',
         'source_supplier_id' => 'int|min[0]',
         'source_order_id' => 'regex|patern[/^((ASN|SOO)\d{13})?$/]',
         'vendor_id' => 'int|min[0]',
@@ -88,9 +88,9 @@ class Action_GetStockinOrderList extends Order_Base_Action
         }
 
         $arrFormatResult['total'] = $arrRet['total'];
-        $userId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
-        $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
-        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $userId, $appId);
+        $intUserId = $this->arrSession['user_id'];
+        $intAppId = $this->arrSession['system'];
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $intUserId, $intAppId);
         return $arrFormatResult;
     }
 }

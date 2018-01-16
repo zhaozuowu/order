@@ -12,7 +12,7 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_ids' => 'str',
+        'warehouse_ids' => 'str|required',
         'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
         'source_order_id' => 'regex|patern[/^(SOO\d{13})?$/]',
         'sku_id' => 'int',
@@ -105,9 +105,9 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
             $arrFormatResult['list'][] = $arrRoundResult;
         }
         $arrFormatResult['total'] = $arrRet['total'];
-        $userId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
-        $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
-        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $userId, $appId);
+        $intUserId = $this->arrSession['user_id'];
+        $intAppId = $this->arrSession['system'];
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $intUserId, $intAppId);
 
         return $arrFormatResult;
     }
