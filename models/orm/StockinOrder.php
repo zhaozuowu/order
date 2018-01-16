@@ -105,7 +105,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'city_id' => intval($intCityId),
             'city_name' => strval($strCityName),
             'warehouse_id' => intval($intWarehouseId),
-            'warehouse_name' => intval($strWarehouseName),
+            'warehouse_name' => strval($strWarehouseName),
             'stockin_time' => $intStockinTime,
             'reserve_order_plan_time' => $intReserveOrderPlanTime,
             'stockin_order_plan_amount' => $intStockinOrderPlanAmount,

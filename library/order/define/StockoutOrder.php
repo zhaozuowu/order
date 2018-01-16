@@ -93,6 +93,14 @@ class Order_Define_StockoutOrder
     const  APP_NWMS_ORDER_LOG_TYPE = 6;//业务类型
 
     /**
+     * 允许入库的状态
+     * @var array
+     */
+    const ALLOW_STOCKIN = [
+        self::STOCKOUTED_STOCKOUT_ORDER_STATUS => true,
+    ];
+
+    /**
      * @desc 操作类型
      */
     const OPERATION_TYPE_INSERT_SUCCESS = 1;
@@ -109,7 +117,4 @@ class Order_Define_StockoutOrder
       '2' => '拒收',
       '3' => '部分签收',
     ];
-
-
-
 }
