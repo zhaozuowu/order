@@ -15,7 +15,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         'page_num' => 'int|default[1]',
         'page_size' => 'int|required|max[100]',
         'status' => 'int|default[0]',
-        'warehouse_id' => 'int|required',
+        'warehouse_id' => 'str|required',
         'stockout_order_id' => 'str',
         'business_form_order_id' => 'int',
         'customer_name' => 'str',
@@ -49,6 +49,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
     {
         $arrFormatRet = [];
         $arrFormatRet['total'] = $arrRet['total'];
+        $arrFormatRet['orders'] = [];
         foreach((array)$arrRet['orders'] as $arrRetItem) {
             $arrFormatRetItem = [];
             $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : 'SSO'.$arrRetItem['stockout_order_id'];

@@ -426,7 +426,7 @@ class Service_Data_StockoutOrder
         $arrListConditions = [];
         if (!empty($arrInput['warehouse_id'])) {
             $arrWareHouseIds = explode(',', $arrInput['warehouse_id']);
-            $arrConditions['warehouse_id'] = ['in', $arrWareHouseIds];
+            $arrListConditions['warehouse_id'] = ['in', $arrWareHouseIds];
         }
         if (!empty($arrInput['stockout_order_id'])) {
             $arrListConditions['stockout_order_id'] = intval($arrInput['stockout_order_id']);
