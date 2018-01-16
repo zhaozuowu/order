@@ -269,4 +269,22 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ADJUST_GET_STOCK_INTO_FAIL = 350018;
+
+    /**
+     * 获取商品信息失败
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_ORDER_SKU_FAILED = 340012;
+
+    /**
+     * 获取仓储信息失败
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED = 340013;
+
+    /**
+     * 客户区域编号错误
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_CUSTOMER_REGION_ID_ERROR = 340014;
 }

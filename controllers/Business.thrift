@@ -37,7 +37,7 @@ struct BusinessFormOrderInfo {
     2:required ShelfInfo shelf_info,
     3:required i32 business_form_order_type,
     4:required i32 order_supply_type,
-    5:required string business_form_order_remark,
+    5:optional string business_form_order_remark,
     6:required string customer_id,
     7:required string customer_name,
     8:required string customer_contactor,

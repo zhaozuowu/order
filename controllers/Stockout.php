@@ -21,5 +21,7 @@ class Controller_Stockout extends Ap_Controller_Abstract
         'getorderprintlist' => 'actions/stockout/GetOrderPrintList.php', #出库单分拣打印#
         'getskuprintlist' => 'actions/stockout/GetSkuPrintList.php', #出库单总拣打印#
         'getstockoutdetail'=>'actions/stockout/GetStockoutDetail.php', #销售出库明细#
+        'getstockoutskus' => 'actions/stockout/GetStockoutSkus.php', #查询出库单商品列表#
+        'getstockoutorderskus' => 'actions/stockout/GetStockoutOrderSkus.php', #查询出库单商品列表#
     );
 }

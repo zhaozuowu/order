@@ -49,6 +49,9 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR => '库存调整-调整类型数量不正确',
         Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR => '库存调整-获取用户信息（用户名、用户ID）失败',
         Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL => '查询商品库存信息失败',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_SKU_FAILED => '获取商品信息失败',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED => '获取仓储信息失败',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_CUSTOMER_REGION_ID_ERROR => '客户区域编号错误',
     ];
 
 }

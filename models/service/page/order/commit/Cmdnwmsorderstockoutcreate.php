@@ -21,9 +21,11 @@ class Service_Page_Order_Commit_Cmdnwmsorderstockoutcreate extends Wm_Lib_Wmq_Co
     /**
      * create stockout order
      * @param array $arrInput
-     * @return array
+     * @return bool
+     * @throws Order_BusinessError
      */
     public function myExecute($arrInput) {
+        Bd_Log::trace(sprintf("method[%s] arrInput[%s]", __METHOD__, json_encode($arrInput)));
         return $this->objDsStockoutOrder->createStockoutOrder($arrInput);
     }
 }

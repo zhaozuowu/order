@@ -51,14 +51,10 @@ class Action_GetReserveOrderList extends Order_Base_Action
             'list' => [],
             'total' => 0,
         ];
-
-        // 返回结果数据
         if (empty($arrRet['list'])) {
             return $arrFormatResult;
         }
-
         $arrRetList = $arrRet['list'];
-
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
             $arrRoundResult['vendor_id'] = empty($arrListItem['vendor_id']) ? '' : intval($arrListItem['vendor_id']);
@@ -77,6 +73,9 @@ class Action_GetReserveOrderList extends Order_Base_Action
         }
 
         $arrFormatResult['total'] = $arrRet['total'];
+        $userId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
+        $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $userId, $appId);
 
         return $arrFormatResult;
     }

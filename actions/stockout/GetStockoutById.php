@@ -58,6 +58,7 @@ class Action_GetStockoutById extends Order_Base_Action
             'stockout_order_distribute_amount' => empty($arrRet['stockout_order_distribute_amount']) ? 0 : $arrRet['stockout_order_distribute_amount'],
             'stockout_order_pickup_amount' => empty($arrRet['stockout_order_pickup_amount']) ? 0 : $arrRet['stockout_order_pickup_amount'],
             'stockout_order_remark' => empty($arrRet['stockout_order_remark']) ? '' : $arrRet['stockout_order_remark'],
+            'signup_status' => empty($arrRet['signup_status'])  ? '':Order_Define_StockoutOrder::STOCKOUT_SIGINUP_STATUS_LIST[$arrRet['signup_status']],
 
         ];
         $arrFormatRet['customerinfo'] = [
@@ -69,7 +70,7 @@ class Action_GetStockoutById extends Order_Base_Action
         ];
         foreach ($data['stockout_order_sku'] as $arrItem) {
             $arrFormatItem = [];
-            $arrFormatItem['sku_id'] = empty($arrItem['sku_id']) ? 0 : intval($arrItem['sku_id']);
+            $arrFormatItem['sku_id'] = empty($arrItem['sku_id']) ? '' : $arrItem['sku_id']."";
             $arrFormatItem['upc_id'] = empty($arrItem['upc_id']) ? '' : $arrItem['upc_id'];
             $arrFormatItem['sku_name'] = empty($arrItem['sku_name']) ? '' : [$arrItem['sku_name']];
             $arrFormatItem['sku_net'] = empty($arrItem['sku_net']) ? '' : [$arrItem['sku_net']];
