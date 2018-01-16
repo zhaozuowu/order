@@ -22,8 +22,8 @@ class Action_GetStockinOrderList extends Order_Base_Action
         'create_time_end' => 'int|min[0]',
         'stockin_order_plan_time_start' => 'int|min[0]',
         'stockin_order_plan_time_end' => 'int|min[0]',
-        'stockin_time_start' => 'int|min[0]',
-        'stockin_time_end' => 'int|min[0]',
+        'stockin_time_start' => 'int|min[0]|required',
+        'stockin_time_end' => 'int|min[0]|required',
         'page_num' => 'int|default[1]|min[1]|optional',
         'page_size' => 'int|required|min[1]|max[200]',
     ];
@@ -61,28 +61,40 @@ class Action_GetStockinOrderList extends Order_Base_Action
         $strSourceOrderId = '';
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
-            $arrRoundResult['stockin_order_type'] = empty($arrListItem['stockin_order_type']) ? '' : intval($arrListItem['stockin_order_type']);
-            $arrRoundResult['source_info'] = empty($arrListItem['source_info']) ? '' : strval($arrListItem['source_info']);
-
+            $arrRoundResult['stockin_order_type'] = empty($arrListItem['stockin_order_type']) ? ''
+                : intval($arrListItem['stockin_order_type']);
+            $arrRoundResult['source_info'] = empty($arrListItem['source_info']) ? ''
+                : strval($arrListItem['source_info']);
             // 不同的入库单类型对应的前缀
             $intStockInType = intval($arrListItem['stockin_order_type']);
             if(!empty($intStockInType)) {
                 if(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockInType){
-                    $strSourceOrderId = empty($arrListItem['source_order_id']) ? '' : Nscm_Define_OrderPrefix::ASN . intval($arrListItem['source_order_id']);
+                    $strSourceOrderId = empty($arrListItem['source_order_id']) ? ''
+                        : Nscm_Define_OrderPrefix::ASN . intval($arrListItem['source_order_id']);
                 }else if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT == $intStockInType){
-                    $strSourceOrderId = empty($arrListItem['source_order_id']) ? '' : Nscm_Define_OrderPrefix::SOO . intval($arrListItem['source_order_id']);
+                    $strSourceOrderId = empty($arrListItem['source_order_id']) ? ''
+                        : Nscm_Define_OrderPrefix::SOO . intval($arrListItem['source_order_id']);
                 }
             }
             $arrRoundResult['source_order_id'] = $strSourceOrderId;
-            $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? '' : Nscm_Define_OrderPrefix::SIO . intval($arrListItem['stockin_order_id']);
-            $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? '' : intval($arrListItem['stockin_order_status']);
-            $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? '' : strval($arrListItem['warehouse_name']);
-            $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? '' : intval($arrListItem['stockin_time']);
-            $arrRoundResult['stockin_order_plan_amount'] = empty($arrListItem['stockin_order_plan_amount']) ? '' : intval($arrListItem['stockin_order_plan_amount']);
-            $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? '' : intval($arrListItem['stockin_order_real_amount']);
-            $arrRoundResult['stockin_order_remark'] = empty($arrListItem['stockin_order_remark']) ? '' : strval($arrListItem['stockin_order_remark']);
-            $arrRoundResult['create_time'] = empty($arrListItem['create_time']) ? '' : intval($arrListItem['create_time']);
-            $arrRoundResult['stockin_order_creator_name'] = empty($arrListItem['stockin_order_creator_name']) ? '' : strval($arrListItem['stockin_order_creator_name']);
+            $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? ''
+                : Nscm_Define_OrderPrefix::SIO . intval($arrListItem['stockin_order_id']);
+            $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? ''
+                : intval($arrListItem['stockin_order_status']);
+            $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? ''
+                : strval($arrListItem['warehouse_name']);
+            $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? ''
+                : intval($arrListItem['stockin_time']);
+            $arrRoundResult['stockin_order_plan_amount'] = empty($arrListItem['stockin_order_plan_amount']) ? ''
+                : intval($arrListItem['stockin_order_plan_amount']);
+            $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? ''
+                : intval($arrListItem['stockin_order_real_amount']);
+            $arrRoundResult['stockin_order_remark'] = empty($arrListItem['stockin_order_remark']) ? ''
+                : strval($arrListItem['stockin_order_remark']);
+            $arrRoundResult['create_time'] = empty($arrListItem['create_time']) ? ''
+                : intval($arrListItem['create_time']);
+            $arrRoundResult['stockin_order_creator_name'] = empty($arrListItem['stockin_order_creator_name']) ? ''
+                : strval($arrListItem['stockin_order_creator_name']);
 
             $arrFormatResult['list'][] = $arrRoundResult;
         }

@@ -9,30 +9,38 @@ class Order_Util
 {
     /**
      * 对参数时间进行校验，结束时间应该在开始时间之后或者相等
+     * 另外，默认的查询时间区间不能超出90天时间范围
      * 均为正整数
      * 均为空返回true
-     * @param $startTime
-     * @param $endTime
+     * @param integer $intStartTime
+     * @param integer $intEndTime
+     * @param float|int $intMaxInterval
      * @return bool
      */
-    public static function verifyUnixTimeSpan($startTime, $endTime)
+    public static function verifyUnixTimeSpan($intStartTime, $intEndTime, $intMaxInterval = 90 * 86400)
     {
-        // 均为空
-        if (empty($startTime) && empty($endTime)) {
+        // 均为空认为通过
+        if (empty($intStartTime) && empty($intEndTime)) {
             return true;
         }
-
         // 判断非负
-        if ((0 > $startTime) || (0 > $endTime)) {
+        if ((0 > $intStartTime) || (0 > $intEndTime)) {
+            return false;
+        }
+        // 结束时间判不能早于开始时间
+        if ($intStartTime > $intEndTime) {
+            return false;
+        }
+        // 如果给定的时间范围为0则不校验区间
+        if (0 == $intMaxInterval){
+            return true;
+        }
+        // 查询区间长度范围在给定时间范围内
+        if ($intMaxInterval < ($intEndTime - $intStartTime)){
             return false;
         }
 
-        // 结束时间判断
-        if ($startTime <= $endTime) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
