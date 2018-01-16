@@ -19,6 +19,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
         'page_num' => 'int|default[1]',
         'warehouse_ids'=>'str',
         'stockout_order_ids'=>'str',
+        'stockout_order_id'=>'str',
         'business_form_order_id'=>'int',
         'sku_name'=>'str',
         'sku_id'=>'int',

@@ -59,9 +59,17 @@ class Action_GetBusinessFormOrderByid extends Order_Base_Action
             'customer_address' => empty($arrRet['customer_address']) ? '' : $arrRet['customer_address'],
             'customer_contactor' => empty($arrRet['customer_contactor']) ? '' : $arrRet['customer_contactor'],
             'customer_contact' => empty($arrRet['customer_contact']) ? '' : $arrRet['customer_contact'],
-            'skus' => empty($arrRet['skus']) ? [] : $arrRet['skus'],
+            'skus' => empty($arrRet['skus']) ? [] : $this->formatSku($arrRet['skus']),
         ];
         return $arrFormatRet;
+    }
+
+    private function formatSku($skus)
+    {
+        foreach ($skus as $key => $item) {
+           $skus[$key]['sku_net_text'] = $item['sku_net'].Order_Define_Sku::SKU_NET_MAP[$item['sku_net_unit']];
+        }
+        return $skus;
     }
 
 
