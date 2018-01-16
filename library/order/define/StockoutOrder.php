@@ -100,6 +100,16 @@ class Order_Define_StockoutOrder
     const OPERATION_TYPE_UPDATE_SUCCESS = 3;
     const OPERATION_TYPE_UPDATE_FAIL = 4;
 
+    /**
+     * 签收状态
+     * @var array
+     */
+    const STOCKOUT_SIGINUP_STATUS_LIST = [
+      '1' => '签收',
+      '2' => '拒收',
+      '3' => '部分签收',
+    ];
+
 
 
 }

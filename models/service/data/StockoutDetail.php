@@ -18,6 +18,7 @@ class Service_Data_StockoutDetail
      */
     public function __construct() {
         $this->objDaoStock = new Model_Orm_StockoutOrderDetail();
+        $this->objDataStockout = new Service_Data_StockoutOrder();
     }
 
 
@@ -43,6 +44,7 @@ class Service_Data_StockoutDetail
      */
     public function getStockoutDetail($arrInput)
     {
+
         $arrConditions = $this->getListConditions($arrInput);
         $arrInput['page_num'] = empty($arrInput['page_num']) ? 1 : intval($arrInput['page_num']);
         $intLimit = intval($arrInput['page_size']);
@@ -51,7 +53,6 @@ class Service_Data_StockoutDetail
         if (empty($arrBusinessFormOrderList)) {
             return [];
         }
-
         return $arrBusinessFormOrderList;
 
     }
@@ -98,6 +99,12 @@ class Service_Data_StockoutDetail
         }
         if (!empty($arrInput['end_time'])) {
             $arrConditions['create_time'][] = ['<=', $arrInput['end_time']];
+        }
+        if (!empty($arrInput['stockout_order_ids'])) {
+            $arrInput['stockout_order_ids'] = is_array($arrInput['stockout_order_ids'])? $arrInput['stockout_order_ids']:explode(',', $arrInput['stockout_order_ids']);
+            $arrInput['stockout_order_ids'] = $this->objDataStockout->batchTrimStockoutOrderIdPrefix($arrInput['stockout_order_ids']);
+            $arrConditions['stockout_order_id'] = ['in', $arrInput['stockout_order_ids']];
+
         }
         return $arrConditions;
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * @name Action_GetPrintList
+ * @name Action_GetSkuPrintList
  * @desc 打印列表
  * @author  jinyu02@iwaimai.baidu.com
  */
