@@ -74,6 +74,11 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL = 310011;
 
+    /***
+     * 拣货数量有误
+     */
+    const NWMS_STOCKOUT_ORDER_FINISH_PICKUP_AMOUNT_ERROR = 310012;
+
     /**
      * 获取彩云系统商品详情信息失败
      * @var integer
