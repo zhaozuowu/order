@@ -1,12 +1,18 @@
 <?php
 /**
- * @name Action_GetStockoutDetail
+ * @name Action_GetStockoutDetailFormApi
  * @desc 销售出库明细
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
-class Action_GetStockoutDetail extends Order_Base_ApiAction
+class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
 {
+    /**
+     * 是否校内网IP
+     *
+     * @var boolean
+     */
+    protected $boolCheckIp = false;
     
     /**
      * input params
