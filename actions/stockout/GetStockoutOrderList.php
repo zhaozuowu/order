@@ -60,14 +60,14 @@ class Action_GetStockoutOrderList extends Order_Base_Action
             $arrFormatRetItem['stockout_order_status'] = empty($arrRetItem['stockout_order_status']) ? 0 : $arrRetItem['stockout_order_status'];
             $arrFormatRetItem['stockout_order_status_text'] = empty($arrRetItem['stockout_order_status']) ? 
                                                                 '' : Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST[$arrRetItem['stockout_order_status']];
-            $arrFormatRetItem['is_print'] = empty($arrRetItem['is_print']) ? 0 : $arrRetItem['is_print'];
-            $arrFormatRetItem['is_print_text'] = empty($arrRetItem['is_print']) ?
-                                                    '' : Order_Define_StockoutOrder::STOCKOUT_PRINT_STATUS[$arrRetItem['is_print']];
+            $arrFormatRetItem['is_print'] = empty($arrRetItem['stockout_order_is_print']) ? 0 : $arrRetItem['stockout_order_is_print'];
+            $arrFormatRetItem['is_print_text'] = empty($arrRetItem['stockout_order_is_print']) ?
+                                                    '' : Order_Define_StockoutOrder::STOCKOUT_PRINT_STATUS[$arrRetItem['stockout_order_is_print']];
             $arrFormatRetItem['warehouse_name'] = empty($arrRetItem['warehouse_name']) ? '' : $arrRetItem['warehouse_name'];
             $arrFormatRetItem['signup_status']  =  empty($arrRetItem['signup_status'])  ? '':Order_Define_StockoutOrder::STOCKOUT_SIGINUP_STATUS_LIST[$arrRetItem['signup_status']];
             $arrFormatRetItem['customer_id'] = empty($arrRetItem['customer_id']) ? '' : $arrRetItem['customer_id'];
             $arrFormatRetItem['customer_name'] = empty($arrRetItem['customer_name']) ? '' : $arrRetItem['customer_name'];
-            $arrFormatRetItem['stockout_order_amount'] = empty($arrRetItem['stockout_order_amount']) ? '' : $arrRetItem['stockout_order_amount'];
+            $arrFormatRetItem['stockout_order_amount'] = empty($arrRetItem['stockout_order_amount']) ? 0 : $arrRetItem['stockout_order_amount'];
             $arrFormatRetItem['distribute_amount'] = empty($arrRetItem['distribute_amount']) ? 0 : $arrRetItem['distribute_amount'];
             $arrFormatRetItem['pickup_amount'] = empty($arrRetItem['pickup_amount']) ? 0 : $arrRetItem['pickup_amount'];
             $arrFormatRetItem['create_time'] = empty($arrRetItem['create_time']) ? '' : date("Y-m-d H:i:s", $arrRetItem['create_time']);
