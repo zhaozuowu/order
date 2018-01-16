@@ -22,7 +22,7 @@ class Dao_Redis_ReserveOrder extends Order_Base_Redis
         $strReserveInfo = json_encode($arrReserveInfo);
         $strKey = $arrReserveInfo['purchase_order_id'];
         $strRedisKey = self::KEY_PREFIX . $strKey;
-        Bd_Log::debug(sprintf('set redis, key[%s], data:`%s`', $strRedisKey, $strReserveInfo));
+        Bd_Log::debug(sprintf('set redis, key[%s], data:%s', $strRedisKey, $strReserveInfo));
         $boolRes = $this->objRedisConn->set($strRedisKey, $strReserveInfo);
         Bd_Log::debug('set redis result: ' . json_encode($boolRes));
         return $strKey;

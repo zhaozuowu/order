@@ -53,15 +53,12 @@ class Action_GetStockinOrderList extends Order_Base_Action
             'list' => [],
             'total' => 0,
         ];
-
         // 返回结果数据
         if (empty($arrRet['list'])) {
             return $arrFormatResult;
         }
-
         $arrRetList = $arrRet['list'];
         $strSourceOrderId = '';
-
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
             $arrRoundResult['stockin_order_type'] = empty($arrListItem['stockin_order_type']) ? '' : intval($arrListItem['stockin_order_type']);
@@ -91,7 +88,9 @@ class Action_GetStockinOrderList extends Order_Base_Action
         }
 
         $arrFormatResult['total'] = $arrRet['total'];
-
+        $userId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
+        $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $userId, $appId);
         return $arrFormatResult;
     }
 }

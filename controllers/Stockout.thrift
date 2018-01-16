@@ -9,13 +9,17 @@ exception StockoutThriftUserException {
 }
 #返回值
 struct Data {
-    1:required  bool result
+    1:required bool result
+}
+#取消状态返值
+struct CancelData {
+    1:required i32 is_cancelled
 }
 #TMS完成门店签收
 struct finishOrderInfo {
-    1:required i32 stockout_order_id,
+    1:required string stockout_order_id,
     2:required i32 signup_status,
-    3:required map<string,string> signup_upcs
+    3:required list<map<string,string>> signup_skus
 }
 
 #服务定义
@@ -23,5 +27,7 @@ service StockoutThriftService {
     Data deliveryOrder(1:string stockout_order_id)
         throws (1: StockoutThriftUserException stockoutException),
     Data finishOrder(1:finishOrderInfo objFinishOrderInfo )
-            throws (1: StockoutThriftUserException stockoutException)
+        throws (1: StockoutThriftUserException stockoutException),
+    CancelData getCancelStatus(1:string stockout_order_id)
+        throws (1: StockoutThriftUserException stockoutException)
 }

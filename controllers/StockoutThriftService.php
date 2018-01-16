@@ -60,6 +60,6 @@ class Controller_StockoutThriftService
      * @return integer
      */
     public function getCancelStatus($strStockoutOrderId) {
-        return $this->getCancelStatus($strStockoutOrderId);
+        return $this->objGetCancelStatus->execute($strStockoutOrderId);
     }
 }

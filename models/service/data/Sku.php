@@ -45,11 +45,46 @@ class Service_Data_Sku
      * 通过sku_id获取sku信息
      * @param  integer $intSkuId
      * @return array
+     * @throws Order_BusinessError
      */
     public function getSkuInfoBySkuId($intSkuId) {
         if (empty($intSkuId)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_SKU_ID_EMPTY);    
         }
         return $this->objSkuDao->getSkuInfo($intSkuId);
-    } 
+    }
+
+    /**
+     * 拼接sku详细信息
+     * @param array $arrBatchSkuParams
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     * @throws Order_Error
+     */
+    public function appendSkuInfosToSkuParams($arrBatchSkuParams) {
+        if (empty($arrBatchSkuParams)) {
+            return [];
+        }
+        $arrSkuIds = array_column($arrBatchSkuParams, 'sku_id');
+        $arrMapSkuInfos = $this->objSkuDao->getSkuInfos($arrSkuIds);
+        if (empty($arrMapSkuInfos)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_SKU_FAILED);
+        }
+        foreach ((array)$arrBatchSkuParams as $intKey => $arrSkuItem) {
+            if (empty($arrSkuItem['sku_id'])) {
+                continue;
+            }
+            $intSkuId = $arrSkuItem['sku_id'];
+            $arrBatchSkuParams[$intKey]['sku_name'] = $arrMapSkuInfos[$intSkuId]['sku_name'];
+            $arrBatchSkuParams[$intKey]['sku_net'] = $arrMapSkuInfos[$intSkuId]['sku_net'];
+            $arrBatchSkuParams[$intKey]['sku_net_unit'] = $arrMapSkuInfos[$intSkuId]['sku_net_unit'];
+            $arrBatchSkuParams[$intKey]['upc_id'] = $arrMapSkuInfos[$intSkuId]['min_upc']['upc_id'];
+            $arrBatchSkuParams[$intKey]['upc_unit'] = $arrMapSkuInfos[$intSkuId]['min_upc']['upc_unit'];
+            $arrBatchSkuParams[$intKey]['upc_unit_num'] = $arrMapSkuInfos[$intSkuId]['min_upc']['upc_unit_num'];
+            $arrBatchSkuParams[$intKey]['sku_effect_type'] = $arrMapSkuInfos[$intSkuId]['sku_effect_type'];
+            $arrBatchSkuParams[$intKey]['sku_effect_day'] = $arrMapSkuInfos[$intSkuId]['sku_effect_day'];
+        }
+        return $arrBatchSkuParams;
+    }
 }
