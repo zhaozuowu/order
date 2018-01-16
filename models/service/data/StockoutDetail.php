@@ -102,11 +102,11 @@ class Service_Data_StockoutDetail
         }
 
         if (!empty($arrInput['order_create_start_time'])) {
-            $arrConditions['order_create_time'][] = ['>=', $arrInput['start_time']];
+            $arrConditions['order_create_time'][] = ['>=', $arrInput['order_create_start_time']];
         }
 
         if (!empty($arrInput['order_create_end_time'])) {
-            $arrConditions['order_create_time'][] = ['<=', $arrInput['start_time']];
+            $arrConditions['order_create_time'][] = ['<=', $arrInput['order_create_end_time']];
         }
         if (!empty($arrInput['stockout_order_ids'])) {
             $arrInput['stockout_order_ids'] = is_array($arrInput['stockout_order_ids'])? $arrInput['stockout_order_ids']:explode(',', $arrInput['stockout_order_ids']);
