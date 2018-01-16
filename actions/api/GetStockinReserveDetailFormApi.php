@@ -50,14 +50,10 @@ class Action_GetStockinReserveDetailFormApi extends Order_Base_ApiAction
             'list' => [],
             'total' => 0,
         ];
-
-        // 返回结果数据
         if (empty($arrRet['list'])) {
             return $arrFormatResult;
         }
-
         $arrRetList = $arrRet['list'];
-
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
             $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? '' : Nscm_Define_OrderPrefix::SIO . intval($arrListItem['stockin_order_id']);
@@ -99,19 +95,22 @@ class Action_GetStockinReserveDetailFormApi extends Order_Base_ApiAction
             $arrRoundResult['expire_date'] = empty($arrListItem['expire_date']) ? '' : strval($arrListItem['expire_date']);
             $arrRoundResult['reserve_order_plan_amount'] = empty($arrListItem['reserve_order_plan_amount']) ? '' : intval($arrListItem['reserve_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? '' : intval($arrListItem['stockin_order_real_amount']);
-            $arrRoundResult['sku_price'] = empty($arrListItem['sku_price']) ? '' : intval($arrListItem['sku_price']);
-            $arrRoundResult['sku_price_yuan'] = empty($arrListItem['sku_price']) ? '' : sprintf('%0.2f', intval($arrListItem['sku_price'])/100);
-            $arrRoundResult['sku_price_tax'] = empty($arrListItem['sku_price_tax']) ? '' : intval($arrListItem['sku_price_tax']);
-            $arrRoundResult['sku_price_tax_yuan'] = empty($arrListItem['sku_price_tax']) ? '' : sprintf('%0.2f', intval($arrListItem['sku_price_tax'])/100);
-            $arrRoundResult['stockin_order_sku_total_price'] = empty($arrListItem['stockin_order_sku_total_price']) ? '' : intval($arrListItem['stockin_order_sku_total_price']);
-            $arrRoundResult['stockin_order_sku_total_price_yuan'] = empty($arrListItem['stockin_order_sku_total_price']) ? '' : sprintf('%0.2f', intval($arrListItem['stockin_order_sku_total_price'])/100);
-            $arrRoundResult['stockin_order_sku_total_price_tax'] = empty($arrListItem['stockin_order_sku_total_price_tax']) ? '' : intval($arrListItem['stockin_order_sku_total_price_tax']);
-            $arrRoundResult['stockin_order_sku_total_price_tax_yuan'] = empty($arrListItem['stockin_order_sku_total_price_tax']) ? '' : sprintf('%0.2f', intval($arrListItem['stockin_order_sku_total_price_tax'])/100);
+//            $arrRoundResult['sku_price'] = empty($arrListItem['sku_price']) ? '' : intval($arrListItem['sku_price']);
+//            $arrRoundResult['sku_price_yuan'] = empty($arrListItem['sku_price']) ? '' : sprintf('%0.2f', intval($arrListItem['sku_price'])/100);
+//            $arrRoundResult['sku_price_tax'] = empty($arrListItem['sku_price_tax']) ? '' : intval($arrListItem['sku_price_tax']);
+//            $arrRoundResult['sku_price_tax_yuan'] = empty($arrListItem['sku_price_tax']) ? '' : sprintf('%0.2f', intval($arrListItem['sku_price_tax'])/100);
+//            $arrRoundResult['stockin_order_sku_total_price'] = empty($arrListItem['stockin_order_sku_total_price']) ? '' : intval($arrListItem['stockin_order_sku_total_price']);
+//            $arrRoundResult['stockin_order_sku_total_price_yuan'] = empty($arrListItem['stockin_order_sku_total_price']) ? '' : sprintf('%0.2f', intval($arrListItem['stockin_order_sku_total_price'])/100);
+//            $arrRoundResult['stockin_order_sku_total_price_tax'] = empty($arrListItem['stockin_order_sku_total_price_tax']) ? '' : intval($arrListItem['stockin_order_sku_total_price_tax']);
+//            $arrRoundResult['stockin_order_sku_total_price_tax_yuan'] = empty($arrListItem['stockin_order_sku_total_price_tax']) ? '' : sprintf('%0.2f', intval($arrListItem['stockin_order_sku_total_price_tax'])/100);
 
             $arrFormatResult['list'][] = $arrRoundResult;
         }
 
         $arrFormatResult['total'] = $arrRet['total'];
+        $userId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
+        $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $userId, $appId);
 
         return $arrFormatResult;
     }

@@ -37,9 +37,7 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
      */
     public function format($arrRet)
     {
-        // 格式化数据结果
         $arrFormatResult = [];
-
         if(!empty($arrRet)) {
             $arrRoundResult = [];
             $arrRoundResult['reserve_order_id'] = empty($arrRet['reserve_order_id']) ? '' : Nscm_Define_OrderPrefix::ASN . intval($arrRet['reserve_order_id']);
@@ -54,6 +52,10 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
 
             $arrFormatResult = $arrRoundResult;
         }
+
+        $userId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
+        $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $userId, $appId);
 
         return $arrFormatResult;
     }
