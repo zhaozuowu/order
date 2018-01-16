@@ -86,11 +86,12 @@ class Service_Data_Stockin_StockinOrder
      * @param int $intStockinOrderId
      * @param array $arrReserveOrderSkus
      * @param array $arrSkuInfoList
+     * @param int $intType
      * @return array
      * @throws Order_BusinessError
      * @throws Order_Error
      */
-    private function getDbStockinSkus($intStockinOrderId, $arrReserveOrderSkus, $arrSkuInfoList)
+    private function getDbStockinSkus($intStockinOrderId, $arrReserveOrderSkus, $arrSkuInfoList, $intType)
     {
         // pre treat sku
         $arrHashReserveOrderSkus = [];
@@ -104,9 +105,16 @@ class Service_Data_Stockin_StockinOrder
                 Order_BusinessError::throwException(Order_Error_Code::SKU_ID_NOT_EXIST_OR_SKU_ID_REPEAT);
             }
             $arrReserveOrderSku = $arrHashReserveOrderSkus[$arrSkuInfo['sku_id']];
-            $arrSkuRow = $this->formatStockinOrderSkuInfo($intStockinOrderId, $arrReserveOrderSku, $arrSkuInfo);
+            $arrSkuRow = $this->formatStockinOrderSkuInfo($intStockinOrderId, $arrReserveOrderSku, $arrSkuInfo, $intType);
+            if (0 == $arrSkuRow['stockin_order_sku_real_amount']
+                && Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT) {
+                Order_BusinessError::throwException(Order_Error_Code::SKU_AMOUNT_CANNOT_EMPTY);
+            }
             $arrDbSkuInfoList[$arrSkuInfo['sku_id']] = $arrSkuRow;
             unset($arrHashReserveOrderSkus[$arrSkuInfo['sku_id']]);
+        }
+        if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intType && !empty($arrHashReserveOrderSkus)) {
+            Order_BusinessError::throwException(Order_Error_Code::ALL_SKU_MUST_STOCKIN);
         }
         return $arrDbSkuInfoList;
     }
@@ -191,7 +199,7 @@ class Service_Data_Stockin_StockinOrder
             Order_Error::throwException(Order_Error_Code::SOURCE_ORDER_TYPE_ERROR);
         }
         $intStockinOrderId = Order_Util_Util::generateStockinOrderCode();
-        $arrDbSkuInfoList = $this->getDbStockinSkus($intStockinOrderId, $arrSourceOrderSkus, $arrSkuInfoList);
+        $arrDbSkuInfoList = $this->getDbStockinSkus($intStockinOrderId, $arrSourceOrderSkus, $arrSkuInfoList, $intType);
         $intStockinOrderRealAmount = $this->calculateTotalSkuAmount($arrDbSkuInfoList);
         $intStockinOrderTotalPrice = $this->calculateTotalPrice($arrDbSkuInfoList);
         $intStockinOrderTotalPriceTax = $this->calculateTotalPriceTax($arrDbSkuInfoList);
@@ -200,7 +208,7 @@ class Service_Data_Stockin_StockinOrder
             $intSourceOrderId = intval($arrSourceOrderInfo['reserve_order_id']);
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['reserve_order_plan_amount'];
             $intSourceSupplierId = $arrSourceOrderInfo['vendor_id'];
-            $intReserveOrderPlanTime = $arrSourceOrderInfo['reserve_Order_plan_time'];
+            $intReserveOrderPlanTime = $arrSourceOrderInfo['reserve_order_plan_time'];
         } else {
             $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockout_order_pickup_amount'];
@@ -311,7 +319,7 @@ class Service_Data_Stockin_StockinOrder
      */
     public function notifyNscm($intReserveOrderId, $intStockinTime, $arrDbSkus)
     {
-        Dao_Ral_SyncInbound::syncInbound($intReserveOrderId, Order_Define_StockinOrder::NSCM_SURE_STOCKIN,
+        Dao_Ral_SyncInbound::syncInboundSelf($intReserveOrderId, Order_Define_StockinOrder::NSCM_SURE_STOCKIN,
             $intStockinTime, $this->formatNscmSkus($arrDbSkus));
     }
 
@@ -375,9 +383,6 @@ class Service_Data_Stockin_StockinOrder
         Bd_Log::trace('call nwms stock, request: ' . json_encode($arrInputParam));
         $arrRet = Nscm_Service_Stock::stockin($arrInputParam);
         Bd_Log::trace('call nwms stock, response: ' . json_encode($arrRet));
-        if (0 != $arrRet['error_no']) {
-            Order_BusinessError::throwException(Order_Error_Code::RAL_ERROR);
-        }
         return $arrRet;
     }
 
