@@ -19,8 +19,8 @@ class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
      * @var array
      */
     protected $arrInputParams = [
-        'start_time'=>'int|required',
-        'end_time'=>'int|required',
+        'order_create_start_time'=>'int|required',
+        'order_create_end_time'=>'int|required',
         'page_size' => 'int|required',
         'page_num' => 'int|default[1]',
         'warehouse_ids'=>'str',
