@@ -74,7 +74,7 @@ class Service_Data_StockAdjustOrderDetail
             $arrFormatInput['sku_id'] = $arrInput['sku_id'];
         }
         if(!empty($arrInput['adjust_type'])) {
-            $intAdjustType = Order_Define_AdjustOrder::ADJUST_TYPE_MAP[$arrInput['adjust_type']];
+            $intAdjustType = Nscm_Define_Stock::ADJUST_TYPE_MAP[$arrInput['adjust_type']];
             if(empty($intAdjustType)) {
                 Bd_Log::warning('调整单类型不正确', Order_Error_Code::PARAMS_ERROR, $arrInput);
                 Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
@@ -82,11 +82,11 @@ class Service_Data_StockAdjustOrderDetail
             $arrFormatInput['adjust_type'] = $arrInput['adjust_type'];
         }
 
-        if (!empty($arrInput['begin_date'])) {
-            $arrFormatInput['create_time'][] = ['>=', intval($arrInput['begin_date'])];
+        if (!empty($arrInput['start_time'])) {
+            $arrFormatInput['create_time'][] = ['>=', intval($arrInput['start_time'])];
         }
-        if (!empty($arrInput['end_date'])) {
-            $arrFormatInput['create_time'][] = ['<=', intval($arrInput['end_date'])];
+        if (!empty($arrInput['end_time'])) {
+            $arrFormatInput['create_time'][] = ['<=', intval($arrInput['end_time'])];
         }
 
         return $arrFormatInput;

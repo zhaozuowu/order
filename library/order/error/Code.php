@@ -274,6 +274,12 @@ class Order_Error_Code extends Wm_Error_Code
      * 获取商品信息失败
      * @var integer
      */
+    const NWMS_ORDER_ADJUST_GET_SKU_FAILED = 350019;
+
+    /**
+     * 获取商品信息失败
+     * @var integer
+     */
     const NWMS_ORDER_STOCKOUT_ORDER_SKU_FAILED = 340012;
 
     /**
