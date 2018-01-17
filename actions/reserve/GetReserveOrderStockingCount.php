@@ -8,7 +8,7 @@
 class Action_GetReserveOrderStockingCount extends Order_Base_Action
 {
     protected $arrInputParams = [
-        'warehouse_ids' => 'regex|patern[/^\d{6}(,\d{6})*$/]',
+        'warehouse_ids' => 'regex|patern[/^\d{7}(,\d{7})*$/]',
     ];
 
     /**
