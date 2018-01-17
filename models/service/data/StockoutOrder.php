@@ -477,7 +477,7 @@ class Service_Data_StockoutOrder
         $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
         $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
         $arrWarehouseList = !empty($arrWarehouseList) ? array_column($arrWarehouseList, null, 'warehouse_id') : [];
-        $arrOrderList['warehouse_name'] = isset($arrWarehouseList[$arrOrderList['warehouse_id']]) ? $arrWarehouseList[$arrOrderList['warehouse_id']]['warehouse_name']: '';
+        $arrOrderList['warehouse_name'] =!empty($arrOrderList['warehouse_name']) ? $arrOrderList['warehouse_name']:(isset($arrWarehouseList[$arrOrderList['warehouse_id']]) ? $arrWarehouseList[$arrOrderList['warehouse_id']]['warehouse_name']: '');
         $skuList = $this->objOrmSku->getSkuInfoById($strStockoutOrderId);
         return [
             'stockout_order_info' => $arrOrderList,

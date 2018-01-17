@@ -13,12 +13,13 @@ class Action_GetStockoutDetail extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'start_time'=>'int|required',
-        'end_time'=>'int|required',
+        'order_create_start_time'=>'int|required',
+        'order_create_end_time'=>'int|required',
         'page_size' => 'int|required',
         'page_num' => 'int|default[1]',
         'warehouse_ids'=>'str',
         'stockout_order_ids'=>'str',
+        'stockout_order_id'=>'str',
         'business_form_order_id'=>'int',
         'sku_name'=>'str',
         'sku_id'=>'int',
@@ -99,6 +100,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
         $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
         Nscm_Service_Format_Data::filterIllegalData($arrFormatRet, $userId, $appId);
         return $arrFormatRet;
+        
     }
 
 }

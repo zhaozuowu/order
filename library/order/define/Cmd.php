@@ -45,7 +45,7 @@ class Order_Define_Cmd
      * @var array
      */
     const DEFAULT_WMQ_CONFIG = [
-        'Topic' => self::CMD_TOPIC,
+        'Topic' => self::NWMS_ORDER_TOPIC,
         'Key' => '',
         'serviceName' => 'wmqproxy',
     ];

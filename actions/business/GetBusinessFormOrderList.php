@@ -45,6 +45,7 @@ class Action_GetBusinessFormOrderList extends Order_Base_Action
      */
     public function format($arrRet)
     {
+
         if (empty($arrRet['orders'])) {
             return $arrRet;
         }
