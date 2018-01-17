@@ -52,6 +52,7 @@ class Action_GetOrderDetail extends Order_Base_Action
             'warehouse_name'            => '',
             'creator_name'              => '',
             'remark'                    => '',
+            'create_time'               => '',
             'stock_adjust_order_detail' => [
                 'total' => 0,
                 'detail' => [],
@@ -64,6 +65,7 @@ class Action_GetOrderDetail extends Order_Base_Action
         $arrFormatResult['warehouse_name']           = empty($data['warehouse_name']) ? '' : strval($data['warehouse_name']);
         $arrFormatResult['creator_name']             = empty($data['creator_name']) ? '' : strval($data['creator_name']);
         $arrFormatResult['remark']                   = empty($data['remark']) ? '' : strval($data['remark']);
+        $arrFormatResult['create_time']              = empty($data['create_time']) ? '' : strval($data['create_time']);
 
         if(empty($data['stock_adjust_order_detail'])) {
             return $arrFormatResult;
@@ -74,17 +76,17 @@ class Action_GetOrderDetail extends Order_Base_Action
         $arrOrderSkuList = $data['stock_adjust_order_detail']['detail'];
         foreach ($arrOrderSkuList as $arrOrder) {
             $arrFormatOrder                     = [];
-            $arrFormatOrder['sku_id']           = empty($arrOrder['sku_id']) ? '' : intval($arrOrder['sku_id']);
+            $arrFormatOrder['sku_id']           = empty($arrOrder['sku_id']) ? '' : strval($arrOrder['sku_id']);
             $arrFormatOrder['sku_name']         = empty($arrOrder['sku_name']) ? '' : strval($arrOrder['sku_name']);
             $arrFormatOrder['upc_id']           = empty($arrOrder['upc_id']) ? '' : strval($arrOrder['upc_id']);
             $arrFormatOrder['upc_unit']         = empty($arrOrder['upc_unit']) ? '' : strval($arrOrder['upc_unit']);
             $arrFormatOrder['sku_net']          = empty($arrOrder['sku_net']) ? '' : strval($arrOrder['sku_net']);
             $arrFormatOrder['sku_net_unit']     = empty($arrOrder['sku_net_unit']) ? '' : strval($arrOrder['sku_net_unit']);
-            $arrFormatOrder['unit_price_tax']   = empty($arrOrder['unit_price_tax']) ? '' : intval($arrOrder['unit_price_tax']);
-            $arrFormatOrder['unit_price']       = empty($arrOrder['unit_price']) ? '' : intval($arrOrder['unit_price']);
-            $arrFormatOrder['adjust_amount']    = empty($arrOrder['adjust_amount']) ? '' : intval($arrOrder['adjust_amount']);
-            $arrFormatOrder['production_time']  = empty($arrOrder['production_time']) ? '' : intval($arrOrder['production_time']);
-            $arrFormatOrder['expire_time']      = empty($arrOrder['expire_time']) ? '' : intval($arrOrder['expire_time']);
+            $arrFormatOrder['unit_price_tax']   = empty($arrOrder['unit_price_tax']) ? '' : Nscm_Service_Price::convertDefaultToYuan($arrOrder['unit_price_tax']);
+            $arrFormatOrder['unit_price']       = empty($arrOrder['unit_price']) ? '' : Nscm_Service_Price::convertDefaultToYuan($arrOrder['unit_price']);
+            $arrFormatOrder['adjust_amount']    = empty($arrOrder['adjust_amount']) ? '' : strval($arrOrder['adjust_amount']);
+            $arrFormatOrder['production_time']  = empty($arrOrder['production_time']) ? '' : strval($arrOrder['production_time']);
+            $arrFormatOrder['expire_time']      = empty($arrOrder['expire_time']) ? '' : strval($arrOrder['expire_time']);
 
             $arrFormatResult['stock_adjust_order_detail']['detail'][] = $arrFormatOrder;
         }

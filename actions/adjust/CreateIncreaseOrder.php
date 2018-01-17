@@ -15,15 +15,13 @@ class Action_Createincreaseorder extends Order_Base_Action
     protected $arrInputParams = [
         'warehouse_id'      => 'int|required',
         'warehouse_name'    => 'str|required',
-        'adjust_type'       => 'int|required',
+        'adjust_type'       => 'int|required|max[10]',
         'remark'            => 'str|required',
         'detail'            => [
             'validate'              => 'json|required|decode',
             'type'                  => 'array',
             'params'                => [
                 'sku_id'                    => 'int|required',
-                'unit_price'                => 'int|required',
-                'unit_price_tax'            => 'int|required',
                 'production_or_expire_time' => 'int|required',
                 'adjust_amount'             => 'int|required',
             ],
