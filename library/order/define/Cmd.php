@@ -33,11 +33,30 @@ class Order_Define_Cmd
     const CMD_FINISH_PRICKUP_ORDER  = 'cmd_nwms_order_finish_pickup';
     const CMD_DELETE_STOCKOUT_ORDER  = 'cmd_nwms_stockout_order_delete';
 
+
+    /**
+     * order statistics operate
+     * @var string
+     */
     const CMD_SYNC_FORM_STATISTICS = 'order_statistics_operate';
+
+    /**
+     * reserve order create
+     * @var string
+     */
     const CMD_CREATE_RESERVE_ORDER = 'reserve_order_create';
 
+    /**
+     * cmd sync inbound
+     * @var string
+     * @deprecated
+     */
     const CMD_SYNC_INBOUND = 'sync_inbound';
 
+    /**
+     * cmd sync inbound nwms
+     * @var string
+     */
     const CMD_SYNC_INBOUND_NWMS = 'nscm_purchase_order_sync';
 
     /**
