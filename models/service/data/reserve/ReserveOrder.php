@@ -274,11 +274,11 @@ class Service_Data_Reserve_ReserveOrder
 
         // 校验预约单状态参数是否合法
         if (false === Model_Orm_ReserveOrder::isReserveOrderStatusCorrect($arrReserveOrderStatus)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
 
         if(empty($strWarehouseId)){
-            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
 
@@ -316,7 +316,7 @@ class Service_Data_Reserve_ReserveOrder
     {
         $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
         if (empty($intReserveOrderId)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
 
         return Model_Orm_ReserveOrder::getReserveOrderInfoByReserveOrderId($intReserveOrderId);
@@ -349,7 +349,7 @@ class Service_Data_Reserve_ReserveOrder
         $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
 
         if (empty($intReserveOrderId)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
 
         return Model_Orm_ReserveOrderSku::getReserveOrderSkuList($intReserveOrderId, $intPageNum, $intPageSize);
