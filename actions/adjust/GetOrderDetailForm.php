@@ -89,18 +89,19 @@ class Action_GetOrderDetailForm extends Order_Base_Action
             $arrFormatDetail['sku_net']    = empty($detail['sku_net']) ? '' : strval($detail['sku_net']);
             $arrFormatDetail['sku_net_unit']    = empty($detail['sku_net_unit_str']) ? '' : strval($detail['sku_net_unit_str']);
             $arrFormatDetail['adjust_amount']    = empty($detail['adjust_amount']) ? '' : strval($detail['adjust_amount']);
-            $arrFormatDetail['unit_price']    = empty($detail['unit_price']) ? '' : strval($detail['unit_price'] / 100) ;
-            $arrFormatDetail['unit_price_tax']    = empty($detail['unit_price_tax']) ? '' : strval($detail['unit_price_tax'] / 100);
+            $arrFormatDetail['unit_price']    = empty($detail['unit_price']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price']);
+            $arrFormatDetail['unit_price_tax']    = empty($detail['unit_price_tax']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price_tax']);
+
 
             if(empty($detail['adjust_amount']) || empty($detail['unit_price']) || empty($detail['unit_price_tax'])) {
                 $arrFormatResult['total_unit_price']    = '';
                 $arrFormatResult['total_unit_price_tax']    = '';
             } else {
-                $total_unit_price = intval($detail['unit_price']) * intval($detail['adjust_amount']);
-                $total_unit_price_tax = intval($detail['unit_price_tax']) * intval($detail['adjust_amount']);
+                $total_unit_price = $detail['unit_price'] * intval($detail['adjust_amount']);
+                $total_unit_price_tax = $detail['unit_price_tax'] * intval($detail['adjust_amount']);
 
-                $arrFormatDetail['total_unit_price']    = strval($total_unit_price / 100);
-                $arrFormatDetail['total_unit_price_tax']    = strval($total_unit_price_tax / 100);
+                $arrFormatDetail['total_unit_price']    = Nscm_Service_Price::convertDefaultToYuan($total_unit_price);
+                $arrFormatDetail['total_unit_price_tax']    = Nscm_Service_Price::convertDefaultToYuan($total_unit_price_tax);
             }
 
             $arrFormatDetail['create_time_str']    = empty($detail['create_time']) ? '' : strval(date('Y-m-d H:i:s',$detail['create_time']));
