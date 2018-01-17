@@ -43,8 +43,6 @@ class Service_Page_Business_CreateBusinessFormOrder {
                                                 $arrInput['business_form_order_type']);
         $arrInput = $this->objDsStockoutFormOrder->assembleStockoutOrder($arrInput);
         $arrInput = $this->objDsBusinessFormOrder->createBusinessFormOrder($arrInput);
-        $this->objDsStockoutFormOrder->createStockoutOrder($arrInput);
-        return true;
         //异步创建出库单
         $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER, $arrInput,
                                             strval($arrInput['stockout_order_id']));
