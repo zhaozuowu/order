@@ -38,7 +38,8 @@ class Service_Data_Stockin_StockinOrder
             ];
             $i++;
             $intTotalAmount += intval($arrRealStockinInfo['amount']);
-            if ($i > Order_Define_StockinOrder::STOCKIN_SKU_EXP_DATE_MAX) {
+            if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intOrderType
+                && $i > Order_Define_StockinOrder::STOCKIN_SKU_EXP_DATE_MAX) {
                 // max expire time 2
                 Order_BusinessError::throwException(Order_Error_Code::SKU_TOO_MUCH);
             }
