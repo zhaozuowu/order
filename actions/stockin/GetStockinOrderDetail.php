@@ -64,8 +64,10 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
                 : strval($arrRet['city_name']);
             $arrRoundResult['reserve_order_plan_time'] = empty($arrRet['reserve_order_plan_time']) ? ''
                 : strval($arrRet['reserve_order_plan_time']);
-//            $arrRoundResult['stockin_order_total_price'] = empty($arrRet['stockin_order_total_price']) ? '' : strval($arrRet['stockin_order_total_price']);
-//            $arrRoundResult['stockin_order_total_price_tax'] = empty($arrRet['stockin_order_total_price_tax']) ? '' : strval($arrRet['stockin_order_total_price_tax']);
+            $arrRoundResult['stockin_order_total_price_yuan'] = sprintf('%0.2f',
+                Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price']));
+            $arrRoundResult['stockin_order_total_price_tax_yuan'] = sprintf('%0.2f',
+                Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price_tax']));
             $arrRoundResult['stockin_order_plan_amount'] = empty($arrRet['stockin_order_plan_amount']) ? ''
                 : strval($arrRet['stockin_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrRet['stockin_order_real_amount']) ? ''
