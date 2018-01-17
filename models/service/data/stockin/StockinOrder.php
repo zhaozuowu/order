@@ -111,7 +111,7 @@ class Service_Data_Stockin_StockinOrder
             $arrReserveOrderSku = $arrHashReserveOrderSkus[$arrSkuInfo['sku_id']];
             $arrSkuRow = $this->formatStockinOrderSkuInfo($intStockinOrderId, $arrReserveOrderSku, $arrSkuInfo, $intType);
             if (0 == $arrSkuRow['stockin_order_sku_real_amount']
-                && Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT) {
+                && Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT == $intType) {
                 Order_BusinessError::throwException(Order_Error_Code::SKU_AMOUNT_CANNOT_EMPTY);
             }
             $arrDbSkuInfoList[$arrSkuInfo['sku_id']] = $arrSkuRow;
