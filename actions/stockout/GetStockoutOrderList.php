@@ -13,7 +13,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
      */
     protected $arrInputParams = [
         'page_num' => 'int|default[1]',
-        'page_size' => 'int|required|max[100]',
+        'page_size' => 'int|required|max[200]',
         'status' => 'int|default[0]',
         'warehouse_id' => 'str|required',
         'stockout_order_id' => 'str',
