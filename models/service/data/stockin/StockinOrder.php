@@ -423,6 +423,9 @@ class Service_Data_Stockin_StockinOrder
         }
 
         $intStockinOrderId = Order_Util::trimStockinOrderIdPrefix($strStockinOrderId);
+        if(empty($strWarehouseId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
         $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
 
         // 拆解出关联入库单号,较复杂的订单号ID场景处理，根据入库单类型进行，如果类型和查询入库单类型不匹配抛出参数异常

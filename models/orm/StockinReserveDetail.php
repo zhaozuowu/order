@@ -97,44 +97,40 @@ class Model_Orm_StockinReserveDetail extends Order_Base_Orm
         $intPageSize)
     {
         // 拼装查询条件
-        if (!empty($arrWarehouseId)) {
-            $arrCondition['warehouse_id'] = [
-                'in',
-                $arrWarehouseId];
-        }
+        $arrCondition['warehouse_id'] = ['in', $arrWarehouseId];
 
         if (!empty($intStockinOrderId)) {
+            // 如果有入库单号则忽略其他条件
             $arrCondition['stockin_order_id'] = $intStockinOrderId;
-        }
-
-        if (!empty($intSourceOrderId)) {
+        } else if (!empty($intSourceOrderId)) {
+            // 如果有关联单号则忽略其他条件
             $arrCondition['source_order_id'] = $intSourceOrderId;
-        }
+        } else {
+            if (!empty($intSkuId)) {
+                $arrCondition['sku_id'] = $intSkuId;
+            }
 
-        if (!empty($intSkuId)) {
-            $arrCondition['sku_id'] = $intSkuId;
-        }
+            if (!empty($intVendorId)) {
+                $arrCondition['vendor_id'] = $intVendorId;
+            }
 
-        if (!empty($intVendorId)) {
-            $arrCondition['vendor_id'] = $intVendorId;
-        }
+            if (!empty($arrOrderPlanTime['start'])
+                && !empty($arrOrderPlanTime['end'])) {
+                $arrCondition['reserve_order_plan_time'] = [
+                    'between',
+                    $arrOrderPlanTime['start'],
+                    $arrOrderPlanTime['end']
+                ];
+            }
 
-        if (!empty($arrOrderPlanTime['start'])
-            && !empty($arrOrderPlanTime['end'])) {
-            $arrCondition['reserve_order_plan_time'] = [
-                'between',
-                $arrOrderPlanTime['start'],
-                $arrOrderPlanTime['end']
-            ];
-        }
-
-        if (!empty($arrStockinTime['start'])
-            && !empty($arrStockinTime['end'])) {
-            $arrCondition['stockin_time'] = [
-                'between',
-                $arrStockinTime['start'],
-                $arrStockinTime['end'],
-            ];
+            if (!empty($arrStockinTime['start'])
+                && !empty($arrStockinTime['end'])) {
+                $arrCondition['stockin_time'] = [
+                    'between',
+                    $arrStockinTime['start'],
+                    $arrStockinTime['end'],
+                ];
+            }
         }
 
         // 只查询未软删除的
