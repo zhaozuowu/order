@@ -584,7 +584,7 @@ class Service_Data_Stockin_StockinOrder
             $arrSourceInfo =empty($item['source_info']) ? []:json_decode($item['source_info'],true);
             $arrRetList[$key]['vendor_id'] = isset($arrSourceInfo['vendor_id']) ? $arrSourceInfo['vendor_id']:0;
             $arrRetList[$key]['vendor_name'] = isset($arrSourceInfo['vendor_name']) ? $arrSourceInfo['vendor_name']:'';
-            $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):empty($item['warehouse_name']);
+            $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):$item['warehouse_name'];
             $arrRetList[$key]['warehouse_contact'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact']:'';
             $arrRetList[$key]['warehouse_contact_phone'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact_phone']:'';
             $arrRetList[$key]['skus'] = isset($arrReserveSkuList[$item['stockin_order_id']]) ? $arrReserveSkuList[$item['stockin_order_id']]:[];
