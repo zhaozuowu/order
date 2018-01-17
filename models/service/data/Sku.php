@@ -96,8 +96,12 @@ class Service_Data_Sku
      * @param $arrBusinessFormDetail
      * @param $intOrderType
      * @return array|mixed
+     * @throws Order_BusinessError
      */
     protected function getSendPriceInfo($arrBusinessFormDetail, $intOrderType) {
+        if (empty($arrBusinessFormDetail)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_FORM_DETAIL_ERROR);
+        }
         $arrSendPriceInfo = [];
         foreach ((array)$arrBusinessFormDetail as $arrBusinessFormItem) {
             if ($intOrderType != $arrBusinessFormItem['type']) {

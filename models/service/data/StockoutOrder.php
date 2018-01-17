@@ -314,6 +314,12 @@ class Service_Data_StockoutOrder
         if (!empty($arrInput['stockout_order_distribute_amount'])) {
             $arrCreateParams['stockout_order_distribute_amount'] = $arrInput['stockout_order_distribute_amount'];
         }
+        if (!empty($arrInput['executor'])) {
+            $arrCreateParams['executor'] = strval($arrInput['executor']);
+        }
+        if (!empty($arrInput['executor_contact'])) {
+            $arrCreateParams['executor_contact'] = strval($arrInput['executor_contact']);
+        }
         return $arrCreateParams;
     }
 

@@ -292,7 +292,6 @@ class Service_Data_BusinessFormOrder
      * @param integer $intBusinessFormOrderId
      * @param array $arrSkus
      * @return array
-     * @throws Order_BusinessError
      */
     public function getBatchSkuCreateParams($intBusinessFormOrderId, $arrSkus)
     {
