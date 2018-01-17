@@ -9,6 +9,18 @@
 class Order_Define_BusinessFormOrder
 {
     /**
+     * 业态订单创建成功
+     * @var integer
+     */
+    const BUSINESS_FORM_ORDER_SUCCESS = 1;
+
+    /**
+     * 业态订单创建失败
+     * @var integer
+     */
+    const BUSINESS_FORM_ORDER_FAILED = 2;
+
+    /**
      * 业态订单状态列表
      * @var array
      */

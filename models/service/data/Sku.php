@@ -61,7 +61,6 @@ class Service_Data_Sku
      * @return array
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
-     * @throws Order_Error
      */
     public function appendSkuInfosToSkuParams($arrBatchSkuParams, $intOrderType) {
         if (empty($arrBatchSkuParams)) {
@@ -77,9 +76,6 @@ class Service_Data_Sku
                 continue;
             }
             $intSkuId = $arrSkuItem['sku_id'];
-            if (!in_array($intOrderType, $arrMapSkuInfos[$intSkuId]['sku_business_form'])) {
-                continue;
-            }
             $arrBatchSkuParams[$intKey]['sku_name'] = $arrMapSkuInfos[$intSkuId]['sku_name'];
             $arrBatchSkuParams[$intKey]['sku_net'] = $arrMapSkuInfos[$intSkuId]['sku_net'];
             $arrBatchSkuParams[$intKey]['sku_net_unit'] = $arrMapSkuInfos[$intSkuId]['sku_net_unit'];
@@ -100,12 +96,8 @@ class Service_Data_Sku
      * @param $arrBusinessFormDetail
      * @param $intOrderType
      * @return array|mixed
-     * @throws Order_BusinessError
      */
     protected function getSendPriceInfo($arrBusinessFormDetail, $intOrderType) {
-        if (empty($arrBusinessFormDetail)) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_FORM_DETAIL_ERROR);
-        }
         $arrSendPriceInfo = [];
         foreach ((array)$arrBusinessFormDetail as $arrBusinessFormItem) {
             if ($intOrderType != $arrBusinessFormItem['type']) {
