@@ -42,6 +42,10 @@ class Service_Page_Adjust_GetOrderDetail
                 intval(Order_Util::trimStockAdjustOrderIdPrefix($arrInput['stock_adjust_order_id']));
         }
 
+        if(empty($arrInput['stock_adjust_order_id'])) {
+            return [];
+        }
+
         $arrOrder = $this->objStockAdjustOrder->getByOrderId($arrInput['stock_adjust_order_id']);
         if( (false === $arrOrder) || empty($arrOrder) ) {
             return [];
