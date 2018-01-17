@@ -57,12 +57,13 @@ class Service_Data_Sku
     /**
      * 拼接sku详细信息
      * @param array $arrBatchSkuParams
+     * @param integer $intOrderType
      * @return array
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      * @throws Order_Error
      */
-    public function appendSkuInfosToSkuParams($arrBatchSkuParams) {
+    public function appendSkuInfosToSkuParams($arrBatchSkuParams, $intOrderType) {
         if (empty($arrBatchSkuParams)) {
             return [];
         }
@@ -76,6 +77,9 @@ class Service_Data_Sku
                 continue;
             }
             $intSkuId = $arrSkuItem['sku_id'];
+            if (!in_array($intOrderType, $arrMapSkuInfos[$intSkuId]['sku_business_form'])) {
+                continue;
+            }
             $arrBatchSkuParams[$intKey]['sku_name'] = $arrMapSkuInfos[$intSkuId]['sku_name'];
             $arrBatchSkuParams[$intKey]['sku_net'] = $arrMapSkuInfos[$intSkuId]['sku_net'];
             $arrBatchSkuParams[$intKey]['sku_net_unit'] = $arrMapSkuInfos[$intSkuId]['sku_net_unit'];
@@ -84,7 +88,31 @@ class Service_Data_Sku
             $arrBatchSkuParams[$intKey]['upc_unit_num'] = $arrMapSkuInfos[$intSkuId]['min_upc']['upc_unit_num'];
             $arrBatchSkuParams[$intKey]['sku_effect_type'] = $arrMapSkuInfos[$intSkuId]['sku_effect_type'];
             $arrBatchSkuParams[$intKey]['sku_effect_day'] = $arrMapSkuInfos[$intSkuId]['sku_effect_day'];
+            $arrBatchSkuParams[$intKey]['sku_business_form'] = implode(',', $arrMapSkuInfos[$intSkuId]['sku_business_form']);
+            $arrBatchSkuParams[$intKey]['send_price_info'] =
+                $this->getSendPriceInfo($arrMapSkuInfos[$intSkuId]['sku_business_form_detail'], $intOrderType);
+            $arrBatchSkuParams[$intKey]['sku_tax_rate'] = $arrMapSkuInfos[$intSkuId]['sku_tax_rate'];
         }
         return $arrBatchSkuParams;
+    }
+
+    /**
+     * @param $arrBusinessFormDetail
+     * @param $intOrderType
+     * @return array|mixed
+     * @throws Order_BusinessError
+     */
+    protected function getSendPriceInfo($arrBusinessFormDetail, $intOrderType) {
+        if (empty($arrBusinessFormDetail)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_FORM_DETAIL_ERROR);
+        }
+        $arrSendPriceInfo = [];
+        foreach ((array)$arrBusinessFormDetail as $arrBusinessFormItem) {
+            if ($intOrderType != $arrBusinessFormItem['type']) {
+                continue;
+            }
+            $arrSendPriceInfo = $arrBusinessFormItem;
+        }
+        return $arrSendPriceInfo;
     }
 }

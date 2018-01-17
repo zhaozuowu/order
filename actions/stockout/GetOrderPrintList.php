@@ -40,6 +40,10 @@ class Action_GetOrderPrintList extends Order_Base_Action
         $arrFormatRet = [];
         foreach((array)$arrRet as $arrRetItem) {
             $arrFormatRetItem = [];
+            $arrShelfInfo = json_decode($arrRetItem['shelf_info'], true);
+            $arrFormatRetItem['supply_type_text'] = empty($arrShelfInfo['supply_type']) ?
+                                                        '' : Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']];
+            $arrFormatRetItem['devices'] = $this->formatDevices($arrShelfInfo['devices']);
             $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : 'SSO'.$arrRetItem['stockout_order_id'];
             $arrFormatRetItem['stockout_order_type'] = empty($arrRetItem['stockout_order_type']) ? 0 : $arrRetItem['stockout_order_type'];
             $arrFormatRetItem['stockout_order_type_text'] = empty($arrRetItem['stockout_order_type']) ? 
@@ -73,12 +77,32 @@ class Action_GetOrderPrintList extends Order_Base_Action
             $arrFormatSkuItem = [];
             $arrFormatSkuItem['upc_id'] = empty($arrSkuItem['upc_id']) ? '' : $arrSkuItem['upc_id'];
             $arrFormatSkuItem['sku_name'] = empty($arrSkuItem['sku_name']) ? '' : $arrSkuItem['sku_name'];
-            $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ? '' : $arrSkuItem['sku_net'];
-            $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ? 0 : $arrSkuItem['upc_unit'];
+            $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ?
+                                            '' : ($arrSkuItem['sku_net'] . Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]);
+            $arrFormatSkuItem['upc_unit_text'] = empty(Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']]) ?
+                                                    0 : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
             $arrFormatSkuItem['pickup_amount'] = empty($arrSkuItem['pickup_amount']) ? 0 : $arrSkuItem['pickup_amount'];
             $arrFormatSkus[] = $arrFormatSkuItem;
         }
         return $arrFormatSkus;
+    }
+
+    /**
+     * format device info
+     * @param $arrDevices
+     * @return string
+     */
+    public function formatDevices($arrDevices) {
+        $strDevices = '';
+        if (empty($arrDevices)) {
+            return '';
+        }
+        foreach ((array)$arrDevices as $strKey => $intAmount) {
+            $strDevice = $intAmount . '个' . Order_Define_BusinessFormOrder::ORDER_DEVICE_MAP[intval($strKey)];
+            $strDevices = $strDevices . $strDevice . '/';
+        }
+        $strDevices = rtrim($strDevices, '/');
+        return $strDevices;
     }
 
 }

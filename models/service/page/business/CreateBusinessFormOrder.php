@@ -39,7 +39,8 @@ class Service_Page_Business_CreateBusinessFormOrder {
      */
     public function execute($arrInput) {
         //同步创建业态订单
-        $arrInput['skus'] = $this->objDsSku->appendSkuInfosToSkuParams($arrInput['skus']);
+        $arrInput['skus'] = $this->objDsSku->appendSkuInfosToSkuParams($arrInput['skus'],
+                                                $arrInput['business_form_order_type']);
         $arrInput = $this->objDsStockoutFormOrder->assembleStockoutOrder($arrInput);
         $arrInput = $this->objDsBusinessFormOrder->createBusinessFormOrder($arrInput);
         $this->objDsStockoutFormOrder->createStockoutOrder($arrInput);
