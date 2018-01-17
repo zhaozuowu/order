@@ -510,6 +510,10 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
         }
 
+        $tmp = $this->checkoutPuckAmount($pickupSkus);
+        if ($tmp) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_AMOUNT_ERROR);
+        }
         return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($stockoutOrderInfo, $strStockoutOrderId, $pickupSkus) {
             $res = [];
             $stockoutOrderPickupAmount = 0;
@@ -531,6 +535,8 @@ class Service_Data_StockoutOrder
                 $skuUpdata = ['pickup_amount' => $item['pickup_amount']];
                 $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
             }
+
+            $this->notifyTmsFnishPick($strStockoutOrderId,$pickupSkus);
         });
     }
 
@@ -837,6 +843,42 @@ class Service_Data_StockoutOrder
         return $arrRet;
     }
 
+    /**
+     * 拣货数量检查
+     * @param $pickupSkus
+     * @return bool
+     */
+    public function checkoutPuckAmount($pickupSkus): bool
+    {
+        $tmp = true;
+        foreach ($pickupSkus as $item) {
+            if (!empty($item['pickup_amount'])) {
+                $tmp = false;
+                break;
+            }
+        }
+        return $tmp;
+    }
+
+    /**
+     * 通知tms完成拣货
+     * @param $strStockoutOrderId
+     * @param $pickupSkus
+     * @return array
+     * @throws Order_BusinessError
+     */
+    private function notifyTmsFnishPick($strStockoutOrderId, $pickupSkus)
+    {
+
+        $arrStockoutParams = ['stockout_order_id' => $strStockoutOrderId, 'pickup_skus' => $pickupSkus];
+        $strCmd = Order_Define_Cmd::CMD_FINISH_PRICKUP_ORDER;
+        $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrStockoutParams, $strStockoutOrderId);
+        if (false == $ret) {
+            Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL);
+        }
+        return [];
+    }
 
 
 }
