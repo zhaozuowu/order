@@ -277,6 +277,9 @@ class Service_Data_Reserve_ReserveOrder
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
 
+        if(empty($strWarehouseId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
         $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
 
         return Model_Orm_ReserveOrder::getReserveOrderList(

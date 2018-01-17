@@ -33,6 +33,9 @@ class Service_Data_Statistics_GetStockoutStockinDetailForm
         $intPageNum,
         $intPageSize)
     {
+        if(empty($strWarehouseId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
         $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
 
         // 解析整形单号部分
