@@ -12,7 +12,7 @@ class Action_DestroyReserveOrder extends Order_Base_ApiAction
      * @var array
      */
     protected $arrInputParams = [
-        'reserve_order_id' => 'int|required',
+        'purchase_order_id' => 'int|required',
         'destroy_type' => 'int|required',
     ];
 
