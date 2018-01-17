@@ -25,13 +25,22 @@ class Order_Define_Cmd
     const NSCM_SYNC_INBOUND = 'nscmsyncinbound';
 
     /**
-     * 命令点名称定义
+     * 创建出库单命令
      * @var string
      */
-    const CMD_CREATE_STOCKOUT_ORDER = 'cmd_nwms_order_stockout_create';
+    const CMD_CREATE_STOCKOUT_ORDER = 'stockout_order_create';
 
-    const CMD_FINISH_PRICKUP_ORDER  = 'cmd_nwms_order_finish_pickup';
-    const CMD_DELETE_STOCKOUT_ORDER  = 'cmd_nwms_stockout_order_delete';
+    /**
+     * 完成拣货命令
+     * @var string
+     */
+    const CMD_FINISH_PRICKUP_ORDER  = 'stockout_order_finish_pickup';
+
+    /**
+     * 作废出库单命令
+     * @var string
+     */
+    const CMD_DELETE_STOCKOUT_ORDER  = 'stockout_order_delete';
 
     const CMD_SYNC_FORM_STATISTICS = 'order_statistics_operate';
     const CMD_CREATE_RESERVE_ORDER = 'reserve_order_create';
