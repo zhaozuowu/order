@@ -55,6 +55,8 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR => '库存调整-获取用户信息（用户名、用户ID）失败',
         Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL => '查询商品库存信息失败',
         Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED => '获取商品信息失败',
+        Order_Error_Code::NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED => '部分商品没有库存信息',
+
         // 库存调整错误码 结束
 
 

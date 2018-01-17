@@ -63,8 +63,8 @@ class Action_GetSkuStockInfo extends Order_Base_Action
             }
             $arrFormatDetail['upc_unit'] = empty($value['min_upc']['upc_unit']) ? '' : $this->formatSkuUpcUnit($value['min_upc']['upc_unit']);
 
-            $arrFormatDetail['cost_unit_price'] = empty($value['cost_unit_price']) ? '' : intval($value['cost_unit_price']);
-            $arrFormatDetail['cost_unit_price_tax'] = empty($value['cost_unit_price_tax']) ? '' : intval($value['cost_unit_price_tax']);
+            //$arrFormatDetail['cost_unit_price'] = empty($value['cost_unit_price']) ? '' : intval($value['cost_unit_price']);
+            //$arrFormatDetail['cost_unit_price_tax'] = empty($value['cost_unit_price_tax']) ? '' : intval($value['cost_unit_price_tax']);
             $arrFormatDetail['available_amount'] = empty($value['available_amount']) ? '' : intval($value['available_amount']);
 
             $arrFormatResult[] = $arrFormatDetail;

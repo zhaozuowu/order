@@ -5,10 +5,8 @@
  * @author sunzhixin@iwaimai.baidu.com
  */
 
-class Action_GetOrderDetailFormApi extends Order_Base_Action
+class Action_GetOrderDetailFormApi extends Order_Base_ApiAction
 {
-    protected $boolCheckLogin = false;
-    protected $boolCheckAuth = false;
     /**
      * input params
      * @var array
@@ -82,6 +80,7 @@ class Action_GetOrderDetailFormApi extends Order_Base_Action
             $arrFormatDetail['adjust_type']    = empty($detail['adjust_type']) ? '' : Nscm_Define_Stock::ADJUST_TYPE_MAP[intval($detail['adjust_type'])];
             $arrFormatDetail['sku_id']    = empty($detail['sku_id']) ? '' : strval($detail['sku_id']);
             $arrFormatDetail['upc_id']    = empty($detail['upc_id']) ? '' : strval($detail['upc_id']);
+            $arrFormatDetail['upc_unit']    = empty($detail['upc_unit_str']) ? '' : strval($detail['upc_unit_str']);
             $arrFormatDetail['sku_name']    = empty($detail['sku_name']) ? '' : strval($detail['sku_name']);
             $arrFormatDetail['sku_category_1_name']    = empty($detail['sku_category_1_name']) ? '' : strval($detail['sku_category_1_name']);
             $arrFormatDetail['sku_category_2_name']    = empty($detail['sku_category_2_name']) ? '' : strval($detail['sku_category_2_name']);
@@ -90,18 +89,18 @@ class Action_GetOrderDetailFormApi extends Order_Base_Action
             $arrFormatDetail['sku_net']    = empty($detail['sku_net']) ? '' : strval($detail['sku_net']);
             $arrFormatDetail['sku_net_unit']    = empty($detail['sku_net_unit_str']) ? '' : strval($detail['sku_net_unit_str']);
             $arrFormatDetail['adjust_amount']    = empty($detail['adjust_amount']) ? '' : strval($detail['adjust_amount']);
-            $arrFormatDetail['unit_price']    = empty($detail['unit_price']) ? '' : strval($detail['unit_price'] / 100) ;
-            $arrFormatDetail['unit_price_tax']    = empty($detail['unit_price_tax']) ? '' : strval($detail['unit_price_tax'] / 100);
+            $arrFormatDetail['unit_price']    = empty($detail['unit_price']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price']);
+            $arrFormatDetail['unit_price_tax']    = empty($detail['unit_price_tax']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price_tax']);
 
             if(empty($detail['adjust_amount']) || empty($detail['unit_price']) || empty($detail['unit_price_tax'])) {
                 $arrFormatResult['total_unit_price']    = '';
                 $arrFormatResult['total_unit_price_tax']    = '';
             } else {
-                $total_unit_price = intval($detail['unit_price']) * intval($detail['adjust_amount']);
-                $total_unit_price_tax = intval($detail['unit_price_tax']) * intval($detail['adjust_amount']);
+                $total_unit_price = $detail['unit_price'] * intval($detail['adjust_amount']);
+                $total_unit_price_tax = $detail['unit_price_tax'] * intval($detail['adjust_amount']);
 
-                $arrFormatDetail['total_unit_price']    = strval($total_unit_price / 100);
-                $arrFormatDetail['total_unit_price_tax']    = strval($total_unit_price_tax / 100);
+                $arrFormatDetail['total_unit_price']    = Nscm_Service_Price::convertDefaultToYuan($total_unit_price);
+                $arrFormatDetail['total_unit_price_tax']    = Nscm_Service_Price::convertDefaultToYuan($total_unit_price_tax);
             }
 
             $arrFormatDetail['create_time_str']    = empty($detail['create_time']) ? '' : strval(date('Y-m-d H:i:s',$detail['create_time']));
