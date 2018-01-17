@@ -76,7 +76,7 @@ class Service_Data_Reserve_ReserveOrder
                 'sku_net_gram' => $arrSkuInfo[$row['sku_id']]['sku_weight'] ?? '',
                 'sku_price' => $row['sku_price'],
                 'sku_price_tax' => $row['sku_price_tax'],
-                'sku_tax_rate' => $arrSkuInfo[$row['sku_id']]['sku_tax_rate'] ?? '',
+                'sku_tax_rate' => $arrSkuInfo[$row['sku_id']]['sku_tax_rate'] ?? 0,
                 'sku_effect_type' => $arrSkuInfo[$row['sku_id']]['sku_effect_type'] ?? '',
                 'sku_effect_day' => $arrSkuInfo[$row['sku_id']]['sku_effect_day'] ?? '',
                 'reserve_order_sku_total_price' => $row['reserve_order_sku_total_price'],
