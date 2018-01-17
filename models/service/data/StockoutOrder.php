@@ -650,7 +650,6 @@ class Service_Data_StockoutOrder
      */
     public function deleteStockoutOrder($strStockoutOrderId,$mark)
     {
-
         $res = [];
         $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
@@ -684,11 +683,8 @@ class Service_Data_StockoutOrder
             if (empty($arrStockoutDetail)) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS);
             }
-            $arrStockoutDetail = $this->formatDeleteStockoutOrder($arrStockoutDetail);
-            $rs = $this->objRalStock->cancelfreezeskustock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id']);
-            if (empty($rs)) {
-                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
-            }
+
+            $this->notifyCancelfreezeskustock($strStockoutOrderId,$stockoutOrderInfo['warehouse_id']);
         });
 
         return [];
@@ -861,7 +857,7 @@ class Service_Data_StockoutOrder
     }
 
     /**
-     * 通知tms完成拣货
+     * 通知tms完成拣货（wmq）
      * @param $strStockoutOrderId
      * @param $pickupSkus
      * @return array
@@ -878,6 +874,39 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL);
         }
         return [];
+    }
+
+    /**
+     * 作废出库单（下游通知库存wmq）
+     * @param $strStockoutOrderId
+     * @param $warehouseId
+     * @return array
+     */
+    private function notifyCancelfreezeskustock($strStockoutOrderId, $warehouseId)
+    {
+        $arrStockoutParams = ['stockout_order_id' => $strStockoutOrderId,'warehouse_id'=>$warehouseId];
+        $strCmd = Order_Define_Cmd::CMD_DELETE_STOCKOUT_ORDER;
+        $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrStockoutParams, $strStockoutOrderId);
+        if (false === $ret) {
+           Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
+       }
+       return [];
+    }
+
+    /**
+     * 订单商品库存-作废-上游
+     * @param $strStockoutOrderId
+     * @param $warehouseId
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function cancelStockoutOrder($strStockoutOrderId, $warehouseId)
+    {
+        $rs = $this->objRalStock->cancelfreezeskustock($strStockoutOrderId, $warehouseId);
+        if (empty($rs)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
+        }
+        return $rs;
     }
 
 

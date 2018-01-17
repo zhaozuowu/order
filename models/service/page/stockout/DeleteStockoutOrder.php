@@ -31,14 +31,6 @@ class Service_Page_Stockout_DeleteStockoutOrder
 
         $strStockoutOrderId = $arrInput['stockout_order_id'];
         $mark= $arrInput['mark'];
-        $arrStockoutParams = ['stockout_order_id' => $strStockoutOrderId,'mark'=>'mark'];
-        $strCmd = Order_Define_Cmd::CMD_DELETE_STOCKOUT_ORDER;
-        $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrStockoutParams, $strStockoutOrderId);
-        if (false === $ret) {
-           Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
-       }
-       return [];
-
-       // return $this->objStockoutOrder->deleteStockoutOrder($strStockoutOrderId);
+        return $this->objStockoutOrder->deleteStockoutOrder($strStockoutOrderId,$mark);
     }
 }
