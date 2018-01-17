@@ -61,7 +61,7 @@
  * @method static Generator|Model_Orm_StockinStockoutDetail[] yieldAllFromRdview($cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldRowsFromRdview($columns, $cond, $orderBy = [], $offset = 0, $limit = null)
  * @method static yieldColumnFromRdview($column, $cond, $orderBy = [], $offset = 0, $limit = null)
-*/
+ */
 
 class Model_Orm_StockinStockoutDetail extends Order_Base_Orm
 {
@@ -73,68 +73,65 @@ class Model_Orm_StockinStockoutDetail extends Order_Base_Orm
     /**
      * 获取销退入库明细（分页）
      *
-     * @param $arrWarehouseId
-     * @param $intStockinOrderId
-     * @param $intSourceOrderId
-     * @param $intSkuId
-     * @param $intClientId
-     * @param $arrStockinTime
-     * @param $intPageNum
-     * @param $intPageSize
+     * @param array $arrWarehouseId
+     * @param integer $intStockinOrderId
+     * @param integer $intSourceOrderId
+     * @param integer $intSkuId
+     * @param integer $intClientId
+     * @param string $strClientName
+     * @param array $arrStockinTime
+     * @param integer $intPageNum
+     * @param integer $intPageSize
      * @return mixed
      */
     public static function getStockoutStockinDetail(
-            $arrWarehouseId,
-            $intStockinOrderId,
-            $intSourceOrderId,
-            $intSkuId,
-            $intClientId,
-            $strClientName,
-            $arrStockinTime,
-            $intPageNum,
-            $intPageSize)
+        $arrWarehouseId,
+        $intStockinOrderId,
+        $intSourceOrderId,
+        $intSkuId,
+        $intClientId,
+        $strClientName,
+        $arrStockinTime,
+        $intPageNum,
+        $intPageSize)
     {
-        // 拼装查询条件
-        if (!empty($arrWarehouseId)) {
-            $arrCondition['warehouse_id'] = [
-                'in',
-                $arrWarehouseId];
+        // 必传仓库id
+        $arrCondition['warehouse_id'] = ['in', $arrWarehouseId];
+
+        if (!empty($intStockinOrderId)) {
+            // 如果有入库单号则忽略其他条件
+            $arrCondition['stockin_order_id'] = $intStockinOrderId;
+        } else if (!empty($intSourceOrderId)) {
+            // 如果有关联单号则忽略其他条件
+            $arrCondition['source_order_id'] = $intSourceOrderId;
+        } else {
+            if (!empty($intSkuId)) {
+                $arrCondition['sku_id'] = $intSkuId;
+            }
+
+            if (!empty($intClientId)) {
+                $arrCondition['client_id'] = $intClientId;
+            }
+
+            if (!empty($strClientName)) {
+                $arrCondition['client_name'] = [
+                    'like',
+                    $strClientName . '%',
+                ];
+            }
+
+            if (!empty($arrStockinTime['start'])
+                && !empty($arrStockinTime['end'])) {
+                $arrCondition['stockin_time'] = [
+                    'between',
+                    $arrStockinTime['start'],
+                    $arrStockinTime['end'],
+                ];
+            }
         }
 
         // 固定添加条件，只查询入库类型为 销退入库 的数据
         $arrCondition['stockin_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
-
-        if (!empty($intStockinOrderId)) {
-            $arrCondition['stockin_order_id'] = $intStockinOrderId;
-        }
-
-        if (!empty($intSourceOrderId)) {
-            $arrCondition['source_order_id'] = $intSourceOrderId;
-        }
-
-        if (!empty($intSkuId)) {
-            $arrCondition['sku_id'] = $intSkuId;
-        }
-
-        if (!empty($intClientId)) {
-            $arrCondition['client_id'] = $intClientId;
-        }
-
-        if (!empty($strClientName)) {
-            $arrCondition['client_name'] = [
-                'like',
-                $strClientName . '%',
-            ];
-        }
-
-        if (!empty($arrStockinTime['start'])
-            && !empty($arrStockinTime['end'])) {
-            $arrCondition['stockin_time'] = [
-                'between',
-                $arrStockinTime['start'],
-                $arrStockinTime['end'],
-            ];
-        }
 
         // 只查询未软删除的
         $arrCondition['is_delete'] = Order_Define_Const::NOT_DELETE;

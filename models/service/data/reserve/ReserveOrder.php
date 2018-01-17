@@ -70,15 +70,15 @@ class Service_Data_Reserve_ReserveOrder
                 'upc_id' => $row['upc_id'],
                 'upc_unit' => $row['upc_unit'],
                 'upc_unit_num' => $row['upc_unit_num'],
-                'sku_name' => $arrSkuInfo[$row['sku_id']]['sku_name'],
-                'sku_net' => $arrSkuInfo[$row['sku_id']]['sku_net'],
-                'sku_net_unit' => $arrSkuInfo[$row['sku_id']]['sku_net_unit'],
-                'sku_net_gram' => $arrSkuInfo[$row['sku_id']]['sku_weight'],
+                'sku_name' => $arrSkuInfo[$row['sku_id']]['sku_name'] ?? '',
+                'sku_net' => $arrSkuInfo[$row['sku_id']]['sku_net'] ?? '',
+                'sku_net_unit' => $arrSkuInfo[$row['sku_id']]['sku_net_unit'] ?? '',
+                'sku_net_gram' => $arrSkuInfo[$row['sku_id']]['sku_weight'] ?? '',
                 'sku_price' => $row['sku_price'],
                 'sku_price_tax' => $row['sku_price_tax'],
-                'sku_tax_rate' => $arrSkuInfo[$row['sku_id']]['sku_tax_rate'],
-                'sku_effect_type' => $arrSkuInfo[$row['sku_id']]['sku_effect_type'],
-                'sku_effect_day' => $arrSkuInfo[$row['sku_id']]['sku_effect_day'],
+                'sku_tax_rate' => $arrSkuInfo[$row['sku_id']]['sku_tax_rate'] ?? 0,
+                'sku_effect_type' => $arrSkuInfo[$row['sku_id']]['sku_effect_type'] ?? '',
+                'sku_effect_day' => $arrSkuInfo[$row['sku_id']]['sku_effect_day'] ?? '',
                 'reserve_order_sku_total_price' => $row['reserve_order_sku_total_price'],
                 'reserve_order_sku_total_price_tax' => $row['reserve_order_sku_total_price_tax'],
                 'reserve_order_sku_plan_amount' => $row['reserve_order_sku_plan_amount'],
@@ -277,6 +277,9 @@ class Service_Data_Reserve_ReserveOrder
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
 
+        if(empty($strWarehouseId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
         $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
 
         return Model_Orm_ReserveOrder::getReserveOrderList(
@@ -394,7 +397,7 @@ class Service_Data_Reserve_ReserveOrder
         //$arrReserveSkuList = array_column($arrReserveSkuList,null,'reserve_order_id');
         $arrReserveSkuList = $this->arrayToKeyValue($arrReserveSkuList, 'reserve_order_id');
         foreach ($arrRetList as $key=>$item) {
-            $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):empty($item['warehouse_name']);
+            $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):$item['warehouse_name'];
             $arrRetList[$key]['warehouse_contact'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact']:'';
             $arrRetList[$key]['warehouse_contact_phone'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact_phone']:'';
             $arrRetList[$key]['skus'] = isset($arrReserveSkuList[$item['reserve_order_id']]) ? $arrReserveSkuList[$item['reserve_order_id']]:[];
@@ -450,5 +453,17 @@ class Service_Data_Reserve_ReserveOrder
             }
         }
         return $arrKeyValue;
+    }
+
+    /**
+     * @param $intInboundId
+     * @param $intStatus
+     * @param $intActualTime
+     * @param $arrItems
+     * @throws Nscm_Exception_Error
+     */
+    public function syncInboundDirect($intInboundId, $intStatus, $intActualTime, $arrItems)
+    {
+        Dao_Ral_SyncInbound::syncInboundDirect($intInboundId, $intStatus, $intActualTime, $arrItems);
     }
 }

@@ -31,7 +31,7 @@ class Service_Page_Reserve_GetReserveOrderList implements Order_Base_Page
     public function execute($arrInput)
     {
         $strReserveOrderStatus = $arrInput['reserve_order_status'];
-        $strWarehouseId = $arrInput['warehouse_id'];
+        $strWarehouseId = $arrInput['warehouse_ids'];
         $strReserveOrderId = $arrInput['reserve_order_id'];
         $intVendorId = $arrInput['vendor_id'];
         $arrCreateTime = [

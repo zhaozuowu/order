@@ -68,7 +68,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param string $strStockinOrderCreatorName
      * @param string $strStockinOrderRemark
      * @param int $intStockinOrderTotalPrice
-     * @param  int$intStockinOrderTotalPriceTax
+     * @param  int $intStockinOrderTotalPriceTax
      * @return int
      */
     public static function createStockinOrder(
@@ -105,7 +105,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'city_id' => intval($intCityId),
             'city_name' => strval($strCityName),
             'warehouse_id' => intval($intWarehouseId),
-            'warehouse_name' => intval($strWarehouseName),
+            'warehouse_name' => strval($strWarehouseName),
             'stockin_time' => $intStockinTime,
             'reserve_order_plan_time' => $intReserveOrderPlanTime,
             'stockin_order_plan_amount' => $intStockinOrderPlanAmount,
@@ -147,8 +147,11 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intPageSize)
     {
         // 拼装查询条件
-        if (!empty($arrSourceOrderIdInfo)) {
-            // 如果指定单号则其他条件忽略
+        if (!empty($intStockinOrderId)) {
+            // 如果指定入库单号则其他条件忽略
+            $arrCondition['stockin_order_id'] = $intStockinOrderId;
+        } else if (!empty($arrSourceOrderIdInfo)) {
+            // 如果指定关联单号则其他条件忽略
             $arrCondition['source_order_id'] = $arrSourceOrderIdInfo['source_order_id'];
             // 入库单类型
             $arrCondition['stockin_order_type'] = $arrSourceOrderIdInfo['source_order_type'];
@@ -160,10 +163,6 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
                 $arrCondition['stockin_order_type'] = [
                     'in',
                     $arrStockinOrderType];
-            }
-
-            if (!empty($intStockinOrderId)) {
-                $arrCondition['stockin_order_id'] = $intStockinOrderId;
             }
 
             if (!empty($arrWarehouseId)) {

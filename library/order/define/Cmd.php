@@ -38,12 +38,14 @@ class Order_Define_Cmd
 
     const CMD_SYNC_INBOUND = 'sync_inbound';
 
+    const CMD_SYNC_INBOUND_NWMS = 'nscm_purchase_order_sync';
+
     /**
      * wmq使用的默认配置
      * @var array
      */
     const DEFAULT_WMQ_CONFIG = [
-        'Topic' => self::CMD_TOPIC,
+        'Topic' => self::NWMS_ORDER_TOPIC,
         'Key' => '',
         'serviceName' => 'wmqproxy',
     ];

@@ -107,7 +107,7 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
             trigger_error('must rewrite arrInputParams in class Action', E_ERROR );
             exit(-1);
         }
-        Bd_Log::debug('validator input: ' . json_encode($this->$arrInput));
+        Bd_Log::debug('validator input: ' . json_encode($arrInput));
         $arrValidateResult = $this->validate($this->arrInputParams, $arrInput);
         if (is_array($this->arrFilterResult)) {
             $this->arrFilterResult = array_merge($arrValidateResult, $this->arrFilterResult);
@@ -115,7 +115,8 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
             $this->arrFilterResult = $this->validate($this->arrInputParams, $arrInput);
         }
         if ($this->boolCheckLogin) {
-            $this->arrFilterResult['_session'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info');
+            $this->arrSession = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info');
+            $this->arrFilterResult['_session'] = $this->arrSession;
         }
         Bd_Log::debug('validator output: ' . json_encode($this->arrFilterResult));
     }

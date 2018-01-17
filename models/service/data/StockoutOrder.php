@@ -173,7 +173,7 @@ class Service_Data_StockoutOrder
             $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_INSERT_SUCCESS;
             $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE;
             $userName = empty($arrInput['user_info']['user_name']) ? '系统':$arrInput['user_info']['user_name'];
-            $operatorId =empty($arrInput['user_info']['user_id']) ? 0 :intval($arrInput['user_info']['user_id']);
+            $operatorId =empty($arrInput['user_info']['user_id']) ? '8888' :intval($arrInput['user_info']['user_id']);
             $this->objRalLog->addLog($logType,$arrCreateParams['stockout_order_id'],$operationType,$userName,$operatorId,'创建出库单');
         });
     }
@@ -426,22 +426,22 @@ class Service_Data_StockoutOrder
         $arrListConditions = [];
         if (!empty($arrInput['warehouse_id'])) {
             $arrWareHouseIds = explode(',', $arrInput['warehouse_id']);
-            $arrConditions['warehouse_id'] = ['in', $arrWareHouseIds];
+            $arrListConditions['warehouse_id'] = ['in', $arrWareHouseIds];
         }
         if (!empty($arrInput['stockout_order_id'])) {
-            $arrListConditions['stockout_order_id'] = intval($arrInput['stockout_order_id']);
+            $arrListConditions['stockout_order_id'] = $this->trimStockoutOrderIdPrefix($arrInput['stockout_order_id']);
         }
         if (!empty($arrInput['business_form_order_id'])) {
             $arrListConditions['business_form_order_id'] = intval($arrInput['business_form_order_id']);
         }
         if (!empty($arrInput['customer_name'])) {
-            $arrListConditions['customer_name'] = ['like', $arrInput['customer_name'] . '%'];
+            $arrListConditions['customer_name'] = $arrInput['customer_name'];
         }
         if (!empty($arrInput['customer_id'])) {
             $arrListConditions['customer_id'] = intval($arrInput['customer_id']);
         }
         if (!empty($arrInput['is_print'])) {
-            $arrListConditions['is_print'] = intval($arrInput['is_print']);
+            $arrListConditions['stockout_order_is_print'] = intval($arrInput['is_print']);
         }
         if (!empty($arrInput['stockout_order_status'])) {
             $arrListConditions['stockout_order_status'] = intval($arrInput['stockout_order_status']);
@@ -477,7 +477,7 @@ class Service_Data_StockoutOrder
         $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
         $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
         $arrWarehouseList = !empty($arrWarehouseList) ? array_column($arrWarehouseList, null, 'warehouse_id') : [];
-        $arrOrderList['warehouse_name'] = isset($arrWarehouseList[$arrOrderList['warehouse_id']]) ? $arrWarehouseList[$arrOrderList['warehouse_id']]['warehouse_name']: '';
+        $arrOrderList['warehouse_name'] =!empty($arrOrderList['warehouse_name']) ? $arrOrderList['warehouse_name']:(isset($arrWarehouseList[$arrOrderList['warehouse_id']]) ? $arrWarehouseList[$arrOrderList['warehouse_id']]['warehouse_name']: '');
         $skuList = $this->objOrmSku->getSkuInfoById($strStockoutOrderId);
         return [
             'stockout_order_info' => $arrOrderList,
@@ -510,6 +510,10 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
         }
 
+        $tmp = $this->checkoutPuckAmount($pickupSkus);
+        if ($tmp) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_AMOUNT_ERROR);
+        }
         return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($stockoutOrderInfo, $strStockoutOrderId, $pickupSkus) {
             $res = [];
             $stockoutOrderPickupAmount = 0;
@@ -531,6 +535,8 @@ class Service_Data_StockoutOrder
                 $skuUpdata = ['pickup_amount' => $item['pickup_amount']];
                 $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
             }
+
+            $this->notifyTmsFnishPick($strStockoutOrderId,$pickupSkus);
         });
     }
 
@@ -644,7 +650,6 @@ class Service_Data_StockoutOrder
      */
     public function deleteStockoutOrder($strStockoutOrderId,$mark)
     {
-
         $res = [];
         $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
@@ -678,11 +683,8 @@ class Service_Data_StockoutOrder
             if (empty($arrStockoutDetail)) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS);
             }
-            $arrStockoutDetail = $this->formatDeleteStockoutOrder($arrStockoutDetail);
-            $rs = $this->objRalStock->cancelfreezeskustock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id']);
-            if (empty($rs)) {
-                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
-            }
+
+            $this->notifyCancelfreezeskustock($strStockoutOrderId,$stockoutOrderInfo['warehouse_id']);
         });
 
         return [];
@@ -837,6 +839,75 @@ class Service_Data_StockoutOrder
         return $arrRet;
     }
 
+    /**
+     * 拣货数量检查
+     * @param $pickupSkus
+     * @return bool
+     */
+    public function checkoutPuckAmount($pickupSkus): bool
+    {
+        $tmp = true;
+        foreach ($pickupSkus as $item) {
+            if (!empty($item['pickup_amount'])) {
+                $tmp = false;
+                break;
+            }
+        }
+        return $tmp;
+    }
+
+    /**
+     * 通知tms完成拣货（wmq）
+     * @param $strStockoutOrderId
+     * @param $pickupSkus
+     * @return array
+     * @throws Order_BusinessError
+     */
+    private function notifyTmsFnishPick($strStockoutOrderId, $pickupSkus)
+    {
+
+        $arrStockoutParams = ['stockout_order_id' => $strStockoutOrderId, 'pickup_skus' => $pickupSkus];
+        $strCmd = Order_Define_Cmd::CMD_FINISH_PRICKUP_ORDER;
+        $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrStockoutParams, $strStockoutOrderId);
+        if (false == $ret) {
+            Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL);
+        }
+        return [];
+    }
+
+    /**
+     * 作废出库单（下游通知库存wmq）
+     * @param $strStockoutOrderId
+     * @param $warehouseId
+     * @return array
+     */
+    private function notifyCancelfreezeskustock($strStockoutOrderId, $warehouseId)
+    {
+        $arrStockoutParams = ['stockout_order_id' => $strStockoutOrderId,'warehouse_id'=>$warehouseId];
+        $strCmd = Order_Define_Cmd::CMD_DELETE_STOCKOUT_ORDER;
+        $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrStockoutParams, $strStockoutOrderId);
+        if (false === $ret) {
+           Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
+       }
+       return [];
+    }
+
+    /**
+     * 订单商品库存-作废-上游
+     * @param $strStockoutOrderId
+     * @param $warehouseId
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function cancelStockoutOrder($strStockoutOrderId, $warehouseId)
+    {
+        $rs = $this->objRalStock->cancelfreezeskustock($strStockoutOrderId, $warehouseId);
+        if (empty($rs)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
+        }
+        return $rs;
+    }
 
 
 }

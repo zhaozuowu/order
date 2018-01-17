@@ -14,15 +14,13 @@ class Action_Createdecreaseorder extends Order_Base_Action
     protected $arrInputParams = [
         'warehouse_id'      => 'int|required',
         'warehouse_name'    => 'str|required',
-        'adjust_type'       => 'int|required',
+        'adjust_type'       => 'int|required|min[10]',
         'remark'            => 'str|required',
         'detail'            => [
             'validate'              => 'json|required|decode',
             'type'                  => 'array',
             'params'                => [
                 'sku_id'                    => 'int|required',
-                'unit_price'                => 'int|required',
-                'unit_price_tax'            => 'int|required',
                 'adjust_amount'             => 'int|required',
             ],
         ]

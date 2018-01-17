@@ -32,13 +32,13 @@ class Order_Define_Sku
      * net gram
      * @var int
      */
-    const SKU_NET_GRAM = 1;
+    const SKU_NET_GRAM = 2;
 
     /**
      * net kg
      * @var int
      */
-    const SKU_NET_KILOGRAM = 2;
+    const SKU_NET_KILOGRAM = 1;
 
     /**
      * net ml
@@ -83,7 +83,22 @@ class Order_Define_Sku
         12 => "根",
     ];
 
+    /**
+     * 生产日期类型
+     */
     const SKU_EFFECT_TYPE_PRODUCT = 1;
 
+    /**
+     * 失效日期类型
+     */
     const SKU_EFFECT_TYPE_EXPIRE = 2;
+
+    /**
+     * expire effect type define
+     * @var array
+     */
+    const SKU_EFFECT_TYPE_EXPIRE_MAP = [
+        self::SKU_EFFECT_TYPE_PRODUCT => '生产日期',
+        self::SKU_EFFECT_TYPE_EXPIRE => '失效日期',
+    ];
 }

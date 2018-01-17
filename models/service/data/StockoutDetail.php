@@ -92,13 +92,21 @@ class Service_Data_StockoutDetail
             $arrConditions['customer_id'] = $arrInput['customer_id'];
         }
         if (!empty($arrInput['customer_name'])) {
-            $arrConditions['customer_name'] = ['like', $arrInput['customer_name'] . '%'];
+            $arrConditions['customer_name'] = $arrInput['customer_name'];
         }
         if (!empty($arrInput['start_time'])) {
             $arrConditions['create_time'][] = ['>=', $arrInput['start_time']];
         }
         if (!empty($arrInput['end_time'])) {
             $arrConditions['create_time'][] = ['<=', $arrInput['end_time']];
+        }
+
+        if (!empty($arrInput['order_create_start_time'])) {
+            $arrConditions['order_create_time'][] = ['>=', $arrInput['order_create_start_time']];
+        }
+
+        if (!empty($arrInput['order_create_end_time'])) {
+            $arrConditions['order_create_time'][] = ['<=', $arrInput['order_create_end_time']];
         }
         if (!empty($arrInput['stockout_order_ids'])) {
             $arrInput['stockout_order_ids'] = is_array($arrInput['stockout_order_ids'])? $arrInput['stockout_order_ids']:explode(',', $arrInput['stockout_order_ids']);

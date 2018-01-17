@@ -41,8 +41,10 @@ class Action_GetReserveOrderStatistics extends Order_Base_Action
         if(!empty($arrRet)) {
             foreach ($arrRetList as $arrListItem) {
                 $arrRoundResult = [];
-                $arrRoundResult['reserve_order_status'] = empty($arrListItem['reserve_order_status']) ? 0 : intval($arrListItem['reserve_order_status']);
-                $arrRoundResult['reserve_order_status_count'] = empty($arrListItem['reserve_order_status_count']) ? 0 : intval($arrListItem['reserve_order_status_count']);
+                $arrRoundResult['reserve_order_status'] = empty($arrListItem['reserve_order_status']) ? 0
+                    : intval($arrListItem['reserve_order_status']);
+                $arrRoundResult['reserve_order_status_count'] = empty($arrListItem['reserve_order_status_count']) ? 0
+                    : intval($arrListItem['reserve_order_status_count']);
                 $intTotal += intval($arrRoundResult['reserve_order_status_count']);
                 $arrFormatResult['list'][] = $arrRoundResult;
             }
@@ -53,9 +55,9 @@ class Action_GetReserveOrderStatistics extends Order_Base_Action
         $arrRoundResult['reserve_order_status'] = 0;
         $arrRoundResult['reserve_order_status_count'] = $intTotal;
         $arrFormatResult['list'][] = $arrRoundResult;
-        $userId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
-        $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
-        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $userId, $appId);
+        $intUserId = $this->arrSession['user_id'];
+        $intAppId = $this->arrSession['system'];
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $intUserId, $intAppId);
 
         return $arrFormatResult;
     }

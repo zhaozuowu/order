@@ -84,7 +84,6 @@ class Dao_Ral_Stock
         }
         $ret = $this->objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_FREEZE_SKU_STOCK]) ? [] : $ret[self::API_RALER_FREEZE_SKU_STOCK];
-        var_dump($ret);
         if (empty($ret) || !empty($ret['error_no'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
         }
@@ -115,6 +114,7 @@ class Dao_Ral_Stock
             $req[self::API_RALER_UNFREEZE_SKU_STOCK]['stockout_details'] = $arrStockoutDetail;
         }
         $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug("unfreezeSkuStock res:".json_encode($ret));
         $ret = empty($ret[self::API_RALER_UNFREEZE_SKU_STOCK]) ? [] : $ret[self::API_RALER_UNFREEZE_SKU_STOCK];
         if (empty($ret) || !empty($ret['error_no'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
@@ -130,8 +130,13 @@ class Dao_Ral_Stock
      */
     public function getStockInfo($intWarehouseId, $arrSkuIds)
     {
+        Bd_Log::debug(__METHOD__ . ' 库存调整-查看库存 参数 intWarehouseId=' . $intWarehouseId);
+        Bd_Log::debug(__METHOD__ . ' 库存调整-查看库存 参数 arrSkuIds=' . json_encode($arrSkuIds));
+
         $ret = [];
         if(empty($intWarehouseId) || empty($arrSkuIds)) {
+            Bd_Log::warning(__METHOD__ . ' 库存调整-出库 ral 调用失败. 参数为空');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
             return $ret;
         }
 
@@ -144,8 +149,11 @@ class Dao_Ral_Stock
         $ret = $this->objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_STOCK_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_DETAIL];
         if (empty($ret) || !empty($ret['error_no'])) {
+            Bd_Log::warning(__METHOD__ . ' 库存调整-出库 ral 调用失败' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
         }
+
+        Bd_Log::debug(__METHOD__ . ' 库存调整-查看库存 ral 调用成功' . json_encode($ret));
         return $ret['result'];
     }
 
@@ -160,16 +168,22 @@ class Dao_Ral_Stock
     public function adjustStockout($intStockoutOrderId, $intWarehouseId, $intAdjustType, $arrDetails)
     {
         $ret = [];
+        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 参数 intStockoutOrderId=' . $intStockoutOrderId);
+        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 参数 intWarehouseId=' . $intWarehouseId);
+        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 参数 intAdjustType=' . $intAdjustType);
+        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 参数 arrDetails=' . json_encode($arrDetails));
+
+
         if(empty($intStockoutOrderId) || empty($intWarehouseId) || empty($intAdjustType) || empty($arrDetails)) {
-            Bd_Log::warning(__METHOD__ . ' 参数为空');
-            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+            Bd_Log::warning(__METHOD__ . ' 库存调整-出库 ral 调用失败. 参数为空');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
             return $ret;
         }
 
         foreach ($arrDetails as $detail) {
             if(empty($detail['sku_id']) || empty($detail['stockout_amount'])) {
-                Bd_Log::warning(__METHOD__ . ' 参数为空');
-                Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+                Bd_Log::warning(__METHOD__ . ' 库存调整-出库 ral 调用失败. detail中参数为空');
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
                 return $ret;
             }
         }
@@ -182,10 +196,11 @@ class Dao_Ral_Stock
         $ret = $this->objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_ADJUST_STOCKOUT]) ? [] : $ret[self::API_RALER_ADJUST_STOCKOUT];
         if (empty($ret) || !empty($ret['error_no'])) {
+            Bd_Log::warning(__METHOD__ . ' 库存调整-出库 ral 调用失败' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 
-        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 ral 调用成功');
+        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 ral 调用成功 ' . print_r($ret));
         return $ret;
     }
 
@@ -243,6 +258,7 @@ class Dao_Ral_Stock
             $req[self::API_RALER_CANCEL_FREEZESKU_STOCK]['warehouse_id'] = $intWarehouseId;
         }
         $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug("cancelfreezeskustock res:".json_encode($ret));
         $ret = empty($ret[self::API_RALER_CANCEL_FREEZESKU_STOCK]) ? [] : $ret[self::API_RALER_CANCEL_FREEZESKU_STOCK];
         if (empty($ret) || !empty($ret['error_no'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);

@@ -74,6 +74,11 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL = 310011;
 
+    /***
+     * 拣货数量有误
+     */
+    const NWMS_STOCKOUT_ORDER_FINISH_PICKUP_AMOUNT_ERROR = 310012;
+
     /**
      * 获取彩云系统商品详情信息失败
      * @var integer
@@ -142,8 +147,33 @@ class Order_Error_Code extends Wm_Error_Code
 
     /**
      * 映射orm不存在
+     * @var int
      */
     const ORM_NOT_EXIST = 330011 ;
+
+    /**
+     * reserve order status not allow stockin
+     * @var int
+     */
+    const RESERVE_ORDER_STATUS_NOT_ALLOW_STOCKIN = 330012;
+
+    /**
+     * warehouse not match
+     * @var int
+     */
+    const WAREHOUSE_NOT_MATCH = 330013;
+
+    /**
+     * all sku must stock in
+     * @var int
+     */
+    const ALL_SKU_MUST_STOCKIN = 330014;
+
+    /**
+     * sku amount cannot empty
+     * @var int
+     */
+    const SKU_AMOUNT_CANNOT_EMPTY = 330015;
 
     /**
      * 查询时间范围错误
@@ -270,6 +300,18 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_ADJUST_GET_STOCK_INTO_FAIL = 350018;
 
+    /**
+     * 获取商品信息失败
+     * @var integer
+     */
+    const NWMS_ORDER_ADJUST_GET_SKU_FAILED = 350019;
+    
+    /**
+     * 库存调整-SKU没有库存信息
+     * @var integer
+     */
+    const NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED = 350020;
+    
     /**
      * 获取商品信息失败
      * @var integer
