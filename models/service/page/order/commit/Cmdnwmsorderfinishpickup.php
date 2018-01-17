@@ -30,7 +30,7 @@ class Service_Page_Order_Commit_Cmdnwmsorderfinishpickup extends Wm_Lib_Wmq_Comm
     {
         $strStockoutOrderId = $arrInput['stockout_order_id'];
         $pickupSkus = is_array($arrInput['pickup_skus']) ? $arrInput['pickup_skus'] : json_decode($arrInput['pickup_skus'], true);
-            Bd_Log::debug("wmq myExecute:".json_encode($arrInput));
+            Bd_Log::debug("wmq finishpickup myExecute:".json_encode($arrInput));
         return $this->objStockoutOrder->finishPickup($strStockoutOrderId, $pickupSkus);
     }
 

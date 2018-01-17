@@ -37,7 +37,7 @@ class Service_Page_Stockout_DeleteStockoutOrder
         if (false === $ret) {
            Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
        }
-       return $ret;
+       return [];
 
        // return $this->objStockoutOrder->deleteStockoutOrder($strStockoutOrderId);
     }
