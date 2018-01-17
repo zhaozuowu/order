@@ -36,6 +36,10 @@ class Action_GetVendorSugByName extends Order_Base_Action
      */
     public function format($data)
     {
-        return $data;
+        $arrRet = [];
+        foreach ((array)$data as $row) {
+            $arrRet[] = $row;
+        }
+        return ['vendor_list' => $arrRet];
     }
 }
