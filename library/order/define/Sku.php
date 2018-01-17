@@ -32,13 +32,13 @@ class Order_Define_Sku
      * net gram
      * @var int
      */
-    const SKU_NET_GRAM = 1;
+    const SKU_NET_GRAM = 2;
 
     /**
      * net kg
      * @var int
      */
-    const SKU_NET_KILOGRAM = 2;
+    const SKU_NET_KILOGRAM = 1;
 
     /**
      * net ml

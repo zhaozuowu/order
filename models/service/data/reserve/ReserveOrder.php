@@ -394,7 +394,7 @@ class Service_Data_Reserve_ReserveOrder
         //$arrReserveSkuList = array_column($arrReserveSkuList,null,'reserve_order_id');
         $arrReserveSkuList = $this->arrayToKeyValue($arrReserveSkuList, 'reserve_order_id');
         foreach ($arrRetList as $key=>$item) {
-            $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):empty($item['warehouse_name']);
+            $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):$item['warehouse_name'];
             $arrRetList[$key]['warehouse_contact'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact']:'';
             $arrRetList[$key]['warehouse_contact_phone'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact_phone']:'';
             $arrRetList[$key]['skus'] = isset($arrReserveSkuList[$item['reserve_order_id']]) ? $arrReserveSkuList[$item['reserve_order_id']]:[];

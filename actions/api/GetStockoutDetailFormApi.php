@@ -19,8 +19,8 @@ class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
      * @var array
      */
     protected $arrInputParams = [
-        'start_time'=>'int|required',
-        'end_time'=>'int|required',
+        'order_create_start_time'=>'int|required',
+        'order_create_end_time'=>'int|required',
         'page_size' => 'int|required',
         'page_num' => 'int|default[1]',
         'warehouse_ids'=>'str',
@@ -73,6 +73,7 @@ class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
             $arrFormatRetItem['customer_name'] = empty($arrRetItem['customer_name']) ? '':$arrRetItem['customer_name'];
             $arrFormatRetItem['customer_id'] = empty($arrRetItem['customer_id']) ? 0 :$arrRetItem['customer_id'];
             $arrFormatRetItem['customer_contactor'] = empty($arrRetItem['customer_contactor']) ? '' :$arrRetItem['customer_contactor'];
+            $arrFormatRetItem['customer_contact'] = empty($arrRetItem['customer_contact']) ? '' :$arrRetItem['customer_contact']; 
             $arrFormatRetItem['sku_id'] = empty($arrRetItem['sku_id']) ? 0 :$arrRetItem['sku_id'];
             $arrFormatRetItem['upc_id'] = empty($arrRetItem['upc_id']) ? '' :$arrRetItem['upc_id'];
             $arrFormatRetItem['sku_name'] = empty($arrRetItem['sku_name']) ? '' :$arrRetItem['sku_name'];

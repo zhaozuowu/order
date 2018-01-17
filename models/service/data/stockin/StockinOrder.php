@@ -38,7 +38,8 @@ class Service_Data_Stockin_StockinOrder
             ];
             $i++;
             $intTotalAmount += intval($arrRealStockinInfo['amount']);
-            if ($i > Order_Define_StockinOrder::STOCKIN_SKU_EXP_DATE_MAX) {
+            if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intOrderType
+                && $i > Order_Define_StockinOrder::STOCKIN_SKU_EXP_DATE_MAX) {
                 // max expire time 2
                 Order_BusinessError::throwException(Order_Error_Code::SKU_TOO_MUCH);
             }
@@ -580,7 +581,7 @@ class Service_Data_Stockin_StockinOrder
             $arrSourceInfo =empty($item['source_info']) ? []:json_decode($item['source_info'],true);
             $arrRetList[$key]['vendor_id'] = isset($arrSourceInfo['vendor_id']) ? $arrSourceInfo['vendor_id']:0;
             $arrRetList[$key]['vendor_name'] = isset($arrSourceInfo['vendor_name']) ? $arrSourceInfo['vendor_name']:'';
-            $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):empty($item['warehouse_name']);
+            $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):$item['warehouse_name'];
             $arrRetList[$key]['warehouse_contact'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact']:'';
             $arrRetList[$key]['warehouse_contact_phone'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact_phone']:'';
             $arrRetList[$key]['skus'] = isset($arrReserveSkuList[$item['stockin_order_id']]) ? $arrReserveSkuList[$item['stockin_order_id']]:[];

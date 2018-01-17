@@ -13,7 +13,7 @@ class Action_GetBusinessFormOrderList extends Order_Base_Action
      */
     protected $arrInputParams = [
         'page_num' => 'int|default[1]',
-        'page_size' => 'int|required',
+        'page_size' => 'int|required|max[200]',
         'status'    => 'int|required',
         'warehouse_id' => 'str|required',
         'business_form_order_id' => 'int',
@@ -45,6 +45,7 @@ class Action_GetBusinessFormOrderList extends Order_Base_Action
      */
     public function format($arrRet)
     {
+
         if (empty($arrRet['orders'])) {
             return $arrRet;
         }
