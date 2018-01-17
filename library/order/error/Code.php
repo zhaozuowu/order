@@ -305,7 +305,13 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_ADJUST_GET_SKU_FAILED = 350019;
-
+    
+    /**
+     * 库存调整-SKU没有库存信息
+     * @var integer
+     */
+    const NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED = 350020;
+    
     /**
      * 获取商品信息失败
      * @var integer

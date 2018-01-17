@@ -13,9 +13,15 @@ class Service_Data_StockAdjustOrder
     protected $objDaoStock;
 
     /**
+     * @var Dao_Ral_Sku
+     */
+    protected $objDaoSku;
+
+    /**
      * init
      */
     public function __construct() {
+        $this->objDaoSku = new Dao_Ral_Sku();
         $this->objDaoStock = new Dao_Ral_Stock();
     }
 
@@ -31,9 +37,13 @@ class Service_Data_StockAdjustOrder
         $arrSkuIds = array_unique(array_column($arrInput['detail'], 'sku_id'));
         $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
 
+        // 获取商品库存信息（成本价）
+        $intWarehouseId = $arrInput['warehouse_id'];
+        $arrStockInfos = $this->getSkuStocks($intWarehouseId, $arrSkuIds);
+
         // 参数检查、组合数据库需要字段
         $arrOrderArg = $this->getCreateOrderArg($arrInput);
-        $arrOrderDetailArg = $this->getCreateOrderDetailArg($arrInput, $arrSkuInfos);
+        $arrOrderDetailArg = $this->getCreateOrderDetailArg($arrInput, $arrSkuInfos, $arrStockInfos);
 
         // 调用库存模块，新增批次库存
         $this->adjustStock($arrInput, $arrSkuInfos);
@@ -41,6 +51,23 @@ class Service_Data_StockAdjustOrder
         $arrRet = $this->insert($arrOrderArg, $arrOrderDetailArg);
 
         return $arrRet;
+    }
+
+
+    /**
+     * 获取商品库存信息
+     * @param $intWarehouseId
+     * @param $arrSkuIds
+     * @return array
+     */
+    protected function getSkuStocks($intWarehouseId, $arrSkuIds) {
+        $arrStocks = $this->objDaoStock->getStockInfo($intWarehouseId, $arrSkuIds);
+        if(empty($arrStocks)) {
+            Bd_Log::warning(__METHOD__ . ' 库存调整-出库 ral 调用失败' . print_r($arrStocks, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
+        }
+
+        return Order_Util_Util::arrayToKeyValue($arrStocks, 'sku_id');
     }
 
     /**
@@ -64,8 +91,7 @@ class Service_Data_StockAdjustOrder
         }
         $arrSkuIds = array_unique($arrSkuIds);
 
-        $daoRalSku = new Dao_Ral_Sku();
-        $arrSkuInfos = $daoRalSku->getSkuInfos($arrSkuIds);
+        $arrSkuInfos = $this->objDaoSku->getSkuInfos($arrSkuIds);
         return $arrSkuInfos;
     }
 
@@ -223,9 +249,10 @@ class Service_Data_StockAdjustOrder
      * 检查、拼装新建调整单详情参数
      * @param $arrInput
      * @param $arrSkuInfos
+     * @param $arrStockInfos
      * @return array
      */
-    protected function getCreateOrderDetailArg($arrInput, $arrSkuInfos)
+    protected function getCreateOrderDetailArg($arrInput, $arrSkuInfos, $arrStockInfos)
     {
         $arrOrderDetailArg = [];
         foreach ($arrInput['detail'] as $arrDetail) {
@@ -248,6 +275,14 @@ class Service_Data_StockAdjustOrder
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR);
             }
 
+            $arrStockInfo = $arrStockInfos[$arrDetail['sku_id']];
+            if(empty($arrStockInfo) ||
+                !isset($arrStockInfo['cost_unit_price']) || !isset($arrStockInfo['cost_unit_price_tax'])) {
+                Bd_Log::warning("当前SKU没获取到成本价" . $arrDetail['sku_id'],
+                    Order_Error_Code::NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED, $arrInput);
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED);
+            }
+
             if(in_array($arrInput['adjust_type'], Nscm_Define_Stock::STOCK_IN_TYPE)) {
                 // 根据商品效期类型，计算生产日期和有效期
                 $arrDetail = $this->getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
@@ -268,8 +303,8 @@ class Service_Data_StockAdjustOrder
                 'upc_unit_num'              => $arrSkuInfo['min_upc']['upc_unit_num'],
                 'sku_net'                   => $arrSkuInfo['sku_net'],
                 'sku_net_unit'              => $arrSkuInfo['sku_net_unit'],
-                'unit_price'                => $arrDetail['unit_price'],
-                'unit_price_tax'            => $arrDetail['unit_price_tax'],
+                'unit_price'                => $arrStockInfo['cost_unit_price'],
+                'unit_price_tax'            => $arrStockInfo['cost_unit_price_tax'],
                 'production_time'           => $arrDetail['production_time'],
                 'expire_time'               => $arrDetail['expire_time'],
             ];
@@ -348,8 +383,6 @@ class Service_Data_StockAdjustOrder
 
             $arrStockSkuInfo = [
                 'sku_id'            => $arrDetail['sku_id'],
-                'unit_price'        => $arrDetail['unit_price'],
-                'unit_price_tax'    => $arrDetail['unit_price_tax'],
                 'batch_info'        => [
                     [
                         'expire_time'           =>  $arrDetail['expire_time'],

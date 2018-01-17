@@ -36,7 +36,7 @@ class Order_Util_Util
 
     /**
      * generate stock adjust order id
-     * @return void
+     * @return int
      */
     public static function generateStockAdjustOrderId()
     {
