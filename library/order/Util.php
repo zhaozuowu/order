@@ -51,7 +51,7 @@ class Order_Util
      */
     public static function getFormatDateTime($unixTime)
     {
-        if(0 == intval($unixTime)){
+        if(0 == $unixTime){
             return '-';
         }
 
