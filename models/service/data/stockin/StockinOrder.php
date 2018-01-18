@@ -339,18 +339,20 @@ class Service_Data_Stockin_StockinOrder
         $arrStockinOrderSkuExtraInfo = json_decode($arrDbSku['stockin_order_sku_extra_info'], true);
         $arrBatchInfo = [];
         foreach ($arrStockinOrderSkuExtraInfo as $skuRow) {
-            if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $arrDbSku['sku_effect_type']) {
-                $intProductionTime = intval($skuRow['expire_date']);
-                $intExpireTime = $intProductionTime + intval($arrDbSku['sku_effect_day']) * 86400;
-            } else {
-                $intExpireTime = intval($skuRow['expire_date']) + 86400;
-                $intProductionTime = $intExpireTime - intval($arrDbSku['sku_effect_day']) * 86400;
+            if ($skuRow['amount'] > 0) {
+                if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $arrDbSku['sku_effect_type']) {
+                    $intProductionTime = intval($skuRow['expire_date']);
+                    $intExpireTime = $intProductionTime + intval($arrDbSku['sku_effect_day']) * 86400;
+                } else {
+                    $intExpireTime = intval($skuRow['expire_date']) + 86400;
+                    $intProductionTime = $intExpireTime - intval($arrDbSku['sku_effect_day']) * 86400;
+                }
+                $arrBatchInfo[] = [
+                    'expire_time' => $intExpireTime,
+                    'production_time' => $intProductionTime,
+                    'amount'      => $skuRow['amount'],
+                ];
             }
-            $arrBatchInfo[] = [
-                'expire_time' => $intExpireTime,
-                'production_time' => $intProductionTime,
-                'amount'      => $skuRow['amount'],
-            ];
         }
         return $arrBatchInfo;
     }
@@ -370,12 +372,15 @@ class Service_Data_Stockin_StockinOrder
     {
         $arrStockinSkuInfo = [];
         foreach ($arrDbSkuInfoList as $row) {
-            $arrStockinSkuInfo[] = [
-                'sku_id'        => $row['sku_id'],
-                'unit_price'    => $row['sku_price'],
-                'unit_price_tax'=> $row['sku_price_tax'],
-                'batch_info'    => $this->calculateExpire($row),
-            ];
+            $arrBatchInfo = $this->calculateExpire($row);
+            if (!empty($arrBatchInfo)) {
+                $arrStockinSkuInfo[] = [
+                    'sku_id'        => $row['sku_id'],
+                    'unit_price'    => $row['sku_price'],
+                    'unit_price_tax'=> $row['sku_price_tax'],
+                    'batch_info'    => $arrBatchInfo,
+                ];
+            }
         }
         $arrInputParam = [
             'stockin_order_id'      => $intStockinOrderId,
