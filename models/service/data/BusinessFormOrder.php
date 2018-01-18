@@ -50,9 +50,6 @@ class Service_Data_BusinessFormOrder
         list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $this->getFreezeStockParams($arrInput);
         $arrStockSkus = $this->objDaoStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
         $arrInput = $this->appendStockSkuInfoToOrder($arrInput, $arrStockSkus);
-        if (empty($arrInput['skus'])) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
-        }
         $arrInput = $this->appendSkuTotalAmountToOrder($arrInput);
         //构造订单和关联商品参数
         $arrCreateParams = $this->getCreateParams($arrInput);
@@ -86,7 +83,11 @@ class Service_Data_BusinessFormOrder
             if (empty($intSkuId)) {
                 continue;
             }
-            $arrOrderSkus[$intKey]['distribute_amount'] = $arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount'];
+            $arrSkuBusinessForm = explode(',', $arrSkuItem['sku_business_form']);
+            $arrSkuBusinessForm = empty($arrSkuBusinessForm) ? [] : $arrSkuBusinessForm;
+            if (in_array($arrInput['business_form_order_type'], $arrSkuBusinessForm)) {
+                $arrOrderSkus[$intKey]['distribute_amount'] = $arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount'];
+            }
             $arrOrderSkus[$intKey]['cost_price'] = $arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price'];
             $arrOrderSkus[$intKey]['cost_total_price'] =
                 $arrOrderSkus[$intKey]['cost_price']*$arrOrderSkus[$intKey]['distribute_amount'];
@@ -158,9 +159,6 @@ class Service_Data_BusinessFormOrder
         $arrSkus = $arrInput['skus'];
         $boolBusinessFormSupport = false;
         foreach ((array)$arrSkus as $arrSkuItem) {
-            if (empty($arrSkuItem['sku_business_form'])) {
-                Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR);
-            }
             $arrSkuBusinessForm = explode(',', $arrSkuItem['sku_business_form']);
             if (in_array($arrInput['business_form_order_type'], $arrSkuBusinessForm)) {
                 $boolBusinessFormSupport = true;
@@ -267,7 +265,7 @@ class Service_Data_BusinessFormOrder
             $arrCreateParams['customer_name'] = strval($arrInput['customer_name']);
         }
         if (!empty($arrInput['customer_contactor'])) {
-            $arrCreateParams['customer_contact'] = strval($arrInput['customer_contactor']);
+            $arrCreateParams['customer_contactor'] = strval($arrInput['customer_contactor']);
         }
         if (!empty($arrInput['customer_contact'])) {
             $arrCreateParams['customer_contact'] = strval($arrInput['customer_contact']);
