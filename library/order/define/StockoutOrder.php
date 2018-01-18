@@ -57,7 +57,19 @@ class Order_Define_StockoutOrder
      *@var array
      */
     const  UPC_UNIT = [
-        '1' => '箱',
+        1 => "箱",
+        2 => "袋",
+        3 => "包",
+        4 => "瓶",
+        5 => "盒",
+        6 => "罐",
+        7 => "条",
+        8 => "件",
+        9 => "个",
+        10 => "桶",
+        11 => "杯",
+        12 => "根",
+
     ];
 
     const STOCKOUT_ORDER_TYPE_ORDER = 1;
@@ -104,10 +116,8 @@ class Order_Define_StockoutOrder
      * @desc 操作类型
      */
     const OPERATION_TYPE_INSERT_SUCCESS = 1;
-    const OPERATION_TYPE_INSERT_FAIL = 2;
-    const OPERATION_TYPE_UPDATE_SUCCESS = 3;
-    const OPERATION_TYPE_UPDATE_FAIL = 4;
-
+    const OPERATION_TYPE_UPDATE_SUCCESS = 2;
+    const OPERATION_TYPE_DELETE_SUCCESS = 3;
     /**
      * 签收状态
      * @var array

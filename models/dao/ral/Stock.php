@@ -77,16 +77,12 @@ class Dao_Ral_Stock
         }
         if (!empty($intWarehouseId)) {
             $req[self::API_RALER_FREEZE_SKU_STOCK]['warehouse_id'] = $intWarehouseId;
-            $req[self::API_RALER_FREEZE_SKU_STOCK]['warehouse_id'] = 1992111308551234;
         }
         if (!empty($arrFreezeDetail)) {
             $req[self::API_RALER_FREEZE_SKU_STOCK]['freeze_details'] = $arrFreezeDetail;
         }
         $ret = $this->objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_FREEZE_SKU_STOCK]) ? [] : $ret[self::API_RALER_FREEZE_SKU_STOCK];
-        if (empty($ret) || !empty($ret['error_no'])) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
-        }
         return $ret;
     }
 
@@ -200,7 +196,7 @@ class Dao_Ral_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 
-        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 ral 调用成功 ' . print_r($ret));
+        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 ral 调用成功 ' . json_encode($ret));
         return $ret;
     }
 

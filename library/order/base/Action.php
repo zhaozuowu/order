@@ -6,6 +6,11 @@
  */
 
 abstract class Order_Base_Action extends Nscm_Base_Action {
+    /**
+     * show price switch
+     * @var bool $boolHidePrice
+     */
+    protected $boolHidePrice = true;
 
     /**
      * constructor
@@ -131,4 +136,21 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
         return $arrResult;
     }
 
+    /**
+     * the price fields to hide
+     * @var array
+     */
+    protected $arrPriceFields = [];
+
+    /**
+     * filter price in arrPriceFields
+     * @param $row
+     * @return array
+     */
+    protected function filterPrice($row) {
+        if ($this->boolHidePrice) {
+            $row = array_merge($row, array_fill_keys($this->arrPriceFields, '-'));
+        }
+        return $row;
+    }
 }

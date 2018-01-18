@@ -232,7 +232,7 @@ class Order_Error_Code extends Wm_Error_Code
      * 创建业态订单失败
      * @var integer
      */
-    const NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR = 340008;
+    const NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR = 340020;
 
     /**
      * 创建业态订单参数错误
@@ -329,4 +329,16 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_STOCKOUT_CUSTOMER_REGION_ID_ERROR = 340014;
+
+    /**
+     * sku业态详细信息错误
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_SKU_BUSINESS_FORM_DETAIL_ERROR = 340015;
+
+    /**
+     * 业态订单无人货架信息错误
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR = 340016;
 }

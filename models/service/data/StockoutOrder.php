@@ -153,7 +153,7 @@ class Service_Data_StockoutOrder
     /**
      * 创建出库单
      * @param array $arrInput
-     * @return void
+     * @return mixed
      * @throws Order_BusinessError
      */
     public function createStockoutOrder($arrInput)
@@ -176,6 +176,9 @@ class Service_Data_StockoutOrder
             $operatorId =empty($arrInput['user_info']['user_id']) ? '8888' :intval($arrInput['user_info']['user_id']);
             $this->objRalLog->addLog($logType,$arrCreateParams['stockout_order_id'],$operationType,$userName,$operatorId,'创建出库单');
         });
+        Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
+                                            Order_Statistics_Type::ACTION_CREATE,
+                                            $arrInput['stockout_order_id']);
     }
 
     /**
@@ -227,7 +230,6 @@ class Service_Data_StockoutOrder
 
     /**
      * @param array $arrInput
-     * @param integer $intBusinessFormOrderId
      * @return array
      * @throws Order_BusinessError
      */
@@ -259,7 +261,7 @@ class Service_Data_StockoutOrder
             $arrCreateParams['stockout_order_id'] = intval($arrInput['stockout_order_id']);
         }
         if (!empty($arrInput['shelf_info'])) {
-            $arrCreateParams['shelf_info'] = json_encode($arrInput['shelf_info']);
+            $arrCreateParams['shelf_info'] = strval($arrInput['shelf_info']);
         }
         if (!empty($arrInput['business_form_order_id'])) {
             $arrCreateParams['business_form_order_id'] = intval($arrInput['business_form_order_id']);
@@ -269,6 +271,9 @@ class Service_Data_StockoutOrder
         }
         if (!empty($arrInput['warehouse_id'])) {
             $arrCreateParams['warehouse_id'] = intval($arrInput['warehouse_id']);
+        }
+        if (!empty($arrInput['warehouse_name'])) {
+            $arrCreateParams['warehouse_name'] = strval($arrInput['warehouse_name']);
         }
         if (!empty($arrInput['stockout_order_remark'])) {
             $arrCreateParams['stockout_order_remark'] = strval($arrInput['stockout_order_remark']);
@@ -315,6 +320,18 @@ class Service_Data_StockoutOrder
         }
         if (!empty($arrInput['stockout_order_distribute_amount'])) {
             $arrCreateParams['stockout_order_distribute_amount'] = $arrInput['stockout_order_distribute_amount'];
+        }
+        if (!empty($arrInput['executor'])) {
+            $arrCreateParams['executor'] = strval($arrInput['executor']);
+        }
+        if (!empty($arrInput['executor_contact'])) {
+            $arrCreateParams['executor_contact'] = strval($arrInput['executor_contact']);
+        }
+        if (!empty($arrInput['business_form_order_type'])) {
+            $arrCreateParams['stockout_order_source'] = intval($arrInput['business_form_order_type']);
+        }
+        if (!empty($arrInput['business_form_order_remark'])) {
+            $arrCreateParams['stockout_order_remark'] = strval($arrInput['business_form_order_remark']);
         }
         return $arrCreateParams;
     }
@@ -365,6 +382,30 @@ class Service_Data_StockoutOrder
             }
             if (!empty($arrItem['sku_effect_day'])) {
                 $arrSkuCreateParams['sku_effect_day'] = intval($arrItem['sku_effect_day']);
+            }
+            if (!empty($arrItem['cost_price'])) {
+                $arrSkuCreateParams['cost_price'] = intval($arrItem['cost_price']);
+            }
+            if (!empty($arrItem['cost_total_price'])) {
+                $arrSkuCreateParams['cost_total_price'] = intval($arrItem['cost_total_price']);
+            }
+            if (!empty($arrItem['cost_price_tax'])) {
+                $arrSkuCreateParams['cost_price_tax'] = intval($arrItem['cost_price_tax']);
+            }
+            if (!empty($arrItem['cost_total_price_tax'])) {
+                $arrSkuCreateParams['cost_total_price_tax'] = intval($arrItem['cost_total_price_tax']);
+            }
+            if (!empty($arrItem['send_price'])) {
+                $arrSkuCreateParams['send_price'] = intval($arrItem['send_price']);
+            }
+            if (!empty($arrItem['send_total_price'])) {
+                $arrSkuCreateParams['send_total_price'] = intval($arrItem['send_total_price']);
+            }
+            if (!empty($arrItem['sku_business_form'])) {
+                $arrSkuCreateParams['sku_business_form'] = strval($arrItem['sku_business_form']);
+            }
+            if (!empty($arrItem['sku_tax_rate'])) {
+                $arrSkuCreateParams['sku_tax_rate'] = intval($arrItem['sku_tax_rate']);
             }
             $arrSkuCreateParams['stockout_order_id'] = $intStockoutOrderId;
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
@@ -579,9 +620,9 @@ class Service_Data_StockoutOrder
         }
         $arrOrderIds = array_column($arrRetList, 'stockout_order_id');
         $arrOrderSkuList = $this->objOrmSku->getStockoutOrderSkusByOrderIds($arrOrderIds);
-        $arrMapOrderIdToSkus = Order_Util_Util::arrayToKeyValue($arrOrderSkuList, 'stockout_order_id');
+        $arrMapOrderIdToSkus = Order_Util_Util::arrayToKeyValues($arrOrderSkuList, 'stockout_order_id');
         foreach ($arrRetList as $intKey => $arrRetItem) {
-            $intOrderId = $arrRetItem['order_id'];
+            $intOrderId = $arrRetItem['stockout_order_id'];
             if (!$intOrderId || !isset($arrMapOrderIdToSkus[$intOrderId])) {
                 continue;
             }
@@ -601,6 +642,7 @@ class Service_Data_StockoutOrder
         if (empty($arrInput['stockout_order_id'])) {
             Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
         }
+        $arrInput['stockout_order_id'] = $this->trimStockoutOrderIdPrefix($arrInput['stockout_order_id']);
         $arrConditions = $this->getOrderSkuConditions($arrInput);
         return Model_Orm_StockoutOrderSku::getListByConditions($arrConditions, $arrInput['page_size'], $arrInput['page_num']);
     }
@@ -669,7 +711,7 @@ class Service_Data_StockoutOrder
             'stockout_order_status' => Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS,
             'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
         ];
-        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($strStockoutOrderId,$updateData,$stockoutOrderInfo) {
+        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($strStockoutOrderId,$updateData,$stockoutOrderInfo,$mark) {
 
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
@@ -735,9 +777,10 @@ class Service_Data_StockoutOrder
         $condtion = [
             'app_id' => $appId,
             'log_type' => Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE, 'quota_idx_int_1' => $strStockoutOrderId,
-            'page_size' => 20
+            'page_size' => 100
         ];
         $list = Nscm_Service_OperationLog::getLogList($condtion);
+        $list = empty($list['log_list']) ? []:$list['log_list'];
         return $list;
 
 
@@ -750,7 +793,7 @@ class Service_Data_StockoutOrder
      */
     public function trimStockoutOrderIdPrefix($strStockoutOrderId)
     {
-        return ltrim($strStockoutOrderId, 'SSO');
+        return ltrim($strStockoutOrderId, Nscm_Define_OrderPrefix::SOO);
     }
 
     /**
@@ -811,15 +854,17 @@ class Service_Data_StockoutOrder
         $arrColumns = $this->objOrmStockoutOrder->getAllColumns();
         $arrConditions = $this->getPrintConditions($arrStockoutOrderIds);
         $arrRetList = $this->objOrmStockoutOrder->findRows($arrColumns, $arrConditions);
+        $arrRetList = $this->appendSkusToOrderList($arrRetList);
         $updateData = ['stockout_order_is_print'=>Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRINT];
-        $result = $this->objOrmStockoutOrder->updateDataByConditions($arrConditions,$updateData);
+        $this->objOrmStockoutOrder->updateDataByConditions($arrConditions,$updateData);
         return $this->appendSkusToOrderList($arrRetList);
     }
 
     /**
      * 获取总拣货打印列表
      * @param array $arrStockoutOrderIds
-     * @return void
+     * @return array
+     * @throws Order_BusinessError
      */
     public function getSkuPrintList($arrStockoutOrderIds)
     {
@@ -829,13 +874,9 @@ class Service_Data_StockoutOrder
         $arrRet = [];
         $arrRet['order_amount'] = count($arrStockoutOrderIds);
         $arrConditions = $this->getPrintConditions($arrStockoutOrderIds);
-        $arrRet['skus'] = Model_Orm_StockoutOrderSku::find($arrConditions)
-            ->select(['sku_id', 'sku_name', 'upc_unit', 'sum(pickup_amount) as pickup_amount'])
-            ->groupBy(['sku_id'])
-            ->orderBy(['id' => 'asc'])
-            ->rows();
+        $arrRet['skus'] = Model_Orm_StockoutOrderSku::getGroupList($arrConditions, 'sku_id');
         $updateData = ['stockout_order_is_print'=>Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRINT];
-        $result = $this->objOrmStockoutOrder->updateDataByConditions($arrConditions,$updateData);
+        $this->objOrmStockoutOrder->updateDataByConditions($arrConditions,$updateData);
         return $arrRet;
     }
 

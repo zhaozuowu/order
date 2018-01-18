@@ -42,7 +42,9 @@ class Service_Data_BusinessFormOrder
     public function createBusinessFormOrder($arrInput)
     {
         //参数校验并拼接参数
+        $arrInput['business_form_order_status'] = Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_SUCCESS;
         $this->checkCreateParams($arrInput);
+        $arrInput = $this->checkSkuBusinessForm($arrInput);
         $arrInput = $this->appendWarehouseInfoToOrder($arrInput);
         //锁定库存
         list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $this->getFreezeStockParams($arrInput);
@@ -66,12 +68,16 @@ class Service_Data_BusinessFormOrder
     }
 
     /**
+     * 新增库存信息到商品
      * @param $arrInput
      * @return $arrInput
      */
     public function appendStockSkuInfoToOrder($arrInput, $arrStockSkus) {
+        //如果库存为空标记为创建失败
         if (empty($arrInput['skus']) || empty($arrStockSkus)) {
-            return [];
+            $arrInput['business_form_order_status'] =
+                Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_FAILED;
+            return $arrInput;
         }
         $arrMapSkuIdToStockInfo = Order_Util_Util::arrayToKeyValue($arrStockSkus, 'sku_id');
         $arrOrderSkus = $arrInput['skus'];
@@ -80,13 +86,37 @@ class Service_Data_BusinessFormOrder
             if (empty($intSkuId)) {
                 continue;
             }
-            $arrOrderSkus[$intKey]['distribute_amount'] = $arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount'];
-            $arrOrderSkus[$intKey]['cost_price'] = $arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price'];
-            $arrOrderSkus[$intKey]['total_cost_price'] =
-                $arrOrderSkus[$intKey]['cost_unit_price']*$arrOrderSkus[$intKey]['distribute_amount'];
-            $arrOrderSkus[$intKey]['cost_price_tax'] = $arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price_tax'];
+            $arrSkuBusinessForm = explode(',', $arrSkuItem['sku_business_form']);
+            $arrSkuBusinessForm = empty($arrSkuBusinessForm) ? [] : $arrSkuBusinessForm;
+            if (in_array($arrInput['business_form_order_type'], $arrSkuBusinessForm)) {
+                $arrOrderSkus[$intKey]['distribute_amount'] = $arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount'];
+            }
+            $arrOrderSkus[$intKey]['cost_price'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price']);
+            $arrOrderSkus[$intKey]['cost_total_price'] =
+                $arrOrderSkus[$intKey]['cost_price']*$arrOrderSkus[$intKey]['distribute_amount'];
+            $arrOrderSkus[$intKey]['cost_price_tax'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price_tax']);
             $arrOrderSkus[$intKey]['cost_total_price_tax'] =
                 $arrOrderSkus[$intKey]['cost_price_tax']*$arrOrderSkus[$intKey]['distribute_amount'];
+            //通过sku业态信息获取配货价格
+            $arrSendPriceInfo = $arrOrderSkus[$intKey]['send_price_info'];
+            if (Order_Define_Sku::SKU_PRICE_TYPE_BENEFIT
+                == $arrSendPriceInfo['sku_price_type']) {
+                $arrOrderSkus[$intKey]['send_price'] = $arrOrderSkus[$intKey]['cost_price']
+                                                        * (1 + $arrSendPriceInfo['sku_price_value']/100);
+                $arrOrderSkus[$intKey]['send_price_tax'] = $arrOrderSkus[$intKey]['cost_price_tax']
+                    * (1 + $arrSendPriceInfo['sku_price_value']/100);
+            }
+            if (Order_Define_Sku::SKU_PRICE_TYPE_COST
+                == $arrSendPriceInfo['sku_price_type']) {
+                $arrOrderSkus[$intKey]['send_price'] = $arrOrderSkus[$intKey]['cost_price'];
+                $arrOrderSkus[$intKey]['send_price_tax'] = $arrOrderSkus[$intKey]['cost_price_tax'];
+            }
+            if (Order_Define_Sku::SKU_PRICE_TYPE_STABLE
+                == $arrSendPriceInfo['sku_price_type']) {
+                $arrOrderSkus[$intKey]['send_price'] = intval($arrSendPriceInfo['sku_price_value']);
+            }
+            $arrOrderSkus[$intKey]['send_total_price'] = $arrOrderSkus[$intKey]['send_price']
+                                                            *$arrOrderSkus[$intKey]['distribute_amount'];
         }
         $arrInput['skus'] = $arrOrderSkus;
         return $arrInput;
@@ -95,7 +125,8 @@ class Service_Data_BusinessFormOrder
     /**
      * 添加总数到订单信息
      * @param $arrInput
-     * @return $arrInput
+     * @return mixed $arrInput
+     * @throws Order_BusinessError
      */
     public function appendSkuTotalAmountToOrder($arrInput) {
         if (empty($arrInput['skus'])) {
@@ -112,6 +143,33 @@ class Service_Data_BusinessFormOrder
             $intTotalDistributeAmount += $arrSkuItem['distribute_amount'];
         }
         $arrInput['stockout_order_distribute_amount'] = $intTotalDistributeAmount;
+        if (0 == $arrInput['stockout_order_distribute_amount']) {
+            $arrInput['business_form_order_status'] = Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_FAILED;
+        }
+        return $arrInput;
+    }
+
+    /**
+     * 校验sku是否支持业态
+     * @param $arrInput
+     * @return mixed $arrInput
+     * @throws Order_BusinessError
+     */
+    public function checkSkuBusinessForm($arrInput) {
+        if (empty($arrInput['skus'])) {
+            return $arrInput;
+        }
+        $arrSkus = $arrInput['skus'];
+        $boolBusinessFormSupport = false;
+        foreach ((array)$arrSkus as $arrSkuItem) {
+            $arrSkuBusinessForm = explode(',', $arrSkuItem['sku_business_form']);
+            if (in_array($arrInput['business_form_order_type'], $arrSkuBusinessForm)) {
+                $boolBusinessFormSupport = true;
+            }
+        }
+        if (!$boolBusinessFormSupport) {
+            $arrInput['business_form_order_status'] = Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_FAILED;
+        }
         return $arrInput;
     }
 
@@ -147,9 +205,12 @@ class Service_Data_BusinessFormOrder
             && !isset(Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_LIST[$arrInput['business_form_order_type']])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR);
         }
-        if ($arrInput['order_supply_type']
-            && !isset(Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrInput['order_supply_type']])) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_SUPPLY_TYPE_ERROR);
+        $arrShelfInfo = json_decode($arrInput['shelf_info'], true);
+        if (empty($arrShelfInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR);
+        }
+        if (!isset(Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR);
         }
     }
 
@@ -188,6 +249,9 @@ class Service_Data_BusinessFormOrder
             return $arrCreateParams;
         }
         $arrCreateParams['business_form_order_id'] = Order_Util_Util::generateBusinessFormOrderId();
+        if (!empty($arrInput['business_form_order_status'])) {
+            $arrCreateParams['status'] = $arrInput['business_form_order_status'];
+        }
         if (!empty($arrInput['business_form_order_type'])) {
             $arrCreateParams['business_form_order_type'] = intval($arrInput['business_form_order_type']);
         }
@@ -204,13 +268,25 @@ class Service_Data_BusinessFormOrder
             $arrCreateParams['customer_name'] = strval($arrInput['customer_name']);
         }
         if (!empty($arrInput['customer_contactor'])) {
-            $arrCreateParams['customer_contact'] = strval($arrInput['customer_contactor']);
+            $arrCreateParams['customer_contactor'] = strval($arrInput['customer_contactor']);
         }
         if (!empty($arrInput['customer_contact'])) {
             $arrCreateParams['customer_contact'] = strval($arrInput['customer_contact']);
         }
         if (!empty($arrInput['customer_address'])) {
             $arrCreateParams['customer_address'] = strval($arrInput['customer_address']);
+        }
+        if (!empty($arrInput['executor'])) {
+            $arrCreateParams['executor'] = strval($arrInput['executor']);
+        }
+        if (!empty($arrInput['executor_contact'])) {
+            $arrCreateParams['executor_contact'] = strval($arrInput['executor_contact']);
+        }
+        if (!empty($arrInput['warehouse_id'])) {
+            $arrCreateParams['warehouse_id'] = intval($arrInput['warehouse_id']);
+        }
+        if (!empty($arrInput['shelf_info'])) {
+            $arrCreateParams['shelf_info'] = strval($arrInput['shelf_info']);
         }
         return $arrCreateParams;
     }
@@ -220,7 +296,6 @@ class Service_Data_BusinessFormOrder
      * @param integer $intBusinessFormOrderId
      * @param array $arrSkus
      * @return array
-     * @throws Order_BusinessError
      */
     public function getBatchSkuCreateParams($intBusinessFormOrderId, $arrSkus)
     {
@@ -235,6 +310,13 @@ class Service_Data_BusinessFormOrder
             }
             if (!empty($arrItem['order_amount'])) {
                 $arrSkuCreateParams['order_amount'] = intval($arrItem['order_amount']);
+            } else {
+                $arrSkuCreateParams['order_amount'] = 0;
+            }
+            if (!empty($arrItem['distribute_amount'])) {
+                $arrSkuCreateParams['distribute_amount'] = intval($arrItem['distribute_amount']);
+            } else {
+                $arrSkuCreateParams['distribute_amount'] = 0;
             }
             if (!empty($arrItem['sku_name'])) {
                 $arrSkuCreateParams['sku_name'] = strval($arrItem['sku_name']);
@@ -253,6 +335,14 @@ class Service_Data_BusinessFormOrder
             }
             if (!empty($arrItem['sku_net_unit'])) {
                 $arrSkuCreateParams['sku_net_unit'] = intval($arrItem['sku_net_unit']);
+            }
+            if (!empty($arrItem['sku_business_form'])) {
+                $arrSkuCreateParams['sku_business_form'] = strval($arrItem['sku_business_form']);
+            } else {
+                $arrSkuCreateParams['sku_business_form'] = '';
+            }
+            if (!empty($arrItem['sku_tax_rate'])) {
+                $arrSkuCreateParams['sku_tax_rate'] = intval($arrItem['sku_tax_rate']);
             }
             $arrSkuCreateParams['business_form_order_id'] = $intBusinessFormOrderId;
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
