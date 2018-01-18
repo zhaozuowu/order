@@ -59,6 +59,8 @@ class Action_GetBusinessFormOrderByid extends Order_Base_Action
             'customer_address' => empty($arrRet['customer_address']) ? '' : $arrRet['customer_address'],
             'customer_contactor' => empty($arrRet['customer_contactor']) ? '' : $arrRet['customer_contactor'],
             'customer_contact' => empty($arrRet['customer_contact']) ? '' : $arrRet['customer_contact'],
+             'executor' => empty($arrRet['executor'])? '' : $arrRet['executor'],
+             'executor_contact' => empty($arrRet['executor_contact'])? '' : $arrRet['executor_contact'],
             'skus' => empty($arrRet['skus']) ? [] : $this->formatSku($arrRet['skus']),
         ];
         return $arrFormatRet;

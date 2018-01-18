@@ -76,7 +76,7 @@ class Service_Data_StockoutDetail
             $arrConditions['warehouse_id'] = ['in', $arrWareHouseIds];
         }
         if (!empty($arrInput['stockout_order_id'])) {
-            $arrInput['stockout_order_id'] = ltrim($arrInput['stockout_order_id'], 'SSO');
+            $arrInput['stockout_order_id'] = ltrim($arrInput['stockout_order_id'], Nscm_Define_OrderPrefix::SOO);
             $arrConditions['stockout_order_id'] = $arrInput['stockout_order_id'];
         }
         if (!empty($arrInput['business_form_order_id'])) {
