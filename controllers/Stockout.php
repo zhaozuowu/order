@@ -8,8 +8,8 @@
 class Controller_Stockout extends Ap_Controller_Abstract
 {
     public $actions = array(
-        'deliveryorder' => 'actions/stockout/DeliveryOrder.php', #TMS完成揽收#
-        'finishorder' => 'actions/stockout/FinishOrder.php', #TMS完成门店签收#
+        'deliveryorder' => 'actions/stockout/DeliveryOrder.php', #TMS完成揽收#@skipped#
+        'finishorder' => 'actions/stockout/FinishOrder.php', #TMS完成门店签收#@skipped#
         'getstockoutbyid' => 'actions/stockout/GetStockoutById.php', #查询出库单明细#
         'finishpickuporder' => 'actions/stockout/FinishPickupOrder.php', #仓库完成拣货#
         'createstockoutorder' => 'actions/stockout/CreateStockoutOrder.php', #手动创建出库单#
