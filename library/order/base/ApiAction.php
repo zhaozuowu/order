@@ -27,4 +27,10 @@ abstract class Order_Base_ApiAction extends Order_Base_Action
      * @var boolean
      */
     protected $boolCheckIp = true;
+
+    /**
+     * show price switch
+     * @var bool $boolHidePrice
+     */
+    protected $boolHidePrice = false;
 }
