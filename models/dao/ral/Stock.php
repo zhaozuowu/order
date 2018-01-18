@@ -77,7 +77,6 @@ class Dao_Ral_Stock
         }
         if (!empty($intWarehouseId)) {
             $req[self::API_RALER_FREEZE_SKU_STOCK]['warehouse_id'] = $intWarehouseId;
-            $req[self::API_RALER_FREEZE_SKU_STOCK]['warehouse_id'] = 1992111308551234;
         }
         if (!empty($arrFreezeDetail)) {
             $req[self::API_RALER_FREEZE_SKU_STOCK]['freeze_details'] = $arrFreezeDetail;

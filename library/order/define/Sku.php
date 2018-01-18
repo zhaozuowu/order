@@ -101,4 +101,33 @@ class Order_Define_Sku
         self::SKU_EFFECT_TYPE_PRODUCT => '生产日期',
         self::SKU_EFFECT_TYPE_EXPIRE => '失效日期',
     ];
+
+    /**
+     * sku price type benefit
+     * @var integer
+     */
+    const SKU_PRICE_TYPE_BENEFIT = 1;
+
+    /**
+     * sku price type stable
+     * @var integer
+     */
+    const SKU_PRICE_TYPE_STABLE = 2;
+
+    /**
+     * sku price type cost
+     * @var sku price type cost
+     */
+    const SKU_PRICE_TYPE_COST = 3;
+
+    /**
+     * sku tax rate
+     * @var array
+     */
+    const SKU_TAX_RATE = [
+        1 => '17%',
+        2 => '11%',
+        3 => '6%',
+        4 => '0',
+    ];
 }
