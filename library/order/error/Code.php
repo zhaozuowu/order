@@ -232,7 +232,7 @@ class Order_Error_Code extends Wm_Error_Code
      * 创建业态订单失败
      * @var integer
      */
-    const NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR = 340008;
+    const NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR = 340020;
 
     /**
      * 创建业态订单参数错误
