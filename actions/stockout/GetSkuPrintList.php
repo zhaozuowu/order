@@ -37,11 +37,10 @@ class Action_GetSkuPrintList extends Order_Base_Action
     public function format($arrRet) {
         $arrFormatRet = [];
         $arrFormatRet['order_amount'] = empty($arrRet['order_amount']) ?  0 : $arrRet['order_amount'];
-        $arrFormatRet['pickup_amount'] = empty($arrRet['pickup_amount']) ? '' : $arrRet['customer_address'];
-        $arrFormatRet['print_time'] = time();
+        $arrFormatRet['pickup_amount'] = empty($arrRet['pickup_amount']) ? '' : $arrRet['pickup_amount'];
+        $arrFormatRet['print_time'] = date('Y-m-d H:i:s', time());
         $arrFormatRet['skus'] = $this->formatSku($arrRet['skus']);
-        $arrFormatRet['operator'] = empty($arrRet['operator']) ? '' : $arrRet['operator'];
-        $arrFormatRet['pickup_date'] = empty($arrRet['update_time']) ? '' : date("Y-m-d", $arrRet['update_time']);  
+        $arrFormatRet['pickup_date'] = empty($arrRet['update_time']) ? '' : date("Y-m-d", $arrRet['update_time']);
         return $arrFormatRet;        
     }
 
@@ -59,12 +58,13 @@ class Action_GetSkuPrintList extends Order_Base_Action
             $arrFormatSkuItem = [];
             $arrFormatSkuItem['upc_id'] = empty($arrSkuItem['upc_id']) ? '' : $arrSkuItem['upc_id'];
             $arrFormatSkuItem['sku_name'] = empty($arrSkuItem['sku_name']) ? '' : $arrSkuItem['sku_name'];
-            $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ? '' : $arrSkuItem['sku_net'];
-            $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ? 0 : $arrSkuItem['upc_unit'];
+            $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ?
+                                            '' : ($arrSkuItem['sku_net'] . Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]);
+            $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ?
+                                                    0 : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
             $arrFormatSkuItem['pickup_amount'] = empty($arrSkuItem['pickup_amount']) ? 0 : $arrSkuItem['pickup_amount'];
             $arrFormatSkus[] = $arrFormatSkuItem;
         }
         return $arrFormatSkus;
     }
-
 }

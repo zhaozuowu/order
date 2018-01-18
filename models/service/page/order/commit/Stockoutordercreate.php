@@ -1,10 +1,10 @@
 <?php
 /**
- * @name Service_Page_Order_Commit_Cmdnwmsorderstockoutcreate
+ * @name Service_Page_Order_Commit_Stockoutordercreate
  * @desc 异步创建出库单
  * @author jinyu02@iwaimai.baidu.com
  */
-class Service_Page_Order_Commit_Cmdnwmsorderstockoutcreate extends Wm_Lib_Wmq_CommitPageService {
+class Service_Page_Order_Commit_Stockoutordercreate extends Wm_Lib_Wmq_CommitPageService {
     
     /**
      * @var Service_Data_StockoutOrder

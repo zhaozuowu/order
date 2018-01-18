@@ -44,6 +44,15 @@ class Model_Orm_StockoutOrderSku extends Order_Base_Orm
     public static $tableName = 'stockout_order_sku';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+    public static $arrGroupByColumns = [
+        'sku_id',
+        'sku_name',
+        'upc_id',
+        'sku_net',
+        'sku_net_unit',
+        'upc_unit',
+        'sum(pickup_amount) as pickup_amount',
+    ];
 
     /**
      * 更新出库单sku信息
@@ -124,5 +133,24 @@ class Model_Orm_StockoutOrderSku extends Order_Base_Orm
         $arrColumns = self::getAllColumns();
         return Model_Orm_StockoutOrderSku::findRows($arrColumns, $arrConditions, ['id' => 'asc'],
                                                     $intOffset, $intLimit);
+    }
+
+    /**
+     * get group list
+     * @param $arrConditions
+     * @param $strGroupKey
+     * @param array $arrColumns
+     * @return mixed
+     */
+    public static function getGroupList($arrConditions, $strGroupKey, $arrColumns=[]) {
+        if (empty($arrColumns)) {
+            $arrColumns = self::$arrGroupByColumns;
+        }
+        $arrRetList = Model_Orm_StockoutOrderSku::find($arrConditions)
+            ->select($arrColumns)
+            ->groupBy([$strGroupKey])
+            ->orderBy(['id' => 'asc'])
+            ->rows();
+        return $arrRetList;
     }
 }

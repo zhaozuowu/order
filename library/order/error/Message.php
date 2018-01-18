@@ -45,6 +45,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_PRINT_LIST_ORDER_IDS_ERROR => '打印列表无法获取数据ID',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT => '重复创建出库单',
         Order_Error_Code::NWMS_ORDER_QUERY_RESULT_EMPTY => '查询结果为空',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_FORM_DETAIL_ERROR => 'sku业态详细信息错误',
 
         // 库存调整错误码 开始
         Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL => '库存调整-出库失败',

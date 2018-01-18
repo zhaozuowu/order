@@ -9,6 +9,18 @@
 class Order_Define_BusinessFormOrder
 {
     /**
+     * 业态订单创建成功
+     * @var integer
+     */
+    const BUSINESS_FORM_ORDER_SUCCESS = 1;
+
+    /**
+     * 业态订单创建失败
+     * @var integer
+     */
+    const BUSINESS_FORM_ORDER_FAILED = 2;
+
+    /**
      * 业态订单状态列表
      * @var array
      */
@@ -26,15 +38,50 @@ class Order_Define_BusinessFormOrder
         '2' => '前置仓',
         '3' => '便利店',
     ];
+
+    /**
+     * 补货类型为铺货
+     * @var integer
+     */
+    const ORDER_SUPPLY_TYPE_CREATE = 1;
+
+    /**
+     * 补货类型为补货
+     * @var integer
+     */
+    const ORDER_SUPPLY_TYPE_SUPPLY = 2;
+
     /**
      * 补货类型
      * @var array
      */
     const ORDER_SUPPLY_TYPE = [
-        '1' => '铺货',
-        '2' => '补货',
-        '3' => '补货+盘货',
+        self::ORDER_SUPPLY_TYPE_CREATE => '铺货',
+        self::ORDER_SUPPLY_TYPE_SUPPLY => '补货',
     ];
+
+    /**
+     * 携带设备类型为货架
+     * @var integer
+     */
+    const ORDER_DEVICE_TYPE_SHELF = 1;
+
+    /**
+     * 携带设备类型为冰柜
+     * @var integer
+     */
+    const ORDER_DEVICE_TYPE_REFRIGERATOR = 2;
+
+    /**
+     * 携带设备类型
+     * @var array
+     */
+    const ORDER_DEVICE_MAP = [
+        self::ORDER_DEVICE_TYPE_SHELF => '货架',
+        self::ORDER_DEVICE_TYPE_REFRIGERATOR => '冰柜',
+    ];
+
+
 
 
 }
