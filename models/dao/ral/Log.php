@@ -93,14 +93,25 @@ class Dao_Ral_Log
         return $ret;
     }
 
-    public function addLog($logType,$quotaIdxInt1,$operationType,$operatorName='',$operatorId=0,$content='')
+    /**
+     * write log
+     * @param $logType
+     * @param $quotaIdxInt1
+     * @param $operationType
+     * @param string $operatorName
+     * @param int $operatorId
+     * @param string $content
+     * @return array|bool
+     */
+    public function addLog($logType, $quotaIdxInt1, $operationType, $operatorName='', $operatorId=0, $content='')
     {
         $ret = [];
-        if (empty($logType) || empty($quotaIdxInt1) || empty($operationType)) {
+        if (empty($logType) || empty($quotaIdxInt1) || empty($operationType) || empty($operatorName) || empty($operatorId)) {
             return $ret;
         }
         $appId = Order_Define_StockoutOrder::APP_NWMS_ORDER_APP_ID;
-        $list = Nscm_Service_OperationLog::addLog($appId,$logType,$operationType,$operatorName,$operatorId,$content,$quotaIdxInt1);
+        Nscm_Event_ShutDownEvent::register();
+        $list = Nscm_Event_ShutDownEvent::add(['Nscm_Service_OperationLog', 'addLog'], $appId, $logType, $operationType, $operatorName, $operatorId, $content,$quotaIdxInt1);   //写入的日志内容
         return $list;
 
     }
