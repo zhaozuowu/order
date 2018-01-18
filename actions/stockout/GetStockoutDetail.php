@@ -100,7 +100,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
         }
         Nscm_Service_Format_Data::filterIllegalData($arrFormatRet['list']);
         return $arrFormatRet;
-
+        
     }
 
 }
