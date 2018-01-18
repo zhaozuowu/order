@@ -47,8 +47,6 @@ class Action_GetBusinessFormOrderByid extends Order_Base_Action
             'business_form_order_status_text' => empty($arrRet['status']) ? '' : Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_STATUS_LIST[$arrRet['status']],
             'business_form_order_type' => empty($arrRet['business_form_order_type']) ? 0 : intval($arrRet['business_form_order_type']),
             'business_form_order_type_text' => empty($arrRet['business_form_order_type']) ? '' : Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_LIST[$arrRet['business_form_order_type']],
-            'order_supply_type' => empty($arrRet['order_supply_type']) ? 0 : intval($arrRet['order_supply_type']),
-            'order_supply_type_text' => empty($arrRet['order_supply_type']) ? '' : Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrRet['order_supply_type']],
             'create_time' => empty($arrRet['create_time']) ? 0 : date('Y-m-d H:i:s', $arrRet['create_time']),
             'order_amount' => empty($arrRet['order_amount']) ? 0 : intval($arrRet['order_amount']),
             'total_price' => empty($arrRet['business_form_order_price']) ? 0 : intval($arrRet['business_form_order_price']),
@@ -63,6 +61,11 @@ class Action_GetBusinessFormOrderByid extends Order_Base_Action
              'executor_contact' => empty($arrRet['executor_contact'])? '' : $arrRet['executor_contact'],
             'skus' => empty($arrRet['skus']) ? [] : $this->formatSku($arrRet['skus']),
         ];
+        //格式化设备信息
+        $arrShelfInfo = json_decode($arrRet['shelf_info'], true);
+        $arrFormatRet['order_supply_type_text'] = empty($arrShelfInfo['supply_type']) ?
+            '' : Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']];
+        $arrFormatRet['devices'] = Order_Define_Format::formatDevices($arrShelfInfo['devices']);
         return $arrFormatRet;
     }
 
