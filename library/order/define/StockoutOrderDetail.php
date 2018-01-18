@@ -31,7 +31,6 @@ class Order_Define_StockoutOrderDetail
         '25' => '待揽收',
         '30' => '已出库',
         '50' => '已作废',
-        
     ];
 
     /**
