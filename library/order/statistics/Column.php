@@ -371,7 +371,7 @@ class Order_Statistics_Column
                 'key' => 0,
                 'replace' => 'sku_category_text',
             ],
-            'sku_category_2_text' => [
+            'category_2_text' => [
                 'type' => Order_Statistics_Type::FUNCTION_ARRAY,
                 'function' => 'explode',
                 'params' => [
@@ -381,7 +381,7 @@ class Order_Statistics_Column
                 'key' => 1,
                 'replace' => 'sku_category_text',
             ],
-            'sku_category_3_text' => [
+            'category_3_text' => [
                 'type' => Order_Statistics_Type::FUNCTION_ARRAY,
                 'function' => 'explode',
                 'params' => [
