@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @name Service_Page_Order_Commit_Cmdnwmsstockoutorderdelete
+ * @name Service_Page_Order_Commit_Stockoutorderdelete
  * @desc 作废出库单
  * @author jinyu02@iwaimai.baidu.com
  */
-class Service_Page_Order_Commit_Cmdnwmsstockoutorderdelete extends Wm_Lib_Wmq_CommitPageService
+class Service_Page_Order_Commit_Stockoutorderdelete extends Wm_Lib_Wmq_CommitPageService
 {
 
     /**
