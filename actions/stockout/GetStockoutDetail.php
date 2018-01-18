@@ -98,9 +98,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
             $arrFormatRet['list'][] = $arrFormatRetItem;
 
         }
-        $userId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
-        $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
-        Nscm_Service_Format_Data::filterIllegalData($arrFormatRet, $userId, $appId);
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatRet['list']);
         return $arrFormatRet;
 
     }
