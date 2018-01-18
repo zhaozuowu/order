@@ -73,8 +73,11 @@ class Service_Data_BusinessFormOrder
      * @return $arrInput
      */
     public function appendStockSkuInfoToOrder($arrInput, $arrStockSkus) {
+        //如果库存为空标记为创建失败
         if (empty($arrInput['skus']) || empty($arrStockSkus)) {
-            return [];
+            $arrInput['business_form_order_status'] =
+                Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_FAILED;
+            return $arrInput;
         }
         $arrMapSkuIdToStockInfo = Order_Util_Util::arrayToKeyValue($arrStockSkus, 'sku_id');
         $arrOrderSkus = $arrInput['skus'];
@@ -88,10 +91,10 @@ class Service_Data_BusinessFormOrder
             if (in_array($arrInput['business_form_order_type'], $arrSkuBusinessForm)) {
                 $arrOrderSkus[$intKey]['distribute_amount'] = $arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount'];
             }
-            $arrOrderSkus[$intKey]['cost_price'] = $arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price'];
+            $arrOrderSkus[$intKey]['cost_price'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price']);
             $arrOrderSkus[$intKey]['cost_total_price'] =
                 $arrOrderSkus[$intKey]['cost_price']*$arrOrderSkus[$intKey]['distribute_amount'];
-            $arrOrderSkus[$intKey]['cost_price_tax'] = $arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price_tax'];
+            $arrOrderSkus[$intKey]['cost_price_tax'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price_tax']);
             $arrOrderSkus[$intKey]['cost_total_price_tax'] =
                 $arrOrderSkus[$intKey]['cost_price_tax']*$arrOrderSkus[$intKey]['distribute_amount'];
             //通过sku业态信息获取配货价格
@@ -110,7 +113,7 @@ class Service_Data_BusinessFormOrder
             }
             if (Order_Define_Sku::SKU_PRICE_TYPE_STABLE
                 == $arrSendPriceInfo['sku_price_type']) {
-                $arrOrderSkus[$intKey]['send_price'] = $arrSendPriceInfo['sku_price_value'];
+                $arrOrderSkus[$intKey]['send_price'] = intval($arrSendPriceInfo['sku_price_value']);
             }
             $arrOrderSkus[$intKey]['send_total_price'] = $arrOrderSkus[$intKey]['send_price']
                                                             *$arrOrderSkus[$intKey]['distribute_amount'];
@@ -307,6 +310,13 @@ class Service_Data_BusinessFormOrder
             }
             if (!empty($arrItem['order_amount'])) {
                 $arrSkuCreateParams['order_amount'] = intval($arrItem['order_amount']);
+            } else {
+                $arrSkuCreateParams['order_amount'] = 0;
+            }
+            if (!empty($arrItem['distribute_amount'])) {
+                $arrSkuCreateParams['distribute_amount'] = intval($arrItem['distribute_amount']);
+            } else {
+                $arrSkuCreateParams['distribute_amount'] = 0;
             }
             if (!empty($arrItem['sku_name'])) {
                 $arrSkuCreateParams['sku_name'] = strval($arrItem['sku_name']);
@@ -328,6 +338,8 @@ class Service_Data_BusinessFormOrder
             }
             if (!empty($arrItem['sku_business_form'])) {
                 $arrSkuCreateParams['sku_business_form'] = strval($arrItem['sku_business_form']);
+            } else {
+                $arrSkuCreateParams['sku_business_form'] = '';
             }
             if (!empty($arrItem['sku_tax_rate'])) {
                 $arrSkuCreateParams['sku_tax_rate'] = intval($arrItem['sku_tax_rate']);
