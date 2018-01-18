@@ -711,7 +711,7 @@ class Service_Data_StockoutOrder
             'stockout_order_status' => Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS,
             'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
         ];
-        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($strStockoutOrderId,$updateData,$stockoutOrderInfo) {
+        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($strStockoutOrderId,$updateData,$stockoutOrderInfo,$mark) {
 
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
@@ -777,9 +777,10 @@ class Service_Data_StockoutOrder
         $condtion = [
             'app_id' => $appId,
             'log_type' => Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE, 'quota_idx_int_1' => $strStockoutOrderId,
-            'page_size' => 20
+            'page_size' => 100
         ];
         $list = Nscm_Service_OperationLog::getLogList($condtion);
+        $list = empty($list['log_list']) ? []:$list['log_list'];
         return $list;
 
 
