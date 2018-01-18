@@ -158,16 +158,6 @@ class Order_Statistics_Column
             'warehouse_name',
             'warehouse_id',
             'stockin_order_type',
-            'reserve_order_plan_time',
-            'reserve_order_plan_time_text' => [
-                'type' => Order_Statistics_Type::FUNCTION,
-                'function' => 'date',
-                'params' => [
-                    'Y-m-d H:i:s',
-                    self::REPLACE,
-                ],
-                'replace' => 'reserve_order_plan_time',
-            ],
             'stockin_time',
             'stockin_time_text' => [
                 'type' => Order_Statistics_Type::FUNCTION,
@@ -188,22 +178,22 @@ class Order_Statistics_Column
             'client_name' => [
                 'type' => Order_Statistics_Type::JSON,
                 'replace' => 'source_info',
-                'key' => 'client_name',
+                'key' => 'customer_name',
             ],
             'client_id' => [
                 'type' => Order_Statistics_Type::JSON,
                 'replace' => 'source_info',
-                'key' => 'client_id',
+                'key' => 'customer_id',
             ],
             'client_contact' => [
                 'type' => Order_Statistics_Type::JSON,
                 'replace' => 'source_info',
-                'key' => 'client_contact',
+                'key' => 'customer_contactor',
             ],
             'client_mobile' => [
                 'type' => Order_Statistics_Type::JSON,
                 'replace' => 'source_info',
-                'key' => 'client_mobile',
+                'key' => 'customer_contact',
             ],
         ],
         'slave' => [
@@ -313,13 +303,13 @@ class Order_Statistics_Column
             'city_id' => 'customer_city_id',
             'warehouse_id',
             'warehouse_name',
-            'stockout_order_type' => '',
+            'stockout_order_type',
             'stockout_order_type_describle' => [
                 'type' => Order_Statistics_Type::ARRAY,
                 'array' => 'Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_TYPE_MAP',
                 'replace' => 'stockout_order_type',
             ],
-            'logistics_order_id'=>'',
+            'logistics_order_id',
             'stockout_order_source',
             'stockout_order_source_describle' => [
                 'type' => Order_Statistics_Type::ARRAY,
@@ -368,9 +358,9 @@ class Order_Statistics_Column
 
         ],
         'sku' => [
-            'category_1',
-            'category_2',
-            'category_3',
+            'category_1'=>'sku_category_1',
+            'category_2'=>'sku_category_2',
+            'category_3'=>'sku_category_3',
             'category_1_text' => [
                 'type' => Order_Statistics_Type::FUNCTION_ARRAY,
                 'function' => 'explode',
@@ -381,7 +371,7 @@ class Order_Statistics_Column
                 'key' => 0,
                 'replace' => 'sku_category_text',
             ],
-            'sku_category_2_text' => [
+            'category_2_text' => [
                 'type' => Order_Statistics_Type::FUNCTION_ARRAY,
                 'function' => 'explode',
                 'params' => [
@@ -391,7 +381,7 @@ class Order_Statistics_Column
                 'key' => 1,
                 'replace' => 'sku_category_text',
             ],
-            'sku_category_3_text' => [
+            'category_3_text' => [
                 'type' => Order_Statistics_Type::FUNCTION_ARRAY,
                 'function' => 'explode',
                 'params' => [
