@@ -57,6 +57,8 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
                 : strval($arrListItem['sku_name']);
             $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? ''
                 : intval($arrListItem['upc_unit']);
+            $arrRoundResult['upc_unit_text'] = empty($arrListItem['upc_unit']) ? ''
+                : Order_Define_Sku::UPC_UNIT_MAP[$arrListItem['upc_unit']];
             $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? ''
                 : intval($arrListItem['upc_unit_num']);
             $arrRoundResult['stockin_order_sku_total_price_tax_yuan'] = sprintf('%0.2f',
