@@ -146,7 +146,7 @@ class Action_GetStockinReserveDetailFormApi extends Order_Base_ApiAction
             $arrRoundResult['sku_effect_type_text'] =
                 Order_Define_Sku::SKU_EFFECT_TYPE_EXPIRE_MAP[$arrListItem['sku_effect_type']] ?? '未知';
             $arrRoundResult['expire_date'] =
-                strval($arrListItem['expire_date']) ?? '未知';
+                strval($arrListItem['expire_date']) ?? 0;
             $arrRoundResult['expire_date_text'] =
                 Order_Util::getFormatDateTime(strval($arrListItem['expire_date'])) ?? '未知';
             $arrRoundResult['reserve_order_plan_amount'] = empty($arrListItem['reserve_order_plan_amount']) ? 0
