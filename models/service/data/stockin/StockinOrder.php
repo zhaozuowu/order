@@ -111,7 +111,7 @@ class Service_Data_Stockin_StockinOrder
             $arrReserveOrderSku = $arrHashReserveOrderSkus[$arrSkuInfo['sku_id']];
             $arrSkuRow = $this->formatStockinOrderSkuInfo($intStockinOrderId, $arrReserveOrderSku, $arrSkuInfo, $intType);
             if (0 == $arrSkuRow['stockin_order_sku_real_amount']
-                && Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT) {
+                && Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT == $intType) {
                 Order_BusinessError::throwException(Order_Error_Code::SKU_AMOUNT_CANNOT_EMPTY);
             }
             $arrDbSkuInfoList[$arrSkuInfo['sku_id']] = $arrSkuRow;
@@ -422,10 +422,13 @@ class Service_Data_Stockin_StockinOrder
         $arrStockinOrderType = Order_Util::extractIntArray($strStockinOrderType);
         // 校验入库单类型参数是否合法
         if (false === Model_Orm_StockinOrder::isStockinOrderTypeCorrect($arrStockinOrderType)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
 
         $intStockinOrderId = Order_Util::trimStockinOrderIdPrefix($strStockinOrderId);
+        if(empty($strWarehouseId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
         $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
 
         // 拆解出关联入库单号,较复杂的订单号ID场景处理，根据入库单类型进行，如果类型和查询入库单类型不匹配抛出参数异常
@@ -486,7 +489,7 @@ class Service_Data_Stockin_StockinOrder
         $intStockinOrderId = intval(Order_Util::trimStockinOrderIdPrefix($strStockinOrderId));
 
         if (empty($intStockinOrderId)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
 
         return Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intStockinOrderId);
@@ -505,7 +508,7 @@ class Service_Data_Stockin_StockinOrder
         $intStockinOrderId = intval(Order_Util::trimStockinOrderIdPrefix($strStockinOrderId));
 
         if (empty($intStockinOrderId)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
 
         return Model_Orm_StockinOrderSku::getStockinOrderSkuList($intStockinOrderId, $intPageNum, $intPageSize);
@@ -530,7 +533,7 @@ class Service_Data_Stockin_StockinOrder
         // preg_match('/^ASN\d{13}$/', $strSourceOrderId)
         if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::ASN . '\d{13}$/', $strSourceOrderId))) {
             if (false === Order_Util::valueIsInArray(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE, $arrStockinOrderType)) {
-                Order_Error::throwException(Order_Error_Code::PARAMS_ERROR);
+                Order_Error::throwException(Order_Error_Code::PARAM_ERROR);
             }
 
             $arrSourceOrderIdInfo['source_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE;
@@ -541,7 +544,7 @@ class Service_Data_Stockin_StockinOrder
         // preg_match('/^SOO\d{13}$/', $strSourceOrderId)
         if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::SOO . '\d{13}$/', $strSourceOrderId))) {
             if (false === Order_Util::valueIsInArray(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT, $arrStockinOrderType)) {
-                Order_Error::throwException(Order_Error_Code::PARAMS_ERROR);
+                Order_Error::throwException(Order_Error_Code::PARAM_ERROR);
             }
 
             $arrSourceOrderIdInfo['source_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;

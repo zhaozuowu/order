@@ -57,11 +57,16 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
                 : strval($arrListItem['sku_name']);
             $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? ''
                 : intval($arrListItem['upc_unit']);
-            $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? '' : intval($arrListItem['upc_unit_num']);
-//            $arrRoundResult['stockin_order_sku_total_price_tax'] = empty($arrListItem['stockin_order_sku_total_price_tax']) ? '' : intval($arrListItem['stockin_order_sku_total_price_tax']);
-//            $arrRoundResult['stockin_order_sku_total_price'] = empty($arrListItem['stockin_order_sku_total_price']) ? '' : intval($arrListItem['stockin_order_sku_total_price']);
-//            $arrRoundResult['sku_price'] = empty($arrListItem['sku_price']) ? '' : intval($arrListItem['sku_price']);
-//            $arrRoundResult['sku_price_tax'] = empty($arrListItem['sku_price_tax']) ? '' : intval($arrListItem['sku_price_tax']);
+            $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? ''
+                : intval($arrListItem['upc_unit_num']);
+            $arrRoundResult['stockin_order_sku_total_price_tax_yuan'] = sprintf('%0.2f',
+                Nscm_Service_Price::convertDefaultToYuan($arrListItem['stockin_order_sku_total_price_tax']));
+            $arrRoundResult['stockin_order_sku_total_price_yuan'] = sprintf('%0.2f',
+                Nscm_Service_Price::convertDefaultToYuan($arrListItem['stockin_order_sku_total_price']));
+            $arrRoundResult['sku_price_yuan'] = sprintf('%0.2f',
+                Nscm_Service_Price::convertDefaultToYuan($arrListItem['sku_price']));
+            $arrRoundResult['sku_price_tax_yuan'] = sprintf('%0.2f',
+                Nscm_Service_Price::convertDefaultToYuan($arrListItem['sku_price_tax']));
             $arrRoundResult['reserve_order_sku_plan_amount'] = empty($arrListItem['reserve_order_sku_plan_amount']) ? ''
                 : intval($arrListItem['reserve_order_sku_plan_amount']);
             $arrRoundResult['stockin_order_sku_real_amount'] = empty($arrListItem['stockin_order_sku_real_amount']) ? ''

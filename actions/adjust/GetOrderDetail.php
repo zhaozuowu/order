@@ -48,6 +48,7 @@ class Action_GetOrderDetail extends Order_Base_Action
         $arrFormatResult = [
             'stock_adjust_order_id'     => '',
             'adjust_type'               => '',
+            'adjust_amount_type'        => '',
             'total_adjust_amount'       => '',
             'warehouse_name'            => '',
             'creator_name'              => '',
@@ -61,6 +62,7 @@ class Action_GetOrderDetail extends Order_Base_Action
 
         $arrFormatResult['stock_adjust_order_id']    = empty($data['stock_adjust_order_id']) ? '' : Nscm_Define_OrderPrefix::SAO . intval($data['stock_adjust_order_id']);
         $arrFormatResult['adjust_type']              = empty($data['adjust_type']) ? '' : Nscm_Define_Stock::ADJUST_TYPE_MAP[intval($data['adjust_type'])];
+        $arrFormatResult['adjust_amount_type']       = empty($data['adjust_amount_type']) ? '' : strval($data['adjust_amount_type']);
         $arrFormatResult['total_adjust_amount']      = empty($data['total_adjust_amount']) ? '' : intval($data['total_adjust_amount']);
         $arrFormatResult['warehouse_name']           = empty($data['warehouse_name']) ? '' : strval($data['warehouse_name']);
         $arrFormatResult['creator_name']             = empty($data['creator_name']) ? '' : strval($data['creator_name']);
@@ -73,22 +75,50 @@ class Action_GetOrderDetail extends Order_Base_Action
 
         $arrFormatResult['stock_adjust_order_detail']['total'] = $data['stock_adjust_order_detail']['total'];
 
+
+        $mapSku2Info = [];
+
         $arrOrderSkuList = $data['stock_adjust_order_detail']['detail'];
         foreach ($arrOrderSkuList as $arrOrder) {
-            $arrFormatOrder                     = [];
-            $arrFormatOrder['sku_id']           = empty($arrOrder['sku_id']) ? '' : strval($arrOrder['sku_id']);
-            $arrFormatOrder['sku_name']         = empty($arrOrder['sku_name']) ? '' : strval($arrOrder['sku_name']);
-            $arrFormatOrder['upc_id']           = empty($arrOrder['upc_id']) ? '' : strval($arrOrder['upc_id']);
-            $arrFormatOrder['upc_unit']         = empty($arrOrder['upc_unit']) ? '' : strval($arrOrder['upc_unit']);
-            $arrFormatOrder['sku_net']          = empty($arrOrder['sku_net']) ? '' : strval($arrOrder['sku_net']);
-            $arrFormatOrder['sku_net_unit']     = empty($arrOrder['sku_net_unit']) ? '' : strval($arrOrder['sku_net_unit']);
-            $arrFormatOrder['unit_price_tax']   = empty($arrOrder['unit_price_tax']) ? '' : Nscm_Service_Price::convertDefaultToYuan($arrOrder['unit_price_tax']);
-            $arrFormatOrder['unit_price']       = empty($arrOrder['unit_price']) ? '' : Nscm_Service_Price::convertDefaultToYuan($arrOrder['unit_price']);
-            $arrFormatOrder['adjust_amount']    = empty($arrOrder['adjust_amount']) ? '' : strval($arrOrder['adjust_amount']);
-            $arrFormatOrder['production_time']  = empty($arrOrder['production_time']) ? '' : strval($arrOrder['production_time']);
-            $arrFormatOrder['expire_time']      = empty($arrOrder['expire_time']) ? '' : strval($arrOrder['expire_time']);
+            $arrFormatOrder = [];
+            $arrFormatOrder['sku_id'] = empty($arrOrder['sku_id']) ? '' : strval($arrOrder['sku_id']);
+            $arrFormatOrder['sku_name'] = empty($arrOrder['sku_name']) ? '' : strval($arrOrder['sku_name']);
+            $arrFormatOrder['upc_id'] = empty($arrOrder['upc_id']) ? '' : strval($arrOrder['upc_id']);
+            $arrFormatOrder['upc_unit'] = empty($arrOrder['upc_unit']) ? '' : strval($arrOrder['upc_unit']);
+            $arrFormatOrder['sku_net'] = empty($arrOrder['sku_net']) ? '' : strval($arrOrder['sku_net']);
+            $arrFormatOrder['sku_net_unit'] = empty($arrOrder['sku_net_unit']) ? '' : strval($arrOrder['sku_net_unit']);
+            $arrFormatOrder['unit_price_tax'] = empty($arrOrder['unit_price_tax']) ? '' : Nscm_Service_Price::convertDefaultToYuan($arrOrder['unit_price_tax']);
+            $arrFormatOrder['unit_price'] = empty($arrOrder['unit_price']) ? '' : Nscm_Service_Price::convertDefaultToYuan($arrOrder['unit_price']);
 
-            $arrFormatResult['stock_adjust_order_detail']['detail'][] = $arrFormatOrder;
+            if (empty($arrFormatOrder['info'])) {
+                $arrFormatOrder['info'] = [];
+            }
+
+            $arrInfo = [];
+            $arrInfo['adjust_amount'] = empty($arrOrder['adjust_amount']) ? '' : strval($arrOrder['adjust_amount']);
+
+            $arrInfo['production_or_expire_time'] = '';
+            if (!empty($arrOrder['production_time'])) {
+                $arrInfo['production_or_expire_time'] = $arrOrder['production_time'];
+            } else if (!empty($arrOrder['expire_time'])) {
+                $arrInfo['production_or_expire_time'] = $arrOrder['expire_time'];
+            }
+
+            if(empty($mapSku2Info[$arrOrder['sku_id']])) {
+                $mapSku2Info[$arrOrder['sku_id']] = [];
+                $arrFormatResult['stock_adjust_order_detail']['detail'][] = $arrFormatOrder;
+            }
+
+            $mapSku2Info[$arrOrder['sku_id']][] = $arrInfo;
+        }
+
+        foreach ($arrFormatResult['stock_adjust_order_detail']['detail'] as &$arrDetail) {
+            $intSkuId = $arrDetail['sku_id'];
+            if(empty($mapSku2Info[$intSkuId])) {
+                $arrDetail['info'] = [];
+            } else {
+                $arrDetail['info'] = $mapSku2Info[$intSkuId];
+            }
         }
 
         return $arrFormatResult;

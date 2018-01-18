@@ -231,12 +231,15 @@ class Service_Data_StockAdjustOrder
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR);
         }
 
+        $intAdjustAmountType = $this->getAdjustAmountType($arrInput['adjust_type']);
+
         $arrOrderArg = [
             'stock_adjust_order_id' => $arrInput['stock_adjust_order_id'],
             'warehouse_id'          => $arrInput['warehouse_id'],
             'warehouse_name'        => $arrInput['warehouse_name'],
             'total_adjust_amount'   => $intTotalAmount,
             'adjust_type'           => $arrInput['adjust_type'],
+            'adjust_amount_type'    => $intAdjustAmountType,
             'remark'                => $arrInput['remark'],
             'creator'               => $intCreator,
             'creator_name'          => $strCreatorName,
@@ -368,6 +371,8 @@ class Service_Data_StockAdjustOrder
             'stockin_sku_info'      => [],
         ];
 
+        $mapSku2Batch = [];
+
         foreach ($arrInput['detail'] as $arrDetail) {
             $intSkuId = $arrDetail['sku_id'];
             $arrSkuInfo = $arrSkuInfos[$intSkuId];
@@ -381,17 +386,20 @@ class Service_Data_StockAdjustOrder
             $arrDetail = $this->getEffectTime(
                 $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
-            $arrStockSkuInfo = [
-                'sku_id'            => $arrDetail['sku_id'],
-                'batch_info'        => [
-                    [
-                        'expire_time'           =>  $arrDetail['expire_time'],
-                        'production_time'       =>  $arrDetail['production_time'],
-                        'amount'                =>  $arrDetail['adjust_amount'],
-                    ],
-                ],
+            $batchInfo = [
+                'expire_time'           =>  $arrDetail['expire_time'],
+                'production_time'       =>  $arrDetail['production_time'],
+                'amount'                =>  $arrDetail['adjust_amount'],
             ];
 
+            $mapSku2Batch[$arrDetail['sku_id']][] = $batchInfo;
+        }
+
+        foreach ($mapSku2Batch as $skuId => $arrBatchInfo) {
+            $arrStockSkuInfo = [
+                'sku_id' => $skuId,
+                'batch_info' => $arrBatchInfo,
+            ];
             $arrStockIn['stockin_sku_info'][] = $arrStockSkuInfo;
         }
 
@@ -496,5 +504,21 @@ class Service_Data_StockAdjustOrder
         }
 
         return $arrDetail;
+    }
+
+    /**
+     * 根据调整类型返回调增还是调减
+     * @param $intAdjustType
+     * @return int
+     */
+    protected function getAdjustAmountType($intAdjustType) {
+        if(in_array($intAdjustType, Nscm_Define_Stock::STOCK_IN_TYPE)) {
+            return 1;
+        } else if(in_array($intAdjustType, Nscm_Define_Stock::STOCK_OUT_TYPE)) {
+            return 2;
+        } else {
+            Bd_Log::warning(__METHOD__ . ' 库存调整类型不正确 ');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_TYPE_ERROR);
+        }
     }
 }
