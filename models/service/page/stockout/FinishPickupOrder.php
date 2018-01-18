@@ -30,6 +30,8 @@ class Service_Page_Stockout_FinishPickupOrder
     {
         $strStockoutOrderId = $arrInput['stockout_order_id'];
         $pickupSkus = is_array($arrInput['pickup_skus']) ? $arrInput['pickup_skus'] : json_decode($arrInput['pickup_skus'], true);
-        return $this->objStockoutOrder->finishPickup($strStockoutOrderId, $pickupSkus);
+        $userId = !empty($arrInput['_session']['user_id']) ? $arrInput['_session']['user_id']:0;
+        $userName = !empty($arrInput['_session']['user_name']) ? $arrInput['_session']['user_name']:'' ;
+        return $this->objStockoutOrder->finishPickup($strStockoutOrderId, $pickupSkus,$userId,$userName);
     }
 }
