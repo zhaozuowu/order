@@ -296,7 +296,7 @@ class Order_Statistics_Column
             ],
             'stockout_order_status_describle' => [
                 'type' => Order_Statistics_Type::ARRAY,
-                'array' => 'Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_STATUS_MAP',
+                'array' => 'Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_STATUS_TEXT_MAP',
                 'replace' => 'stockout_order_status',
             ],
             'city_name' => 'customer_city_name',
