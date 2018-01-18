@@ -44,6 +44,8 @@ class Action_GetOrderPrintList extends Order_Base_Action
             $arrFormatRetItem['supply_type_text'] = empty($arrShelfInfo['supply_type']) ?
                                                         '' : Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']];
             $arrFormatRetItem['devices'] = $this->formatDevices($arrShelfInfo['devices']);
+            $arrFormatRetItem['executor'] = empty($arrRetItem['executor']) ? '' : $arrRetItem['executor'];
+            $arrFormatRetItem['executor_contact'] = empty($arrRetItem['executor_contact']) ? '' : $arrRetItem['executor_contact'];
             $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : 'SSO'.$arrRetItem['stockout_order_id'];
             $arrFormatRetItem['stockout_order_type'] = empty($arrRetItem['stockout_order_type']) ? 0 : $arrRetItem['stockout_order_type'];
             $arrFormatRetItem['stockout_order_type_text'] = empty($arrRetItem['stockout_order_type']) ? 
