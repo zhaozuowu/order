@@ -337,6 +337,8 @@ class Order_Statistics_Column
             ],
             'sku_net',
             'upc_unit',
+            'sku_net_unit',
+            'sku_net_gram',
             'upc_unit_text' => [
                 'type' => Order_Statistics_Type::ARRAY,
                 'array' => 'Order_Define_Sku::UPC_UNIT_MAP',
