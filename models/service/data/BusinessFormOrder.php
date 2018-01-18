@@ -284,6 +284,9 @@ class Service_Data_BusinessFormOrder
         if (!empty($arrInput['warehouse_id'])) {
             $arrCreateParams['warehouse_id'] = intval($arrInput['warehouse_id']);
         }
+        if (!empty($arrInput['shelf_info'])) {
+            $arrCreateParams['shelf_info'] = strval($arrInput['shelf_info']);
+        }
         return $arrCreateParams;
     }
 
