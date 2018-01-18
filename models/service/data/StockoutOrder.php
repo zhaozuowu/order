@@ -783,7 +783,7 @@ class Service_Data_StockoutOrder
      */
     public function trimStockoutOrderIdPrefix($strStockoutOrderId)
     {
-        return ltrim($strStockoutOrderId, 'SSO');
+        return ltrim($strStockoutOrderId, Nscm_Define_OrderPrefix::SOO);
     }
 
     /**
