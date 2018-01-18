@@ -58,7 +58,7 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
             $arrRoundResult = [];
             $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? ''
                 : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
-            $arrRoundResult['source_order_id'] = empty($arrListItem['source_order_id']) ? ''
+            $arrRoundResult['source_order_id'] = empty($arrListItem['source_order_id']) ? '未知'
                 : Nscm_Define_OrderPrefix::ASN . strval($arrListItem['source_order_id']);
             $arrRoundResult['city_name'] = empty($arrListItem['city_name']) ? ''
                 : strval($arrListItem['city_name']);

@@ -61,7 +61,7 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
             $arrRoundResult = [];
             $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? ''
                 : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
-            $arrRoundResult['source_order_id'] = empty($arrListItem['source_order_id']) ? ''
+            $arrRoundResult['source_order_id'] = empty($arrListItem['source_order_id']) ? '未知'
                 : Nscm_Define_OrderPrefix::SOO . strval($arrListItem['source_order_id']);
             $arrRoundResult['city_name'] = empty($arrListItem['city_name']) ? ''
                 : strval($arrListItem['city_name']);
@@ -73,8 +73,8 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
                 : strval($arrListItem['warehouse_name']);
             $arrRoundResult['stockin_order_type'] = empty($arrListItem['stockin_order_type']) ? ''
                 : strval($arrListItem['stockin_order_type']);
-            // 手动返回 销退入库 文本介绍
-            $arrRoundResult['stockin_order_type_text'] = '销退入库';
+            $arrRoundResult['stockin_order_type_text'] =
+                Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$arrListItem['stockin_order_type']] ?? '未定义';
             $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? ''
                 : strval($arrListItem['stockin_time']);
             $arrRoundResult['stockin_time_text'] = empty($arrListItem['stockin_time_text']) ? ''
