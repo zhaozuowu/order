@@ -8,6 +8,19 @@
 class Action_FinishOrder extends Order_Base_Action
 {
     /**
+     * 是否验证登陆
+     *
+     * @var boolean
+     */
+    protected $boolCheckLogin = false;
+
+    /**
+     * 判断是否有权限
+     *
+     * @var boolean
+     */
+    protected $boolCheckAuth = false;
+    /**
      * input params
      * @var array
      */
