@@ -26,6 +26,21 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
     ];
 
     /**
+     * filter price fields
+     * @var array
+     */
+    protected $arrPriceFields = [
+        'sku_price',
+        'sku_price_yuan',
+        'sku_price_tax',
+        'sku_price_tax_yuan',
+        'stockin_order_sku_total_price',
+        'stockin_order_sku_total_price_yuan',
+        'stockin_order_sku_total_price_tax',
+        'stockin_order_sku_total_price_tax_yuan',
+    ];
+
+    /**
      * method
      * @var int
      */
@@ -131,6 +146,8 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
             $arrRoundResult['sku_effect_type_text'] =
                 Order_Define_Sku::SKU_EFFECT_TYPE_EXPIRE_MAP[$arrListItem['sku_effect_type']] ?? '未知';
             $arrRoundResult['expire_date'] =
+                strval($arrListItem['expire_date']) ?? 0;
+            $arrRoundResult['expire_date_text'] =
                 Order_Util::getFormatDateTime(strval($arrListItem['expire_date'])) ?? '未知';
             $arrRoundResult['reserve_order_plan_amount'] = empty($arrListItem['reserve_order_plan_amount']) ? 0
                 : strval($arrListItem['reserve_order_plan_amount']);
@@ -152,6 +169,8 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
                 Nscm_Service_Price::convertDefaultToFen($arrListItem['stockin_order_sku_total_price_tax']));
             $arrRoundResult['stockin_order_sku_total_price_tax_yuan'] = sprintf('%0.2f',
                 Nscm_Service_Price::convertDefaultToYuan($arrListItem['stockin_order_sku_total_price_tax']));
+
+            $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult['list'][] = $arrRoundResult;
         }
 
