@@ -26,10 +26,11 @@ class Order_Define_StockoutOrderDetail
      * @var array
      */
     const STOCKOUT_ORDER_STATUS_TEXT_MAP = [
-        '1' => '待拣货',
-        '2' => '待揽收',
-        '3' => '已出库',
-        '4' => '已作废',
+        '10' => '待拣货',
+        '20' => '待拣货',
+        '25' => '待揽收',
+        '30' => '已出库',
+        '50' => '已作废',
     ];
 
     /**
