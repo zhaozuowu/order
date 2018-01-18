@@ -358,9 +358,9 @@ class Order_Statistics_Column
 
         ],
         'sku' => [
-            'sku_category_1',
-            'sku_category_2',
-            'sku_category_3',
+            'category_1'=>'sku_category_1',
+            'category_2'=>'sku_category_2',
+            'category_3'=>'sku_category_3',
             'category_1_text' => [
                 'type' => Order_Statistics_Type::FUNCTION_ARRAY,
                 'function' => 'explode',
