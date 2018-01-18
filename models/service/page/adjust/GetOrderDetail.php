@@ -51,7 +51,7 @@ class Service_Page_Adjust_GetOrderDetail
             return [];
         }
 
-        $intOrderDetailCount = $this->objStockAdjustOrderDetail->getCount($arrInput);
+        $intOrderDetailCount = $this->objStockAdjustOrderDetail->getCountWithGroup($arrInput);
         $arrOrderDetail = $this->objStockAdjustOrderDetail->get($arrInput);
 
         return $this->formatResult($arrOrder, $intOrderDetailCount, $arrOrderDetail);
