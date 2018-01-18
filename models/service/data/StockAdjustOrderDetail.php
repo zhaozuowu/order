@@ -51,6 +51,20 @@ class Service_Data_StockAdjustOrderDetail
     }
 
     /**
+     * 按照sku_id 分组查询count
+     * @param $arrInput
+     * @return int
+     */
+    public function getCountWithGroup($arrInput) {
+        Bd_Log::debug(__METHOD__ . '  param ', 0, $arrInput);
+
+        $arrConditions = $this->getConditions($arrInput);
+        $ret = Model_Orm_StockAdjustOrderDetail::find($arrConditions)->count('distinct sku_id');
+        Bd_Log::debug(__METHOD__ . 'sql return: ' . $ret);
+        return $ret;
+    }
+
+    /**
      * 获取查询条件
      * @param $arrInput
      * @return array
