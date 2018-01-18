@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @name Service_Page_Order_Commit_Cmdnwmsorderfinishpickup
+ * @name Service_Page_Order_Commit_Stockoutorderfinishpickup
  * @desc 仓库完成拣货
  * @author jinyu02@iwaimai.baidu.com
  */
-class Service_Page_Order_Commit_Cmdnwmsorderfinishpickup extends Wm_Lib_Wmq_CommitPageService
+class Service_Page_Order_Commit_Stockoutorderfinishpickup extends Wm_Lib_Wmq_CommitPageService
 {
 
     /**
