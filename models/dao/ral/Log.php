@@ -106,7 +106,7 @@ class Dao_Ral_Log
     public function addLog($logType, $quotaIdxInt1, $operationType, $operatorName='', $operatorId=0, $content='')
     {
         $ret = [];
-        if (empty($logType) || empty($quotaIdxInt1) || empty($operationType) || empty($operatorName) || empty($operatorId)) {
+        if (empty($logType) || empty($quotaIdxInt1) || empty($operationType)) {
             return $ret;
         }
         $appId = Order_Define_StockoutOrder::APP_NWMS_ORDER_APP_ID;
