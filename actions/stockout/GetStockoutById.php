@@ -61,6 +61,10 @@ class Action_GetStockoutById extends Order_Base_Action
             'signup_status' => empty($arrRet['signup_status'])  ? '':Order_Define_StockoutOrder::STOCKOUT_SIGINUP_STATUS_LIST[$arrRet['signup_status']],
 
         ];
+        $arrShelfInfo = json_decode($arrRet['shelf_info'], true);
+        $arrFormatRet['order_supply_type_text'] = empty($arrShelfInfo['supply_type']) ?
+            '' : Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']];
+        $arrFormatRet['devices'] = Order_Define_Format::formatDevices($arrShelfInfo['devices']);
         $arrFormatRet['customerinfo'] = [
             'customer_id' => empty($arrRet['customer_id']) ? 0 : intval($arrRet['customer_id']),
             'customer_name' => empty($arrRet['customer_name']) ? 0 : intval($arrRet['customer_name']),
