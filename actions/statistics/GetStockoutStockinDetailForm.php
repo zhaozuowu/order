@@ -81,13 +81,13 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
             $arrRoundResult['city_name'] = empty($arrListItem['city_name']) ? ''
                 : strval($arrListItem['city_name']);
             $arrRoundResult['city_id'] = empty($arrListItem['city_id']) ? ''
-                : strval($arrListItem['city_id']);
+                : intval($arrListItem['city_id']);
             $arrRoundResult['warehouse_id'] = empty($arrListItem['warehouse_id']) ? ''
-                : strval($arrListItem['warehouse_id']);
+                : intval($arrListItem['warehouse_id']);
             $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? ''
                 : strval($arrListItem['warehouse_name']);
             $arrRoundResult['stockin_order_type'] = empty($arrListItem['stockin_order_type']) ? ''
-                : strval($arrListItem['stockin_order_type']);
+                : intval($arrListItem['stockin_order_type']);
             $arrRoundResult['stockin_order_type_text'] =
                 Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$arrListItem['stockin_order_type']] ?? '未定义';
             $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? ''
@@ -95,13 +95,13 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
             $arrRoundResult['stockin_time_text'] = empty($arrListItem['stockin_time_text']) ? ''
                 : strval($arrListItem['stockin_time_text']);
             $arrRoundResult['stockin_batch_id'] = empty($arrListItem['stockin_batch_id']) ? ''
-                : strval($arrListItem['stockin_batch_id']);
+                : intval($arrListItem['stockin_batch_id']);
             $arrRoundResult['client_name'] = empty($arrListItem['client_name']) ? ''
                 : strval($arrListItem['client_name']);
             $arrRoundResult['client_id'] = empty($arrListItem['client_id']) ? ''
-                : strval($arrListItem['client_id']);
+                : intval($arrListItem['client_id']);
             $arrRoundResult['sku_id'] = empty($arrListItem['sku_id']) ? ''
-                : strval($arrListItem['sku_id']);
+                : intval($arrListItem['sku_id']);
             $arrRoundResult['sku_name'] = empty($arrListItem['sku_name']) ? ''
                 : strval($arrListItem['sku_name']);
             $arrRoundResult['sku_category_1'] = empty($arrListItem['sku_category_1']) ? ''

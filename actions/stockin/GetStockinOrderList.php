@@ -62,7 +62,7 @@ class Action_GetStockinOrderList extends Order_Base_Action
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
             $arrRoundResult['stockin_order_type'] = empty($arrListItem['stockin_order_type']) ? ''
-                : strval($arrListItem['stockin_order_type']);
+                : intval($arrListItem['stockin_order_type']);
             $arrRoundResult['source_info'] = empty($arrListItem['source_info']) ? ''
                 : strval($arrListItem['source_info']);
             // 不同的入库单类型对应的前缀
@@ -80,7 +80,7 @@ class Action_GetStockinOrderList extends Order_Base_Action
             $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? ''
                 : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
             $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? ''
-                : strval($arrListItem['stockin_order_status']);
+                : intval($arrListItem['stockin_order_status']);
             $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? ''
                 : strval($arrListItem['warehouse_name']);
             $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? 0

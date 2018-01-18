@@ -60,9 +60,9 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
             $arrRoundResult['upc_id'] = empty($arrListItem['upc_id']) ? ''
-                : strval($arrListItem['upc_id']);
+                : intval($arrListItem['upc_id']);
             $arrRoundResult['sku_id'] = empty($arrListItem['sku_id']) ? ''
-                : strval($arrListItem['sku_id']);
+                : intval($arrListItem['sku_id']);
             $arrRoundResult['sku_name'] = empty($arrListItem['sku_name']) ? ''
                 : strval($arrListItem['sku_name']);
             $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? ''

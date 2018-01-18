@@ -68,7 +68,7 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
             $arrRoundResult['warehouse_name'] = empty($arrRet['warehouse_name']) ? ''
                 : strval($arrRet['warehouse_name']);
             $arrRoundResult['city_id'] = empty($arrRet['city_id']) ? ''
-                : strval($arrRet['city_id']);
+                : intval($arrRet['city_id']);
             $arrRoundResult['city_name'] = empty($arrRet['city_name']) ? ''
                 : strval($arrRet['city_name']);
             $arrRoundResult['reserve_order_plan_time'] =
@@ -84,7 +84,7 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
             $arrRoundResult['stockin_order_real_amount'] = empty($arrRet['stockin_order_real_amount']) ? ''
                 : strval($arrRet['stockin_order_real_amount']);
             $arrRoundResult['source_supplier_id'] = empty($arrRet['source_supplier_id']) ? ''
-                : strval($arrRet['source_supplier_id']);
+                : intval($arrRet['source_supplier_id']);
             $arrRoundResult['stockin_order_creator_name'] = empty($arrRet['stockin_order_creator_name']) ? ''
                 : strval($arrRet['stockin_order_creator_name']);
             $arrRoundResult['source_info'] = empty($arrRet['source_info']) ? ''
