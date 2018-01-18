@@ -34,7 +34,7 @@ class Service_Data_Statistics_GetStockinReserveDetailForm
         $intPageSize)
     {
         if(empty($strWarehouseId)){
-            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
 
