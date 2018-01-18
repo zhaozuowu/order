@@ -153,7 +153,7 @@ class Service_Data_StockoutOrder
     /**
      * 创建出库单
      * @param array $arrInput
-     * @return void
+     * @return mixed
      * @throws Order_BusinessError
      */
     public function createStockoutOrder($arrInput)
@@ -176,6 +176,9 @@ class Service_Data_StockoutOrder
             $operatorId =empty($arrInput['user_info']['user_id']) ? '8888' :intval($arrInput['user_info']['user_id']);
             $this->objRalLog->addLog($logType,$arrCreateParams['stockout_order_id'],$operationType,$userName,$operatorId,'创建出库单');
         });
+        Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
+                                            Order_Statistics_Type::ACTION_CREATE,
+                                            $arrInput['stockout_order_id']);
     }
 
     /**
@@ -228,12 +231,13 @@ class Service_Data_StockoutOrder
     /**
      * @param array $arrInput
      * @return array
+     * @throws Order_BusinessError
      */
     public function assembleStockoutOrder($arrInput) {
         //校验重复提交的问题
-        /*if ($this->objDaoRedisStockoutOrder->getValByCustomerId($arrInput['customer_id'])) {
+        if ($this->objDaoRedisStockoutOrder->getValByCustomerId($arrInput['customer_id'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT);
-        }*/
+        }
         $intStockoutOrderId = Order_Util_Util::generateStockoutOrderId();
         $this->objDaoRedisStockoutOrder->setCustomerId($arrInput['customer_id']);
         $arrInput['stockout_order_id'] = $intStockoutOrderId;
