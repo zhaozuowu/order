@@ -235,9 +235,9 @@ class Service_Data_StockoutOrder
      */
     public function assembleStockoutOrder($arrInput) {
         //校验重复提交的问题
-        if ($this->objDaoRedisStockoutOrder->getValByCustomerId($arrInput['customer_id'])) {
+        /*if ($this->objDaoRedisStockoutOrder->getValByCustomerId($arrInput['customer_id'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT);
-        }
+        }*/
         $intStockoutOrderId = Order_Util_Util::generateStockoutOrderId();
         $this->objDaoRedisStockoutOrder->setCustomerId($arrInput['customer_id']);
         $arrInput['stockout_order_id'] = $intStockoutOrderId;

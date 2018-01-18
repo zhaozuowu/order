@@ -303,13 +303,13 @@ class Order_Statistics_Column
             'city_id' => 'customer_city_id',
             'warehouse_id',
             'warehouse_name',
-            'stockout_order_type' => '',
+            'stockout_order_type',
             'stockout_order_type_describle' => [
                 'type' => Order_Statistics_Type::ARRAY,
                 'array' => 'Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_TYPE_MAP',
                 'replace' => 'stockout_order_type',
             ],
-            'logistics_order_id'=>'',
+            'logistics_order_id',
             'stockout_order_source',
             'stockout_order_source_describle' => [
                 'type' => Order_Statistics_Type::ARRAY,
@@ -337,6 +337,8 @@ class Order_Statistics_Column
             ],
             'sku_net',
             'upc_unit',
+            'sku_net_unit',
+            'sku_net_gram',
             'upc_unit_text' => [
                 'type' => Order_Statistics_Type::ARRAY,
                 'array' => 'Order_Define_Sku::UPC_UNIT_MAP',
@@ -358,9 +360,9 @@ class Order_Statistics_Column
 
         ],
         'sku' => [
-            'category_1',
-            'category_2',
-            'category_3',
+            'category_1'=>'sku_category_1',
+            'category_2'=>'sku_category_2',
+            'category_3'=>'sku_category_3',
             'category_1_text' => [
                 'type' => Order_Statistics_Type::FUNCTION_ARRAY,
                 'function' => 'explode',
@@ -371,7 +373,7 @@ class Order_Statistics_Column
                 'key' => 0,
                 'replace' => 'sku_category_text',
             ],
-            'sku_category_2_text' => [
+            'category_2_text' => [
                 'type' => Order_Statistics_Type::FUNCTION_ARRAY,
                 'function' => 'explode',
                 'params' => [
@@ -381,7 +383,7 @@ class Order_Statistics_Column
                 'key' => 1,
                 'replace' => 'sku_category_text',
             ],
-            'sku_category_3_text' => [
+            'category_3_text' => [
                 'type' => Order_Statistics_Type::FUNCTION_ARRAY,
                 'function' => 'explode',
                 'params' => [
