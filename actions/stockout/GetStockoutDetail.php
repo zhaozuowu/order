@@ -26,6 +26,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
         'customer_name'=>'str',
         'customer_id'=>'int',
         'customer_name'=>'str',
+        
     ];
 
     /**
@@ -53,7 +54,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
         $arrFormatRet['total'] = $arrRet['total'];
         foreach((array)$arrRet['list'] as $arrRetItem) {
             $arrFormatRetItem = [];
-            $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : 'SSO'.$arrRetItem['stockout_order_id'];
+            $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : Nscm_Define_OrderPrefix::SOO.$arrRetItem['stockout_order_id'];
             $arrFormatRetItem['create_time'] = empty($arrRetItem['create_time']) ?  0 : date('Y-m-d H:i:s',$arrRetItem['create_time']);
             $arrFormatRetItem['business_form_order_id'] = empty($arrRetItem['business_form_order_id']) ?  0 : $arrRetItem['business_form_order_id'];
             $arrFormatRetItem['stockout_order_status'] = empty($arrRetItem['stockout_order_status']) ?  '' : Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_STATUS_TEXT_MAP[$arrRetItem['stockout_order_status']];
@@ -97,11 +98,9 @@ class Action_GetStockoutDetail extends Order_Base_Action
             $arrFormatRet['list'][] = $arrFormatRetItem;
 
         }
-        $userId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
-        $appId = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['system'];
-        Nscm_Service_Format_Data::filterIllegalData($arrFormatRet, $userId, $appId);
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatRet['list']);
         return $arrFormatRet;
-
+        
     }
 
 }

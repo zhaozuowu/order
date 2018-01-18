@@ -58,7 +58,7 @@ class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
         $arrFormatRet['total'] = $arrRet['total'];
         foreach((array)$arrRet['list'] as $arrRetItem) {
             $arrFormatRetItem = [];
-            $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : 'SSO'.$arrRetItem['stockout_order_id'];
+            $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : Nscm_Define_OrderPrefix::SOO.$arrRetItem['stockout_order_id'];
             $arrFormatRetItem['create_time'] = empty($arrRetItem['create_time']) ?  0 : date('Y-m-d H:i:s',$arrRetItem['create_time']);
             $arrFormatRetItem['business_form_order_id'] = empty($arrRetItem['business_form_order_id']) ?  0 : $arrRetItem['business_form_order_id'];
             $arrFormatRetItem['stockout_order_status'] = empty($arrRetItem['stockout_order_status']) ?  '' : Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_STATUS_TEXT_MAP[$arrRetItem['stockout_order_status']];

@@ -272,6 +272,9 @@ class Service_Data_StockoutOrder
         if (!empty($arrInput['warehouse_id'])) {
             $arrCreateParams['warehouse_id'] = intval($arrInput['warehouse_id']);
         }
+        if (!empty($arrInput['warehouse_name'])) {
+            $arrCreateParams['warehouse_name'] = strval($arrInput['warehouse_name']);
+        }
         if (!empty($arrInput['stockout_order_remark'])) {
             $arrCreateParams['stockout_order_remark'] = strval($arrInput['stockout_order_remark']);
         }
@@ -323,6 +326,12 @@ class Service_Data_StockoutOrder
         }
         if (!empty($arrInput['executor_contact'])) {
             $arrCreateParams['executor_contact'] = strval($arrInput['executor_contact']);
+        }
+        if (!empty($arrInput['business_form_order_type'])) {
+            $arrCreateParams['stockout_order_source'] = intval($arrInput['business_form_order_type']);
+        }
+        if (!empty($arrInput['business_form_order_remark'])) {
+            $arrCreateParams['stockout_order_remark'] = strval($arrInput['business_form_order_remark']);
         }
         return $arrCreateParams;
     }
@@ -783,7 +792,7 @@ class Service_Data_StockoutOrder
      */
     public function trimStockoutOrderIdPrefix($strStockoutOrderId)
     {
-        return ltrim($strStockoutOrderId, 'SSO');
+        return ltrim($strStockoutOrderId, Nscm_Define_OrderPrefix::SOO);
     }
 
     /**

@@ -199,7 +199,7 @@ class Dao_Ral_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 
-        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 ral 调用成功 ' . print_r($ret));
+        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 ral 调用成功 ' . json_encode($ret));
         return $ret;
     }
 
