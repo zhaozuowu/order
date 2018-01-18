@@ -8,6 +8,13 @@
 class Action_GetVendorSugByName extends Order_Base_Action
 {
     /**
+     * 判断是否有权限
+     *
+     * @var boolean
+     */
+    protected $boolCheckAuth = false;
+    
+    /**
      * input params
      * @var array
      */
@@ -36,6 +43,10 @@ class Action_GetVendorSugByName extends Order_Base_Action
      */
     public function format($data)
     {
-        return $data;
+        $arrRet = [];
+        foreach ((array)$data as $row) {
+            $arrRet[] = $row;
+        }
+        return ['vendor_list' => $arrRet];
     }
 }
