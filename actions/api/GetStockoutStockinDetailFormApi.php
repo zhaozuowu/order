@@ -25,6 +25,21 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
     ];
 
     /**
+     * filter price fields
+     * @var array
+     */
+    protected $arrPriceFields = [
+        'sku_price',
+        'sku_price_yuan',
+        'sku_price_tax',
+        'sku_price_tax_yuan',
+        'stockin_order_sku_total_price',
+        'stockin_order_sku_total_price_yuan',
+        'stockin_order_sku_total_price_tax',
+        'stockin_order_sku_total_price_tax_yuan',
+    ];
+
+    /**
      * method
      * @var int
      */
@@ -59,7 +74,7 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
 
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
-            $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? ''
+            $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? '未知'
                 : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
             $arrRoundResult['source_order_id'] = empty($arrListItem['source_order_id']) ? '未知'
                 : Nscm_Define_OrderPrefix::SOO . strval($arrListItem['source_order_id']);
@@ -101,19 +116,19 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
                 : strval($arrListItem['sku_category_2_text']);
             $arrRoundResult['sku_category_3_text'] = empty($arrListItem['sku_category_3_text']) ? ''
                 : strval($arrListItem['sku_category_3_text']);
-            $arrRoundResult['sku_from_country'] = empty($arrListItem['sku_from_country']) ? ''
+            $arrRoundResult['sku_from_country'] = empty($arrListItem['sku_from_country']) ? 0
                 : strval($arrListItem['sku_from_country']);
-            $arrRoundResult['sku_from_country_text'] = empty($arrListItem['sku_from_country_text']) ? ''
+            $arrRoundResult['sku_from_country_text'] = empty($arrListItem['sku_from_country_text']) ? '未知'
                 : strval($arrListItem['sku_from_country_text']);
-            $arrRoundResult['sku_net'] = empty($arrListItem['sku_net']) ? ''
+            $arrRoundResult['sku_net'] = empty($arrListItem['sku_net']) ? 0
                 : strval($arrListItem['sku_net']);
-            $arrRoundResult['sku_net_unit'] = empty($arrListItem['sku_net_unit']) ? ''
+            $arrRoundResult['sku_net_unit'] = empty($arrListItem['sku_net_unit']) ? 0
                 : strval($arrListItem['sku_net_unit']);
-            $arrRoundResult['sku_net_unit_text'] = empty($arrListItem['sku_net_unit_text']) ? ''
+            $arrRoundResult['sku_net_unit_text'] = empty($arrListItem['sku_net_unit_text']) ? '未知'
                 : strval($arrListItem['sku_net_unit_text']);
-            $arrRoundResult['upc_id'] = empty($arrListItem['upc_id']) ? ''
+            $arrRoundResult['upc_id'] = empty($arrListItem['upc_id']) ? '未知'
                 : strval($arrListItem['upc_id']);
-            $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? ''
+            $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? '未知'
                 : strval($arrListItem['upc_unit']);
             $arrRoundResult['upc_unit_text'] = empty($arrListItem['upc_unit_text']) ? ''
                 : strval($arrListItem['upc_unit_text']);
@@ -121,9 +136,11 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
                 : strval($arrListItem['upc_unit_num']);
             $arrRoundResult['sku_effect_type'] =
                 Order_Define_Sku::SKU_EFFECT_TYPE_EXPIRE_MAP[$arrListItem['sku_effect_type']] ?? '';
-            $arrRoundResult['expire_date'] = empty($arrListItem['expire_date']) ? ''
+            $arrRoundResult['expire_date'] = empty($arrListItem['expire_date']) ? 0
                 : strval($arrListItem['expire_date']);
-            $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? ''
+            $arrRoundResult['expire_date_text'] =
+                Order_Util::getFormatDateTime($arrListItem['expire_date']) ?? '未知';
+            $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? 0
                 : strval($arrListItem['stockin_order_real_amount']);
             $arrRoundResult['sku_price'] = sprintf('%0.2f',
                 Nscm_Service_Price::convertDefaultToFen($arrListItem['sku_price']));
@@ -141,6 +158,8 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
                 Nscm_Service_Price::convertDefaultToFen($arrListItem['stockin_order_sku_total_price_tax']));
             $arrRoundResult['stockin_order_sku_total_price_tax_yuan'] = sprintf('%0.2f',
                 Nscm_Service_Price::convertDefaultToYuan($arrListItem['stockin_order_sku_total_price_tax']));
+
+            $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult['list'][] = $arrRoundResult;
         }
         $arrFormatResult['total'] = $arrRet['total'];
