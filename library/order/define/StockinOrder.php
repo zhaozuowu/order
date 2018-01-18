@@ -65,7 +65,7 @@ class Order_Define_StockinOrder
      * @var
      */
     const  STOCKIN_ORDER_TYPE_MAP = [
-      '1' =>'采购入库',
-      '2' => '销退入库'
+        self::STOCKIN_ORDER_TYPE_RESERVE => '采购入库',
+        self::STOCKIN_ORDER_TYPE_STOCKOUT => '销退入库'
     ];
 }
