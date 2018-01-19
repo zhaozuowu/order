@@ -91,7 +91,7 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
             $arrRoundResult['stockin_order_type_text'] =
                 Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$arrListItem['stockin_order_type']] ?? '未定义';
             $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? ''
-                : strval($arrListItem['stockin_time']);
+                : intval($arrListItem['stockin_time']);
             $arrRoundResult['stockin_time_text'] = empty($arrListItem['stockin_time_text']) ? ''
                 : strval($arrListItem['stockin_time_text']);
             $arrRoundResult['stockin_batch_id'] = empty($arrListItem['stockin_batch_id']) ? ''
@@ -105,11 +105,11 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
             $arrRoundResult['sku_name'] = empty($arrListItem['sku_name']) ? ''
                 : strval($arrListItem['sku_name']);
             $arrRoundResult['sku_category_1'] = empty($arrListItem['sku_category_1']) ? ''
-                : strval($arrListItem['sku_category_1']);
+                : intval($arrListItem['sku_category_1']);
             $arrRoundResult['sku_category_2'] = empty($arrListItem['sku_category_2']) ? ''
-                : strval($arrListItem['sku_category_2']);
+                : intval($arrListItem['sku_category_2']);
             $arrRoundResult['sku_category_3'] = empty($arrListItem['sku_category_3']) ? ''
-                : strval($arrListItem['sku_category_3']);
+                : intval($arrListItem['sku_category_3']);
             $arrRoundResult['sku_category_1_text'] = empty($arrListItem['sku_category_1_text']) ? ''
                 : strval($arrListItem['sku_category_1_text']);
             $arrRoundResult['sku_category_2_text'] = empty($arrListItem['sku_category_2_text']) ? ''
@@ -123,25 +123,25 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
             $arrRoundResult['sku_net'] = empty($arrListItem['sku_net']) ? 0
                 : strval($arrListItem['sku_net']);
             $arrRoundResult['sku_net_unit'] = empty($arrListItem['sku_net_unit']) ? 0
-                : strval($arrListItem['sku_net_unit']);
+                : intval($arrListItem['sku_net_unit']);
             $arrRoundResult['sku_net_unit_text'] = empty($arrListItem['sku_net_unit_text']) ? '未知'
                 : strval($arrListItem['sku_net_unit_text']);
             $arrRoundResult['upc_id'] = empty($arrListItem['upc_id']) ? '未知'
                 : strval($arrListItem['upc_id']);
             $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? '未知'
-                : strval($arrListItem['upc_unit']);
+                : intval($arrListItem['upc_unit']);
             $arrRoundResult['upc_unit_text'] = empty($arrListItem['upc_unit_text']) ? ''
                 : strval($arrListItem['upc_unit_text']);
             $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? ''
-                : strval($arrListItem['upc_unit_num']);
-            $arrRoundResult['sku_effect_type'] =
+                : intval($arrListItem['upc_unit_num']);
+            $arrRoundResult['sku_effect_type_text'] =
                 Order_Define_Sku::SKU_EFFECT_TYPE_EXPIRE_MAP[$arrListItem['sku_effect_type']] ?? '';
             $arrRoundResult['expire_date'] = empty($arrListItem['expire_date']) ? 0
-                : strval($arrListItem['expire_date']);
+                : intval($arrListItem['expire_date']);
             $arrRoundResult['expire_date_text'] =
                 Order_Util::getFormatDateTime($arrListItem['expire_date']) ?? '未知';
             $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? 0
-                : strval($arrListItem['stockin_order_real_amount']);
+                : intval($arrListItem['stockin_order_real_amount']);
             $arrRoundResult['sku_price'] = sprintf('%0.2f',
                 Nscm_Service_Price::convertDefaultToFen($arrListItem['sku_price']));
             $arrRoundResult['sku_price_yuan'] = sprintf('%0.2f',

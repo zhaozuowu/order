@@ -72,7 +72,7 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
             $arrRoundResult['city_name'] = empty($arrRet['city_name']) ? ''
                 : strval($arrRet['city_name']);
             $arrRoundResult['reserve_order_plan_time'] =
-                empty($arrRet['reserve_order_plan_time']) ? 0 : strval($arrRet['reserve_order_plan_time']);
+                empty($arrRet['reserve_order_plan_time']) ? 0 : intval($arrRet['reserve_order_plan_time']);
             $arrRoundResult['reserve_order_plan_time_text'] =
                 Order_Util::getFormatDateTime($arrRet['reserve_order_plan_time']) ?? '未知';
             $arrRoundResult['stockin_order_total_price_yuan'] = sprintf('%0.2f',
@@ -80,9 +80,9 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
             $arrRoundResult['stockin_order_total_price_tax_yuan'] = sprintf('%0.2f',
                 Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price_tax']));
             $arrRoundResult['stockin_order_plan_amount'] = empty($arrRet['stockin_order_plan_amount']) ? ''
-                : strval($arrRet['stockin_order_plan_amount']);
+                : intval($arrRet['stockin_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrRet['stockin_order_real_amount']) ? ''
-                : strval($arrRet['stockin_order_real_amount']);
+                : intval($arrRet['stockin_order_real_amount']);
             $arrRoundResult['source_supplier_id'] = empty($arrRet['source_supplier_id']) ? ''
                 : intval($arrRet['source_supplier_id']);
             $arrRoundResult['stockin_order_creator_name'] = empty($arrRet['stockin_order_creator_name']) ? ''

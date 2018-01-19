@@ -84,17 +84,17 @@ class Action_GetStockinOrderList extends Order_Base_Action
             $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? ''
                 : strval($arrListItem['warehouse_name']);
             $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? 0
-                : strval($arrListItem['stockin_time']);
+                : intval($arrListItem['stockin_time']);
             $arrRoundResult['stockin_time_text'] =
                 Order_Util::getFormatDateTime($arrListItem['stockin_time']) ?? '未知';
             $arrRoundResult['stockin_order_plan_amount'] = empty($arrListItem['stockin_order_plan_amount']) ? ''
-                : strval($arrListItem['stockin_order_plan_amount']);
+                : intval($arrListItem['stockin_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? ''
-                : strval($arrListItem['stockin_order_real_amount']);
+                : intval($arrListItem['stockin_order_real_amount']);
             $arrRoundResult['stockin_order_remark'] = empty($arrListItem['stockin_order_remark']) ? ''
                 : strval($arrListItem['stockin_order_remark']);
             $arrRoundResult['create_time'] = empty($arrListItem['create_time']) ? 0
-                : strval($arrListItem['create_time']);
+                : intval($arrListItem['create_time']);
             $arrRoundResult['create_time_text'] =
                 Order_Util::getFormatDateTime($arrListItem['create_time']) ?? '未知';
             $arrRoundResult['stockin_order_creator_name'] = empty($arrListItem['stockin_order_creator_name']) ? ''
