@@ -71,23 +71,23 @@ class Action_GetStockinReserveDetailFormApi extends Order_Base_ApiAction
         $arrRetList = $arrRet['list'];
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
-            $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? ''
+            $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? '未知'
                 : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
             $arrRoundResult['source_order_id'] = empty($arrListItem['source_order_id']) ? '未知'
                 : Nscm_Define_OrderPrefix::ASN . strval($arrListItem['source_order_id']);
-            $arrRoundResult['city_name'] = empty($arrListItem['city_name']) ? ''
+            $arrRoundResult['city_name'] = empty($arrListItem['city_name']) ? '未知'
                 : strval($arrListItem['city_name']);
-            $arrRoundResult['city_id'] = empty($arrListItem['city_id']) ? ''
+            $arrRoundResult['city_id'] = empty($arrListItem['city_id']) ? 0
                 : intval($arrListItem['city_id']);
-            $arrRoundResult['warehouse_id'] = empty($arrListItem['warehouse_id']) ? ''
+            $arrRoundResult['warehouse_id'] = empty($arrListItem['warehouse_id']) ? 0
                 : intval($arrListItem['warehouse_id']);
             $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? ''
                 : strval($arrListItem['warehouse_name']);
             $arrRoundResult['vendor_name'] = empty($arrListItem['vendor_name']) ? ''
                 : strval($arrListItem['vendor_name']);
-            $arrRoundResult['vendor_id'] = empty($arrListItem['vendor_id']) ? ''
+            $arrRoundResult['vendor_id'] = empty($arrListItem['vendor_id']) ? 0
                 : intval($arrListItem['vendor_id']);
-            $arrRoundResult['stockin_order_type'] = empty($arrListItem['stockin_order_type']) ? ''
+            $arrRoundResult['stockin_order_type'] = empty($arrListItem['stockin_order_type']) ? 0
                 : intval($arrListItem['stockin_order_type']);
             $arrRoundResult['stockin_order_type_text'] =
                 Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$arrListItem['stockin_order_type']] ?? '未知';
@@ -95,29 +95,29 @@ class Action_GetStockinReserveDetailFormApi extends Order_Base_ApiAction
                 : intval($arrListItem['reserve_order_plan_time']);
             $arrRoundResult['reserve_order_plan_time_text'] = empty($arrListItem['reserve_order_plan_time_text']) ? '未知'
                 : strval($arrListItem['reserve_order_plan_time_text']);
-            $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? ''
+            $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? 0
                 : intval($arrListItem['stockin_time']);
-            $arrRoundResult['stockin_time_text'] = empty($arrListItem['stockin_time_text']) ? ''
+            $arrRoundResult['stockin_time_text'] = empty($arrListItem['stockin_time_text']) ? 0
                 : strval($arrListItem['stockin_time_text']);
-            $arrRoundResult['stockin_batch_id'] = empty($arrListItem['stockin_batch_id']) ? ''
+            $arrRoundResult['stockin_batch_id'] = empty($arrListItem['stockin_batch_id']) ? 0
                 : intval($arrListItem['stockin_batch_id']);
-            $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? ''
+            $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? 0
                 : intval($arrListItem['stockin_order_status']);
             $arrRoundResult['stockin_order_status_text'] = empty($arrListItem['stockin_order_status_text']) ? ''
                 : strval($arrListItem['stockin_order_status_text']);
             $arrRoundResult['vendor_name'] = empty($arrListItem['vendor_name']) ? ''
                 : strval($arrListItem['vendor_name']);
-            $arrRoundResult['vendor_id'] = empty($arrListItem['vendor_id']) ? ''
+            $arrRoundResult['vendor_id'] = empty($arrListItem['vendor_id']) ? 0
                 : intval($arrListItem['vendor_id']);
-            $arrRoundResult['sku_id'] = empty($arrListItem['sku_id']) ? ''
+            $arrRoundResult['sku_id'] = empty($arrListItem['sku_id']) ? 0
                 : intval($arrListItem['sku_id']);
             $arrRoundResult['sku_name'] = empty($arrListItem['sku_name']) ? ''
                 : strval($arrListItem['sku_name']);
-            $arrRoundResult['sku_category_1'] = empty($arrListItem['sku_category_1']) ? ''
+            $arrRoundResult['sku_category_1'] = empty($arrListItem['sku_category_1']) ? 0
                 : intval($arrListItem['sku_category_1']);
-            $arrRoundResult['sku_category_2'] = empty($arrListItem['sku_category_2']) ? ''
+            $arrRoundResult['sku_category_2'] = empty($arrListItem['sku_category_2']) ? 0
                 : intval($arrListItem['sku_category_2']);
-            $arrRoundResult['sku_category_3'] = empty($arrListItem['sku_category_3']) ? ''
+            $arrRoundResult['sku_category_3'] = empty($arrListItem['sku_category_3']) ? 0
                 : intval($arrListItem['sku_category_3']);
             $arrRoundResult['sku_category_1_text'] = empty($arrListItem['sku_category_1_text']) ? ''
                 : strval($arrListItem['sku_category_1_text']);
@@ -125,23 +125,23 @@ class Action_GetStockinReserveDetailFormApi extends Order_Base_ApiAction
                 : strval($arrListItem['sku_category_2_text']);
             $arrRoundResult['sku_category_3_text'] = empty($arrListItem['sku_category_3_text']) ? ''
                 : strval($arrListItem['sku_category_3_text']);
-            $arrRoundResult['sku_from_country'] = empty($arrListItem['sku_from_country']) ? ''
+            $arrRoundResult['sku_from_country'] = empty($arrListItem['sku_from_country']) ? 0
                 : intval($arrListItem['sku_from_country']);
             $arrRoundResult['sku_from_country_text'] = empty($arrListItem['sku_from_country_text']) ? ''
                 : strval($arrListItem['sku_from_country_text']);
             $arrRoundResult['sku_net'] = empty($arrListItem['sku_net']) ? ''
                 : strval($arrListItem['sku_net']);
-            $arrRoundResult['sku_net_unit'] = empty($arrListItem['sku_net_unit']) ? ''
+            $arrRoundResult['sku_net_unit'] = empty($arrListItem['sku_net_unit']) ? 0
                 : intval($arrListItem['sku_net_unit']);
             $arrRoundResult['sku_net_unit_text'] = empty($arrListItem['sku_net_unit_text']) ? ''
                 : strval($arrListItem['sku_net_unit_text']);
             $arrRoundResult['upc_id'] = empty($arrListItem['upc_id']) ? ''
                 : strval($arrListItem['upc_id']);
-            $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? ''
+            $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? 0
                 : intval($arrListItem['upc_unit']);
             $arrRoundResult['upc_unit_text'] = empty($arrListItem['upc_unit_text']) ? ''
                 : strval($arrListItem['upc_unit_text']);
-            $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? ''
+            $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? 0
                 : intval($arrListItem['upc_unit_num']);
             $arrRoundResult['sku_effect_type_text'] =
                 Order_Define_Sku::SKU_EFFECT_TYPE_EXPIRE_MAP[$arrListItem['sku_effect_type']] ?? '未知';
@@ -151,7 +151,7 @@ class Action_GetStockinReserveDetailFormApi extends Order_Base_ApiAction
                 Order_Util::getFormatDateTime(strval($arrListItem['expire_date'])) ?? '未知';
             $arrRoundResult['reserve_order_plan_amount'] = empty($arrListItem['reserve_order_plan_amount']) ? 0
                 : intval($arrListItem['reserve_order_plan_amount']);
-            $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? ''
+            $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? 0
                 : intval($arrListItem['stockin_order_real_amount']);
             $arrRoundResult['sku_price'] = sprintf('%0.2f',
                 Nscm_Service_Price::convertDefaultToFen($arrListItem['sku_price']));
