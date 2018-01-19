@@ -76,6 +76,10 @@ class Service_Data_Sku
                 continue;
             }
             $intSkuId = $arrSkuItem['sku_id'];
+            if (empty($arrMapSkuInfos[$intSkuId])) {
+                unset($arrBatchSkuParams[$intKey]);
+                continue;
+            }
             $arrBatchSkuParams[$intKey]['sku_name'] = $arrMapSkuInfos[$intSkuId]['sku_name'];
             $arrBatchSkuParams[$intKey]['sku_net'] = $arrMapSkuInfos[$intSkuId]['sku_net'];
             $arrBatchSkuParams[$intKey]['sku_net_unit'] = $arrMapSkuInfos[$intSkuId]['sku_net_unit'];
@@ -100,7 +104,7 @@ class Service_Data_Sku
      */
     protected function getSendPriceInfo($arrBusinessFormDetail, $intOrderType) {
         if (empty($arrBusinessFormDetail)) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_FORM_DETAIL_ERROR);
+            return [];
         }
         $arrSendPriceInfo = [];
         foreach ((array)$arrBusinessFormDetail as $arrBusinessFormItem) {

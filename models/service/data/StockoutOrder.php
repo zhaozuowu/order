@@ -257,82 +257,38 @@ class Service_Data_StockoutOrder
             return $arrCreateParams;
         }
         $arrCreateParams['stockout_order_status'] = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
-        if (!empty($arrInput['stockout_order_id'])) {
-            $arrCreateParams['stockout_order_id'] = intval($arrInput['stockout_order_id']);
-        }
-        if (!empty($arrInput['shelf_info'])) {
-            $arrCreateParams['shelf_info'] = strval($arrInput['shelf_info']);
-        }
-        if (!empty($arrInput['business_form_order_id'])) {
-            $arrCreateParams['business_form_order_id'] = intval($arrInput['business_form_order_id']);
-        }
-        if (!empty($arrInput['stockout_order_type'])) {
-            $arrCreateParams['stockout_order_type'] = intval($arrInput['stockout_order_type']);
-        }
-        if (!empty($arrInput['warehouse_id'])) {
-            $arrCreateParams['warehouse_id'] = intval($arrInput['warehouse_id']);
-        }
-        if (!empty($arrInput['warehouse_name'])) {
-            $arrCreateParams['warehouse_name'] = strval($arrInput['warehouse_name']);
-        }
-        if (!empty($arrInput['stockout_order_remark'])) {
-            $arrCreateParams['stockout_order_remark'] = strval($arrInput['stockout_order_remark']);
-        }
-        if (!empty($arrInput['customer_id'])) {
-            $arrCreateParams['customer_id'] = intval($arrInput['customer_id']);
-        }
-        if (!empty($arrInput['customer_name'])) {
-            $arrCreateParams['customer_name'] = strval($arrInput['customer_name']);
-        }
-        if (!empty($arrInput['customer_contactor'])) {
-            $arrCreateParams['customer_contactor'] = strval($arrInput['customer_contactor']);
-        }
-        if (!empty($arrInput['customer_contact'])) {
-            $arrCreateParams['customer_contact'] = strval($arrInput['customer_contact']);
-        }
-        if (!empty($arrInput['customer_address'])) {
-            $arrCreateParams['customer_address'] = strval($arrInput['customer_address']);
-        }
-        if (!empty($arrInput['customer_location'])) {
-            $arrCreateParams['customer_location'] = strval($arrInput['customer_location']);
-        }
-        if (!empty($arrInput['customer_location_source'])) {
-            $arrCreateParams['customer_location_source'] = intval($arrInput['customer_location_source']);
-        }
-        if (!empty($arrInput['customer_city_id'])) {
-            $arrCreateParams['customer_city_id'] = intval($arrInput['customer_city_id']);
-        }
-        if (!empty($arrInput['customer_name'])) {
-            $arrCreateParams['customer_name'] = strval($arrInput['customer_name']);
-        }
-        if (!empty($arrInput['customer_region_id'])) {
-            $arrCreateParams['customer_region_id'] = intval($arrInput['customer_region_id']);
-        }
-        if (!empty($arrInput['customer_region_name'])) {
-            $arrCreateParams['customer_region_name'] = strval($arrInput['customer_region_name']);
-        }
-        if (!empty($arrInput['expect_arrive_time'])) {
-            $arrCreateParams['expect_arrive_start_time'] = intval($arrInput['expect_arrive_time']['start']);
-            $arrCreateParams['expect_arrive_end_time'] = intval($arrInput['expect_arrive_time']['end']);
-        }
-        if (!empty($arrInput['stockout_order_amount'])) {
-            $arrCreateParams['stockout_order_amount'] = $arrInput['stockout_order_amount'];
-        }
-        if (!empty($arrInput['stockout_order_distribute_amount'])) {
-            $arrCreateParams['stockout_order_distribute_amount'] = $arrInput['stockout_order_distribute_amount'];
-        }
-        if (!empty($arrInput['executor'])) {
-            $arrCreateParams['executor'] = strval($arrInput['executor']);
-        }
-        if (!empty($arrInput['executor_contact'])) {
-            $arrCreateParams['executor_contact'] = strval($arrInput['executor_contact']);
-        }
-        if (!empty($arrInput['business_form_order_type'])) {
-            $arrCreateParams['stockout_order_source'] = intval($arrInput['business_form_order_type']);
-        }
-        if (!empty($arrInput['business_form_order_remark'])) {
-            $arrCreateParams['stockout_order_remark'] = strval($arrInput['business_form_order_remark']);
-        }
+        $arrCreateParams['stockout_order_id'] = empty($arrInput['stockout_order_id']) ?
+                                                    0 : intval($arrInput['stockout_order_id']);
+        $arrCreateParams['shelf_info'] = empty($arrInput['shelf_info']) ?
+                                                    '' : strval($arrInput['shelf_info']);
+        $arrCreateParams['business_form_order_id'] = empty($arrInput['business_form_order_id']) ?
+                                                        0 : intval($arrInput['business_form_order_id']);
+        $arrCreateParams['stockout_order_type'] = empty($arrInput['stockout_order_type']) ? 0 : intval($arrInput['stockout_order_type']);
+        $arrCreateParams['warehouse_id'] = empty($arrInput['warehouse_id']) ? 0 : intval($arrInput['warehouse_id']);
+        $arrCreateParams['warehouse_name'] = empty($arrInput['warehouse_name']) ? '' : strval($arrInput['warehouse_name']);
+        $arrCreateParams['stockout_order_remark'] = empty($arrInput['stockout_order_remark']) ? '' : strval($arrInput['stockout_order_remark']);
+        $arrCreateParams['customer_id'] = empty($arrInput['customer_id']) ? 0 : intval($arrInput['customer_id']);
+        $arrCreateParams['customer_name'] = empty($arrInput['customer_name']) ? '' : strval($arrInput['customer_name']);
+        $arrCreateParams['customer_contactor'] = empty($arrInput['customer_contactor']) ? '' : strval($arrInput['customer_contactor']);
+        $arrCreateParams['customer_contact'] = empty($arrInput['customer_contact']) ? '' : strval($arrInput['customer_contact']);
+        $arrCreateParams['customer_address'] = empty($arrInput['customer_address']) ? '' : strval($arrInput['customer_address']);
+        $arrCreateParams['customer_location'] = empty($arrInput['customer_location']) ? '' : strval($arrInput['customer_location']);
+        $arrCreateParams['customer_location_source'] = empty($arrInput['customer_location_source']) ? 0 : intval($arrInput['customer_location_source']);
+        $arrCreateParams['customer_city_id'] = empty($arrInput['customer_city_id']) ? 0 : intval($arrInput['customer_city_id']);
+        $arrCreateParams['customer_city_name'] = empty($arrInput['customer_city_name']) ? '' : strval($arrInput['customer_city_name']);
+        $arrCreateParams['customer_region_id'] = empty($arrInput['customer_region_id']) ? 0 : intval($arrInput['customer_region_id']);
+        $arrCreateParams['customer_region_name'] = empty($arrInput['customer_region_name']) ? '' : strval($arrInput['customer_region_name']);
+        $arrCreateParams['expect_arrive_start_time'] = empty($arrInput['expect_arrive_time']['start']) ?
+                                                            0 : intval($arrInput['expect_arrive_time']['start']);
+        $arrCreateParams['expect_arrive_end_time'] = empty($arrInput['expect_arrive_time']['end']) ?
+                                                        0 : intval($arrInput['expect_arrive_time']['end']);
+        $arrCreateParams['stockout_order_amount'] = empty($arrInput['stockout_order_amount']) ? 0 : intval($arrInput['stockout_order_amount']);
+        $arrCreateParams['stockout_order_distribute_amount'] = empty($arrInput['stockout_order_distribute_amount']) ?
+                                                                0 : intval($arrInput['stockout_order_distribute_amount']);
+        $arrCreateParams['executor'] = empty($arrInput['executor']) ? '' : strval($arrInput['executor']);
+        $arrCreateParams['executor_contact'] = empty($arrInput['executor_contact']) ? '' : strval($arrInput['executor_contact']);
+        $arrCreateParams['stockout_order_source'] = empty($arrInput['business_form_order_type']) ? 0 : intval($arrInput['business_form_order_type']);
+        $arrCreateParams['stockout_order_remark'] = empty($arrInput['stockout_order_remark']) ? '' : strval($arrInput['business_form_order_remark']);
         return $arrCreateParams;
     }
 
@@ -350,63 +306,25 @@ class Service_Data_StockoutOrder
         }
         foreach ($arrSkus as $arrItem) {
             $arrSkuCreateParams = [];
-            if (!empty($arrItem['sku_id'])) {
-                $arrSkuCreateParams['sku_id'] = intval($arrItem['sku_id']);
-            }
-            if (!empty($arrItem['order_amount'])) {
-                $arrSkuCreateParams['order_amount'] = intval($arrItem['order_amount']);
-            }
-            if (!empty($arrItem['distribute_amount'])) {
-                $arrSkuCreateParams['distribute_amount'] = intval($arrItem['distribute_amount']);
-            }
-            if (!empty($arrItem['sku_name'])) {
-                $arrSkuCreateParams['sku_name'] = strval($arrItem['sku_name']);
-            }
-            if (!empty($arrItem['upc_id'])) {
-                $arrSkuCreateParams['upc_id'] = strval($arrItem['upc_id']);
-            }
-            if (!empty($arrItem['upc_unit'])) {
-                $arrSkuCreateParams['upc_unit'] = intval($arrItem['upc_unit']);
-            }
-            if (!empty($arrItem['upc_unit_num'])) {
-                $arrSkuCreateParams['upc_unit_num'] = intval($arrItem['upc_unit_num']);
-            }
-            if (!empty($arrItem['sku_net'])) {
-                $arrSkuCreateParams['sku_net'] = strval($arrItem['sku_net']);
-            }
-            if (!empty($arrItem['sku_net_unit'])) {
-                $arrSkuCreateParams['sku_net_unit'] = intval($arrItem['sku_net_unit']);
-            }
-            if (!empty($arrItem['sku_effect_type'])) {
-                $arrSkuCreateParams['sku_effect_type'] = intval($arrItem['sku_effect_type']);
-            }
-            if (!empty($arrItem['sku_effect_day'])) {
-                $arrSkuCreateParams['sku_effect_day'] = intval($arrItem['sku_effect_day']);
-            }
-            if (!empty($arrItem['cost_price'])) {
-                $arrSkuCreateParams['cost_price'] = intval($arrItem['cost_price']);
-            }
-            if (!empty($arrItem['cost_total_price'])) {
-                $arrSkuCreateParams['cost_total_price'] = intval($arrItem['cost_total_price']);
-            }
-            if (!empty($arrItem['cost_price_tax'])) {
-                $arrSkuCreateParams['cost_price_tax'] = intval($arrItem['cost_price_tax']);
-            }
-            if (!empty($arrItem['cost_total_price_tax'])) {
-                $arrSkuCreateParams['cost_total_price_tax'] = intval($arrItem['cost_total_price_tax']);
-            }
-            if (!empty($arrItem['send_price'])) {
-                $arrSkuCreateParams['send_price'] = intval($arrItem['send_price']);
-            }
-            if (!empty($arrItem['send_total_price'])) {
-                $arrSkuCreateParams['send_total_price'] = intval($arrItem['send_total_price']);
-            }
-            if (!empty($arrItem['sku_business_form'])) {
-                $arrSkuCreateParams['sku_business_form'] = strval($arrItem['sku_business_form']);
-            }
-            if (!empty($arrItem['sku_tax_rate'])) {
-                $arrSkuCreateParams['sku_tax_rate'] = intval($arrItem['sku_tax_rate']);
-            }
+            $arrSkuCreateParams['sku_id'] = empty($arrItem['sku_id']) ? 0 : intval($arrItem['sku_id']);
+            $arrSkuCreateParams['order_amount'] = empty($arrItem['order_amount']) ? 0 : intval($arrItem['order_amount']);
+            $arrSkuCreateParams['distribute_amount'] = empty($arrItem['distribute_amount']) ? 0 : intval($arrItem['distribute_amount']);
+            $arrSkuCreateParams['sku_name'] = empty($arrItem['sku_name']) ? '' : strval($arrItem['sku_name']);
+            $arrSkuCreateParams['upc_id'] = empty($arrItem['upc_id']) ? '' : strval($arrItem['upc_id']);
+            $arrSkuCreateParams['upc_unit'] = empty($arrItem['upc_unit']) ? 0 : intval($arrItem['upc_unit']);
+            $arrSkuCreateParams['upc_unit_num'] = empty($arrItem['upc_unit_num']) ? 0 : intval($arrItem['upc_unit_num']);
+            $arrSkuCreateParams['sku_net'] = empty($arrItem['sku_net']) ? '' : strval($arrItem['sku_net']);
+            $arrSkuCreateParams['sku_net_unit'] = empty($arrItem['sku_net_unit']) ? 0 : intval($arrItem['sku_net_unit']);
+            $arrSkuCreateParams['sku_effect_type'] = empty($arrItem['sku_effect_type']) ? 0 : intval($arrItem['sku_effect_type']);
+            $arrSkuCreateParams['sku_effect_day'] = empty($arrItem['sku_effect_day']) ? 0 : intval($arrItem['sku_effect_day']);
+            $arrSkuCreateParams['cost_price'] = empty($arrItem['cost_price']) ? 0 : intval($arrItem['cost_price']);
+            $arrSkuCreateParams['cost_total_price'] = empty($arrItem['cost_total_price']) ? 0 : intval($arrItem['cost_total_price']);
+            $arrSkuCreateParams['cost_price_tax'] = empty($arrItem['cost_price_tax']) ? 0 : intval($arrItem['cost_price_tax']);
+            $arrSkuCreateParams['cost_total_price_tax'] = empty($arrItem['cost_total_price_tax']) ? 0 : intval($arrItem['cost_total_price_tax']);
+            $arrSkuCreateParams['send_price'] = empty($arrItem['send_price']) ? 0 : intval($arrItem['send_price']);
+            $arrSkuCreateParams['send_total_price'] = empty($arrItem['send_total_price']) ? 0 : intval($arrItem['send_total_price']);
+            $arrSkuCreateParams['sku_business_form'] = empty($arrItem['sku_business_form']) ? '' : strval($arrItem['sku_business_form']);
+            $arrSkuCreateParams['sku_tax_rate'] = empty($arrItem['sku_tax_rate']) ? 0 : intval($arrItem['sku_tax_rate']);
             $arrSkuCreateParams['stockout_order_id'] = $intStockoutOrderId;
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
         }
