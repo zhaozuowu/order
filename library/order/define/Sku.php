@@ -130,4 +130,15 @@ class Order_Define_Sku
         3 => '6%',
         4 => '0',
     ];
+
+    /**
+     * sku tax num
+     * @var array
+     */
+    const SKU_TAX_NUM = [
+        1 => 17,
+        2 => 11,
+        3 => 6,
+        4 => 0,
+    ];
 }
