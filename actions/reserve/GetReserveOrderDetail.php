@@ -44,7 +44,7 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
                 : Nscm_Define_OrderPrefix::ASN . strval($arrRet['reserve_order_id']);
             $arrRoundResult['stockin_order_id'] = empty($arrRet['stockin_order_id']) ? ''
                 : Nscm_Define_OrderPrefix::SIO . strval($arrRet['stockin_order_id']);
-            $arrRoundResult['warehouse_id'] = empty($arrRet['warehouse_id']) ? ''
+            $arrRoundResult['warehouse_id'] = empty($arrRet['warehouse_id']) ? 0
                 : intval($arrRet['warehouse_id']);
             $arrRoundResult['warehouse_name'] = empty($arrRet['warehouse_name']) ? ''
                 : strval($arrRet['warehouse_name']);
@@ -52,11 +52,11 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
                 : intval($arrRet['reserve_order_plan_time']);
             $arrRoundResult['reserve_order_plan_time_text'] =
                 Order_Util::getFormatDateTime($arrRet['reserve_order_plan_time']) ?? '未知';
-            $arrRoundResult['reserve_order_status'] = empty($arrRet['reserve_order_status']) ? ''
+            $arrRoundResult['reserve_order_status'] = empty($arrRet['reserve_order_status']) ? 0
                 : intval($arrRet['reserve_order_status']);
             $arrRoundResult['reserve_order_remark'] = empty($arrRet['reserve_order_remark']) ? ''
                 : strval($arrRet['reserve_order_remark']);
-            $arrRoundResult['vendor_id'] = empty($arrRet['vendor_id']) ? ''
+            $arrRoundResult['vendor_id'] = empty($arrRet['vendor_id']) ? 0
                 : intval($arrRet['vendor_id']);
             $arrRoundResult['vendor_name'] = empty($arrRet['vendor_name']) ? ''
                 : strval($arrRet['vendor_name']);
