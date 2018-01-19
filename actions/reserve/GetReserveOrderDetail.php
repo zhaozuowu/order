@@ -49,7 +49,7 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
             $arrRoundResult['warehouse_name'] = empty($arrRet['warehouse_name']) ? ''
                 : strval($arrRet['warehouse_name']);
             $arrRoundResult['reserve_order_plan_time'] = empty($arrRet['reserve_order_plan_time']) ? 0
-                : strval($arrRet['reserve_order_plan_time']);
+                : intval($arrRet['reserve_order_plan_time']);
             $arrRoundResult['reserve_order_plan_time_text'] =
                 Order_Util::getFormatDateTime($arrRet['reserve_order_plan_time']) ?? '未知';
             $arrRoundResult['reserve_order_status'] = empty($arrRet['reserve_order_status']) ? ''
