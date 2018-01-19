@@ -100,9 +100,11 @@ class Service_Data_Statistics_Statistics
         $arrTemp = [];
         foreach ($arrColumns as $key => $value) {
             if (is_int($key)) {
-                $arrTemp[$value] = $arrSourceRow[$value];
+                $mixValue = $arrSourceRow[$value] ?? '';
+                $arrTemp[$value] = (null === $mixValue ? '' : $mixValue);
             } else if (is_string($value)) {
-                $arrTemp[$key] = $arrSourceRow[$value];
+                $mixValue = $arrSourceRow[$value] ?? '';
+                $arrTemp[$key] = (null === $mixValue ? '' : $mixValue);
             } else if (is_array($value)) {
                 switch ($value['type']) {
                     case Order_Statistics_Type::FUNCTION:
