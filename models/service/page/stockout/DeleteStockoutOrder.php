@@ -31,6 +31,8 @@ class Service_Page_Stockout_DeleteStockoutOrder
 
         $strStockoutOrderId = $arrInput['stockout_order_id'];
         $mark= $arrInput['mark'];
-        return $this->objStockoutOrder->deleteStockoutOrder($strStockoutOrderId,$mark);
+        $userId = !empty($arrInput['_session']['user_id']) ? $arrInput['_session']['user_id']:0;
+        $userName = !empty($arrInput['_session']['user_name']) ? $arrInput['_session']['user_name']:'' ;
+        return $this->objStockoutOrder->deleteStockoutOrder($strStockoutOrderId,$mark,$userId,$userName);
     }
 }

@@ -100,9 +100,11 @@ class Service_Data_Statistics_Statistics
         $arrTemp = [];
         foreach ($arrColumns as $key => $value) {
             if (is_int($key)) {
-                $arrTemp[$value] = $arrSourceRow[$value];
+                $mixValue = $arrSourceRow[$value] ?? '';
+                $arrTemp[$value] = (null === $mixValue ? '' : $mixValue);
             } else if (is_string($value)) {
-                $arrTemp[$key] = $arrSourceRow[$value];
+                $mixValue = $arrSourceRow[$value] ?? '';
+                $arrTemp[$key] = (null === $mixValue ? '' : $mixValue);
             } else if (is_array($value)) {
                 switch ($value['type']) {
                     case Order_Statistics_Type::FUNCTION:
@@ -114,10 +116,12 @@ class Service_Data_Statistics_Statistics
                                 $arrParams[] = $strParam;
                             }
                         }
-                        $arrTemp[$key] = call_user_func_array($value['function'], $arrParams);
+                        $mixValue = call_user_func_array($value['function'], $arrParams);
+                        $arrTemp[$key] = (null === $mixValue ? '' : $mixValue);
                         break;
                     case Order_Statistics_Type::ARRAY:
-                        $arrTemp[$key] = constant($value['array'])[$arrSourceRow[$value['replace']]];
+                        $mixValue = constant($value['array'])[$arrSourceRow[$value['replace']]];
+                        $arrTemp[$key] = (null === $mixValue ? '' : $mixValue);
                         break;
                     case Order_Statistics_Type::FUNCTION_ARRAY:
                         $arrParams = [];
@@ -128,10 +132,12 @@ class Service_Data_Statistics_Statistics
                                 $arrParams[] = $strParam;
                             }
                         }
-                        $arrTemp[$key] = call_user_func_array($value['function'], $arrParams)[$value['key']];
+                        $mixValue = call_user_func_array($value['function'], $arrParams)[$value['key']];
+                        $arrTemp[$key] = (null === $mixValue ? '' : $mixValue);
                         break;
                     case Order_Statistics_Type::JSON:
-                        $arrTemp[$key] = json_decode($arrSourceRow[$value['replace']], true)[$value['key']];
+                        $mixValue = json_decode($arrSourceRow[$value['replace']], true)[$value['key']];
+                        $arrTemp[$key] = (null === $mixValue ? '' : $mixValue);
                         break;
                 }
             }
