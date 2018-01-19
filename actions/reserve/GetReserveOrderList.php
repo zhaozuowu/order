@@ -58,7 +58,7 @@ class Action_GetReserveOrderList extends Order_Base_Action
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
             $arrRoundResult['vendor_id'] = empty($arrListItem['vendor_id']) ? '未知'
-                : strval($arrListItem['vendor_id']);
+                : intval($arrListItem['vendor_id']);
             $arrRoundResult['vendor_name'] = empty($arrListItem['vendor_name']) ? '未知'
                 : strval($arrListItem['vendor_name']);
             $arrRoundResult['reserve_order_id'] = empty($arrListItem['reserve_order_id']) ? '未知'
@@ -66,21 +66,21 @@ class Action_GetReserveOrderList extends Order_Base_Action
             $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? '未知'
                 : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
             $arrRoundResult['reserve_order_status'] = empty($arrListItem['reserve_order_status']) ? '未知'
-                : strval($arrListItem['reserve_order_status']);
+                : intval($arrListItem['reserve_order_status']);
             $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? '未知'
                 : strval($arrListItem['warehouse_name']);
             $arrRoundResult['reserve_order_plan_time'] = empty($arrListItem['reserve_order_plan_time']) ? 0
-                : strval($arrListItem['reserve_order_plan_time']);
+                : intval($arrListItem['reserve_order_plan_time']);
             $arrRoundResult['reserve_order_plan_time_text'] =
                 Order_Util::getFormatDateTime($arrListItem['reserve_order_plan_time']);
             $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? 0
-                : strval($arrListItem['stockin_time']) ?? '未知';
+                : intval($arrListItem['stockin_time']) ?? '未知';
             $arrRoundResult['stockin_time_text'] =
                 Order_Util::getFormatDateTime($arrListItem['stockin_time']) ?? '未知';
             $arrRoundResult['reserve_order_plan_amount'] = empty($arrListItem['reserve_order_plan_amount']) ? 0
-                : strval($arrListItem['reserve_order_plan_amount']);
+                : intval($arrListItem['reserve_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? 0
-                : strval($arrListItem['stockin_order_real_amount']);
+                : intval($arrListItem['stockin_order_real_amount']);
             $arrRoundResult['reserve_order_remark'] = empty($arrListItem['reserve_order_remark']) ? ''
                 : strval($arrListItem['reserve_order_remark']);
 
