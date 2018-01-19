@@ -42,9 +42,9 @@ class Action_GetReserveOrderStatistics extends Order_Base_Action
             foreach ($arrRetList as $arrListItem) {
                 $arrRoundResult = [];
                 $arrRoundResult['reserve_order_status'] = empty($arrListItem['reserve_order_status']) ? 0
-                    : strval($arrListItem['reserve_order_status']);
+                    : intval($arrListItem['reserve_order_status']);
                 $arrRoundResult['reserve_order_status_count'] = empty($arrListItem['reserve_order_status_count']) ? 0
-                    : strval($arrListItem['reserve_order_status_count']);
+                    : intval($arrListItem['reserve_order_status_count']);
                 $intTotal += intval($arrRoundResult['reserve_order_status_count']);
                 $arrFormatResult['list'][] = $arrRoundResult;
             }
