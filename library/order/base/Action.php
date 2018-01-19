@@ -149,7 +149,7 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
      */
     protected function filterPrice($row) {
         if ($this->boolHidePrice) {
-            $row = array_merge($row, array_fill_keys($this->arrPriceFields, '-'));
+            $row = array_merge($row, array_fill_keys($this->arrPriceFields, Order_Define_Const::DEFAULT_EMPTY_RESULT_STR));
         }
         return $row;
     }
