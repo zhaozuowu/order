@@ -45,14 +45,14 @@ class Order_Util
 
     /**
      * 对输入的Unix时间戳进行格式转换
-     * 如果输入为0则返回'-'
+     * 如果输入为0则返回'--'
      * @param integer $unixTime
      * @return false|string
      */
     public static function getFormatDateTime($unixTime)
     {
         if(0 == $unixTime){
-            return '-';
+            return '--';
         }
 
         return date('Y-m-d H:i:s', intval($unixTime));
