@@ -19,14 +19,12 @@ class Service_Data_Stockin_StockinOrder
     private function formatStockinOrderSkuInfo($intStockinOrderId, $sourceOrderSkuInfo, $arrSkuInfo, $intOrderType = 1)
     {
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intOrderType) {
-            $intSkuPrice = $sourceOrderSkuInfo['sku_price'];
-            $intSkuPriceTax = $sourceOrderSkuInfo['sku_price_tax'];
             $intPlanAmount =  $sourceOrderSkuInfo['reserve_order_sku_plan_amount'];
         } else {
-            $intSkuPrice = $sourceOrderSkuInfo['send_price'];
-            $intSkuPriceTax = $sourceOrderSkuInfo['send_price_tax'];
             $intPlanAmount = $sourceOrderSkuInfo['pickup_amount'];
         }
+        $intSkuPrice = $sourceOrderSkuInfo['sku_price'];
+        $intSkuPriceTax = $sourceOrderSkuInfo['sku_price_tax'];
         $arrDbStockinOrderSkuExtraInfo = [];
         // amount
         $intTotalAmount = 0;
@@ -69,6 +67,51 @@ class Service_Data_Stockin_StockinOrder
             'stockin_order_sku_real_amount' => $intTotalAmount,
             'stockin_order_sku_extra_info' => json_encode($arrDbStockinOrderSkuExtraInfo),
         ];
+    }
+
+    /**
+     * get stock price
+     * @param int $intWarehouseId
+     * @param int[] $arrSkuIds
+     * @return array
+     * @throws Order_BusinessError
+     */
+    private function getStockPrice($intWarehouseId, $arrSkuIds)
+    {
+        $daoStock = new Dao_Ral_Stock();
+        $arrRet = $daoStock->getStockInfo($intWarehouseId, $arrSkuIds);
+        $arrRes = [];
+        foreach ($arrRet as $row) {
+            $arrRes[$row['sku_id']] = [
+                'sku_price' => $row['cost_unit_price'],
+                'sku_price_tax' => $row['cost_unit_price_tax'],
+            ];
+        }
+        if (count($arrSkuIds) != count($arrRes)) {
+            $strTip = '获取sku价格失败！相关sku：' . implode(',', array_diff($arrSkuIds, array_keys($arrRes)));
+            Order_BusinessError::throwException(Order_Error_Code::RAL_ERROR, $strTip);
+        }
+        return $arrRes;
+    }
+
+    /**
+     * assemble price
+     * @param int $intWarehouseId
+     * @param array[] $arrSkus
+     * @param int $intType
+     * @return array
+     * @throws Order_BusinessError
+     */
+    private function assemblePrice($intWarehouseId, $arrSkus, $intType)
+    {
+        if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT == $intType) {
+            $arrSkuIds = array_column($arrSkus, 'sku_id');
+            $arrStockPrice = $this->getStockPrice($intWarehouseId, $arrSkuIds);
+            foreach ($arrSkus as $key => $row) {
+                $arrSkus[$key] = array_merge($row, $arrStockPrice[$row['sku_id']] ?? []);
+            }
+        }
+        return $arrSkus;
     }
 
     /**
@@ -203,6 +246,7 @@ class Service_Data_Stockin_StockinOrder
             Order_Error::throwException(Order_Error_Code::SOURCE_ORDER_TYPE_ERROR);
         }
         $intStockinOrderId = Order_Util_Util::generateStockinOrderCode();
+        $arrSourceOrderSkus = $this->assemblePrice($intWarehouseId, $arrSourceOrderSkus, $intType);
         $arrDbSkuInfoList = $this->getDbStockinSkus($intStockinOrderId, $arrSourceOrderSkus, $arrSkuInfoList, $intType);
         $intStockinOrderRealAmount = $this->calculateTotalSkuAmount($arrDbSkuInfoList);
         $intStockinOrderTotalPrice = $this->calculateTotalPrice($arrDbSkuInfoList);
@@ -282,7 +326,7 @@ class Service_Data_Stockin_StockinOrder
                         $strExtraInfo = '[]';
                     }
                     $ormStockinOrderSku->syncStockinSkuInfo($intRealAmount, $strExtraInfo);
-                }
+                } 
             }
             return $intStockinOrderId;
         });
