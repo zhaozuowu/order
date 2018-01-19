@@ -97,7 +97,7 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
                 : strval($arrListItem['reserve_order_plan_time_text']);
             $arrRoundResult['stockin_time'] = empty($arrListItem['stockin_time']) ? 0
                 : intval($arrListItem['stockin_time']);
-            $arrRoundResult['stockin_time_text'] = empty($arrListItem['stockin_time_text']) ? 0
+            $arrRoundResult['stockin_time_text'] = empty($arrListItem['stockin_time_text']) ? ''
                 : strval($arrListItem['stockin_time_text']);
             $arrRoundResult['stockin_batch_id'] = empty($arrListItem['stockin_batch_id']) ? 0
                 : intval($arrListItem['stockin_batch_id']);
