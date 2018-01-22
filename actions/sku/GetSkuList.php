@@ -20,7 +20,7 @@ class Action_GetSkuList extends Order_Base_Action
      */
     protected $arrInputParams = [
         'page_num' => 'int|default[1]',
-        'page_size' => 'int|required|max[100]',
+        'page_size' => 'int|required|max[200]',
         'sku_id' => 'str',
         'upc_id' => 'str',
         'sku_name' => 'str',
