@@ -103,7 +103,7 @@ class Service_Data_Reserve_ReserveOrder
         if (!empty($arrIllegalSkus)) {
             // @alarm
             Bd_Log::warning(sprintf('get skus info fail, sku: %s, purchase order id: %d',
-                implode(',', $arrIllegalSkus)), $intPurchaseOrderId);
+                implode(',', $arrIllegalSkus), $intPurchaseOrderId));
             Order_Error::throwException(Order_Error_Code::RAL_ERROR);
         }
         Bd_Log::debug('order info: ' . json_encode($arrOrderInfo));
