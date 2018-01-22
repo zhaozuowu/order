@@ -99,6 +99,13 @@ class Service_Data_Reserve_ReserveOrder
         $objRedis = new Dao_Redis_ReserveOrder();
         $arrOrderInfo = $objRedis->getOrderInfo($intPurchaseOrderId);
         $arrSkus = $this->assembleSku($arrOrderInfo['purchase_order_skus']);
+        $arrIllegalSkus = $this->checkIllegalSku($arrSkus);
+        if (!empty($arrIllegalSkus)) {
+            // @alarm
+            Bd_Log::warning(sprintf('get skus info fail, sku: %s, purchase order id: %d',
+                implode(',', $arrIllegalSkus)), $intPurchaseOrderId);
+            Order_Error::throwException(Order_Error_Code::RAL_ERROR);
+        }
         Bd_Log::debug('order info: ' . json_encode($arrOrderInfo));
         if (empty($arrOrderInfo)) {
             // @alarm
@@ -126,6 +133,22 @@ class Service_Data_Reserve_ReserveOrder
             Model_Orm_ReserveOrderSku::createReserveOrderSku($arrSkus, $intReserveOrderId);
         });
         $objRedis->dropOrderInfo($intPurchaseOrderId);
+    }
+
+    /**
+     * check illegal sku
+     * @param array $arrSkus
+     * @return int[]
+     */
+    private function checkIllegalSku($arrSkus)
+    {
+        $arrRet = [];
+        foreach ($arrSkus as $row) {
+            if (!isset(Order_Define_Sku::SKU_EFFECT_TYPE_EXPIRE_MAP[$row['sku_effect_type']])) {
+                $arrRet[] = $row['sku_id'];
+            }
+        }
+        return $arrRet;
     }
 
     /**
