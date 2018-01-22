@@ -1,4 +1,4 @@
-#!/home/map/odp_nwms/php/bin/php
+#!php/bin/php
 <?php
 /**
  * @name AppendStatisticsOrder

@@ -77,11 +77,12 @@ class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
             $arrFormatRetItem['sku_id'] = empty($arrRetItem['sku_id']) ? 0 :$arrRetItem['sku_id'];
             $arrFormatRetItem['upc_id'] = empty($arrRetItem['upc_id']) ? '' :$arrRetItem['upc_id'];
             $arrFormatRetItem['sku_name'] = empty($arrRetItem['sku_name']) ? '' :$arrRetItem['sku_name'];
-            $arrFormatRetItem['sku_category_1'] = empty($arrRetItem['category_1']) ? 0 :$arrRetItem['category_1'];
-            $arrFormatRetItem['sku_category_2'] = empty($arrRetItem['category_2']) ? 0 :$arrRetItem['category_2'];
-            $arrFormatRetItem['sku_category_3'] = empty($arrRetItem['category_3']) ? 0 :$arrRetItem['category_3'];
+            $arrFormatRetItem['sku_category_1'] = empty($arrRetItem['category_1_text']) ? '' :$arrRetItem['category_1_text'];
+            $arrFormatRetItem['sku_category_2'] = empty($arrRetItem['category_2_text']) ? '' :$arrRetItem['category_2_text'];
+            $arrFormatRetItem['sku_category_3'] = empty($arrRetItem['category_3_text']) ? '' :$arrRetItem['category_3_text'];
             $arrFormatRetItem['sku_category_text'] =(empty($arrRetItem['category_1']) && $arrRetItem['category_2'] && $arrRetItem['category_3'] ) ? '':$arrRetItem['category_1_text'].'/'.$arrRetItem['category_2_text'].'/'.$arrRetItem['category_3_text'];
-            $arrFormatRetItem['sku_net'] =  empty($arrRetItem['sku_net']) ? '' :$arrRetItem['sku_net'];
+            $skuNeText = isset(Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]) ? Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]:'';
+            $arrFormatRetItem['sku_net'] = $arrRetItem['sku_net'].$skuNeText;
             $arrFormatRetItem['is_import'] =  empty($arrRetItem['import_describle']) ? '' :$arrRetItem['import_describle'];
             $arrFormatRetItem['upc_unit'] =  empty($arrRetItem['upc_unit']) ? 0 :$arrRetItem['upc_unit'];
             $arrFormatRetItem['upc_unit_text'] =  empty($arrRetItem['upc_unit_text']) ? '' :$arrRetItem['upc_unit_text'];
