@@ -56,6 +56,7 @@ class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
     {
         $arrFormatRet = [];
         $arrFormatRet['total'] = $arrRet['total'];
+        $arrFormatRet['list'] = [];
         foreach((array)$arrRet['list'] as $arrRetItem) {
             $arrFormatRetItem = [];
             $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : Nscm_Define_OrderPrefix::SOO.$arrRetItem['stockout_order_id'];
@@ -90,7 +91,7 @@ class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
             $arrFormatRetItem['distribute_amount'] =  empty($arrRetItem['distribute_amount']) ? 0 :$arrRetItem['distribute_amount'];
             $arrFormatRetItem['pickup_amount'] =  empty($arrRetItem['pickup_amount']) ? 0 :$arrRetItem['pickup_amount'];
             $arrFormatRetItem['sku_effect_type'] =  empty($arrRetItem['sku_effect_type']) ? '' :Order_Define_StockoutOrderDetail::SKU_EFFECT_TYPE[$arrRetItem['sku_effect_type']];
-            $arrFormatRetItem['sku_effect_day'] =  empty($arrRetItem['sku_effect_day']) ? 0:date('Y-m-d H:i:s',$arrRetItem['sku_effect_day']);
+            $arrFormatRetItem['sku_effect_day'] =  empty($arrRetItem['sku_effect_day']) ? 0:$arrRetItem['sku_effect_day'];
             $arrFormatRetItem['cost_untaxed_price'] =  empty($arrRetItem['cost_price']) ? 0 :$arrRetItem['cost_price'];
             $arrFormatRetItem['cost_taxed_price'] =  empty($arrRetItem['cost_price_tax']) ? 0 :$arrRetItem['cost_price_tax'];
             $arrFormatRetItem['total_cost_untaxed_price'] =  empty($arrRetItem['cost_total_price']) ? 0 :$arrRetItem['cost_total_price'];
