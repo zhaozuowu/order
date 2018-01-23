@@ -99,12 +99,10 @@ class Model_Orm_StockinStockoutDetail extends Order_Base_Orm
         $arrCondition['warehouse_id'] = ['in', $arrWarehouseId];
 
         if (!empty($intStockinOrderId)) {
-            // 如果有入库单号则忽略其他条件
             $arrCondition['stockin_order_id'] = $intStockinOrderId;
         }
 
         if (!empty($intSourceOrderId)) {
-            // 如果有关联单号则忽略其他条件
             $arrCondition['source_order_id'] = $intSourceOrderId;
         }
 
