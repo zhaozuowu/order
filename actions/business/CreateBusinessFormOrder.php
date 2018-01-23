@@ -64,10 +64,43 @@ class Action_CreateBusinessFormOrder extends Order_Base_Action {
 
 	/**
 	 * format result
-	 * @param array $data
+	 * @param array $arrRet
 	 * @return array
 	 */
-	public function format($data) {
-		return $data;
+	public function format($arrRet) {
+	    $arrFormatRet = [];
+	    if (empty($arrRet)) {
+	        return $arrFormatRet;
+        }
+        $arrFormatRet['stockout_order_id'] = empty($arrRet['stockout_order_id']) ? 0 : $arrRet['stockout_order_id'];
+	    $arrFormatRet['skus'] = $this->formatSkus($arrRet['skus']);
+		return $arrFormatRet;
 	}
+
+    /**
+     * format skus
+     * @param $arrSkus
+     * @return array
+     */
+	public function formatSkus($arrSkus) {
+	    $arrFormatSkus = [];
+        if (empty($arrSkus)) {
+            return $arrFormatSkus;
+        }
+        foreach ((array)$arrSkus as $arrSkuItem) {
+            $arrFormatSkuItem = [];
+            $arrFormatSkuItem['sku_id'] = empty($arrSkuItem['sku_id']) ? 0 : $arrSkuItem['sku_id'];
+            $arrFormatSkuItem['cost_price_tax'] = empty($arrSkuItem['cost_price_tax']) ?
+                                                    0 : $arrSkuItem['cost_price_tax'];
+            $arrFormatSkuItem['cost_price_untax'] = empty($arrSkuItem['cost_price']) ?
+                                                    0 : $arrSkuItem['cost_price'];
+            $arrFormatSkuItem['order_amount'] = empty($arrSkuItem['order_amount']) ?
+                                                    0 : $arrSkuItem['order_amount'];
+            $arrFormatSkuItem['distribute_amount'] = empty($arrSkuItem['distribute_amount']) ?
+                                                    0 : $arrSkuItem['distribute_amount'];
+            $arrFormatSkus[] = $arrFormatSkuItem;
+        }
+        return $arrFormatSkus;
+
+    }
 }
