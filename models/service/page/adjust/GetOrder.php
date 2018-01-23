@@ -31,7 +31,7 @@ class Service_Page_Adjust_GetOrder
         // 去掉SAO前缀
         if(!empty($arrInput['stock_adjust_order_id'])) {
             $arrInput['stock_adjust_order_id'] =
-                intval(Order_Util::trimStockAdjustOrderIdPrefix(stock_adjust_order_id));
+                intval(Order_Util::trimStockAdjustOrderIdPrefix($arrInput['stock_adjust_order_id']));
         }
 
         $intCount = $this->objStockAdjustOrder->getCount($arrInput);

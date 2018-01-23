@@ -66,6 +66,8 @@ class Service_Data_Stock
             $intSkuId = $value['sku_id'];
             if(!empty($arrSkuInfo[$intSkuId])) {
                 $arrRet[] = array_merge($arrSkuInfo[$intSkuId], $value);
+            } else {
+                $arrRet[] = $value;
             }
         }
 
