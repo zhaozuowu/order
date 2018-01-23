@@ -54,6 +54,6 @@ class Service_Page_Business_CreateBusinessFormOrder {
             Bd_Log::warning(sprintf("method[%s] cmd[%s] error",
                                     __METHOD__, Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER));
         }
-        return $ret;
+        return $arrInput;
     }
 }
