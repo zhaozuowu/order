@@ -99,35 +99,35 @@ class Model_Orm_StockinStockoutDetail extends Order_Base_Orm
         $arrCondition['warehouse_id'] = ['in', $arrWarehouseId];
 
         if (!empty($intStockinOrderId)) {
-            // 如果有入库单号则忽略其他条件
             $arrCondition['stockin_order_id'] = $intStockinOrderId;
-        } else if (!empty($intSourceOrderId)) {
-            // 如果有关联单号则忽略其他条件
+        }
+
+        if (!empty($intSourceOrderId)) {
             $arrCondition['source_order_id'] = $intSourceOrderId;
-        } else {
-            if (!empty($intSkuId)) {
-                $arrCondition['sku_id'] = $intSkuId;
-            }
+        }
 
-            if (!empty($intClientId)) {
-                $arrCondition['client_id'] = $intClientId;
-            }
+        if (!empty($intSkuId)) {
+            $arrCondition['sku_id'] = $intSkuId;
+        }
 
-            if (!empty($strClientName)) {
-                $arrCondition['client_name'] = [
-                    'like',
-                    $strClientName . '%',
-                ];
-            }
+        if (!empty($intClientId)) {
+            $arrCondition['client_id'] = $intClientId;
+        }
 
-            if (!empty($arrStockinTime['start'])
-                && !empty($arrStockinTime['end'])) {
-                $arrCondition['stockin_time'] = [
-                    'between',
-                    $arrStockinTime['start'],
-                    $arrStockinTime['end'],
-                ];
-            }
+        if (!empty($strClientName)) {
+            $arrCondition['client_name'] = [
+                'like',
+                $strClientName . '%',
+            ];
+        }
+
+        if (!empty($arrStockinTime['start'])
+            && !empty($arrStockinTime['end'])) {
+            $arrCondition['stockin_time'] = [
+                'between',
+                $arrStockinTime['start'],
+                $arrStockinTime['end'],
+            ];
         }
 
         // 固定添加条件，只查询入库类型为 销退入库 的数据
