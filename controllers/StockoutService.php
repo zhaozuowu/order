@@ -58,9 +58,10 @@ class Controller_StockoutService
      */
     public function finishOrder($arrInput)
     {
+        $arrInput = $arrInput['objFinishOrderInfo'];
         $strStockoutOrderId = isset($arrInput['stockout_order_id']) ? $arrInput['stockout_order_id'] : '';
         $intSignupStatus = isset($arrInput['signup_status']) ? intval($arrInput['signup_status']) : 0;
-        $arrSignupSkus = isset($arrInput['signup_skus']) ? json_decode($arrInput['signup_skus'], true) : [];
+        $arrSignupSkus = isset($arrInput['signup_skus']) ? $arrInput['signup_skus'] : [];
         $arrInput = [
             'stockout_order_id' => $strStockoutOrderId,
             'signup_status' => $intSignupStatus,
