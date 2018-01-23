@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @name Controller_StockoutThriftService
+ * @name Controller_StockoutService
  * @desc 创建出库单
  * @author  jinyu02@iwaimai.baidu.com
  */
-class Controller_StockoutThriftService
+class Controller_StockoutService
 {
 
     /**
