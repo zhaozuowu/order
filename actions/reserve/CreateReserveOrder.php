@@ -34,7 +34,7 @@ class Action_CreateReserveOrder extends Order_Base_ApiAction
                 'upc_unit' => 'int|required|min[1]|max[12]',
                 'upc_unit_num' => 'int|required|min[1]',
                 'sku_price' => 'int|required|min[1]',
-                'sku_price_tax'=> 'int|required|min[1]|max[4]',
+                'sku_price_tax'=> 'int|required|min[1]',
                 'reserve_order_sku_total_price' => 'int|required',
                 'reserve_order_sku_total_price_tax' => 'int|required',
                 'reserve_order_sku_plan_amount' => 'int|required',
