@@ -22,12 +22,13 @@ class Service_Page_Stockout_GetCancelStatus implements Order_Base_Page
 
     /**
      * execute
-     * @param $strStockoutOrderId
+     * @param $arrInput
      * @return array
+     * @throws Order_BusinessError
      */
-    public function execute($strStockoutOrderId)
+    public function execute($arrInput)
     {
-        $intCancelStatus = $this->objStockoutOrder->getCancelStatus($strStockoutOrderId);
+        $intCancelStatus = $this->objStockoutOrder->getCancelStatus($arrInput);
         return [
             'is_cancelled' => $intCancelStatus,
         ];

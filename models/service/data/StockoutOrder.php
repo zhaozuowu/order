@@ -44,6 +44,11 @@ class Service_Data_StockoutOrder
     protected $objRalStock;
 
     /**
+     * dao wrpc tms
+     * @var Dao_Wrpc_Tms
+     */
+    protected $objWrpcTms;
+    /**
      * init
      */
     public function __construct()
@@ -54,6 +59,7 @@ class Service_Data_StockoutOrder
         $this->objRalStock = new Dao_Ral_Stock();
         $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
         $this->objRalLog = new Dao_Ral_Log();
+        $this->objWrpcTms = new Dao_Wrpc_Tms();
     }
 
 
@@ -163,6 +169,7 @@ class Service_Data_StockoutOrder
         if (false === $boolDuplicateFlag) {
             return false;
         }
+        $arrInput['shipment_order_id'] = $this->objWrpcTms->createShipmentOrder($arrInput);
         Bd_Log::trace(sprintf("method[%s] skus[%s]", __METHOD__, $arrInput['skus']));
         Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrInput) {
             $arrCreateParams = $this->getCreateParams($arrInput);
@@ -258,6 +265,8 @@ class Service_Data_StockoutOrder
         $arrCreateParams['stockout_order_status'] = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
         $arrCreateParams['stockout_order_id'] = empty($arrInput['stockout_order_id']) ?
                                                     0 : intval($arrInput['stockout_order_id']);
+        $arrCreateParams['shipment_order_id'] = empty($arrInput['shipment_order_id']) ?
+                                                    0 : intval($arrInput['shipment_order_id']);
         $arrCreateParams['shelf_info'] = empty($arrInput['shelf_info']) ?
                                                     '' : strval($arrInput['shelf_info']);
         $arrCreateParams['business_form_order_id'] = empty($arrInput['business_form_order_id']) ?
@@ -333,18 +342,15 @@ class Service_Data_StockoutOrder
     /**
      * 完成签收
      * @param $strStockoutOrderId 出库单号
-     * @param $signupStatus 签收状态
-     * @param $signupUpcs 签收数量
+     * @param $intSignupStatus 签收状态
+     * @param $arrSignupSkus 签收数量
      * @return bool|mixed
      * @throws Exception
      * @throws Order_BusinessError
      */
-    public function finishorder($strStockoutOrderId, $signupStatus, $signupUpcs)
+    public function finishorder($strStockoutOrderId, $intSignupStatus, $arrSignupSkus)
     {
-        $res = [];
-        $signupStatusList = Order_Define_StockoutOrder::SIGNUP_STATUS_LIST;
-        $signupStatusList = array_keys($signupStatusList);
-        if (!in_array($signupStatus, Order_Define_StockoutOrder::SIGNUP_STATUS_LIST) && empty($signupUpcs)) {
+        if (!in_array($intSignupStatus, Order_Define_StockoutOrder::SIGNUP_STATUS_LIST) && empty($arrSignupSkus)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
@@ -356,17 +362,18 @@ class Service_Data_StockoutOrder
         if ($stockoutOrderInfo['stockout_order_status'] != $status) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
         }
-        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($strStockoutOrderId, $signupStatus, $signupUpcs) {
-            $updateData = ['signup_status' => $signupStatus];
+        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use
+                                            ($strStockoutOrderId, $intSignupStatus, $arrSignupSkus) {
+            $updateData = ['signup_status' => $intSignupStatus];
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
             }
             $res = [];
-            if (empty($signupUpcs)) {
+            if (empty($arrSignupSkus)) {
                 return $res;
             }
-            foreach ($signupUpcs as $item) {
+            foreach ($arrSignupSkus as $item) {
                 $condition = ['stockout_order_id' => $strStockoutOrderId, 'sku_id' => $item['sku_id']];
                 $skuUpdata = ['upc_accept_amount' => $item['sku_accept_amount'], 'upc_reject_amount' => $item['sku_reject_amount']];
                 $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
@@ -602,7 +609,6 @@ class Service_Data_StockoutOrder
         return $arrConditions;
     }
 
-
     /**
      * 作废出库单
      * @param $strStockoutOrderId
@@ -732,6 +738,7 @@ class Service_Data_StockoutOrder
 
     /**
      * 获取出库单取消状态
+     * @param string $strStockoutOrderId
      * @return integer
      * @throws Order_BusinessError
      */
@@ -766,6 +773,7 @@ class Service_Data_StockoutOrder
      * 获取分拣打印列表
      * @param array $arrStockoutOrderIds
      * @return array
+     * @throws Order_BusinessError
      */
     public function getOrderPrintList($arrStockoutOrderIds)
     {
@@ -827,8 +835,13 @@ class Service_Data_StockoutOrder
      */
     private function notifyTmsFnishPick($strStockoutOrderId, $pickupSkus)
     {
-
-        $arrStockoutParams = ['stockout_order_id' => $strStockoutOrderId, 'pickup_skus' => $pickupSkus];
+        $intShipmentOrderId = Model_Orm_StockoutOrder::
+                                getShipmentOrderIdByStockoutOrderId($strStockoutOrderId);
+        $arrStockoutParams = [
+            'stockout_order_id' => $strStockoutOrderId,
+            'shipment_order_id' => $intShipmentOrderId,
+            'pickup_skus' => $pickupSkus
+        ];
         $strCmd = Order_Define_Cmd::CMD_FINISH_PRICKUP_ORDER;
         $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrStockoutParams, $strStockoutOrderId);
         if (false == $ret) {
@@ -836,6 +849,17 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL);
         }
         return [];
+    }
+
+    /**
+     * 调用tms接口通知拣货数量
+     * @param $intShipmentOrderId
+     * @param $arrPickupSkus
+     * @return void
+     * @throws Order_BusinessError
+     */
+    public function syncNotifyTmsFinishPickup($intShipmentOrderId, $arrPickupSkus){
+        $this->objWrpcTms->notifyPickupAmount($intShipmentOrderId, $arrPickupSkus);
     }
 
     /**

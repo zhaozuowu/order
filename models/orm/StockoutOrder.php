@@ -77,6 +77,26 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
     }
 
     /**
+     * 通过出库单号查询运单号
+     * @param array $intStockoutOrderId
+     * @return array|mixed
+     * @throws Order_BusinessError
+     */
+    public static function getShipmentOrderIdByStockoutOrderId($intStockoutOrderId) {
+        if (empty($intStockoutOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+        }
+        $arrConditions = [
+            'stockout_order_id' => $intStockoutOrderId,
+        ];
+        $objStockoutOrder = static::findOne($arrConditions);
+        if (!$objStockoutOrder) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        return $objStockoutOrder->shipment_order_id;
+    }
+
+    /**
      * 更新数据
      * @param $arrConditions
      * @param $updateData

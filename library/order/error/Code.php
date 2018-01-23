@@ -341,4 +341,16 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR = 340016;
+
+    /**
+     * 创建运单失败
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_CREATE_SHIPMENTORDER_ERROR = 340017;
+
+    /**
+     * 通知拣货数量错误
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_NOTIFY_FINISHPICKUP_ERROR = 340018;
 }
