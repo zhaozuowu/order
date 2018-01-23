@@ -25,13 +25,16 @@ class Service_Page_Stockout_FinishPickupOrder
      * execute
      * @param $arrInput
      * @return array
+     * @throws Exception
+     * @throws Order_BusinessError
      */
     public function execute($arrInput)
     {
         $strStockoutOrderId = $arrInput['stockout_order_id'];
-        $pickupSkus = is_array($arrInput['pickup_skus']) ? $arrInput['pickup_skus'] : json_decode($arrInput['pickup_skus'], true);
+        $arrPickupSkus = is_array($arrInput['pickup_skus']) ? $arrInput['pickup_skus'] : json_decode($arrInput['pickup_skus'], true);
         $userId = !empty($arrInput['_session']['user_id']) ? $arrInput['_session']['user_id']:0;
         $userName = !empty($arrInput['_session']['user_name']) ? $arrInput['_session']['user_name']:'' ;
-        return $this->objStockoutOrder->finishPickup($strStockoutOrderId, $pickupSkus,$userId,$userName);
+        return $this->objStockoutOrder->finishPickup($strStockoutOrderId, $arrPickupSkus, $userId, $userName);
+        //$this->objStockoutOrder->syncNotifyTmsFinishPickup('121801220001201', $arrPickupSkus);
     }
 }

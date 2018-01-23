@@ -14,6 +14,21 @@ class Controller_StockoutThriftService
     protected $objData;
 
     /**
+     * @var Service_Page_Stockout_DeliveryOrder
+     */
+    protected $objDeliveryOrderService;
+
+    /**
+     * @var Service_Page_Stockout_FinishOrder
+     */
+    protected $objFinishOrderService;
+
+    /**
+     * @var Service_Page_Stockout_GetCancelStatus
+     */
+    protected $objGetCancelStatus;
+
+    /**
      * init
      */
     public function __construct()
@@ -44,22 +59,22 @@ class Controller_StockoutThriftService
     public function finishOrder($arrInput)
     {
         $strStockoutOrderId = isset($arrInput['stockout_order_id']) ? $arrInput['stockout_order_id'] : '';
-        $signupStatus = isset($arrInput['signup_status']) ? intval($arrInput['signup_status']) : 0;
-        $signupUpcs = isset($arrInput['signup_upcs']) ? json_decode($arrInput['signup_upcs'], true) : [];
+        $intSignupStatus = isset($arrInput['signup_status']) ? intval($arrInput['signup_status']) : 0;
+        $arrSignupSkus = isset($arrInput['signup_skus']) ? json_decode($arrInput['signup_skus'], true) : [];
         $arrInput = [
             'stockout_order_id' => $strStockoutOrderId,
-            'signup_status' => $signupStatus,
-            'signup_upcs' => $signupUpcs,
+            'signup_status' => $intSignupStatus,
+            'signup_skus' => $arrSignupSkus,
         ];
         return $this->objFinishOrderService->execute($arrInput);
     }
 
     /**
      * 获取出库单取消状态
-     * @param string $strStockoutOrderId
-     * @return integer
+     * @param array $arrInput
+     * @return mixed
      */
-    public function getCancelStatus($strStockoutOrderId) {
-        return $this->objGetCancelStatus->execute($strStockoutOrderId);
+    public function getCancelStatus($arrInput) {
+        return $this->objGetCancelStatus->execute($arrInput);
     }
 }

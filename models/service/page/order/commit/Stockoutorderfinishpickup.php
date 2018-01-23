@@ -25,14 +25,16 @@ class Service_Page_Order_Commit_Stockoutorderfinishpickup extends Wm_Lib_Wmq_Com
      * create stockout order
      * @param array $arrInput
      * @return array
+     * @throws Exception
+     * @throws Order_BusinessError
      */
     public function myExecute($arrInput)
     {
-        $strStockoutOrderId = $arrInput['stockout_order_id'];
-        $pickupSkus = is_array($arrInput['pickup_skus']) ? $arrInput['pickup_skus'] : json_decode($arrInput['pickup_skus'], true);
+        $intShipmentOrderId = $arrInput['shipment_order_id'];
+        $arrPickupSkus = is_array($arrInput['pickup_skus']) ? $arrInput['pickup_skus'] : json_decode($arrInput['pickup_skus'], true);
         Bd_Log::debug("notify TMS finishpickup myExecute:".json_encode($arrInput));
+        $this->objStockoutOrder->syncNotifyTmsFinishPickup($intShipmentOrderId, $arrPickupSkus);
         return [];
-        //return $this->objStockoutOrder->finishPickup($strStockoutOrderId, $pickupSkus);
     }
 
 

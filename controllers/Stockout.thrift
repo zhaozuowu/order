@@ -1,7 +1,7 @@
-namespace php StockoutThrift
-namespace java me.ele.StockoutThrift
+namespace php order
+namespace java me.ele.order
 #创建业态订单返回异常
-exception StockoutThriftUserException {
+exception OrderUserException {
     1: string cl,
     2: string msg,
     3: map<string, string> fields,
@@ -13,21 +13,21 @@ struct Data {
 }
 #取消状态返值
 struct CancelData {
-    1:required i32 is_cancelled
+    1:required i32 isCancelled
 }
 #TMS完成门店签收
-struct finishOrderInfo {
+struct FinishOrderInfo {
     1:required string stockout_order_id,
     2:required i32 signup_status,
     3:required list<map<string,string>> signup_skus
 }
 
 #服务定义
-service StockoutThriftService {
-    Data deliveryOrder(1:string stockout_order_id)
-        throws (1: StockoutThriftUserException stockoutException),
-    Data finishOrder(1:finishOrderInfo objFinishOrderInfo )
-        throws (1: StockoutThriftUserException stockoutException),
-    CancelData getCancelStatus(1:string stockout_order_id)
-        throws (1: StockoutThriftUserException stockoutException)
+service StockoutService {
+    Data deliveryOrder(1:string stockout_Order_id)
+        throws (1: OrderUserException stockoutException),
+    Data finishOrder(1:FinishOrderInfo objFinishOrderInfo )
+        throws (1: OrderUserException stockoutException),
+    CancelData getCancelStatus(1:string stockoutOrderId)
+        throws (1: OrderUserException stockoutException)
 }

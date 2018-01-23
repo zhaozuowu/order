@@ -109,7 +109,7 @@ class Service_Data_BusinessFormOrder
                 $arrOrderSkus[$intKey]['send_price'] = $arrOrderSkus[$intKey]['cost_price']
                                                         * (1 + $arrSendPriceInfo['sku_price_value']/100);
                 $arrOrderSkus[$intKey]['send_price_tax'] = $arrOrderSkus[$intKey]['cost_price_tax']
-                    * (1 + $arrSendPriceInfo['sku_price_value']/100);
+                    * (1 + $arrSendPriceInfo['sku_price_value']/100.0);
             }
             if (Order_Define_Sku::SKU_PRICE_TYPE_COST
                 == $arrSendPriceInfo['sku_price_type']) {
@@ -121,7 +121,7 @@ class Service_Data_BusinessFormOrder
                 $arrOrderSkus[$intKey]['send_price_tax'] = intval($arrSendPriceInfo['sku_price_value']);
                 $intTaxRate = $arrOrderSkus[$intKey]['sku_tax_rate'];
                 $arrOrderSkus[$intKey]['send_price'] = $arrOrderSkus[$intKey]['send_price_tax']
-                                    /(intval(1 + Order_Define_Sku::SKU_TAX_NUM[$intTaxRate]/100));
+                                    /(1 + Order_Define_Sku::SKU_TAX_NUM[$intTaxRate]/100.0);
             }
             $arrOrderSkus[$intKey]['send_total_price'] = $arrOrderSkus[$intKey]['send_price']
                                                             *$arrOrderSkus[$intKey]['distribute_amount'];
@@ -309,40 +309,6 @@ class Service_Data_BusinessFormOrder
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
         }
         return $arrBatchSkuCreateParams;
-    }
-
-    /**
-     * 拼接sku详细信息
-     * @param array $arrBatchSkuParams
-     * @return array
-     * @throws Nscm_Exception_Error
-     * @throws Order_BusinessError
-     * @throws Order_Error
-     */
-    public function appendSkuInfosToSkuParams($arrBatchSkuParams) {
-        if (empty($arrBatchSkuParams)) {
-            return [];
-        }
-        $arrSkuIds = array_column($arrBatchSkuParams, 'sku_id');
-        $arrMapSkuInfos = $this->objDaoSku->getSkuInfos($arrSkuIds);
-        if (empty($arrMapSkuInfos)) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_SKU_FAILED);
-        }
-        foreach ((array)$arrBatchSkuParams as $intKey => $arrSkuItem) {
-            if (empty($arrSkuItem['sku_id'])) {
-                continue;
-            }
-            $intSkuId = $arrSkuItem['sku_id'];
-            $arrBatchSkuParams[$intKey]['sku_name'] = $arrMapSkuInfos[$intSkuId]['sku_name'];
-            $arrBatchSkuParams[$intKey]['sku_net'] = $arrMapSkuInfos[$intSkuId]['sku_net'];
-            $arrBatchSkuParams[$intKey]['sku_net_unit'] = $arrMapSkuInfos[$intSkuId]['sku_net_unit'];
-            $arrBatchSkuParams[$intKey]['upc_id'] = $arrMapSkuInfos[$intSkuId]['min_upc']['upc_id'];
-            $arrBatchSkuParams[$intKey]['upc_unit'] = $arrMapSkuInfos[$intSkuId]['min_upc']['upc_unit'];
-            $arrBatchSkuParams[$intKey]['upc_unit_num'] = $arrMapSkuInfos[$intSkuId]['min_upc']['upc_unit_num'];
-            $arrBatchSkuParams[$intKey]['sku_effect_type'] = $arrMapSkuInfos[$intSkuId]['sku_effect_type'];
-            $arrBatchSkuParams[$intKey]['sku_effect_day'] = $arrMapSkuInfos[$intSkuId]['sku_effect_day'];
-        }
-        return $arrBatchSkuParams;
     }
 
     /**
