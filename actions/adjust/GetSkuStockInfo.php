@@ -65,7 +65,7 @@ class Action_GetSkuStockInfo extends Order_Base_Action
 
             //$arrFormatDetail['cost_unit_price'] = empty($value['cost_unit_price']) ? '' : intval($value['cost_unit_price']);
             //$arrFormatDetail['cost_unit_price_tax'] = empty($value['cost_unit_price_tax']) ? '' : intval($value['cost_unit_price_tax']);
-            $arrFormatDetail['available_amount'] = empty($value['available_amount']) ? '' : intval($value['available_amount']);
+            $arrFormatDetail['available_amount'] = !isset($value['available_amount']) ? '' : intval($value['available_amount']);
 
             $arrFormatResult[] = $arrFormatDetail;
         }
