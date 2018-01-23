@@ -22,8 +22,8 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         'customer_id' => 'int',
         'is_print' => 'int',
         'stockout_order_status' => 'int',
-        'start_time' => 'int',
-        'end_time' => 'int',
+        'start_time' => 'int|required',
+        'end_time' => 'int|required',
     ];
 
     /**
