@@ -35,6 +35,5 @@ class Service_Page_Stockout_FinishPickupOrder
         $userId = !empty($arrInput['_session']['user_id']) ? $arrInput['_session']['user_id']:0;
         $userName = !empty($arrInput['_session']['user_name']) ? $arrInput['_session']['user_name']:'' ;
         return $this->objStockoutOrder->finishPickup($strStockoutOrderId, $arrPickupSkus, $userId, $userName);
-        //$this->objStockoutOrder->syncNotifyTmsFinishPickup('121801220001201', $arrPickupSkus);
     }
 }

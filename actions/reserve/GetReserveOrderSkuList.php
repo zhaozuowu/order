@@ -61,18 +61,24 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
             $arrRoundResult = [];
             $arrRoundResult['upc_id'] = empty($arrListItem['upc_id']) ? ''
                 : strval($arrListItem['upc_id']);
-            $arrRoundResult['sku_id'] = empty($arrListItem['sku_id']) ? ''
-                : strval($arrListItem['sku_id']);
+            $arrRoundResult['sku_id'] = empty($arrListItem['sku_id']) ? 0
+                : intval($arrListItem['sku_id']);
             $arrRoundResult['sku_name'] = empty($arrListItem['sku_name']) ? ''
                 : strval($arrListItem['sku_name']);
-            $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? ''
-                : strval($arrListItem['upc_unit']);
-            $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? ''
-                : strval($arrListItem['upc_unit_num']);
+            $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? 0
+                : intval($arrListItem['upc_unit']);
+            $arrRoundResult['upc_unit_text'] =
+                Order_Define_Sku::UPC_UNIT_MAP[intval($arrListItem['upc_unit'])]
+                    ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
+            $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? 0
+                : intval($arrListItem['upc_unit_num']);
             $arrRoundResult['sku_net'] = empty($arrListItem['sku_net']) ? ''
                 : strval($arrListItem['sku_net']);
-            $arrRoundResult['sku_net_unit'] = empty($arrListItem['sku_net_unit']) ? ''
-                : strval($arrListItem['sku_net_unit']);
+            $arrRoundResult['sku_net_unit'] = empty($arrListItem['sku_net_unit']) ? 0
+                : intval($arrListItem['sku_net_unit']);
+            $arrRoundResult['sku_net_unit_text'] =
+                Order_Define_Sku::SKU_NET_MAP[intval($arrListItem['sku_net_unit'])]
+                    ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['sku_price_yuan'] = sprintf('%0.2f',
                 Nscm_Service_Price::convertDefaultToYuan($arrListItem['sku_price']));
             $arrRoundResult['sku_price_tax_yuan'] = sprintf('%0.2f',
@@ -81,12 +87,15 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
                 Nscm_Service_Price::convertDefaultToYuan($arrListItem['reserve_order_sku_total_price']));
             $arrRoundResult['reserve_order_sku_total_price_tax_yuan'] = sprintf('%0.2f',
                 Nscm_Service_Price::convertDefaultToYuan($arrListItem['reserve_order_sku_total_price_tax']));
-            $arrRoundResult['reserve_order_sku_plan_amount'] = empty($arrListItem['reserve_order_sku_plan_amount']) ? ''
-                : strval($arrListItem['reserve_order_sku_plan_amount']);
-            $arrRoundResult['stockin_order_sku_real_amount'] = empty($arrListItem['stockin_order_sku_real_amount']) ? ''
-                : strval($arrListItem['stockin_order_sku_real_amount']);
-            $arrRoundResult['stockin_order_sku_extra_info'] = empty($arrListItem['stockin_order_sku_extra_info']) ? ''
-                : strval($arrListItem['stockin_order_sku_extra_info']);
+            $arrRoundResult['reserve_order_sku_plan_amount'] =
+                empty($arrListItem['reserve_order_sku_plan_amount']) ? 0
+                    : intval($arrListItem['reserve_order_sku_plan_amount']);
+            $arrRoundResult['stockin_order_sku_real_amount'] =
+                empty($arrListItem['stockin_order_sku_real_amount']) ? 0
+                    : intval($arrListItem['stockin_order_sku_real_amount']);
+            $arrRoundResult['stockin_order_sku_extra_info'] =
+                empty($arrListItem['stockin_order_sku_extra_info']) ? ''
+                    : strval($arrListItem['stockin_order_sku_extra_info']);
 
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult['list'][] = $arrRoundResult;

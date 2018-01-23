@@ -55,10 +55,10 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
             $intStockInType = intval($arrRet['stockin_order_type']);
             if (!empty($intStockInType)) {
                 if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockInType) {
-                    $strSourceOrderId = empty($arrRet['source_order_id']) ? '未知'
+                    $strSourceOrderId = empty($arrRet['source_order_id']) ? ''
                         : Nscm_Define_OrderPrefix::ASN . strval($arrRet['source_order_id']);
                 } else if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT == $intStockInType) {
-                    $strSourceOrderId = empty($arrRet['source_order_id']) ? '未知'
+                    $strSourceOrderId = empty($arrRet['source_order_id']) ? ''
                         : Nscm_Define_OrderPrefix::SOO . strval($arrRet['source_order_id']);
                 }
             }
@@ -67,26 +67,28 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
                 : Nscm_Define_OrderPrefix::SIO . strval($arrRet['stockin_order_id']);
             $arrRoundResult['warehouse_name'] = empty($arrRet['warehouse_name']) ? ''
                 : strval($arrRet['warehouse_name']);
-            $arrRoundResult['city_id'] = empty($arrRet['city_id']) ? ''
-                : strval($arrRet['city_id']);
+            $arrRoundResult['city_id'] = empty($arrRet['city_id']) ? 0
+                : intval($arrRet['city_id']);
             $arrRoundResult['city_name'] = empty($arrRet['city_name']) ? ''
                 : strval($arrRet['city_name']);
             $arrRoundResult['reserve_order_plan_time'] =
-                empty($arrRet['reserve_order_plan_time']) ? 0 : strval($arrRet['reserve_order_plan_time']);
+                empty($arrRet['reserve_order_plan_time']) ? 0
+                    : intval($arrRet['reserve_order_plan_time']);
             $arrRoundResult['reserve_order_plan_time_text'] =
-                Order_Util::getFormatDateTime($arrRet['reserve_order_plan_time']) ?? '未知';
+                Order_Util::getFormatDateTime($arrRet['reserve_order_plan_time']);
             $arrRoundResult['stockin_order_total_price_yuan'] = sprintf('%0.2f',
                 Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price']));
             $arrRoundResult['stockin_order_total_price_tax_yuan'] = sprintf('%0.2f',
                 Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price_tax']));
-            $arrRoundResult['stockin_order_plan_amount'] = empty($arrRet['stockin_order_plan_amount']) ? ''
-                : strval($arrRet['stockin_order_plan_amount']);
-            $arrRoundResult['stockin_order_real_amount'] = empty($arrRet['stockin_order_real_amount']) ? ''
-                : strval($arrRet['stockin_order_real_amount']);
-            $arrRoundResult['source_supplier_id'] = empty($arrRet['source_supplier_id']) ? ''
-                : strval($arrRet['source_supplier_id']);
-            $arrRoundResult['stockin_order_creator_name'] = empty($arrRet['stockin_order_creator_name']) ? ''
-                : strval($arrRet['stockin_order_creator_name']);
+            $arrRoundResult['stockin_order_plan_amount'] = empty($arrRet['stockin_order_plan_amount']) ? 0
+                : intval($arrRet['stockin_order_plan_amount']);
+            $arrRoundResult['stockin_order_real_amount'] = empty($arrRet['stockin_order_real_amount']) ? 0
+                : intval($arrRet['stockin_order_real_amount']);
+            $arrRoundResult['source_supplier_id'] = empty($arrRet['source_supplier_id']) ? 0
+                : intval($arrRet['source_supplier_id']);
+            $arrRoundResult['stockin_order_creator_name'] =
+                empty($arrRet['stockin_order_creator_name']) ? ''
+                    : strval($arrRet['stockin_order_creator_name']);
             $arrRoundResult['source_info'] = empty($arrRet['source_info']) ? ''
                 : strval($arrRet['source_info']);
             $arrRoundResult['stockin_order_remark'] = empty($arrRet['stockin_order_remark']) ? ''

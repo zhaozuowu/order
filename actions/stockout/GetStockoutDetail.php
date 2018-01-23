@@ -52,6 +52,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
     {
         $arrFormatRet = [];
         $arrFormatRet['total'] = $arrRet['total'];
+        $arrFormatRet['list'] = [];
         foreach((array)$arrRet['list'] as $arrRetItem) {
             $arrFormatRetItem = [];
             $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : Nscm_Define_OrderPrefix::SOO.$arrRetItem['stockout_order_id'];
@@ -73,11 +74,12 @@ class Action_GetStockoutDetail extends Order_Base_Action
             $arrFormatRetItem['sku_id'] = empty($arrRetItem['sku_id']) ? 0 :$arrRetItem['sku_id'];
             $arrFormatRetItem['upc_id'] = empty($arrRetItem['upc_id']) ? '' :$arrRetItem['upc_id'];
             $arrFormatRetItem['sku_name'] = empty($arrRetItem['sku_name']) ? '' :$arrRetItem['sku_name'];
-            $arrFormatRetItem['sku_category_1'] = empty($arrRetItem['category_1']) ? 0 :$arrRetItem['category_1'];
-            $arrFormatRetItem['sku_category_2'] = empty($arrRetItem['category_2']) ? 0 :$arrRetItem['category_2'];
-            $arrFormatRetItem['sku_category_3'] = empty($arrRetItem['category_3']) ? 0 :$arrRetItem['category_3'];
+            $arrFormatRetItem['sku_category_1'] = empty($arrRetItem['category_1_text']) ? '' :$arrRetItem['category_1_text'];
+            $arrFormatRetItem['sku_category_2'] = empty($arrRetItem['category_2_text']) ? '' :$arrRetItem['category_2_text'];
+            $arrFormatRetItem['sku_category_3'] = empty($arrRetItem['category_3_text']) ? '' :$arrRetItem['category_3_text'];
             $arrFormatRetItem['sku_category_text'] =(empty($arrRetItem['category_1']) && $arrRetItem['category_2'] && $arrRetItem['category_3'] ) ? '':$arrRetItem['category_1_text'].'/'.$arrRetItem['category_2_text'].'/'.$arrRetItem['category_3_text'];
-            $arrFormatRetItem['sku_net'] =  empty($arrRetItem['sku_net']) ? '' :$arrRetItem['sku_net'];
+            $skuNeText = isset(Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]) ? Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]:'';
+            $arrFormatRetItem['sku_net'] = $arrRetItem['sku_net'].$skuNeText;
             $arrFormatRetItem['is_import'] =  empty($arrRetItem['import_describle']) ? '' :$arrRetItem['import_describle'];
             $arrFormatRetItem['upc_unit'] =  empty($arrRetItem['upc_unit']) ? 0 :$arrRetItem['upc_unit'];
             $arrFormatRetItem['upc_unit_text'] =  empty($arrRetItem['upc_unit_text']) ? '' :$arrRetItem['upc_unit_text'];
@@ -85,7 +87,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
             $arrFormatRetItem['distribute_amount'] =  empty($arrRetItem['distribute_amount']) ? 0 :$arrRetItem['distribute_amount'];
             $arrFormatRetItem['pickup_amount'] =  empty($arrRetItem['pickup_amount']) ? 0 :$arrRetItem['pickup_amount'];
             $arrFormatRetItem['sku_effect_type'] =  empty($arrRetItem['sku_effect_type']) ? '' :Order_Define_StockoutOrderDetail::SKU_EFFECT_TYPE[$arrRetItem['sku_effect_type']];
-            $arrFormatRetItem['sku_effect_day'] =  empty($arrRetItem['sku_effect_day']) ? 0:date('Y-m-d H:i:s',$arrRetItem['sku_effect_day']);
+            $arrFormatRetItem['sku_effect_day'] =  empty($arrRetItem['sku_effect_day']) ? 0:$arrRetItem['sku_effect_day'];
             $arrFormatRetItem['cost_untaxed_price'] =  empty($arrRetItem['cost_price']) ? 0 :$arrRetItem['cost_price'];
             $arrFormatRetItem['cost_taxed_price'] =  empty($arrRetItem['cost_price_tax']) ? 0 :$arrRetItem['cost_price_tax'];
             $arrFormatRetItem['total_cost_untaxed_price'] =  empty($arrRetItem['cost_total_price']) ? 0 :$arrRetItem['cost_total_price'];

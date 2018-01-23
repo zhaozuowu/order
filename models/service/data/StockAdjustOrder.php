@@ -290,6 +290,7 @@ class Service_Data_StockAdjustOrder
                 // 根据商品效期类型，计算生产日期和有效期
                 $arrDetail = $this->getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
             } else {
+                // 调减不需要生产日期参数
                 $arrDetail['production_time'] = '';
                 $arrDetail['expire_time'] = '';
             }
@@ -477,7 +478,8 @@ class Service_Data_StockAdjustOrder
     public function getEffectTime($arrDetail, $intSkuEffectType, $intSkuEffectDay)
     {
         if(empty($intSkuEffectType)) {
-            return $arrDetail;
+            Bd_Log::warning('sku效期类型为空 ' . $intSkuEffectType);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
         }
 
         $intSkuEffectType = intval($intSkuEffectType);

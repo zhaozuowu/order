@@ -35,4 +35,9 @@ class  Order_Define_Const
      * post方法
      */
     const METHOD_POST = 2;
+
+    /**
+     * 空数据默认显示为格式
+     */
+    const DEFAULT_EMPTY_RESULT_STR = '--';
 }

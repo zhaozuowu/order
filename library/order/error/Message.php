@@ -53,7 +53,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_STOCKOUT_NOTIFY_FINISHPICKUP_ERROR => '通知拣货数量失败',
         // 库存调整错误码 开始
         Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL => '库存调整-出库失败',
-        Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR => '库存调整-sku效期类型不识别',
+        Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR => '库存调整-sku效期类型不正确',
         Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR => '库存调整-sku id 不存在',
         Order_Error_Code::NWMS_ADJUST_TYPE_ERROR => '库存调整-调整类型不正确',
         Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR => '库存调整-调整类型数量不正确',

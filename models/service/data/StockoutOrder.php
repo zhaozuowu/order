@@ -105,7 +105,7 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
         }
         return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($nextStockoutOrderStatus, $strStockoutOrderId, $stockoutOrderInfo) {
-            $updateData = ['stockout_order_status' => $nextStockoutOrderStatus];
+            $updateData = ['stockout_order_status' => $nextStockoutOrderStatus, 'destroy_order_status' => $stockoutOrderInfo['stockout_order_status']];
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
@@ -488,7 +488,7 @@ class Service_Data_StockoutOrder
                 $stockoutOrderPickupAmount += $item['pickup_amount'];
             }
             $nextStockoutStatus = $this->getNextStockoutOrderStatus($stockoutOrderInfo['stockout_order_status']);
-            $updateData = ['stockout_order_status' => $nextStockoutStatus, 'stockout_order_pickup_amount' => $stockoutOrderPickupAmount];
+            $updateData = ['stockout_order_status' => $nextStockoutStatus, 'stockout_order_pickup_amount' => $stockoutOrderPickupAmount,'destroy_order_status' => $stockoutOrderInfo['stockout_order_status']];
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
@@ -519,7 +519,7 @@ class Service_Data_StockoutOrder
         $arrColumns = Model_Orm_StockoutOrder::getAllColumns();
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
-        $arrRetList = Model_Orm_StockoutOrder::findRows($arrColumns, $arrListConditions, ['id' => 'asc'], $intOffset, $intLimit);
+        $arrRetList = Model_Orm_StockoutOrder::findRows($arrColumns, $arrListConditions, ['update_time' => 'desc'], $intOffset, $intLimit);
         return $arrRetList;
     }
 
