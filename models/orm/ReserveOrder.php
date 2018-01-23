@@ -91,45 +91,44 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
         }
 
         if (!empty($intReserveOrderId)) {
-            // 如果存在预约单id则忽略其余条件
             $arrCondition['reserve_order_id'] = $intReserveOrderId;
-        } else {
-            if (!empty($arrReserveOrderStatus)) {
-                $arrCondition['reserve_order_status'] = [
-                    'in',
-                    $arrReserveOrderStatus];
-            }
+        }
 
-            if (!empty($intVendorId)) {
-                $arrCondition['vendor_id'] = $intVendorId;
-            }
+        if (!empty($arrReserveOrderStatus)) {
+            $arrCondition['reserve_order_status'] = [
+                'in',
+                $arrReserveOrderStatus];
+        }
 
-            if (!empty($arrCreateTime['start'])
-                && !empty($arrCreateTime['end'])) {
-                $arrCondition['create_time'] = [
-                    'between',
-                    $arrCreateTime['start'],
-                    $arrCreateTime['end']
-                ];
-            }
+        if (!empty($intVendorId)) {
+            $arrCondition['vendor_id'] = $intVendorId;
+        }
 
-            if (!empty($arrOrderPlanTime['start'])
-                && !empty($arrOrderPlanTime['end'])) {
-                $arrCondition['reserve_order_plan_time'] = [
-                    'between',
-                    $arrOrderPlanTime['start'],
-                    $arrOrderPlanTime['end']
-                ];
-            }
+        if (!empty($arrCreateTime['start'])
+            && !empty($arrCreateTime['end'])) {
+            $arrCondition['create_time'] = [
+                'between',
+                $arrCreateTime['start'],
+                $arrCreateTime['end']
+            ];
+        }
 
-            if (!empty($arrStockinTime['start'])
-                && !empty($arrStockinTime['end'])) {
-                $arrCondition['stockin_time'] = [
-                    'between',
-                    $arrStockinTime['start'],
-                    $arrStockinTime['end'],
-                ];
-            }
+        if (!empty($arrOrderPlanTime['start'])
+            && !empty($arrOrderPlanTime['end'])) {
+            $arrCondition['reserve_order_plan_time'] = [
+                'between',
+                $arrOrderPlanTime['start'],
+                $arrOrderPlanTime['end']
+            ];
+        }
+
+        if (!empty($arrStockinTime['start'])
+            && !empty($arrStockinTime['end'])) {
+            $arrCondition['stockin_time'] = [
+                'between',
+                $arrStockinTime['start'],
+                $arrStockinTime['end'],
+            ];
         }
 
         // 只查询未软删除的

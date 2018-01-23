@@ -148,59 +148,57 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     {
         // 拼装查询条件
         if (!empty($intStockinOrderId)) {
-            // 如果指定入库单号则其他条件忽略
             $arrCondition['stockin_order_id'] = $intStockinOrderId;
-        } else if (!empty($arrSourceOrderIdInfo)) {
-            // 如果指定关联单号则其他条件忽略
+        }
+
+        if (!empty($arrSourceOrderIdInfo)) {
             $arrCondition['source_order_id'] = $arrSourceOrderIdInfo['source_order_id'];
             // 入库单类型
             $arrCondition['stockin_order_type'] = $arrSourceOrderIdInfo['source_order_type'];
-        } else {
-            // 未指定单号，进行其他查询场景
+        }
 
-            // 必填入库单参数类型
-            if (!empty($arrStockinOrderType)) {
-                $arrCondition['stockin_order_type'] = [
-                    'in',
-                    $arrStockinOrderType];
-            }
+        // 必填入库单参数类型
+        if (!empty($arrStockinOrderType)) {
+            $arrCondition['stockin_order_type'] = [
+                'in',
+                $arrStockinOrderType];
+        }
 
-            if (!empty($arrWarehouseId)) {
-                $arrCondition['warehouse_id'] = [
-                    'in',
-                    $arrWarehouseId];
-            }
+        if (!empty($arrWarehouseId)) {
+            $arrCondition['warehouse_id'] = [
+                'in',
+                $arrWarehouseId];
+        }
 
-            if (!empty($intSourceSupplierId)) {
-                $arrCondition['source_supplier_id'] = $intSourceSupplierId;
-            }
+        if (!empty($intSourceSupplierId)) {
+            $arrCondition['source_supplier_id'] = $intSourceSupplierId;
+        }
 
-            if (!empty($arrCreateTime['start'])
-                && !empty($arrCreateTime['end'])) {
-                $arrCondition['create_time'] = [
-                    'between',
-                    $arrCreateTime['start'],
-                    $arrCreateTime['end']
-                ];
-            }
+        if (!empty($arrCreateTime['start'])
+            && !empty($arrCreateTime['end'])) {
+            $arrCondition['create_time'] = [
+                'between',
+                $arrCreateTime['start'],
+                $arrCreateTime['end']
+            ];
+        }
 
-            if (!empty($arrOrderPlanTime['start'])
-                && !empty($arrOrderPlanTime['end'])) {
-                $arrCondition['reserve_order_plan_time'] = [
-                    'between',
-                    $arrOrderPlanTime['start'],
-                    $arrOrderPlanTime['end']
-                ];
-            }
+        if (!empty($arrOrderPlanTime['start'])
+            && !empty($arrOrderPlanTime['end'])) {
+            $arrCondition['reserve_order_plan_time'] = [
+                'between',
+                $arrOrderPlanTime['start'],
+                $arrOrderPlanTime['end']
+            ];
+        }
 
-            if (!empty($arrStockinTime['start'])
-                && !empty($arrStockinTime['end'])) {
-                $arrCondition['stockin_time'] = [
-                    'between',
-                    $arrStockinTime['start'],
-                    $arrStockinTime['end'],
-                ];
-            }
+        if (!empty($arrStockinTime['start'])
+            && !empty($arrStockinTime['end'])) {
+            $arrCondition['stockin_time'] = [
+                'between',
+                $arrStockinTime['start'],
+                $arrStockinTime['end'],
+            ];
         }
 
         // 只查询未软删除的
