@@ -92,15 +92,17 @@ class Service_Data_Sku
             $arrBatchSkuParams[$intKey]['send_price_info'] =
                 $this->getSendPriceInfo($arrMapSkuInfos[$intSkuId]['sku_business_form_detail'], $intOrderType);
             $arrBatchSkuParams[$intKey]['sku_tax_rate'] = $arrMapSkuInfos[$intSkuId]['sku_tax_rate'];
+            $arrBatchSkuParams[$intKey]['import'] = intval($arrMapSkuInfos[$intSkuId]['sku_from_country']);
+            $arrBatchSkuParams[$intKey]['send_upc_num'] =
+                $arrBatchSkuParams[$intKey]['send_price_info']['default_upc_num'];
         }
         return $arrBatchSkuParams;
     }
 
     /**
-     * @param $arrBusinessFormDetail
-     * @param $intOrderType
+     * @param array $arrBusinessFormDetail
+     * @param integer $intOrderType
      * @return array|mixed
-     * @throws Order_BusinessError
      */
     protected function getSendPriceInfo($arrBusinessFormDetail, $intOrderType) {
         if (empty($arrBusinessFormDetail)) {

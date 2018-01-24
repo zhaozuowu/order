@@ -297,6 +297,8 @@ class Service_Data_StockoutOrder
         $arrCreateParams['executor_contact'] = empty($arrInput['executor_contact']) ? '' : strval($arrInput['executor_contact']);
         $arrCreateParams['stockout_order_source'] = empty($arrInput['business_form_order_type']) ? 0 : intval($arrInput['business_form_order_type']);
         $arrCreateParams['stockout_order_remark'] = empty($arrInput['stockout_order_remark']) ? '' : strval($arrInput['business_form_order_remark']);
+        $arrCreateParams['stockout_order_total_price'] = empty($arrInput['stockout_order_total_price']) ?
+                                                            0 : intval($arrInput['stockout_order_total_price']);
         return $arrCreateParams;
     }
 
@@ -321,6 +323,7 @@ class Service_Data_StockoutOrder
             $arrSkuCreateParams['upc_id'] = empty($arrItem['upc_id']) ? '' : strval($arrItem['upc_id']);
             $arrSkuCreateParams['upc_unit'] = empty($arrItem['upc_unit']) ? 0 : intval($arrItem['upc_unit']);
             $arrSkuCreateParams['upc_unit_num'] = empty($arrItem['upc_unit_num']) ? 0 : intval($arrItem['upc_unit_num']);
+            $arrSkuCreateParams['send_upc_num'] = empty($arrItem['send_upc_num']) ? 0 : intval($arrItem['send_upc_num']);
             $arrSkuCreateParams['sku_net'] = empty($arrItem['sku_net']) ? '' : strval($arrItem['sku_net']);
             $arrSkuCreateParams['sku_net_unit'] = empty($arrItem['sku_net_unit']) ? 0 : intval($arrItem['sku_net_unit']);
             $arrSkuCreateParams['sku_effect_type'] = empty($arrItem['sku_effect_type']) ? 0 : intval($arrItem['sku_effect_type']);
@@ -330,9 +333,13 @@ class Service_Data_StockoutOrder
             $arrSkuCreateParams['cost_price_tax'] = empty($arrItem['cost_price_tax']) ? 0 : intval($arrItem['cost_price_tax']);
             $arrSkuCreateParams['cost_total_price_tax'] = empty($arrItem['cost_total_price_tax']) ? 0 : intval($arrItem['cost_total_price_tax']);
             $arrSkuCreateParams['send_price'] = empty($arrItem['send_price']) ? 0 : intval($arrItem['send_price']);
+            $arrSkuCreateParams['send_price_tax'] = empty($arrItem['send_price_tax']) ? 0 : intval($arrItem['send_price_tax']);
             $arrSkuCreateParams['send_total_price'] = empty($arrItem['send_total_price']) ? 0 : intval($arrItem['send_total_price']);
+            $arrSkuCreateParams['send_total_price_tax'] = empty($arrItem['send_total_price_tax']) ?
+                                                            0 : intval($arrItem['send_total_price_tax']);
             $arrSkuCreateParams['sku_business_form'] = empty($arrItem['sku_business_form']) ? '' : strval($arrItem['sku_business_form']);
             $arrSkuCreateParams['sku_tax_rate'] = empty($arrItem['sku_tax_rate']) ? 0 : intval($arrItem['sku_tax_rate']);
+            $arrSkuCreateParams['import'] = empty($arrItem['import']) ? 0 : intval($arrItem['import']);
             $arrSkuCreateParams['stockout_order_id'] = $intStockoutOrderId;
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
         }
