@@ -47,7 +47,6 @@ class Service_Page_Business_CreateBusinessFormOrder {
             == $arrInput['business_form_order_status']) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR);
         }
-        $this->objDsStockoutFormOrder->createStockoutOrder($arrInput);
         //异步创建出库单
         $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER, $arrInput,
                                             strval($arrInput['stockout_order_id']));
