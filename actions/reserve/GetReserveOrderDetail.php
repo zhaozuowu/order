@@ -46,8 +46,11 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
                 : Nscm_Define_OrderPrefix::SIO . strval($arrRet['stockin_order_id']);
             $arrRoundResult['warehouse_id'] = empty($arrRet['warehouse_id']) ? 0
                 : intval($arrRet['warehouse_id']);
-            $arrRoundResult['warehouse_name'] = empty($arrRet['warehouse_name']) ?
-                : strval($arrRet['warehouse_name']);
+            $arrRoundResult['warehouse_name'] =
+                empty($arrRet['warehouse_name']) ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                    : strval($arrRet['warehouse_name']);
+            $arrRoundResult['reserve_order_plan_amount'] = empty($arrRet['reserve_order_plan_amount']) ? 0
+                : intval($arrRet['reserve_order_plan_amount']);
             $arrRoundResult['reserve_order_plan_time'] = empty($arrRet['reserve_order_plan_time']) ? 0
                 : intval($arrRet['reserve_order_plan_time']);
             $arrRoundResult['reserve_order_plan_time_text'] =
