@@ -147,10 +147,13 @@ class Service_Data_BusinessFormOrder
         }
         $arrInput['stockout_order_amount'] = $intTotalOrderAmount;
         $intTotalDistributeAmount = 0;
+        $intTotalPrice = 0;
         foreach ((array)$arrSkus as $arrSkuItem) {
             $intTotalDistributeAmount += $arrSkuItem['distribute_amount'];
+            $intTotalPrice += $arrSkuItem['send_total_price_tax'];
         }
         $arrInput['stockout_order_distribute_amount'] = $intTotalDistributeAmount;
+        $arrInput['stockout_order_total_price'] = $intTotalPrice;
         if (0 == $arrInput['stockout_order_distribute_amount']) {
             $arrInput['business_form_order_status'] = Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_FAILED;
             Bd_Log::trace(sprintf("method[%s],create business form order failed because no available stock",

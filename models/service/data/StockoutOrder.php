@@ -297,6 +297,8 @@ class Service_Data_StockoutOrder
         $arrCreateParams['executor_contact'] = empty($arrInput['executor_contact']) ? '' : strval($arrInput['executor_contact']);
         $arrCreateParams['stockout_order_source'] = empty($arrInput['business_form_order_type']) ? 0 : intval($arrInput['business_form_order_type']);
         $arrCreateParams['stockout_order_remark'] = empty($arrInput['stockout_order_remark']) ? '' : strval($arrInput['business_form_order_remark']);
+        $arrCreateParams['stockout_order_total_price'] = empty($arrInput['stockout_order_total_price']) ?
+                                                            0 : intval($arrInput['stockout_order_total_price']);
         return $arrCreateParams;
     }
 

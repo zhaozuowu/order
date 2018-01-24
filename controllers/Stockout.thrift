@@ -24,10 +24,10 @@ struct FinishOrderInfo {
 
 #服务定义
 service StockoutService {
-    Data deliveryOrder(1:string stockout_Order_id)
+    Data deliveryOrder(1:string stockout_order_id)
         throws (1: OrderUserException stockoutException),
     Data finishOrder(1:FinishOrderInfo objFinishOrderInfo )
         throws (1: OrderUserException stockoutException),
-    CancelData getCancelStatus(1:string stockoutOrderId)
+    CancelData getCancelStatus(1:string stockout_order_id)
         throws (1: OrderUserException stockoutException)
 }
