@@ -88,23 +88,4 @@ class Action_GetOrderPrintList extends Order_Base_Action
         }
         return $arrFormatSkus;
     }
-
-    /**
-     * format device info
-     * @param $arrDevices
-     * @return string
-     */
-    public function formatDevices($arrDevices) {
-        $strDevices = '';
-        if (empty($arrDevices)) {
-            return '';
-        }
-        foreach ((array)$arrDevices as $strKey => $intAmount) {
-            $strDevice = $intAmount . '个' . Order_Define_BusinessFormOrder::ORDER_DEVICE_MAP[intval($strKey)];
-            $strDevices = $strDevices . $strDevice . '/';
-        }
-        $strDevices = rtrim($strDevices, '/');
-        return $strDevices;
-    }
-
 }
