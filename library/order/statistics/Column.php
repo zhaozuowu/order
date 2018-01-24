@@ -86,6 +86,7 @@ class Order_Statistics_Column
             'upc_unit_num',
             'sku_price',
             'sku_price_tax',
+            'reserve_order_plan_amount' => 'reserve_order_sku_plan_amount',
         ],
         'sku' => [
             'sku_category_1',
