@@ -110,6 +110,7 @@ class Order_Define_StockoutOrder
      */
     const ALLOW_STOCKIN = [
         self::STOCKOUTED_STOCKOUT_ORDER_STATUS => true,
+        self::STOCKOUT_ORDER_DESTORYED => true,
     ];
 
     /**
