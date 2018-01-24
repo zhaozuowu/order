@@ -125,6 +125,8 @@ class Service_Data_BusinessFormOrder
             }
             $arrOrderSkus[$intKey]['send_total_price'] = $arrOrderSkus[$intKey]['send_price']
                                                             *$arrOrderSkus[$intKey]['distribute_amount'];
+            $arrOrderSkus[$intKey]['send_total_price_tax'] = $arrOrderSkus[$intKey]['send_price_tax']
+                                                            *$arrOrderSkus[$intKey]['distribute_amount'];
         }
         $arrInput['skus'] = $arrOrderSkus;
         return $arrInput;
