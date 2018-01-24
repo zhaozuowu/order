@@ -333,7 +333,10 @@ class Service_Data_StockoutOrder
             $arrSkuCreateParams['cost_price_tax'] = empty($arrItem['cost_price_tax']) ? 0 : intval($arrItem['cost_price_tax']);
             $arrSkuCreateParams['cost_total_price_tax'] = empty($arrItem['cost_total_price_tax']) ? 0 : intval($arrItem['cost_total_price_tax']);
             $arrSkuCreateParams['send_price'] = empty($arrItem['send_price']) ? 0 : intval($arrItem['send_price']);
+            $arrSkuCreateParams['send_price_tax'] = empty($arrItem['send_price_tax']) ? 0 : intval($arrItem['send_price_tax']);
             $arrSkuCreateParams['send_total_price'] = empty($arrItem['send_total_price']) ? 0 : intval($arrItem['send_total_price']);
+            $arrSkuCreateParams['send_total_price_tax'] = empty($arrItem['send_total_price_tax']) ?
+                                                            0 : intval($arrItem['send_total_price_tax']);
             $arrSkuCreateParams['sku_business_form'] = empty($arrItem['sku_business_form']) ? '' : strval($arrItem['sku_business_form']);
             $arrSkuCreateParams['sku_tax_rate'] = empty($arrItem['sku_tax_rate']) ? 0 : intval($arrItem['sku_tax_rate']);
             $arrSkuCreateParams['import'] = empty($arrItem['import']) ? 0 : intval($arrItem['import']);
