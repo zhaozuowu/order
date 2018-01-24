@@ -63,15 +63,18 @@ class Action_GetStockinOrderList extends Order_Base_Action
             $arrRoundResult = [];
             $arrRoundResult['stockin_order_type'] = empty($arrListItem['stockin_order_type']) ? ''
                 : intval($arrListItem['stockin_order_type']);
+            $arrRoundResult['stockin_order_type_text'] =
+                Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[intval($arrListItem['stockin_order_type'])]
+                ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['source_info'] = empty($arrListItem['source_info']) ? ''
                 : strval($arrListItem['source_info']);
             // 不同的入库单类型对应的前缀
             $intStockInType = intval($arrListItem['stockin_order_type']);
-            if(!empty($intStockInType)) {
-                if(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockInType){
+            if (!empty($intStockInType)) {
+                if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockInType) {
                     $strSourceOrderId = empty($arrListItem['source_order_id']) ? ''
                         : Nscm_Define_OrderPrefix::ASN . strval($arrListItem['source_order_id']);
-                }else if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT == $intStockInType){
+                } else if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT == $intStockInType) {
                     $strSourceOrderId = empty($arrListItem['source_order_id']) ? ''
                         : Nscm_Define_OrderPrefix::SOO . strval($arrListItem['source_order_id']);
                 }
