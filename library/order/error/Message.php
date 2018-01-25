@@ -52,7 +52,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_STOCKOUT_CREATE_SHIPMENTORDER_ERROR => '创建运单失败',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_NOTIFY_FINISHPICKUP_ERROR => '通知拣货数量失败',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_EXPECT_ARRIVE_TIME_ERROR => '预计送达时间错误',
-        Order_Error_Code::NWMS_ORDER_STOCKOUT_LATIDUTE_ERROR => '纬度超出范围',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_LATITUDE_ERROR => '纬度超出范围',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_LONGITUDE_ERROR => '经度超出范围',
         Order_Error_Code::NWMS_ORDER_CUSTOMER_LOCATION_SOURCE_ERROR => '坐标来源标识错误',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR => '无人货架信息错误',

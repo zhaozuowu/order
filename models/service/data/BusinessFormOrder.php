@@ -235,8 +235,10 @@ class Service_Data_BusinessFormOrder
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR);
         }
         foreach ((array)$arrShelfInfo['devices'] as $intKey => $intAmount) {
+            $intKey = intval($intKey);
+            $intAmount = intval($intAmount);
             if (!isset(Order_Define_BusinessFormOrder::ORDER_DEVICE_MAP[$intKey])
-                || !is_int($intAmount) || $intAmount <= 0) {
+                || $intAmount <= 0) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR);
             }
         }
@@ -251,7 +253,7 @@ class Service_Data_BusinessFormOrder
         $arrLocation = explode(',', $arrInput['customer_location']);
         if (floatval($arrLocation[1]) >= Order_Define_BusinessFormOrder::MAX_LATITUDE
             || floatval($arrLocation[1]) <= Order_Define_BusinessFormOrder::MIN_LATITUDE) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_LATITUTE_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_LATITUDE_ERROR);
         }
         if (floatval($arrLocation[0]) >= Order_Define_BusinessFormOrder::MAX_LONGITUDE
             || floatval($arrLocation[0]) <= Order_Define_BusinessFormOrder::MIN_LONGITUDE) {
