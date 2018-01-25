@@ -222,12 +222,43 @@ class Service_Data_BusinessFormOrder
             && !isset(Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_LIST[$arrInput['business_form_order_type']])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR);
         }
+        //无人货架信息校验
         $arrShelfInfo = json_decode($arrInput['shelf_info'], true);
         if (empty($arrShelfInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR);
         }
         if (!isset(Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR);
+        }
+        if (Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE_CREATE == $arrShelfInfo['supply_type']
+            && empty($arrShelfInfo['devices'])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR);
+        }
+        foreach ((array)$arrShelfInfo['devices'] as $intKey => $intAmount) {
+            if (!isset(Order_Define_BusinessFormOrder::ORDER_DEVICE_MAP[$intKey])
+                || !is_int($intAmount) || $intAmount <= 0) {
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR);
+            }
+        }
+        //校验预计送达时间
+        $arrExpectArriveTime = $arrInput['expect_arrive_time'];
+        $intCurTime = time();
+        if ($arrExpectArriveTime['start'] < $intCurTime ||
+            $arrExpectArriveTime['end'] <= $arrExpectArriveTime['start']) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_EXPECT_ARRIVE_TIME_ERROR);
+        }
+        //校验位置信息
+        $arrLocation = explode(',', $arrInput['customer_location']);
+        if (floatval($arrLocation[1]) >= Order_Define_BusinessFormOrder::MAX_LATITUDE
+            || floatval($arrLocation[1]) <= Order_Define_BusinessFormOrder::MIN_LATITUDE) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_LATITUTE_ERROR);
+        }
+        if (floatval($arrLocation[0]) >= Order_Define_BusinessFormOrder::MAX_LONGITUDE
+            || floatval($arrLocation[0]) <= Order_Define_BusinessFormOrder::MIN_LONGITUDE) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_LONGITUDE_ERROR);
+        }
+        if (!isset(Order_Define_BusinessFormOrder::CUSTOMER_LOCATION_SOURCE_TYPE[$arrInput['customer_location_source']])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_CUSTOMER_LOCATION_SOURCE_ERROR);
         }
     }
 

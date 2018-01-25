@@ -186,8 +186,6 @@ class Dao_Wrpc_Tms
         $arrPoiInfo['cityName'] = empty($arrInput['customer_city_name']) ? '' : strval($arrInput['customer_city_name']);
         $arrPoiInfo['districtId'] = empty($arrInput['customer_region_id']) ? 0 : intval($arrInput['customer_region_id']);
         $arrPoiInfo['districtName'] = empty($arrInput['customer_region_name']) ? '' : strval($arrInput['customer_region_name']);
-        $arrPoiInfo['provinceId'] = 11000;
-        $arrPoiInfo['provinceName'] = '北京市';
         $arrPoiInfo['coordsType'] = empty($arrInput['customer_location_source']) ? 0 : intval($arrInput['customer_location_source']);
         return $arrPoiInfo;
     }
