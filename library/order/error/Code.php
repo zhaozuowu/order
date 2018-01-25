@@ -229,12 +229,6 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_STOCKOUT_CANCEL_STOCK_FAIL = 340008;
 
     /**
-     * 创建业态订单失败
-     * @var integer
-     */
-    const NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR = 340020;
-
-    /**
      * 创建业态订单参数错误
      * @var integer
      */
@@ -353,4 +347,40 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_STOCKOUT_NOTIFY_FINISHPICKUP_ERROR = 340018;
+
+    /**
+     * 预计送达时间不合法
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_EXPECT_ARRIVE_TIME_ERROR = 340019;
+
+    /**
+     * 创建业态订单失败
+     * @var integer
+     */
+    const NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR = 340020;
+
+    /**
+     * 纬度错误
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_LATITUDE_ERROR = 340021;
+
+    /**
+     * 经度错误
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_LONGITUDE_ERROR = 340022;
+
+    /**
+     * 坐标来源标识错误
+     * @var integer
+     */
+    const NWMS_ORDER_CUSTOMER_LOCATION_SOURCE_ERROR = 340023;
+
+    /**
+     * 无人货架信息错误
+     * @var integer
+     */
+    const NWMS_ORDER_STOCKOUT_SHELF_ERROR = 340024;
 }

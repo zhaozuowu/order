@@ -81,6 +81,50 @@ class Order_Define_BusinessFormOrder
         self::ORDER_DEVICE_TYPE_REFRIGERATOR => '冰柜',
     ];
 
+    /**
+     * 最小纬度
+     * @var float
+     */
+    const MIN_LATITUDE = 3.86;
+
+    /**
+     * 最大纬度
+     * @var float
+     */
+    const MAX_LATITUDE = 53.55;
+
+    /**
+     * 最小经度
+     * @var float
+     */
+    const MIN_LONGITUDE = 73.66;
+
+    /**
+     * 最大经度
+     * @var float
+     */
+    const MAX_LONGITUDE = 135.05;
+
+    /**
+     * 高德地图坐标标识
+     * @var integer
+     */
+    const CUSTOMER_LOCATION_SOURCE_AMAP = 1;
+
+    /**
+     * 百度地图坐标标识
+     * @var integer
+     */
+    const CUSTOMER_LOCATION_SOURCE_BAIDU = 2;
+
+    /**
+     * 地图来源标识列表
+     * @var array
+     */
+    const CUSTOMER_LOCATION_SOURCE_TYPE = [
+        self::CUSTOMER_LOCATION_SOURCE_AMAP => '高德',
+        self::CUSTOMER_LOCATION_SOURCE_BAIDU => '百度',
+    ];
 
 
 
