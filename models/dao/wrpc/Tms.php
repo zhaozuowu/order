@@ -32,6 +32,7 @@ class Dao_Wrpc_Tms
     public function createShipmentOrder($arrInput) {
         $arrParams = $this->getCreateShipmentParams($arrInput);
         $arrRet = $this->objWrpcService->processWarehouseRequest($arrParams);
+        var_dump($arrRet);exit;
         if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s]", __METHOD__, json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_CREATE_SHIPMENTORDER_ERROR);
@@ -186,8 +187,6 @@ class Dao_Wrpc_Tms
         $arrPoiInfo['cityName'] = empty($arrInput['customer_city_name']) ? '' : strval($arrInput['customer_city_name']);
         $arrPoiInfo['districtId'] = empty($arrInput['customer_region_id']) ? 0 : intval($arrInput['customer_region_id']);
         $arrPoiInfo['districtName'] = empty($arrInput['customer_region_name']) ? '' : strval($arrInput['customer_region_name']);
-        $arrPoiInfo['provinceId'] = 11000;
-        $arrPoiInfo['provinceName'] = '北京市';
         $arrPoiInfo['coordsType'] = empty($arrInput['customer_location_source']) ? 0 : intval($arrInput['customer_location_source']);
         return $arrPoiInfo;
     }
