@@ -72,6 +72,7 @@ class Action_GetBusinessFormOrderByid extends Order_Base_Action
     private function formatSku($skus)
     {
         foreach ($skus as $key => $item) {
+           unset($skus[$key]['stock_amount']);
            $skus[$key]['sku_net_text'] = $item['sku_net'].Order_Define_Sku::SKU_NET_MAP[$item['sku_net_unit']];
            $skus[$key]['upc_unit_num'] = empty($item['upc_unit_num']) ? '' : $item['upc_unit_num'];
            $skus[$key]['upc_unit'] = isset(Order_Define_StockoutOrder::UPC_UNIT[$item['upc_unit']]) ? Order_Define_StockoutOrder::UPC_UNIT[$item['upc_unit']]:'';

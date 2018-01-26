@@ -86,7 +86,7 @@ class Service_Data_StockoutOrder
      * @return array
      * @throws Order_BusinessError
      */
-    public function deliveryOrder($strStockoutOrderId)
+    public function deliveryOrder($strStockoutOrderId,$userId,$userName)
     {
         $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         if (empty($strStockoutOrderId)) {
@@ -104,7 +104,7 @@ class Service_Data_StockoutOrder
         if (empty($nextStockoutOrderStatus)) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
         }
-        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($nextStockoutOrderStatus, $strStockoutOrderId, $stockoutOrderInfo) {
+        return Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($nextStockoutOrderStatus, $strStockoutOrderId, $stockoutOrderInfo,$userId,$userName) {
             $updateData = ['stockout_order_status' => $nextStockoutOrderStatus, 'destroy_order_status' => $stockoutOrderInfo['stockout_order_status']];
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
@@ -119,6 +119,10 @@ class Service_Data_StockoutOrder
             if (empty($rs)) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
             }
+            $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
+            $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
+            $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
+            $this->addLog($userId, $userName, '完成揽收:'.$strStockoutOrderId,$operationType, $strStockoutOrderId);
         });
         return [];
     }
@@ -178,8 +182,8 @@ class Service_Data_StockoutOrder
             $objStockoutOrder->create($arrCreateParams, false);
             $this->createStockoutOrderSku($arrInput['skus'], $arrCreateParams['stockout_order_id']);
             $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_INSERT_SUCCESS;
-            $userName = empty($arrInput['_session']['user_name']) ? '':$arrInput['_session']['user_name'];
-            $operatorId =empty($arrInput['_session']['user_id']) ? 0 :intval($arrInput['_session']['user_id']);
+            $userName = empty($arrInput['_session']['user_name']) ? Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME:$arrInput['_session']['user_name'];
+            $operatorId =empty($arrInput['_session']['user_id']) ? Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID :intval($arrInput['_session']['user_id']);
             $this->addLog($operatorId, $userName, '创建出库单', $operationType, $arrInput['stockout_order_id']);
         });
         Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
@@ -376,6 +380,11 @@ class Service_Data_StockoutOrder
             if (empty($result)) {
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
             }
+
+            $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
+            $userId = Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
+            $userName = Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
+            $this->addLog($userId, $userName, '完成签收:'.$strStockoutOrderId,$operationType, $strStockoutOrderId);
             $res = [];
             if (empty($arrSignupSkus)) {
                 return $res;
@@ -510,6 +519,8 @@ class Service_Data_StockoutOrder
                 $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
             }
             $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
+            $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
+            $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
             $this->addLog($userId, $userName, '完成拣货:'.$strStockoutOrderId.",拣货数量:".$stockoutOrderPickupAmount, $operationType, $strStockoutOrderId);
             $this->notifyTmsFnishPick($strStockoutOrderId,$pickupSkus);
         });
@@ -650,6 +661,10 @@ class Service_Data_StockoutOrder
             if (empty($result)) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
             }
+            $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_INSERT_SUCCESS;
+            $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
+            $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
+            $this->addLog($userId, $userName, $mark, $operationType, $strStockoutOrderId);
             //释放库存(已出库不释放库存)
             if ($stockoutOrderInfo['stockout_order_status'] >= Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS) {
                 return [];
@@ -658,8 +673,7 @@ class Service_Data_StockoutOrder
             if (empty($arrStockoutDetail)) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS);
             }
-            $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_INSERT_SUCCESS;
-            $this->addLog($userId, $userName, $mark, $operationType, $strStockoutOrderId);
+
             $this->notifyCancelfreezeskustock($strStockoutOrderId,$stockoutOrderInfo['warehouse_id']);
         });
 

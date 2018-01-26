@@ -33,6 +33,7 @@ class Service_Page_Stockout_DeleteStockoutOrder
         $mark= $arrInput['mark'];
         $userId = !empty($arrInput['_session']['user_id']) ? $arrInput['_session']['user_id']:0;
         $userName = !empty($arrInput['_session']['user_name']) ? $arrInput['_session']['user_name']:'' ;
+        Bd_Log::debug("DeleteStockoutOrder execute userinfo:".json_encode($arrInput));
         return $this->objStockoutOrder->deleteStockoutOrder($strStockoutOrderId,$mark,$userId,$userName);
     }
 }
