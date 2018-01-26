@@ -76,9 +76,9 @@ class Dao_Ral_SyncInbound
     public static function syncInboundSelf($intInboundId, $intStatus, $intActualTime, $arrItems)
     {
         $arrInput = [
-            'inbound_id' => $intInboundId,
-            'status' => $intStatus,
-            'actual_time' => $intActualTime,
+            'inbound_id' => strval($intInboundId),
+            'status' => strval($intStatus),
+            'actual_time' => strval($intActualTime),
             'items' => $arrItems,
         ];
         Bd_Log::trace('send wmq cmd sync inbound self, req: ' . json_encode($arrInput));

@@ -31,9 +31,9 @@ class Dao_Ral_Statistics
             return false;
         }
         $arrInput = [
-            'type' => $intType,
-            'table' => $intTable,
-            'key' => intval($intKey),
+            'type' => strval($intType),
+            'table' => strval($intTable),
+            'key' => strval($intKey),
         ];
         Bd_Log::trace('send wmq cmd, req: ' . json_encode($arrInput));
         Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_SYNC_FORM_STATISTICS, $arrInput,
