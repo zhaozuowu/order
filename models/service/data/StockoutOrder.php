@@ -811,9 +811,26 @@ class Service_Data_StockoutOrder
         $arrRet['order_amount'] = count($arrStockoutOrderIds);
         $arrConditions = $this->getPrintConditions($arrStockoutOrderIds);
         $arrRet['skus'] = Model_Orm_StockoutOrderSku::getGroupList($arrConditions, 'sku_id');
+        $arrRet['pickup_amount'] = $this->getTotalPickupAmount($arrRet['skus']);
         $updateData = ['stockout_order_is_print'=>Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRINT];
         $this->objOrmStockoutOrder->updateDataByConditions($arrConditions,$updateData);
         return $arrRet;
+    }
+
+    /**
+     * 获取拣货数量总数
+     * @param $arrSkus
+     * @return int
+     */
+    protected function getTotalPickupAmount($arrSkus) {
+        if (empty($arrSkus)) {
+            return 0;
+        }
+        $intTotalPickupAmount = 0;
+        foreach ((array)$arrSkus as $arrSkuItem) {
+            $intTotalPickupAmount += intval($arrSkuItem['pickup_amount']);
+        }
+        return $intTotalPickupAmount;
     }
 
     /**
@@ -846,7 +863,7 @@ class Service_Data_StockoutOrder
                                 getShipmentOrderIdByStockoutOrderId($strStockoutOrderId);
         $arrStockoutParams = [
             'stockout_order_id' => $strStockoutOrderId,
-            'shipment_order_id' => $intShipmentOrderId,
+            'shipment_order_id' => strval($intShipmentOrderId),
             'pickup_skus' => $pickupSkus
         ];
         $strCmd = Order_Define_Cmd::CMD_FINISH_PRICKUP_ORDER;
