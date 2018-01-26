@@ -828,7 +828,7 @@ class Service_Data_StockoutOrder
         }
         $intTotalPickupAmount = 0;
         foreach ((array)$arrSkus as $arrSkuItem) {
-            $intTotalPickupAmount += $arrSkuItem['pickup_amount'];
+            $intTotalPickupAmount += intval($arrSkuItem['pickup_amount']);
         }
         return $intTotalPickupAmount;
     }
