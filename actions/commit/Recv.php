@@ -15,8 +15,9 @@ class Action_Recv extends Order_Wmq_CommitAction {
     }
 
     /**
-     * checkAuto
+     * checkAuth
      * @return void
+     * @throws Wm_Error
      */
     public function checkAuth() {
         parent::checkAuth();

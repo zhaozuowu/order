@@ -37,7 +37,7 @@ class Action_GetSkuPrintList extends Order_Base_Action
     public function format($arrRet) {
         $arrFormatRet = [];
         $arrFormatRet['order_amount'] = empty($arrRet['order_amount']) ?  0 : $arrRet['order_amount'];
-        $arrFormatRet['pickup_amount'] = empty($arrRet['pickup_amount']) ? '' : $arrRet['pickup_amount'];
+        $arrFormatRet['pickup_amount'] = empty($arrRet['pickup_amount']) ? 0 : $arrRet['pickup_amount'];
         $arrFormatRet['print_time'] = date('Y-m-d H:i:s', time());
         $arrFormatRet['skus'] = $this->formatSku($arrRet['skus']);
         $arrFormatRet['pickup_date'] = empty($arrRet['update_time']) ? '' : date("Y-m-d", $arrRet['update_time']);
