@@ -110,7 +110,7 @@ class Dao_Ral_Stock
             $req[self::API_RALER_UNFREEZE_SKU_STOCK]['stockout_details'] = $arrStockoutDetail;
         }
         $ret = $this->objApiRal->getData($req);
-        Bd_Log::debug("unfreezeSkuStock res:".json_encode($ret));
+        Bd_Log::debug("unfreezeSkuStock res:".json_encode($ret).",request data:".json_encode($req));
         $ret = empty($ret[self::API_RALER_UNFREEZE_SKU_STOCK]) ? [] : $ret[self::API_RALER_UNFREEZE_SKU_STOCK];
         if (empty($ret) || !empty($ret['error_no'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
@@ -254,7 +254,7 @@ class Dao_Ral_Stock
             $req[self::API_RALER_CANCEL_FREEZESKU_STOCK]['warehouse_id'] = $intWarehouseId;
         }
         $ret = $this->objApiRal->getData($req);
-        Bd_Log::debug("cancelfreezeskustock res:".json_encode($ret));
+        Bd_Log::debug("cancelfreezeskustock res:".json_encode($ret).",request data:".json_encode($req));
         $ret = empty($ret[self::API_RALER_CANCEL_FREEZESKU_STOCK]) ? [] : $ret[self::API_RALER_CANCEL_FREEZESKU_STOCK];
         if (empty($ret) || !empty($ret['error_no'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);

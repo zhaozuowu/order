@@ -40,4 +40,10 @@ class  Order_Define_Const
      * 空数据默认显示为格式
      */
     const DEFAULT_EMPTY_RESULT_STR = '--';
+
+    /**
+     * 默认系统操作人
+     */
+    const DEFAULT_SYSTEM_OPERATION_NAME = '系统';
+    const DEFAULT_SYSTEM_OPERATION_ID = '11111111';
 }

@@ -29,6 +29,9 @@ class Service_Page_Stockout_DeliveryOrder implements Order_Base_Page
     public function execute($arrInput)
     {
         $strStockoutOrderId = $arrInput['stockout_order_id'];
-        return $this->objStockoutOrder->deliveryOrder($strStockoutOrderId);
+        $userId = !empty($arrInput['_session']['user_id']) ? $arrInput['_session']['user_id']:0;
+        $userName = !empty($arrInput['_session']['user_name']) ? $arrInput['_session']['user_name']:'' ;
+        Bd_Log::debug("DeliveryOrder execute userinfo:".json_encode($arrInput));
+        return $this->objStockoutOrder->deliveryOrder($strStockoutOrderId,$userId,$userName);
     }
 }
