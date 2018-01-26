@@ -352,9 +352,9 @@ class Service_Data_Stockin_StockinOrder
         foreach ($arrDbSkus as $arrSku)
         {
             $arrRet[] = [
-                'upc' => $arrSku['upc_id'],
-                'real_amount' => $arrSku['stockin_order_sku_real_amount'],
-                'unit' => Order_Define_Sku::UPC_UNIT_MAP[$arrSku['upc_unit']],
+                'upc' => strval($arrSku['upc_id']),
+                'real_amount' => strval($arrSku['stockin_order_sku_real_amount']),
+                'unit' => strval(Order_Define_Sku::UPC_UNIT_MAP[$arrSku['upc_unit']]),
             ];
         }
         return $arrRet;

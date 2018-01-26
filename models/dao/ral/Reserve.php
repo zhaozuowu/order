@@ -17,7 +17,7 @@ class Dao_Ral_Reserve
     public static function writeReserveOrderDb($intPurchaseOrderId)
     {
         $arrInput = [
-            'purchase_order_id' => $intPurchaseOrderId,
+            'purchase_order_id' => strval($intPurchaseOrderId),
         ];
         Bd_Log::trace('send wmq cmd, req: ' . json_encode($arrInput));
         Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_CREATE_RESERVE_ORDER, $arrInput,
