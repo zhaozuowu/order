@@ -391,12 +391,16 @@ class Service_Data_StockoutOrder
             }
             foreach ($arrSignupSkus as $item) {
                 $condition = ['stockout_order_id' => $strStockoutOrderId, 'sku_id' => $item['sku_id']];
+                $skuInfo =  $this->objOrmSku->findOne($condition);
                 $skuAcceptAmount = $item['sku_accept_amount'];
                 $skuRejectAmount = $item['sku_reject_amount'];
                 if ($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_ACCEPT_ALL) {
                     $skuRejectAmount = 0;
                 }elseif($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_REJECT_ALL) {
                     $skuAcceptAmount = 0;
+                }elseif($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_ACCEPT_PART) {
+                    $skuAcceptAmount = $item['sku_accept_amount'];
+                    $skuRejectAmount = !empty($skuInfo->pickup_amount) ? ($skuInfo->pickup_amount - $skuAcceptAmount):$skuRejectAmount;
                 }
                 $skuUpdata = ['upc_accept_amount' => $skuAcceptAmount, 'upc_reject_amount' => $skuRejectAmount];
                 $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdata);
