@@ -128,4 +128,12 @@ class Order_Define_StockoutOrder
       '2' => '拒收',
       '3' => '部分签收',
     ];
+
+    /**
+     * 签收状态
+     * @var array
+     */
+    const  STOCKOUT_SIGINUP_ACCEPT_ALL= 1;
+    const  STOCKOUT_SIGINUP_REJECT_ALL= 2;
+    const  STOCKOUT_SIGINUP_ACCEPT_PART= 3;
 }
