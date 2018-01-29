@@ -87,6 +87,8 @@ class Action_GetOrderDetail extends Order_Base_Action
             $arrFormatOrder['upc_unit'] = empty($arrOrder['upc_unit']) ? '' : strval($arrOrder['upc_unit']);
             $arrFormatOrder['sku_net'] = empty($arrOrder['sku_net']) ? '' : strval($arrOrder['sku_net']);
             $arrFormatOrder['sku_net_unit'] = empty($arrOrder['sku_net_unit']) ? '' : strval($arrOrder['sku_net_unit']);
+            $arrFormatOrder['sku_net_unit_text'] =
+                Order_Define_Sku::SKU_NET_MAP[intval($arrFormatOrder['sku_net_unit'])] ?? '';
             $arrFormatOrder['unit_price_tax'] = empty($arrOrder['unit_price_tax']) ? '' : Nscm_Service_Price::convertDefaultToYuan($arrOrder['unit_price_tax']);
             $arrFormatOrder['unit_price'] = empty($arrOrder['unit_price']) ? '' : Nscm_Service_Price::convertDefaultToYuan($arrOrder['unit_price']);
 

@@ -35,6 +35,12 @@ class Service_Data_StockAdjustOrder
         $arrRet = [];
         // 获取SKU详情
         $arrSkuIds = array_unique(array_column($arrInput['detail'], 'sku_id'));
+
+        if(count($arrSkuIds) > Order_Define_StockAdjustOrder::STOCK_ADJUST_ORDER_MAX_SKU) {
+            Bd_Log::warning('调整SKU个数超过上限', Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH, $arrInput);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH);
+        }
+
         $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
 
         // 获取商品库存信息（成本价）
@@ -50,6 +56,7 @@ class Service_Data_StockAdjustOrder
 
         $arrRet = $this->insert($arrOrderArg, $arrOrderDetailArg);
 
+        Bd_Log::trace('新建调整单 ' . print_r($arrInput, true));
         return $arrRet;
     }
 
@@ -417,7 +424,7 @@ class Service_Data_StockAdjustOrder
         $arrRet = [];
         Bd_Log::debug('调用库存模块参数 ' . print_r($arrStockIn,true));
         $arrRet =  Nscm_Service_Stock::stockin($arrStockIn);
-        Bd_Log::debug('调用库存模块返回值 ' . print_r($arrRet,true));
+        Bd_Log::trace('调用库存模块返回值 ' . print_r($arrRet,true));
         return $arrRet;
     }
 
@@ -464,7 +471,7 @@ class Service_Data_StockAdjustOrder
             $arrStockOut['inventory_type'],
             $arrStockOut['stockout_details']);
 
-        Bd_Log::debug('调用库存模块返回值 ' . print_r($arrRet,true));
+        Bd_Log::trace('调用库存模块返回值 ' . print_r($arrRet,true));
     }
 
     /**
