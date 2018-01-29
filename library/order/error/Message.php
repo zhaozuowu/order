@@ -66,6 +66,8 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL => '查询商品库存信息失败',
         Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED => '获取商品信息失败',
         Order_Error_Code::NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED => '部分商品没有库存信息',
+        Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH => '调整SKU个数超过100个',
+
     ];
 
 }
