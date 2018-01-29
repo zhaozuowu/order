@@ -60,6 +60,8 @@ class Action_GetBusinessFormOrderList extends Order_Base_Action
             $arrFormatItem['customer_id'] = empty($arrItem['customer_id']) ? '' : intval($arrItem['customer_id']);
             $arrFormatItem['customer_name'] = empty($arrItem['customer_name']) ? '' : ($arrItem['customer_name']);
             $arrFormatItem['order_amount'] = empty($arrItem['order_amount']) ? 0 : intval($arrItem['order_amount']);
+            $arrFormatItem['customer_city_id'] = empty($arrItem['customer_city_id']) ? 0 : intval($arrItem['customer_city_id']);
+            $arrFormatItem['customer_city_name'] = empty($arrItem['customer_city_name']) ? '' : $arrItem['customer_city_name'];
             $arrFormatItem['distribute_amount'] = empty($arrItem['distribute_amount']) ? 0 : intval($arrItem['distribute_amount']);
             $arrFormatItem['create_time'] = empty($arrItem['create_time']) ? 0 : date('Y-m-d H:i:s', $arrItem['create_time']);
             $arrFormatRet[] = $arrFormatItem;
