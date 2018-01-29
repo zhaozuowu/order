@@ -46,7 +46,8 @@ class Action_GetStockoutById extends Order_Base_Action
         $arrRet = $data['stockout_order_info'];
         $arrFormatRet['stockoutinfo'] = [
             'stockout_order_id' => empty($arrRet['stockout_order_id']) ? '' : Nscm_Define_OrderPrefix::SOO.$arrRet['stockout_order_id'],
-            'stockout_order_status' => empty($arrRet['stockout_order_status']) ? '' : Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST[$arrRet['stockout_order_status']],
+            'stockout_order_status' => empty($arrRet['stockout_order_status']) ? 0 : $arrRet['stockout_order_status'],
+            'stockout_order_status_text' => empty($arrRet['stockout_order_status']) ? '' : Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST[$arrRet['stockout_order_status']],
             'business_form_order_id' => empty($arrRet['business_form_order_id']) ? 0 : intval($arrRet['business_form_order_id']),
             'warehouse_id' => empty($arrRet['warehouse_id']) ? 0:  $arrRet['warehouse_id'],
             'warehouse_name' => empty($arrRet['warehouse_name']) ? '' : $arrRet['warehouse_name'],

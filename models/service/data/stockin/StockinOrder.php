@@ -30,6 +30,9 @@ class Service_Data_Stockin_StockinOrder
         $intTotalAmount = 0;
         $i = 0;
         foreach ($arrSkuInfo['real_stockin_info'] as $arrRealStockinInfo) {
+            if (0 == $arrRealStockinInfo['amount'] && count($arrSkuInfo['real_stockin_info']) > 1) {
+                Order_BusinessError::throwException(Order_Error_Code::SKU_AMOUNT_CANNOT_EMPTY);
+            }
             $arrDbStockinOrderSkuExtraInfo[] = [
                 'amount' => $arrRealStockinInfo['amount'],
                 'expire_date' => $arrRealStockinInfo['expire_date'],

@@ -50,6 +50,7 @@ class Service_Data_StockAdjustOrder
 
         $arrRet = $this->insert($arrOrderArg, $arrOrderDetailArg);
 
+        Bd_Log::trace('新建调整单 ' . print_r($arrInput, true));
         return $arrRet;
     }
 
@@ -417,7 +418,7 @@ class Service_Data_StockAdjustOrder
         $arrRet = [];
         Bd_Log::debug('调用库存模块参数 ' . print_r($arrStockIn,true));
         $arrRet =  Nscm_Service_Stock::stockin($arrStockIn);
-        Bd_Log::debug('调用库存模块返回值 ' . print_r($arrRet,true));
+        Bd_Log::trace('调用库存模块返回值 ' . print_r($arrRet,true));
         return $arrRet;
     }
 
@@ -464,7 +465,7 @@ class Service_Data_StockAdjustOrder
             $arrStockOut['inventory_type'],
             $arrStockOut['stockout_details']);
 
-        Bd_Log::debug('调用库存模块返回值 ' . print_r($arrRet,true));
+        Bd_Log::trace('调用库存模块返回值 ' . print_r($arrRet,true));
     }
 
     /**

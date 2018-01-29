@@ -71,6 +71,8 @@ class Action_GetStockoutOrderList extends Order_Base_Action
             $arrFormatRetItem['distribute_amount'] = empty($arrRetItem['stockout_order_distribute_amount']) ? 0 : $arrRetItem['stockout_order_distribute_amount'];
             $arrFormatRetItem['pickup_amount'] = empty($arrRetItem['stockout_order_pickup_amount']) ? 0 : $arrRetItem['stockout_order_pickup_amount'];
             $arrFormatRetItem['create_time'] = empty($arrRetItem['create_time']) ? '' : date("Y-m-d H:i:s", $arrRetItem['create_time']);
+            $arrFormatRetItem['customer_city_id'] = empty($arrRetItem['customer_city_id']) ? 0 : intval($arrRetItem['customer_city_id']);
+            $arrFormatRetItem['customer_city_name'] = empty($arrRetItem['customer_city_name']) ? '' : $arrRetItem['customer_city_name'];
             $arrFormatRet['orders'][] = $arrFormatRetItem;
         }
         return $arrFormatRet;
