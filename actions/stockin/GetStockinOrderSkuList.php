@@ -63,7 +63,7 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
             $arrRoundResult['sku_id'] = empty($arrListItem['sku_id']) ? 0
                 : intval($arrListItem['sku_id']);
             $arrRoundResult['upc_id'] = empty($arrListItem['upc_id']) ? 0
-                : intval($arrListItem['upc_id']);
+                : strval($arrListItem['upc_id']);
             $arrRoundResult['sku_name'] = empty($arrListItem['sku_name']) ? ''
                 : strval($arrListItem['sku_name']);
             $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? 0
