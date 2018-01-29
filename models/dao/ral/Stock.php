@@ -126,8 +126,8 @@ class Dao_Ral_Stock
      */
     public function getStockInfo($intWarehouseId, $arrSkuIds)
     {
-        Bd_Log::debug(__METHOD__ . ' 库存调整-查看库存 参数 intWarehouseId=' . $intWarehouseId);
-        Bd_Log::debug(__METHOD__ . ' 库存调整-查看库存 参数 arrSkuIds=' . json_encode($arrSkuIds));
+        Bd_Log::trace(__METHOD__ . ' 库存调整-查看库存 参数 intWarehouseId=' . $intWarehouseId);
+        Bd_Log::trace(__METHOD__ . ' 库存调整-查看库存 参数 arrSkuIds=' . json_encode($arrSkuIds));
 
         $ret = [];
         if(empty($intWarehouseId) || empty($arrSkuIds)) {
@@ -149,7 +149,7 @@ class Dao_Ral_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
         }
 
-        Bd_Log::debug(__METHOD__ . ' 库存调整-查看库存 ral 调用成功' . json_encode($ret));
+        Bd_Log::trace(__METHOD__ . ' 库存调整-查看库存 ral 调用成功' . json_encode($ret));
         return $ret['result'];
     }
 
@@ -164,10 +164,10 @@ class Dao_Ral_Stock
     public function adjustStockout($intStockoutOrderId, $intWarehouseId, $intAdjustType, $arrDetails)
     {
         $ret = [];
-        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 参数 intStockoutOrderId=' . $intStockoutOrderId);
-        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 参数 intWarehouseId=' . $intWarehouseId);
-        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 参数 intAdjustType=' . $intAdjustType);
-        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 参数 arrDetails=' . json_encode($arrDetails));
+        Bd_Log::trace(__METHOD__ . ' 库存调整-出库 参数 intStockoutOrderId=' . $intStockoutOrderId);
+        Bd_Log::trace(__METHOD__ . ' 库存调整-出库 参数 intWarehouseId=' . $intWarehouseId);
+        Bd_Log::trace(__METHOD__ . ' 库存调整-出库 参数 intAdjustType=' . $intAdjustType);
+        Bd_Log::trace(__METHOD__ . ' 库存调整-出库 参数 arrDetails=' . json_encode($arrDetails));
 
 
         if(empty($intStockoutOrderId) || empty($intWarehouseId) || empty($intAdjustType) || empty($arrDetails)) {
@@ -196,7 +196,7 @@ class Dao_Ral_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 
-        Bd_Log::debug(__METHOD__ . ' 库存调整-出库 ral 调用成功 ' . json_encode($ret));
+        Bd_Log::trace(__METHOD__ . ' 库存调整-出库 ral 调用成功 ' . json_encode($ret));
         return $ret;
     }
 
