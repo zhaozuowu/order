@@ -91,7 +91,7 @@ class Action_GetStockoutById extends Order_Base_Action
             $arrFormatItem['send_total_price'] = empty($arrItem['send_total_price']) ? 0 : $arrItem['send_total_price'];
             $arrFormatItem['order_amount'] = empty($arrItem['order_amount']) ? 0 : $arrItem['order_amount'];
             $arrFormatItem['distribute_amount'] = empty($arrItem['distribute_amount']) ? 0 : $arrItem['distribute_amount'];
-            $arrFormatItem['pickup_amount'] = empty($arrItem['pickup_amount']) ? 0 : $arrItem['pickup_amount'];
+            $arrFormatItem['pickup_amount'] = empty($arrItem['stockout_order_pickup_amount']) ? 0 : $arrItem['stockout_order_pickup_amount'];
             $arrFormatItem['upc_accept_amount'] = empty($arrItem['upc_accept_amount']) ? 0 : $arrItem['upc_accept_amount'];
             $arrFormatItem['upc_reject_amount'] = empty($arrItem['upc_reject_amount']) ? 0 : $arrItem['upc_reject_amount'];
             $arrFormatRet['stockout_order_skuinfo'][] = $arrFormatItem;
