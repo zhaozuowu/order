@@ -35,6 +35,12 @@ class Service_Data_StockAdjustOrder
         $arrRet = [];
         // 获取SKU详情
         $arrSkuIds = array_unique(array_column($arrInput['detail'], 'sku_id'));
+
+        if(count($arrSkuIds) > Order_Define_StockAdjustOrder::STOCK_ADJUST_ORDER_MAX_SKU) {
+            Bd_Log::warning('调整SKU个数超过上限', Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH, $arrInput);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH);
+        }
+
         $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
 
         // 获取商品库存信息（成本价）

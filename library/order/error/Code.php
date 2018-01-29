@@ -305,6 +305,13 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED = 350020;
+
+
+    /**
+     * 库存调整-调整SKU个数超过100个
+     * @var integer
+     */
+    const NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH = 350021;
     
     /**
      * 获取商品信息失败
