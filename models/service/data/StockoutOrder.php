@@ -593,6 +593,26 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     * 获取出库单状态
+     * @param $strStockoutOrderId
+     * @return integer
+     * @throws Order_BusinessError
+     */
+    public function getStockoutOrderStatus($strStockoutOrderId) {
+        if (empty($strStockoutOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        $intStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
+        $objStockoutOrder = Model_Orm_StockoutOrder::findOne([
+            'stockout_order_id' => $intStockoutOrderId,
+        ]);
+        if (!$objStockoutOrder) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        return $objStockoutOrder->stockout_order_status;
+    }
+
+    /**
      * @param array $arrInput
      * @return integer
      * @throws Order_BusinessError

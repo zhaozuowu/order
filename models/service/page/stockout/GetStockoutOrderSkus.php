@@ -28,9 +28,11 @@ class Service_Page_Stockout_GetStockoutOrderSkus
     public function execute($arrInput)
     {
         $arrList = $this->objStockoutOrder->getStockoutOrderSkus($arrInput);
+        $intStatus = $this->objStockoutOrder->getStockoutOrderStatus($arrInput['stockout_order_id']);
         $intTotal = $this->objStockoutOrder->getStockoutOrderSkusCount($arrInput);
         return [
             'total' => $intTotal,
+            'stockout_order_status' => $intStatus,
             'skus' => $arrList,
         ];
     }
