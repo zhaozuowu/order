@@ -41,6 +41,9 @@ class Action_GetStockoutOrderSkus extends Order_Base_Action
     public function format($arrRet) {
         $arrFormatRet = [];
         $arrFormatRet['total'] = $arrRet['total'];
+        $arrFormatRet['stockout_order_status'] = empty($arrRet['stockout_order_status']) ? 0 : $arrRet['stockout_order_status'];
+        $arrFormatRet['stockout_order_status_text'] = empty($arrRet['stockout_order_status']) ?
+                                                        '' : Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST[$arrRet['stockout_order_status']];
         foreach ((array)$arrRet['skus'] as $arrRetItem) {
             $arrFormatRetItem = [];
             $arrFormatRetItem['sku_name'] = empty($arrRetItem['sku_name']) ? '' : $arrRetItem['sku_name'];
