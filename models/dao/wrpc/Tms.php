@@ -31,7 +31,7 @@ class Dao_Wrpc_Tms
      */
     public function createShipmentOrder($arrInput) {
         $strRoutingKey = sprintf("loc=%s", $arrInput['customer_location']);
-        $this->objWrpcService->setMeta(array("routing-key"=>$strRoutingKey));
+        $this->objWrpcService->setMeta(["routing-key"=>"shardid=1"]);
         $arrParams = $this->getCreateShipmentParams($arrInput);
         $arrRet = $this->objWrpcService->processWarehouseRequest($arrParams);
         if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
@@ -52,11 +52,12 @@ class Dao_Wrpc_Tms
      */
     public function notifyPickupAmount($strCustomerLocation, $intShipmentOrderId, $arrPickupSkus) {
         $strRoutingKey = sprintf("loc=%s", $strCustomerLocation);
-        $this->objWrpcService->setMeta(["routing-key" => $strRoutingKey]);
+        $this->objWrpcService->setMeta(["routing-key" => "shardid=1"]);
         $arrParams = $this->getPickingAmountParams($intShipmentOrderId, $arrPickupSkus);
         $arrRet = $this->objWrpcService->pickingAmount($arrParams);
         if (0 != $arrRet['errno']) {
-            Bd_Log::warning(sprintf("method[%s] arrRet[%s]", __METHOD__, json_encode($arrRet)));
+            Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
+                                    __METHOD__, json_encode($arrRet), $strRoutingKey));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_NOTIFY_FINISHPICKUP_ERROR);
         }
     }
