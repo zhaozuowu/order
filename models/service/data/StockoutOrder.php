@@ -695,6 +695,7 @@ class Service_Data_StockoutOrder
             $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_INSERT_SUCCESS;
             $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
             $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
+            $mark = '作废出库单:'.$mark;
             $this->addLog($userId, $userName, $mark, $operationType, $strStockoutOrderId);
             //释放库存(已出库不释放库存)
             if ($stockoutOrderInfo['stockout_order_status'] >= Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS) {
