@@ -84,7 +84,7 @@ abstract class Order_Base_Action extends Nscm_Base_Action {
                 $arrAfterValidate = $this->validate($arrFormat[$key]['params'], $arrRet[$key]);
             } else {
                 $arrAfterValidate = [];
-                foreach ($arrRet[$key] as $row) {
+                foreach ((array)$arrRet[$key] as $row) {
                     $arrAfterValidate[] = $this->validate($arrFormat[$key]['params'], $row);
                 }
             }
