@@ -35,8 +35,7 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
         $strStockinOrderType = $arrInput['stockin_order_type'];
         $strStockinOrderId = $arrInput['stockin_order_id'];
         $strWarehouseId = $arrInput['warehouse_ids'];
-        // source_supplier_id即vendor_id（数据库结构，业务决定）
-        $intSourceSupplierId = $arrInput['vendor_id'];
+        $intSourceSupplierId = $arrInput['source_supplier_id'];
         $strSourceOrderId = $arrInput['source_order_id'];
 
         $arrCreateTime = [
