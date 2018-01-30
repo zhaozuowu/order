@@ -82,7 +82,7 @@ class Action_GetStockoutById extends Order_Base_Action
             $arrFormatItem['sku_name'] = empty($arrItem['sku_name']) ? '' : $arrItem['sku_name'];
             $skuNeText = isset(Order_Define_Sku::SKU_NET_MAP[$arrItem['sku_net_unit']]) ? Order_Define_Sku::SKU_NET_MAP[$arrItem['sku_net_unit']]:'';
             $arrFormatItem['sku_net'] = $arrItem['sku_net'].$skuNeText;
-            $arrFormatItem['upc_unit_num'] = empty($arrItem['upc_unit_num']) ? '' : $arrItem['upc_unit_num'];
+            $arrFormatItem['upc_unit_num'] = empty($arrItem['upc_unit_num']) ? '' : '1*' . $arrItem['upc_unit_num'];
             $arrFormatItem['upc_unit'] = isset(Order_Define_StockoutOrder::UPC_UNIT[$arrItem['upc_unit']]) ? Order_Define_StockoutOrder::UPC_UNIT[$arrItem['upc_unit']]:'';
             $arrFormatItem['cost_price'] = empty($arrItem['cost_price']) ? 0 : $arrItem['cost_price'];
             $arrFormatItem['cost_total_price'] = empty($arrItem['cost_total_price']) ? 0 : $arrItem['cost_total_price'];
