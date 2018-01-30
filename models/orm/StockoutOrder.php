@@ -97,6 +97,26 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
     }
 
     /**
+     * 通过出库单号查询订单坐标
+     * @param $intStockoutOrderId
+     * @return string
+     * @throws Order_BusinessError
+     */
+    public static function getLocationByStockoutOrderId($intStockoutOrderId) {
+        if (empty($intStockoutOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $arrConditions = [
+            'stockout_order_id' => $intStockoutOrderId,
+        ];
+        $objStockoutOrder = static::findOne($arrConditions);
+        if (!$objStockoutOrder) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        return $objStockoutOrder->customer_location;
+    }
+
+    /**
      * 更新数据
      * @param $arrConditions
      * @param $updateData

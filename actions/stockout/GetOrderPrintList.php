@@ -59,7 +59,7 @@ class Action_GetOrderPrintList extends Order_Base_Action
             $arrFormatRetItem['customer_address'] = empty($arrRetItem['customer_address']) ? '' : $arrRetItem['customer_address'];
             $arrFormatRetItem['operator'] = empty($arrRetItem['operator']) ? '' : $arrRetItem['operator'];
             $arrFormatRetItem['pickup_date'] = empty($arrRetItem['update_time']) ? '' : date("Y-m-d", $arrRetItem['update_time']);
-            $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $this->formatSku($arrRetItem['skus']);
+            $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $this->formatSku($arrRetItem['skus'], $arrRetItem['stockout_order_status']);
             $arrFormatRet['list'][] = $arrFormatRetItem;
         }
         return $arrFormatRet;        
@@ -68,9 +68,10 @@ class Action_GetOrderPrintList extends Order_Base_Action
     /**
      *format sku result
      * @param array $arrSkus
+     * @param integer $intStatus
      * @return array
      */
-    public function formatSku($arrSkus) {
+    public function formatSku($arrSkus, $intStatus) {
         $arrFormatSkus = [];
         if (empty($arrSkus)) {
             return $arrFormatSkus;
@@ -83,7 +84,11 @@ class Action_GetOrderPrintList extends Order_Base_Action
                                             '' : ($arrSkuItem['sku_net'] . Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]);
             $arrFormatSkuItem['upc_unit_text'] = empty(Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']]) ?
                                                     0 : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
-            $arrFormatSkuItem['pickup_amount'] = empty($arrSkuItem['pickup_amount']) ? 0 : $arrSkuItem['pickup_amount'];
+            if ($intStatus > Order_Define_StockoutOrder::STAY_RECEIVED_STOCKOUT_ORDER_STATUS) {
+                $arrFormatSkuItem['pickup_amount'] = empty($arrSkuItem['pickup_amount']) ? 0 : $arrSkuItem['pickup_amount'];
+            } else {
+                $arrFormatSkus['pickup_amount'] = '';
+            }
             $arrFormatSkus[] = $arrFormatSkuItem;
         }
         return $arrFormatSkus;
