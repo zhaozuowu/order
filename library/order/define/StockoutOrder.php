@@ -48,7 +48,7 @@ class Order_Define_StockoutOrder
      * @var array
      */
     const STOCKOUT_ORDER_SOURCE_LIST = [
-        '1' => '货架补货',
+        '1' => '无人货架',
         '2' => '前置仓',
         '3' => '便利店'
     ];
