@@ -129,6 +129,9 @@ class Dao_Ral_Sku
         $ret = $this->objApiRal->getData($req);
         Bd_Log::debug('ral getSkuInfos out params: ' . json_encode($ret));
         $arrSkuInfos = [];
+        if (empty($ret[self::API_RALER_GET_SKU_INFOS]['skus'])) {
+            return $arrSkuInfos;
+        }
         foreach ($ret[self::API_RALER_GET_SKU_INFOS]['skus'] as $row) {
             $arrSkuInfos[$row['sku_id']] = $row;
         }
