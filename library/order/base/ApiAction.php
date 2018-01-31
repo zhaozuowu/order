@@ -5,7 +5,7 @@
  * @author lvbochao@iwaimai.baidu.com
  */
 
-abstract class Order_Base_ApiAction extends Order_Base_Action
+abstract class Order_Base_ApiAction extends Order_Base_BaseAction
 {
     /**
      * 是否验证登陆
