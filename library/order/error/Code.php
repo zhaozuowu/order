@@ -176,6 +176,12 @@ class Order_Error_Code extends Wm_Error_Code
     const SKU_AMOUNT_CANNOT_EMPTY = 330015;
 
     /**
+     * total count cannot empty
+     * @var int
+     */
+    const TOTAL_COUNT_CANNOT_EMPTY = 330016;
+
+    /**
      * 查询时间范围错误
      */
     const QUERY_TIME_SPAN_ERROR = 340000;

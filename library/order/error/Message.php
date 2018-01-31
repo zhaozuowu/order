@@ -32,6 +32,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::WAREHOUSE_NOT_MATCH => '仓库不匹配',
         Order_Error_Code::ALL_SKU_MUST_STOCKIN => '全部商品必须入库',
         Order_Error_Code::SKU_AMOUNT_CANNOT_EMPTY => '商品数量不允许为0',
+        Order_Error_Code::TOTAL_COUNT_CANNOT_EMPTY => '商品入库总数不允许为0',
         Order_Error_Code::NWMS_STOCKOUT_ORDER_CREATE_FAIL => '出库单创建失败',
         Order_Error_Code::NWMS_STOCKOUT_ORDER_TYPE_ERROR => '出库单类型错误',
         Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_SUPPLY_TYPE_ERROR => '业态订单补货类型错误',
