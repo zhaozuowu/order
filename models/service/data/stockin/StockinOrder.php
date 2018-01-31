@@ -632,13 +632,15 @@ class Service_Data_Stockin_StockinOrder
         $arrWarehouseList = $objDao->getWareHouseList($arrWarehouseIds);
         $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
         $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
-        $arrSkuColumns = ['stockin_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount'];
+        $arrSkuColumns = ['stockin_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount','sku_net_unit'];
         $arrReserveSkuList = Model_Orm_StockinOrderSku::findRows($arrSkuColumns, $arrConditions);
         $arrReserveSkuList = $this->arrayToKeyValue($arrReserveSkuList, 'stockin_order_id');
         foreach ($arrRetList as $key=>$item) {
             $arrSourceInfo =empty($item['source_info']) ? []:json_decode($item['source_info'],true);
             $arrRetList[$key]['vendor_id'] = isset($arrSourceInfo['vendor_id']) ? $arrSourceInfo['vendor_id']:0;
             $arrRetList[$key]['vendor_name'] = isset($arrSourceInfo['vendor_name']) ? $arrSourceInfo['vendor_name']:'';
+            $arrRetList[$key]['customer_id'] = isset($arrSourceInfo['customer_id']) ? $arrSourceInfo['customer_id']:0;
+            $arrRetList[$key]['customer_name'] = isset($arrSourceInfo['customer_name']) ? $arrSourceInfo['customer_name']:'';
             $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):$item['warehouse_name'];
             $arrRetList[$key]['warehouse_contact'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact']:'';
             $arrRetList[$key]['warehouse_contact_phone'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact_phone']:'';
