@@ -170,6 +170,8 @@ class Dao_Wrpc_Tms
         $arrUserInfo['npId'] = empty($arrInput['customer_id']) ? 0 : intval($arrInput['customer_id']);
         $arrUserInfo['contactName'] = empty($arrInput['customer_contactor']) ? '' : strval($arrInput['customer_contactor']);
         $arrUserInfo['contactPhone'] = empty($arrInput['customer_contact']) ? '' : strval($arrInput['customer_contact']);
+        $arrUserInfo['customerServiceName'] = empty($arrInput['executor']) ? '' : strval($arrInput['executor']);
+        $arrUserInfo['customerServicePhone'] = empty($arrInput['executor_contact']) ? '' : strval($arrInput['executor_contact']);
         $arrUserInfo['poi'] = (object)$this->getPoi($arrInput);
         return $arrUserInfo;
     }
