@@ -239,17 +239,26 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     * 校验重复提交
+     * @param string $strCustomerId
+     * @return void
+     * @throws Order_BusinessError
+     */
+    public function checkRepeatSubmit($strCustomerId) {
+        if ($this->objDaoRedisStockoutOrder->getValByCustomerId($strCustomerId)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT);
+        }
+        $this->objDaoRedisStockoutOrder->setCustomerId($strCustomerId);
+    }
+
+    /**
      * @param array $arrInput
      * @return array
      * @throws Order_BusinessError
      */
     public function assembleStockoutOrder($arrInput) {
-        //校验重复提交的问题
-        /*if ($this->objDaoRedisStockoutOrder->getValByCustomerId($arrInput['customer_id'])) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT);
-        }*/
+        $this->checkRepeatSubmit($arrInput['customer_id']);
         $intStockoutOrderId = Order_Util_Util::generateStockoutOrderId();
-        $this->objDaoRedisStockoutOrder->setCustomerId($arrInput['customer_id']);
         $arrInput['stockout_order_id'] = $intStockoutOrderId;
         $arrInput['stockout_order_type'] = Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_STOCK;
         return $arrInput;
@@ -928,14 +937,8 @@ class Service_Data_StockoutOrder
      * @return void
      * @throws Order_BusinessError
      */
-    public function syncNotifyTmsFinishPickup($intStockoutOrderId, $intShipmentOrderId, $arrPickupSkus){
-        $strCustomerLocation = Model_Orm_StockoutOrder::getLocationByStockoutOrderId($intStockoutOrderId);
-        if (empty($strCustomerLocation)) {
-            Bd_Log::warning(sprintf("method[%s] stockout_order_id[%s] customer_location is empty",
-                                    __METHOD__, $intStockoutOrderId));
-            return ;
-        }
-        $this->objWrpcTms->notifyPickupAmount($strCustomerLocation, $intShipmentOrderId, $arrPickupSkus);
+    public function syncNotifyTmsFinishPickup($intShipmentOrderId, $arrPickupSkus){
+        $this->objWrpcTms->notifyPickupAmount($intShipmentOrderId, $arrPickupSkus);
     }
 
     /**

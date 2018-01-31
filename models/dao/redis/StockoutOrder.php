@@ -17,7 +17,7 @@ class Dao_Redis_StockoutOrder extends Order_Base_Redis
      * stockout order id key expire time
      * @var integer
      */
-    const EXPIRE_TIME = 120;
+    const EXPIRE_TIME = 5;
 
     /**
      * set stockout customer id key

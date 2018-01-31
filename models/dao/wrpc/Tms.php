@@ -30,8 +30,8 @@ class Dao_Wrpc_Tms
      * @throws Order_BusinessError
      */
     public function createShipmentOrder($arrInput) {
-        $strRoutingKey = sprintf("loc=%s", $arrInput['customer_location']);
-        $this->objWrpcService->setMeta(["routing-key"=>"shardid=1"]);
+        $strRoutingKey = sprintf("loc=%s", $arrInput['warehouse_location']);
+        $this->objWrpcService->setMeta(["routing-key"=>$strRoutingKey]);
         $arrParams = $this->getCreateShipmentParams($arrInput);
         $arrRet = $this->objWrpcService->processWarehouseRequest($arrParams);
         if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
@@ -50,9 +50,9 @@ class Dao_Wrpc_Tms
      * @return void
      * @throws Order_BusinessError
      */
-    public function notifyPickupAmount($strCustomerLocation, $intShipmentOrderId, $arrPickupSkus) {
-        $strRoutingKey = sprintf("loc=%s", $strCustomerLocation);
-        $this->objWrpcService->setMeta(["routing-key" => "shardid=1"]);
+    public function notifyPickupAmount($intShipmentOrderId, $arrPickupSkus) {
+        $strRoutingKey = sprintf("shipmentid=%s", $intShipmentOrderId);
+        $this->objWrpcService->setMeta(["routing-key"=>$strRoutingKey]);
         $arrParams = $this->getPickingAmountParams($intShipmentOrderId, $arrPickupSkus);
         $arrRet = $this->objWrpcService->pickingAmount($arrParams);
         if (0 != $arrRet['errno']) {
@@ -170,6 +170,8 @@ class Dao_Wrpc_Tms
         $arrUserInfo['npId'] = empty($arrInput['customer_id']) ? 0 : intval($arrInput['customer_id']);
         $arrUserInfo['contactName'] = empty($arrInput['customer_contactor']) ? '' : strval($arrInput['customer_contactor']);
         $arrUserInfo['contactPhone'] = empty($arrInput['customer_contact']) ? '' : strval($arrInput['customer_contact']);
+        $arrUserInfo['customerServiceName'] = empty($arrInput['executor']) ? '' : strval($arrInput['executor']);
+        $arrUserInfo['customerServicePhone'] = empty($arrInput['executor_contact']) ? '' : strval($arrInput['executor_contact']);
         $arrUserInfo['poi'] = (object)$this->getPoi($arrInput);
         return $arrUserInfo;
     }

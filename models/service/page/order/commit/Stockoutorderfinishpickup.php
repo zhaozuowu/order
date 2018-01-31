@@ -31,10 +31,9 @@ class Service_Page_Order_Commit_Stockoutorderfinishpickup extends Wm_Lib_Wmq_Com
     public function myExecute($arrInput)
     {
         $intShipmentOrderId = $arrInput['shipment_order_id'];
-        $intStockoutOrderId = $arrInput['stockout_order_id'];
         $arrPickupSkus = is_array($arrInput['pickup_skus']) ? $arrInput['pickup_skus'] : json_decode($arrInput['pickup_skus'], true);
         Bd_Log::debug("notify TMS finishpickup myExecute:".json_encode($arrInput));
-        $this->objStockoutOrder->syncNotifyTmsFinishPickup($intStockoutOrderId, $intShipmentOrderId, $arrPickupSkus);
+        $this->objStockoutOrder->syncNotifyTmsFinishPickup($intShipmentOrderId, $arrPickupSkus);
         return [];
     }
 

@@ -89,4 +89,24 @@ class Order_Util_Util
         }
         return $arrKeyValue;
     }
+
+    /**
+     * 把百度地图坐标转成高德地图坐标
+     * @param $strLocation
+     * @return string
+     */
+    public static function transferBMapToAMap($strLocation) {
+        $strRetLocation = '';
+        $arrLocation = explode(',', $strLocation);
+        if (empty($arrLocation)) {
+            return $strLocation;
+        }
+        $arrRetLocation = Wm_Lib_Coord::convert(
+            $arrLocation,
+            Wm_Lib_Coord::TYPE_BDLL,
+            Wm_Lib_Coord::TYPE_AMAP
+        );
+        $strRetLocation = implode(',', $arrRetLocation);
+        return $strRetLocation;
+    }
 }
