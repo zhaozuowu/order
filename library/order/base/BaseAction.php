@@ -99,7 +99,6 @@ abstract class Order_Base_BaseAction extends Nscm_Base_Action {
      */
     public function beforeMyExecute()
     {
-        parent::beforeMyExecute();
         if ($this->intMethod == Order_Define_Const::METHOD_GET) {
             $arrInput = $this->arrReqGet;
         } else if ($this->intMethod == Order_Define_Const::METHOD_POST) {
@@ -124,6 +123,7 @@ abstract class Order_Base_BaseAction extends Nscm_Base_Action {
             $this->arrFilterResult['_session'] = $this->arrSession;
         }
         Bd_Log::debug('validator output: ' . json_encode($this->arrFilterResult));
+        parent::beforeMyExecute();
     }
 
     /**
