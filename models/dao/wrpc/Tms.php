@@ -30,8 +30,8 @@ class Dao_Wrpc_Tms
      * @throws Order_BusinessError
      */
     public function createShipmentOrder($arrInput) {
-        $strRoutingKey = sprintf("loc=%s", $arrInput['customer_location']);
-        $this->objWrpcService->setMeta(["routing-key"=>"shardid=1"]);
+        $strRoutingKey = sprintf("loc=%s", $arrInput['warehouse_location']);
+        $this->objWrpcService->setMeta(["routing-key"=>$strRoutingKey]);
         $arrParams = $this->getCreateShipmentParams($arrInput);
         $arrRet = $this->objWrpcService->processWarehouseRequest($arrParams);
         if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
@@ -50,9 +50,9 @@ class Dao_Wrpc_Tms
      * @return void
      * @throws Order_BusinessError
      */
-    public function notifyPickupAmount($strCustomerLocation, $intShipmentOrderId, $arrPickupSkus) {
-        $strRoutingKey = sprintf("loc=%s", $strCustomerLocation);
-        $this->objWrpcService->setMeta(["routing-key" => "shardid=1"]);
+    public function notifyPickupAmount($intShipmentOrderId, $arrPickupSkus) {
+        $strRoutingKey = sprintf("shipmentid=%s", $intShipmentOrderId);
+        $this->objWrpcService->setMeta(["routing-key"=>$strRoutingKey]);
         $arrParams = $this->getPickingAmountParams($intShipmentOrderId, $arrPickupSkus);
         $arrRet = $this->objWrpcService->pickingAmount($arrParams);
         if (0 != $arrRet['errno']) {
