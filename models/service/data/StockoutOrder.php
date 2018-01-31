@@ -257,7 +257,6 @@ class Service_Data_StockoutOrder
      * @throws Order_BusinessError
      */
     public function assembleStockoutOrder($arrInput) {
-        $this->checkRepeatSubmit($arrInput['customer_id']);
         $intStockoutOrderId = Order_Util_Util::generateStockoutOrderId();
         $arrInput['stockout_order_id'] = $intStockoutOrderId;
         $arrInput['stockout_order_type'] = Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_STOCK;
