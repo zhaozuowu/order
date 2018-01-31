@@ -908,7 +908,7 @@ class Service_Data_StockoutOrder
         $intShipmentOrderId = Model_Orm_StockoutOrder::
                                 getShipmentOrderIdByStockoutOrderId($strStockoutOrderId);
         $arrStockoutParams = [
-            'stockout_order_id' => $strStockoutOrderId,
+            'stockout_order_id' => strval($strStockoutOrderId),
             'shipment_order_id' => strval($intShipmentOrderId),
             'pickup_skus' => $pickupSkus
         ];
@@ -923,13 +923,19 @@ class Service_Data_StockoutOrder
 
     /**
      * 调用tms接口通知拣货数量
-     * @param $intShipmentOrderId
-     * @param $arrPickupSkus
+     * @param integer $intShipmentOrderId
+     * @param array $arrPickupSkus
      * @return void
      * @throws Order_BusinessError
      */
-    public function syncNotifyTmsFinishPickup($intShipmentOrderId, $arrPickupSkus){
-        $this->objWrpcTms->notifyPickupAmount($intShipmentOrderId, $arrPickupSkus);
+    public function syncNotifyTmsFinishPickup($intStockoutOrderId, $intShipmentOrderId, $arrPickupSkus){
+        $strCustomerLocation = Model_Orm_StockoutOrder::getLocationByStockoutOrderId($intStockoutOrderId);
+        if (empty($strCustomerLocation)) {
+            Bd_Log::warning(sprintf("method[%s] stockout_order_id[%s] customer_location is empty",
+                                    __METHOD__, $intStockoutOrderId));
+            return ;
+        }
+        $this->objWrpcTms->notifyPickupAmount($strCustomerLocation, $intShipmentOrderId, $arrPickupSkus);
     }
 
     /**

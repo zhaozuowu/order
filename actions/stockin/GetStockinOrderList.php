@@ -17,7 +17,6 @@ class Action_GetStockinOrderList extends Order_Base_Action
         'warehouse_ids' => 'str|required',
         'source_supplier_id' => 'int|min[0]',
         'source_order_id' => 'regex|patern[/^((ASN|SOO)\d{13})?$/]',
-        'vendor_id' => 'int|min[0]',
         'create_time_start' => 'int|min[0]',
         'create_time_end' => 'int|min[0]',
         'stockin_order_plan_time_start' => 'int|min[0]',
