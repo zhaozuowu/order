@@ -415,7 +415,7 @@ class Service_Data_Reserve_ReserveOrder
         $arrWarehouseList = $objDao->getWareHouseList($arrWarehouseIds);
         $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
         $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
-        $arrSkuColumns = ['reserve_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount'];
+        $arrSkuColumns = ['reserve_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount','sku_net_unit'];
         $arrReserveSkuList = Model_Orm_ReserveOrderSku::findRows($arrSkuColumns, $arrConditions);
         //$arrReserveSkuList = array_column($arrReserveSkuList,null,'reserve_order_id');
         $arrReserveSkuList = $this->arrayToKeyValue($arrReserveSkuList, 'reserve_order_id');

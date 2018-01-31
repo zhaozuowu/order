@@ -50,7 +50,6 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
             $arrFormatRetItem['stockin_order_real_amount'] = empty($arrRetItem['stockin_order_real_amount']) ? 0 : $arrRetItem['stockin_order_real_amount'];
             $arrFormatRetItem['sign_date'] = empty($arrRetItem['sign_date']) ? '' : $arrRetItem['sign_date'];
             $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $this->formatSku($arrRetItem['skus']);
-            $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $this->formatSku($arrRetItem['skus']);
             $arrFormatRet['list'][] = $arrFormatRetItem;
         }
         return $arrFormatRet;        
@@ -71,6 +70,8 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
             $arrFormatSkuItem['upc_id'] = empty($arrSkuItem['upc_id']) ? '' : $arrSkuItem['upc_id'];
             $arrFormatSkuItem['sku_name'] = empty($arrSkuItem['sku_name']) ? '' : $arrSkuItem['sku_name'];
             $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ? '' : $arrSkuItem['sku_net'];
+            $skuNeText = isset(Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]) ? Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]:'';
+            $arrFormatSkuItem['sku_net_text'] = $arrFormatSkuItem['sku_net'].$skuNeText;
             $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
             $arrFormatSkuItem['plan_amount'] = empty($arrSkuItem['reserve_order_sku_plan_amount']) ? 0 : $arrSkuItem['reserve_order_sku_plan_amount'];
             $arrFormatSkuItem['real_amount'] = empty($arrSkuItem['stockin_order_sku_real_amount']) ? 0 : $arrSkuItem['stockin_order_sku_real_amount'];

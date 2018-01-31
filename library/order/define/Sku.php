@@ -57,10 +57,10 @@ class Order_Define_Sku
      * @var array
      */
     const SKU_NET_MAP = [
-        self::SKU_NET_GRAM => '克',
-        self::SKU_NET_KILOGRAM => '千克',
-        self::SKU_NET_MILLILITER => '毫升',
-        self::SKU_NET_LITER => '升',
+        self::SKU_NET_GRAM => 'g',
+        self::SKU_NET_KILOGRAM => 'kg',
+        self::SKU_NET_MILLILITER => 'mL',
+        self::SKU_NET_LITER => 'L',
     ];
 
 
