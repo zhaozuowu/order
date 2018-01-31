@@ -38,7 +38,7 @@ class Order_Define_StockoutOrderDetail
      * @var array
      */
     const  STOCKOUT_ORDER_TYPE_MAP = [
-        '1'=>'订单出库',
+        '1'=>'订货出库',
         '2' =>'采购退货',
         '3' =>'配货出库',
     ];
