@@ -87,7 +87,7 @@ class Action_GetOrderPrintList extends Order_Base_Action
             if ($intStatus > Order_Define_StockoutOrder::STAY_RECEIVED_STOCKOUT_ORDER_STATUS) {
                 $arrFormatSkuItem['pickup_amount'] = empty($arrSkuItem['pickup_amount']) ? 0 : $arrSkuItem['pickup_amount'];
             } else {
-                $arrFormatSkus['pickup_amount'] = '';
+                $arrFormatSkuItem['pickup_amount'] = '';
             }
             $arrFormatSkus[] = $arrFormatSkuItem;
         }
