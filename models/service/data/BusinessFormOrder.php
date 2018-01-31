@@ -207,6 +207,7 @@ class Service_Data_BusinessFormOrder
         }
         $arrInput['warehouse_id'] = $arrRet[0]['warehouse_id'];
         $arrInput['warehouse_name'] = $arrRet[0]['warehouse_name'];
+        $arrInput['warehouse_location'] = Order_Util_Util::transferBMapToAMap($arrRet[0]['location']);
         return $arrInput;
     }
 
