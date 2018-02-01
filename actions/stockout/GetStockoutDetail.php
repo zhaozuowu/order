@@ -66,7 +66,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
             $arrFormatRetItem['business_form_order_type'] = empty($arrRetItem['stockout_order_source_describle']) ?  '' : $arrRetItem['stockout_order_source_describle'];
             $arrFormatRetItem['stockout_order_type'] = empty($arrRetItem['stockout_order_type_describle']) ?  '' : $arrRetItem['stockout_order_type_describle'];
             $arrFormatRetItem['business_form_create_time'] = empty($arrRetItem['order_create_time']) ?  0 : date('Y-m-d H:i:s',$arrRetItem['order_create_time']);
-            $arrFormatRetItem['expect_send_time'] = date('Y-m-d H:i:s',$arrRetItem['expect_arrive_start_time']).'~'.date('Y-m-d H:i:s',$arrRetItem['expect_arrive_start_time']);
+            $arrFormatRetItem['expect_send_time'] = date('Y-m-d H:i:s',$arrRetItem['expect_arrive_start_time']).'~'.date('Y-m-d H:i:s',$arrRetItem['expect_arrive_end_time']);
             $arrFormatRetItem['customer_name'] = empty($arrRetItem['customer_name']) ? '':$arrRetItem['customer_name'];
             $arrFormatRetItem['customer_id'] = empty($arrRetItem['customer_id']) ? 0 :$arrRetItem['customer_id'];
             $arrFormatRetItem['customer_contactor'] = empty($arrRetItem['customer_contactor']) ? '' :$arrRetItem['customer_contactor'];
@@ -88,14 +88,14 @@ class Action_GetStockoutDetail extends Order_Base_Action
             $arrFormatRetItem['pickup_amount'] =  empty($arrRetItem['pickup_amount']) ? 0 :$arrRetItem['pickup_amount'];
             $arrFormatRetItem['sku_effect_type'] =  empty($arrRetItem['sku_effect_type']) ? '' :Order_Define_StockoutOrderDetail::SKU_EFFECT_TYPE[$arrRetItem['sku_effect_type']];
             $arrFormatRetItem['sku_effect_day'] =  empty($arrRetItem['sku_effect_day']) ? 0:$arrRetItem['sku_effect_day'];
-            $arrFormatRetItem['cost_untaxed_price'] =  empty($arrRetItem['cost_price']) ? 0 :$arrRetItem['cost_price'];
-            $arrFormatRetItem['cost_taxed_price'] =  empty($arrRetItem['cost_price_tax']) ? 0 :$arrRetItem['cost_price_tax'];
-            $arrFormatRetItem['total_cost_untaxed_price'] =  empty($arrRetItem['cost_total_price']) ? 0 :$arrRetItem['cost_total_price'];
-            $arrFormatRetItem['total_cost_taxed_price'] =  empty($arrRetItem['cost_total_price_tax']) ? 0 :$arrRetItem['cost_total_price_tax'];
-            $arrFormatRetItem['send_untaxed_price'] =  empty($arrRetItem['send_price']) ? 0 :$arrRetItem['send_price'];
-            $arrFormatRetItem['send_taxed_price'] =  empty($arrRetItem['send_price_tax']) ? 0 :$arrRetItem['send_price_tax'];
-            $arrFormatRetItem['total_send_untaxed_price'] =  empty($arrRetItem['send_total_price']) ? 0 :$arrRetItem['send_total_price'];
-            $arrFormatRetItem['total_send_taxed_price'] =  empty($arrRetItem['send_total_price_tax']) ? 0 :$arrRetItem['send_total_price_tax'];
+            $arrFormatRetItem['cost_untaxed_price'] =  empty($arrRetItem['cost_price']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_price']);
+            $arrFormatRetItem['cost_taxed_price'] =  empty($arrRetItem['cost_price_tax']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_price_tax']);
+            $arrFormatRetItem['total_cost_untaxed_price'] =  empty($arrRetItem['cost_total_price']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_total_price']);
+            $arrFormatRetItem['total_cost_taxed_price'] =  empty($arrRetItem['cost_total_price_tax']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_total_price_tax']);
+            $arrFormatRetItem['send_untaxed_price'] =  empty($arrRetItem['send_price']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_price']);
+            $arrFormatRetItem['send_taxed_price'] =  empty($arrRetItem['send_price_tax']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_price_tax']);
+            $arrFormatRetItem['total_send_untaxed_price'] =  empty($arrRetItem['send_total_price']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_total_price']);
+            $arrFormatRetItem['total_send_taxed_price'] =  empty($arrRetItem['send_total_price_tax']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_total_price_tax']);
             $arrFormatRetItem['delivery_order_id'] =  empty($arrRetItem['logistics_order_id']) ? 0 :$arrRetItem['logistics_order_id'];
             $arrFormatRet['list'][] = $arrFormatRetItem;
 
