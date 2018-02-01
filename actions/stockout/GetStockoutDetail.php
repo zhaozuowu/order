@@ -64,7 +64,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
             $arrFormatRetItem['warehouse_name'] = empty($arrRetItem['warehouse_name']) ?  '' : $arrRetItem['warehouse_name'];
             $arrFormatRetItem['warehouse_id'] = empty($arrRetItem['warehouse_id']) ?  0 : $arrRetItem['warehouse_id'];
             $arrFormatRetItem['warehouse_session_privilege'] =
-                boolval(Nscm_Service_Auth::checkWarehouse([$arrRetItem['warehouse_id']]));
+                boolval(!Nscm_Service_Auth::checkWarehouse([$arrRetItem['warehouse_id']]));
             $arrFormatRetItem['business_form_order_type'] = empty($arrRetItem['stockout_order_source_describle']) ?  '' : $arrRetItem['stockout_order_source_describle'];
             $arrFormatRetItem['stockout_order_type'] = empty($arrRetItem['stockout_order_type_describle']) ?  '' : $arrRetItem['stockout_order_type_describle'];
             $arrFormatRetItem['business_form_create_time'] = empty($arrRetItem['order_create_time']) ?  0 : date('Y-m-d H:i:s',$arrRetItem['order_create_time']);

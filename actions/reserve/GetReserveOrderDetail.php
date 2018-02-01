@@ -47,7 +47,7 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
             $arrRoundResult['warehouse_id'] = empty($arrRet['warehouse_id']) ? 0
                 : intval($arrRet['warehouse_id']);
             $arrRoundResult['warehouse_session_privilege'] =
-                boolval(Nscm_Service_Auth::checkWarehouse([$arrRet['warehouse_id']]));
+                boolval(!Nscm_Service_Auth::checkWarehouse([$arrRet['warehouse_id']]));
             $arrRoundResult['warehouse_name'] =
                 empty($arrRet['warehouse_name']) ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                     : strval($arrRet['warehouse_name']);
