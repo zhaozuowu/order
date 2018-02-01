@@ -13,6 +13,7 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
      */
     protected $arrInputParams = [
         'reserve_order_id' => 'regex|patern[/^ASN\d{13}$/]',
+        'reserve_order_status' => 'int|default[0]',
         'page_num' => 'int|default[1]|min[1]|optional',
         'page_size' => 'int|required|min[0]|max[200]',
     ];
@@ -57,6 +58,7 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
             return $arrFormatResult;
         }
         $arrRetList = $arrRet['list'];
+        $boolHideCount = $this->hideCount();
         foreach ($arrRetList as $arrListItem) {
             $arrRoundResult = [];
             $arrRoundResult['upc_id'] = empty($arrListItem['upc_id']) ? ''
@@ -90,8 +92,7 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
             $arrRoundResult['reserve_order_sku_plan_amount'] =
                 empty($arrListItem['reserve_order_sku_plan_amount']) ? 0
                     : intval($arrListItem['reserve_order_sku_plan_amount']);
-            $arrRoundResult['stockin_order_sku_real_amount'] =
-                empty($arrListItem['stockin_order_sku_real_amount']) ? 0
+            $arrRoundResult['stockin_order_sku_real_amount'] = $boolHideCount ? '--'
                     : intval($arrListItem['stockin_order_sku_real_amount']);
             $arrRoundResult['stockin_order_sku_extra_info'] =
                 empty($arrListItem['stockin_order_sku_extra_info']) ? ''
@@ -107,5 +108,14 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
         Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $intUserId, $intAppId);
 
         return $arrFormatResult;
+    }
+
+    /**
+     * return - replace count
+     * @return bool
+     */
+    private function hideCount()
+    {
+        return boolval(isset(Order_Define_ReserveOrder::TRANS_NULL_TO[$this->arrFilterResult['reserve_order_status']]));
     }
 }
