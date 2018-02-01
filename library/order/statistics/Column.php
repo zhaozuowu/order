@@ -310,7 +310,7 @@ class Order_Statistics_Column
                 'array' => 'Order_Define_StockoutOrderDetail::STOCKOUT_ORDER_TYPE_MAP',
                 'replace' => 'stockout_order_type',
             ],
-            'logistics_order_id',
+            'logistics_order_id'=>'shipment_order_id',
             'stockout_order_source',
             'stockout_order_source_describle' => [
                 'type' => Order_Statistics_Type::ARRAY,
