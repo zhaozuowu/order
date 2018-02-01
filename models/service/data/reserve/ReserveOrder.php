@@ -405,7 +405,7 @@ class Service_Data_Reserve_ReserveOrder
         }
         $ret = [];
         $arrConditions = $this->getPrintConditions($arrOrderIds);
-        $arrColumns = ['reserve_order_id','purchase_order_id','vendor_name','vendor_id','warehouse_name','reserve_order_remark','warehouse_id','stockin_order_real_amount'];
+        $arrColumns = ['reserve_order_status', 'reserve_order_id','purchase_order_id','vendor_name','vendor_id','warehouse_name','reserve_order_remark','warehouse_id','stockin_order_real_amount'];
         $arrRetList = Model_Orm_ReserveOrder::findRows($arrColumns, $arrConditions);
         if (empty($arrRetList)) {
             return $ret;
