@@ -415,8 +415,8 @@ class Service_Data_BusinessFormOrder
     {
         $arrConditions = [];
         $arrConditions['is_delete'] = Order_Define_Const::NOT_DELETE;
-        if (!empty($arrInput['warehouse_id'])) {
-            $arrWareHouseIds = explode(',', $arrInput['warehouse_id']);
+        if (!empty($arrInput['warehouse_ids'])) {
+            $arrWareHouseIds = explode(',', $arrInput['warehouse_ids']);
             $arrConditions['warehouse_id'] = ['in', $arrWareHouseIds];
         }
         if (!empty($arrInput['status'])) {
