@@ -424,8 +424,8 @@ class Service_Data_StockoutOrder
     protected function getListConditions($arrInput)
     {
         $arrListConditions = [];
-        if (!empty($arrInput['warehouse_id'])) {
-            $arrWareHouseIds = explode(',', $arrInput['warehouse_id']);
+        if (!empty($arrInput['warehouse_ids'])) {
+            $arrWareHouseIds = explode(',', $arrInput['warehouse_ids']);
             $arrListConditions['warehouse_id'] = ['in', $arrWareHouseIds];
         }
         if (!empty($arrInput['stockout_order_id'])) {
