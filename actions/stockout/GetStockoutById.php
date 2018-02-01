@@ -49,6 +49,7 @@ class Action_GetStockoutById extends Order_Base_Action
             'stockout_order_status_text' => empty($arrRet['stockout_order_status']) ? '' : Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST[$arrRet['stockout_order_status']],
             'business_form_order_id' => empty($arrRet['business_form_order_id']) ? 0 : intval($arrRet['business_form_order_id']),
             'warehouse_id' => empty($arrRet['warehouse_id']) ? 0:  $arrRet['warehouse_id'],
+            'warehouse_session_privilege' => boolval(!Nscm_Service_Auth::checkWarehouse([$arrRet['warehouse_id']])),
             'warehouse_name' => empty($arrRet['warehouse_name']) ? '' : $arrRet['warehouse_name'],
             'stockout_order_type' => empty($arrRet['stockout_order_type']) ? '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrRet['stockout_order_type']],
             'stockout_order_source' => empty($arrRet['stockout_order_source']) ? '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_SOURCE_LIST[$arrRet['stockout_order_source']],
