@@ -374,16 +374,19 @@ class Service_Data_StockoutOrder
      */
     public function finishorder($strStockoutOrderId, $intSignupStatus, $arrSignupSkus)
     {
-        if (!in_array($intSignupStatus, Order_Define_StockoutOrder::SIGNUP_STATUS_LIST)) {
+        if (empty(Order_Define_StockoutOrder::SIGNUP_STATUS_LIST[$intSignupStatus])) {
+            Bd_Log::warning("signup_status is not in right status by:".$intSignupStatus.",stockoutOrder:".$strStockoutOrderId);
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
         $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
         if (empty($stockoutOrderInfo)) {
+            Bd_Log::warning("stockcoutOrderInfo no data:by stockoutOrderId：".$strStockoutOrderId);
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
         }
         $status = Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS;
         if ($stockoutOrderInfo['stockout_order_status'] != $status) {
+            Bd_Log::warning("stockoutOrderInfo can't modify stockout_order_status by stockoutOrderId:".$strStockoutOrderId);
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
         }
         return Model_Orm_StockoutOrder::getConnection()->transaction(function () use
