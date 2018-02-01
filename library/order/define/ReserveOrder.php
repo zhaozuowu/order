@@ -66,4 +66,14 @@ class Order_Define_ReserveOrder
     const ALLOW_STOCKIN = [
         self::STATUS_STOCKING => true,
     ];
+
+    /**
+     * 把0转成--
+     * @var array
+     */
+    const TRANS_NULL_TO = [
+        self::STATUS_STOCKING => true,
+        self::STATUS_DUPLICATE_HUMAN => true,
+        self::STATUS_DUPLICATE_TIME => true,
+    ];
 }
