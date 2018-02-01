@@ -80,7 +80,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
             $arrFormatRetItem['sku_category_text'] =(empty($arrRetItem['category_1']) && $arrRetItem['category_2'] && $arrRetItem['category_3'] ) ? '':$arrRetItem['category_1_text'].'/'.$arrRetItem['category_2_text'].'/'.$arrRetItem['category_3_text'];
             $skuNeText = isset(Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]) ? Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]:'';
             $arrFormatRetItem['sku_net'] = $arrRetItem['sku_net'].$skuNeText;
-            $arrFormatRetItem['is_import'] =  empty($arrRetItem['import_describle']) ? '' :$arrRetItem['import_describle'];
+            $arrFormatRetItem['is_import'] = isset(Order_Define_Sku::SKU_FROM_COUNTRY_MAP[$arrRetItem['import']]) ? Order_Define_Sku::SKU_FROM_COUNTRY_MAP[$arrRetItem['import']]:'';
             $arrFormatRetItem['upc_unit'] =  empty($arrRetItem['upc_unit']) ? 0 :$arrRetItem['upc_unit'];
             $arrFormatRetItem['upc_unit_text'] =  empty($arrRetItem['upc_unit_text']) ? '' :$arrRetItem['upc_unit_text'];
             $arrFormatRetItem['order_amount'] =  empty($arrRetItem['order_amount']) ? 0 :$arrRetItem['order_amount'];
