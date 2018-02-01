@@ -374,7 +374,7 @@ class Service_Data_StockoutOrder
      */
     public function finishorder($strStockoutOrderId, $intSignupStatus, $arrSignupSkus)
     {
-        if (!in_array($intSignupStatus, Order_Define_StockoutOrder::SIGNUP_STATUS_LIST) && empty($arrSignupSkus)) {
+        if (!in_array($intSignupStatus, Order_Define_StockoutOrder::SIGNUP_STATUS_LIST)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         $strStockoutOrderId = $this->trimStockoutOrderIdPrefix($strStockoutOrderId);
@@ -409,8 +409,10 @@ class Service_Data_StockoutOrder
                 $skuRejectAmount = $item['sku_reject_amount'];
                 if ($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_ACCEPT_ALL) {
                     $skuRejectAmount = 0;
+                    $skuAcceptAmount = !empty($skuInfo->pickup_amount) ? $skuInfo->pickup_amount:$skuAcceptAmount;
                 }elseif($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_REJECT_ALL) {
                     $skuAcceptAmount = 0;
+                    $skuRejectAmount = !empty($skuInfo->pickup_amount) ? $skuInfo->pickup_amount:$skuRejectAmount;
                 }elseif($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_ACCEPT_PART) {
                     $skuAcceptAmount = $item['sku_accept_amount'];
                     $skuRejectAmount = !empty($skuInfo->pickup_amount) ? ($skuInfo->pickup_amount - $skuAcceptAmount):$skuRejectAmount;

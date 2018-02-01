@@ -26,6 +26,7 @@ class Order_Define_StockoutOrder
      */
     const  SIGNUP_STATUS_LIST = [
       '1' => '签收',
+      '2' => '拒收',
       '3' => '部分签收',
     ];
 
