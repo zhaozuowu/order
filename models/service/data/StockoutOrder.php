@@ -119,6 +119,11 @@ class Service_Data_StockoutOrder
             if (empty($rs)) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
             }
+
+            Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
+                Order_Statistics_Type::ACTION_UPDATE,
+                $strStockoutOrderId);//更新报表
+
             $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
             $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
             $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
