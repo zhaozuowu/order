@@ -47,7 +47,7 @@ class Service_Page_Adjust_GetOrderDetail
         }
 
         $arrOrder = $this->objStockAdjustOrder->getByOrderId($arrInput['stock_adjust_order_id']);
-        if( (false === $arrOrder) || empty($arrOrder) ) {
+        if(empty($arrOrder)) {
             return [];
         }
 

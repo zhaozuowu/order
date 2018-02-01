@@ -82,7 +82,7 @@ class Action_GetSkuStockInfo extends Order_Base_Action
         $strSkuNetUnit = '';
 
         if(!empty($intSkuNetUnit)) {
-            $strSkuNetUnit = empty(Order_Define_Sku::SKU_NET_MAP[$intSkuNetUnit]) ? '' : Order_Define_Sku::SKU_NET_MAP[$intSkuNetUnit];
+            $strSkuNetUnit = empty(Nscm_Define_Sku::SKU_NET_UNIT_TEXT[$intSkuNetUnit]) ? '' : Nscm_Define_Sku::SKU_NET_UNIT_TEXT[$intSkuNetUnit];
         }
 
         return $strSkuNetUnit;
