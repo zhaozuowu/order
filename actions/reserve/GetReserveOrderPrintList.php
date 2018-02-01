@@ -7,7 +7,6 @@
 
 class Action_GetReserveOrderPrintList extends Order_Base_Action
 {
-
     /**
      * input params
      * @var array
@@ -39,6 +38,7 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
         $arrFormatRet = [];
         foreach($arrRet as $arrRetItem) {
             $arrFormatRetItem = [];
+            $boolHideRealAmount = isset(Order_Define_ReserveOrder::TRANS_NULL_TO[$arrRetItem['reserve_order_status']]);
             $arrFormatRetItem['reserve_order_id'] = empty($arrRetItem['reserve_order_id']) ?  '' : Nscm_Define_OrderPrefix::ASN.$arrRetItem['reserve_order_id'];
             $arrFormatRetItem['purchase_order_id'] = empty($arrRetItem['purchase_order_id']) ? 0 : Nscm_Define_OrderPrefix::PUR.$arrRetItem['purchase_order_id'];
             $arrFormatRetItem['vendor_name'] = empty($arrRetItem['vendor_name']) ? '' : $arrRetItem['vendor_name'];
@@ -47,9 +47,9 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
             $arrFormatRetItem['warehouse_contact'] = empty($arrRetItem['warehouse_contact']) ? '' : $arrRetItem['warehouse_contact'];
             $arrFormatRetItem['warehouse_contact_phone'] = empty($arrRetItem['warehouse_contact_phone']) ? '' : $arrRetItem['warehouse_contact_phone'];
             $arrFormatRetItem['reserve_order_remark'] = empty($arrRetItem['reserve_order_remark']) ? '' : $arrRetItem['reserve_order_remark'];
-            $arrFormatRetItem['stockin_order_real_amount'] = empty($arrRetItem['stockin_order_real_amount']) ? 0 : $arrRetItem['stockin_order_real_amount'];
+            $arrFormatRetItem['stockin_order_real_amount'] = $boolHideRealAmount ? '' : $arrRetItem['stockin_order_real_amount'];
             $arrFormatRetItem['sign_date'] = empty($arrRetItem['sign_date']) ? '' : $arrRetItem['sign_date'];
-            $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $this->formatSku($arrRetItem['skus']);
+            $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $this->formatSku($arrRetItem['skus'], $boolHideRealAmount);
             $arrFormatRet['list'][] = $arrFormatRetItem;
         }
         return $arrFormatRet;        
@@ -58,9 +58,10 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
     /**
      *format sku result
      * @param array $arrSkus
+     * @param bool $boolHideRealAmount
      * @return array
      */
-    public function formatSku($arrSkus) {
+    public function formatSku($arrSkus, $boolHideRealAmount) {
         $arrFormatSkus = [];
         if (empty($arrSkus)) {
             return $arrFormatSkus;
@@ -74,7 +75,7 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
             $arrFormatSkuItem['sku_net_text'] = $arrFormatSkuItem['sku_net'].$skuNeText;
             $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
             $arrFormatSkuItem['plan_amount'] = empty($arrSkuItem['reserve_order_sku_plan_amount']) ? 0 : $arrSkuItem['reserve_order_sku_plan_amount'];
-            $arrFormatSkuItem['real_amount'] = empty($arrSkuItem['stockin_order_sku_real_amount']) ? 0 : $arrSkuItem['stockin_order_sku_real_amount'];
+            $arrFormatSkuItem['real_amount'] = $boolHideRealAmount ? '' : $arrSkuItem['stockin_order_sku_real_amount'];
             $arrFormatSkus[] = $arrFormatSkuItem;
         }
         return $arrFormatSkus;
