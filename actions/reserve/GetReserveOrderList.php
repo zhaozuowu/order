@@ -79,8 +79,10 @@ class Action_GetReserveOrderList extends Order_Base_Action
                 Order_Util::getFormatDateTime($arrListItem['stockin_time']);
             $arrRoundResult['reserve_order_plan_amount'] = empty($arrListItem['reserve_order_plan_amount']) ? 0
                 : intval($arrListItem['reserve_order_plan_amount']);
-            $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? 0
-                : intval($arrListItem['stockin_order_real_amount']);
+            $arrRoundResult['stockin_order_real_amount'] =
+                isset(Order_Define_ReserveOrder::TRANS_NULL_TO[$arrListItem['reserve_order_status']]) ?
+                    Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                    : intval($arrListItem['stockin_order_real_amount']);
             $arrRoundResult['reserve_order_remark'] = empty($arrListItem['reserve_order_remark']) ? ''
                 : strval($arrListItem['reserve_order_remark']);
 
