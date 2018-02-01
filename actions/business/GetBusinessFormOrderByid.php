@@ -49,7 +49,6 @@ class Action_GetBusinessFormOrderByid extends Order_Base_Action
             'business_form_order_type_text' => empty($arrRet['business_form_order_type']) ? '' : Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_LIST[$arrRet['business_form_order_type']],
             'create_time' => empty($arrRet['create_time']) ? 0 : date('Y-m-d H:i:s', $arrRet['create_time']),
             'order_amount' => empty($arrRet['order_amount']) ? 0 : intval($arrRet['order_amount']),
-            'total_price' => empty($arrRet['business_form_order_price']) ? 0 : intval($arrRet['business_form_order_price']),
             'business_form_order_remark' => empty($arrRet['business_form_order_remark']) ? '' : $arrRet['business_form_order_remark'],
             'warehouse_name' => empty($arrRet['warehouse_name']) ? '' : $arrRet['warehouse_name'],
             'customer_id' => empty($arrRet['customer_id']) ? '' : $arrRet['customer_id'],

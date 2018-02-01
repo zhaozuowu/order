@@ -55,7 +55,6 @@ class Action_GetStockoutById extends Order_Base_Action
             'stockout_order_source' => empty($arrRet['stockout_order_source']) ? '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_SOURCE_LIST[$arrRet['stockout_order_source']],
             'stockout_create_time' => empty($arrRet['create_time']) ? 0 : date('Y-m-d H:i:s', $arrRet['create_time']),
             'stockout_expect_send_time' => date('Y-m-d H:i:s',$arrRet['expect_arrive_start_time'])."~".date('Y-m-d H:i:s',$arrRet['expect_arrive_end_time']),
-            'stockout_order_total_price' => empty($arrRet['stockout_order_total_price']) ? 0 : $arrRet['stockout_order_total_price'],
             'stockout_order_amount' => empty($arrRet['stockout_order_amount']) ? 0 : $arrRet['stockout_order_amount'],
             'stockout_order_distribute_amount' => empty($arrRet['stockout_order_distribute_amount']) ? 0 : $arrRet['stockout_order_distribute_amount'],
             'stockout_order_pickup_amount' => empty($arrRet['stockout_order_pickup_amount']) ? 0 : $arrRet['stockout_order_pickup_amount'],
@@ -85,10 +84,6 @@ class Action_GetStockoutById extends Order_Base_Action
             $arrFormatItem['sku_net'] = $arrItem['sku_net'].$skuNeText;
             $arrFormatItem['upc_unit_num'] = empty($arrItem['upc_unit_num']) ? '' : '1*' . $arrItem['upc_unit_num'];
             $arrFormatItem['upc_unit'] = isset(Order_Define_StockoutOrder::UPC_UNIT[$arrItem['upc_unit']]) ? Order_Define_StockoutOrder::UPC_UNIT[$arrItem['upc_unit']]:'';
-            $arrFormatItem['cost_price'] = empty($arrItem['cost_price']) ? 0 : $arrItem['cost_price'];
-            $arrFormatItem['cost_total_price'] = empty($arrItem['cost_total_price']) ? 0 : $arrItem['cost_total_price'];
-            $arrFormatItem['send_price'] = empty($arrItem['send_price']) ? 0 : $arrItem['send_price'];
-            $arrFormatItem['send_total_price'] = empty($arrItem['send_total_price']) ? 0 : $arrItem['send_total_price'];
             $arrFormatItem['order_amount'] = empty($arrItem['order_amount']) ? 0 : $arrItem['order_amount'];
             $arrFormatItem['distribute_amount'] = empty($arrItem['distribute_amount']) ? 0 : $arrItem['distribute_amount'];
             $arrFormatItem['pickup_amount'] = empty($arrItem['pickup_amount']) ? 0 : $arrItem['pickup_amount'];
