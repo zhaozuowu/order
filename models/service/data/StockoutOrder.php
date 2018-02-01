@@ -533,6 +533,10 @@ class Service_Data_StockoutOrder
             if (empty($result)) {
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
             }
+
+            Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
+                Order_Statistics_Type::ACTION_UPDATE,
+                $strStockoutOrderId);//更新报表
             $res = [];
             if (empty($pickupSkus)) {
                 return $res;
