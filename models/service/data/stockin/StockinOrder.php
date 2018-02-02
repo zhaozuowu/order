@@ -393,15 +393,18 @@ class Service_Data_Stockin_StockinOrder
                 if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $arrDbSku['sku_effect_type']) {
                     $intProductionTime = intval($skuRow['expire_date']);
                     $intExpireTime = $intProductionTime + intval($arrDbSku['sku_effect_day']) * 86400;
+                    $arrBatchInfo[] = [
+                        'expire_time' => $intExpireTime,
+                        'production_time' => $intProductionTime,
+                        'amount'      => $skuRow['amount'],
+                    ];
                 } else {
-                    $intExpireTime = intval($skuRow['expire_date']) + 86400;
-                    $intProductionTime = $intExpireTime - intval($arrDbSku['sku_effect_day']) * 86400;
+                    $intExpireTime = intval($skuRow['expire_date']) + 86399;
+                    $arrBatchInfo[] = [
+                        'expire_time' => $intExpireTime,
+                        'amount'      => $skuRow['amount'],
+                    ];
                 }
-                $arrBatchInfo[] = [
-                    'expire_time' => $intExpireTime,
-                    'production_time' => $intProductionTime,
-                    'amount'      => $skuRow['amount'],
-                ];
             }
         }
         return $arrBatchInfo;
