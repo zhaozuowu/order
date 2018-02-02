@@ -141,6 +141,8 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
                 : intval($arrListItem['sku_net_unit']);
             $arrRoundResult['sku_net_unit_text'] = empty($arrListItem['sku_net_unit_text']) ? ''
                 : strval($arrListItem['sku_net_unit_text']);
+            $arrRoundResult['sku_net_number_unit_text'] =
+                $arrRoundResult['sku_net'] . $arrRoundResult['sku_net_unit_text'];
             $arrRoundResult['upc_id'] = empty($arrListItem['upc_id']) ? ''
                 : strval($arrListItem['upc_id']);
             $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? 0
