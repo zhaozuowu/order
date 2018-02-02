@@ -92,7 +92,7 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
                 : json_decode($arrListItem['stockin_order_sku_extra_info'], true);
             foreach ($arrSkuExtInf as $item => $value) {
                 if (isset($value['expire_date'])) {
-                    $arrSkuExtInf[$item]['expire_date'] = Order_Util::getFormatDateTime(intval($value['expire_date']));
+                    $arrSkuExtInf[$item]['expire_date'] = Order_Util::getFormatDate(intval($value['expire_date']));
                 }
             }
             $arrRoundResult['stockin_order_sku_extra_info'] = empty($arrSkuExtInf) ? '' : json_encode($arrSkuExtInf);
