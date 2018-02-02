@@ -7,6 +7,7 @@
 class Controller_Stockin extends Ap_Controller_Abstract {
     public $actions = array(
         'createstockinorder' => 'actions/stockin/CreateStockinOrder.php', #创建入库单#
+        'createstockinstockoutorder' => 'actions/stockin/CreateStockinOrder.php', #创建销退入库单#
         'getstockinorderlist' => 'actions/stockin/GetStockinOrderList.php', #查询入库单列表（分页）#
         'getstockinstockoutorderlist' => 'actions/stockin/GetStockinOrderList.php', #查询销退入库单列表（分页）#
         'getstockinorderdetail' => 'actions/stockin/GetStockinOrderDetail.php', #查询入库单详情#
