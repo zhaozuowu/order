@@ -160,7 +160,7 @@ class Action_GetStockinReserveDetailFormApi extends Order_Base_ApiAction
             $arrRoundResult['expire_date'] =
                 intval($arrListItem['expire_date']) ?? 0;
             $arrRoundResult['expire_date_text'] =
-                Order_Util::getFormatDateTime(strval($arrListItem['expire_date']));
+                Order_Util::getFormatDate(strval($arrListItem['expire_date']));
             $arrRoundResult['reserve_order_plan_amount'] = empty($arrListItem['reserve_order_plan_amount']) ? 0
                 : intval($arrListItem['reserve_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? 0

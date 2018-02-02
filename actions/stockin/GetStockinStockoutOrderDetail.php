@@ -53,6 +53,11 @@ class Action_GetStockinStockoutOrderDetail extends Order_Base_Action
             $strSourceOrderId = '';
             // 不同的入库单类型对应的前缀
             $intStockInType = intval($arrRet['stockin_order_type']);
+            // 不显示非销退入库类型的
+            if(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT != $intStockInType){
+                return $arrFormatResult;
+            }
+
             if (!empty($intStockInType)) {
                 if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockInType) {
                     $strSourceOrderId = empty($arrRet['source_order_id']) ? ''

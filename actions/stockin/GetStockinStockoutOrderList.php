@@ -12,11 +12,12 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'stockin_order_type' => 'str|required',
+        // 2 - SOO - 销退入库类型
+        'stockin_order_type' => 'int|2',
         'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
         'warehouse_ids' => 'str|required',
         'source_supplier_id' => 'int|min[0]',
-        'source_order_id' => 'regex|patern[/^((ASN|SOO)\d{13})?$/]',
+        'source_order_id' => 'regex|patern[/^(SOO\d{13})?$/]',
         'create_time_start' => 'int|min[0]',
         'create_time_end' => 'int|min[0]',
         'stockin_order_plan_time_start' => 'int|min[0]',
