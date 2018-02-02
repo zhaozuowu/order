@@ -137,7 +137,7 @@ class Action_GetStockinReserveDetailFormApi extends Order_Base_ApiAction
                 empty($arrListItem['sku_from_country_text']) ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                     : strval($arrListItem['sku_from_country_text']);
             $arrRoundResult['sku_net'] =
-                empty($arrListItem['sku_net']) ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                empty($arrListItem['sku_net']) ? '0'
                     : strval($arrListItem['sku_net']);
             $arrRoundResult['sku_net_unit'] = empty($arrListItem['sku_net_unit']) ? 0
                 : intval($arrListItem['sku_net_unit']);
