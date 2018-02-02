@@ -125,7 +125,7 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
             $arrRoundResult['sku_from_country_text'] =
                 empty($arrListItem['sku_from_country_text']) ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                     : strval($arrListItem['sku_from_country_text']);
-            $arrRoundResult['sku_net'] = empty($arrListItem['sku_net']) ? 0
+            $arrRoundResult['sku_net'] = empty($arrListItem['sku_net']) ? '0'
                 : strval($arrListItem['sku_net']);
             $arrRoundResult['sku_net_unit'] = empty($arrListItem['sku_net_unit']) ? 0
                 : intval($arrListItem['sku_net_unit']);
