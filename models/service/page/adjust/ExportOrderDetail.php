@@ -101,7 +101,7 @@ class Service_Page_Adjust_ExportOrderDetail
                 }
 
                 if(!empty($arrSkuInfo['sku_net_unit'])) {
-                    $detail['sku_net_unit_str'] = Order_Define_Sku::SKU_NET_MAP[$arrSkuInfo['sku_net_unit']];
+                    $detail['sku_net_unit_str'] = Nscm_Define_Sku::SKU_NET_UNIT_TEXT[$arrSkuInfo['sku_net_unit']];
                 }
 
                 if(!empty($arrSkuInfo['min_upc'])) {
