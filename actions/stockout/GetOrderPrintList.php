@@ -7,8 +7,6 @@
 
 class Action_GetOrderPrintList extends Order_Base_Action
 {
-    protected $boolCheckAuth = false;
-    protected $boolCheckLogin = false;
     /**
      * input params
      * @var array
@@ -78,6 +76,7 @@ class Action_GetOrderPrintList extends Order_Base_Action
         }
         foreach($arrSkus as $arrSkuItem) {
             $arrFormatSkuItem = [];
+            $arrFormatSkuItem['sku_id'] = empty($arrSkuItem['sku_id']) ? 0 : $arrSkuItem['sku_id'];
             $arrFormatSkuItem['upc_id'] = empty($arrSkuItem['upc_id']) ? '' : $arrSkuItem['upc_id'];
             $arrFormatSkuItem['sku_name'] = empty($arrSkuItem['sku_name']) ? '' : $arrSkuItem['sku_name'];
             $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ?
