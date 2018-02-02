@@ -46,6 +46,7 @@ class Action_GetStockoutOrderSkus extends Order_Base_Action
                                                         '' : Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST[$arrRet['stockout_order_status']];
         foreach ((array)$arrRet['skus'] as $arrRetItem) {
             $arrFormatRetItem = [];
+            $strSkuNeText = isset(Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]) ? Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]:'';
             $arrFormatRetItem['sku_name'] = empty($arrRetItem['sku_name']) ? '' : $arrRetItem['sku_name'];
             $arrFormatRetItem['sku_id'] = empty($arrRetItem['sku_id']) ? 0 : $arrRetItem['sku_id'];
             $arrFormatRetItem['upc_id'] = empty($arrRetItem['upc_id']) ? '' : $arrRetItem['upc_id'];
@@ -58,7 +59,7 @@ class Action_GetStockoutOrderSkus extends Order_Base_Action
             $arrFormatRetItem['upc_unit_text'] = empty($arrRetItem['upc_unit']) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$arrRetItem['upc_unit']];
             $arrFormatRetItem['upc_unit_num'] = empty($arrRetItem['upc_unit_num']) ? 0 : $arrRetItem['upc_unit_num'];
             $arrFormatRetItem['upc_unit_num_text'] = empty($arrRetItem['upc_unit_num']) ? '' : '1*'.$arrRetItem['upc_unit_num'];
-            $arrFormatRetItem['sku_net'] = empty($arrRetItem['sku_net']) ? '' : $arrRetItem['sku_net'];
+            $arrFormatRetItem['sku_net'] = empty($arrRetItem['sku_net']) ? '' : $arrRetItem['sku_net'] . $strSkuNeText;
             $arrFormatRetItem['pickup_amount'] = empty($arrRetItem['pickup_amount']) ? 0 : $arrRetItem['pickup_amount'];
             $arrFormatRet['skus'][] = $arrFormatRetItem;
         }
