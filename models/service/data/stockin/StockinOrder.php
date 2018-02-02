@@ -392,7 +392,7 @@ class Service_Data_Stockin_StockinOrder
             if ($skuRow['amount'] > 0) {
                 if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $arrDbSku['sku_effect_type']) {
                     $intProductionTime = intval($skuRow['expire_date']);
-                    $intExpireTime = $intProductionTime + intval($arrDbSku['sku_effect_day']) * 86400;
+                    $intExpireTime = $intProductionTime + intval($arrDbSku['sku_effect_day']) * 86400 - 1;
                     $arrBatchInfo[] = [
                         'expire_time' => $intExpireTime,
                         'production_time' => $intProductionTime,
