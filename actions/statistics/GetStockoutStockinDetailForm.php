@@ -148,7 +148,7 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
             $arrRoundResult['expire_date'] = empty($arrListItem['expire_date']) ? 0
                 : intval($arrListItem['expire_date']);
             $arrRoundResult['expire_date_text'] =
-                Order_Util::getFormatDateTime($arrListItem['expire_date']) ?? '';
+                Order_Util::getFormatDate($arrListItem['expire_date']) ?? '';
             $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? 0
                 : intval($arrListItem['stockin_order_real_amount']);
             $arrRoundResult['sku_price'] = sprintf('%0.2f',
