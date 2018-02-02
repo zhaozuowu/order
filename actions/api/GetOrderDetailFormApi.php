@@ -86,8 +86,7 @@ class Action_GetOrderDetailFormApi extends Order_Base_ApiAction
             $arrFormatDetail['sku_category_2_name']    = empty($detail['sku_category_2_name']) ? '' : strval($detail['sku_category_2_name']);
             $arrFormatDetail['sku_category_3_name']    = empty($detail['sku_category_3_name']) ? '' : strval($detail['sku_category_3_name']);
             $arrFormatDetail['sku_from_country']    = empty($detail['sku_from_country_str']) ? '' : strval($detail['sku_from_country_str']);
-            $arrFormatDetail['sku_net']    = empty($detail['sku_net']) ? '' : strval($detail['sku_net']);
-            $arrFormatDetail['sku_net_unit']    = empty($detail['sku_net_unit_str']) ? '' : strval($detail['sku_net_unit_str']);
+            $arrFormatDetail['sku_net']    = empty($detail['sku_net']) ? '' : strval($detail['sku_net']) . $detail['sku_net_unit_str'];
             $arrFormatDetail['adjust_amount']    = empty($detail['adjust_amount']) ? '' : strval($detail['adjust_amount']);
             $arrFormatDetail['unit_price']    = empty($detail['unit_price']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price']);
             $arrFormatDetail['unit_price_tax']    = empty($detail['unit_price_tax']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price_tax']);
