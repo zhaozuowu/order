@@ -88,6 +88,7 @@ class Service_Data_Sku
             $arrBatchSkuParams[$intKey]['upc_unit_num'] = $arrMapSkuInfos[$intSkuId]['min_upc']['upc_unit_num'];
             $arrBatchSkuParams[$intKey]['sku_effect_type'] = $arrMapSkuInfos[$intSkuId]['sku_effect_type'];
             $arrBatchSkuParams[$intKey]['sku_effect_day'] = $arrMapSkuInfos[$intSkuId]['sku_effect_day'];
+            $arrBatchSkuParams[$intKey]['sku_category_text'] = $arrMapSkuInfos[$intSkuId]['sku_category_text'];
             $arrBatchSkuParams[$intKey]['sku_business_form'] = implode(',', $arrMapSkuInfos[$intSkuId]['sku_business_form']);
             $arrBatchSkuParams[$intKey]['send_price_info'] =
                 $this->getSendPriceInfo($arrMapSkuInfos[$intSkuId]['sku_business_form_detail'], $intOrderType);
