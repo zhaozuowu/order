@@ -45,6 +45,8 @@ class Service_Page_Business_CreateBusinessFormOrder {
         $arrInput = $this->objDsBusinessFormOrder->createBusinessFormOrder($arrInput);
         if (Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_FAILED
             == $arrInput['business_form_order_status']) {
+            Bd_Log::warning(sprintf("createbusinessformorder failed business_form_order_id[%s]",
+                                        $arrInput['business_form_order_id']));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR);
         }
         //异步创建出库单
