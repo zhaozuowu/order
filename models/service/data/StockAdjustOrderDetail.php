@@ -20,7 +20,8 @@ class Service_Data_StockAdjustOrderDetail
         $arrColumns = Model_Orm_StockAdjustOrderDetail::getAllColumns();
 
         $arrConditions = $this->getConditions($arrInput);
-        $arrOrderBy = ['sku_id' => 'asc'];
+        // 库存调整明细：仓库ID排期（ID从小到大）> 创建时间倒序
+        $arrOrderBy = ['warehouse_id' => 'asc', 'id' => 'desc'];
         if(empty($arrInput['page_num'])) {
             $arrInput['page_num'] = 1;
         }

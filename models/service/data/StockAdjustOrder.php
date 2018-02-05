@@ -139,7 +139,7 @@ class Service_Data_StockAdjustOrder
 
         $arrColumns = Model_Orm_StockAdjustOrder::getAllColumns();
         $arrConditions = $this->getConditions($arrInput);
-        $arrOrderBy = ['warehouse_id' => 'asc', 'create_time' => 'desc'];
+        $arrOrderBy = ['warehouse_id' => 'asc', 'id' => 'desc'];
 
         $intOffset = 0;
         $intLimit = null;
