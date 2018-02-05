@@ -72,9 +72,7 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
             $arrFormatResult = $arrRoundResult;
         }
 
-        $intUserId = $this->arrSession['user_id'];
-        $intAppId = $this->arrSession['system'];
-        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $intUserId, $intAppId);
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult);
 
         return $arrFormatResult;
     }

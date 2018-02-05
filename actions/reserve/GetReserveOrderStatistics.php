@@ -55,9 +55,7 @@ class Action_GetReserveOrderStatistics extends Order_Base_Action
         $arrRoundResult['reserve_order_status'] = 0;
         $arrRoundResult['reserve_order_status_count'] = $intTotal;
         $arrFormatResult['list'][] = $arrRoundResult;
-        $intUserId = $this->arrSession['user_id'];
-        $intAppId = $this->arrSession['system'];
-        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $intUserId, $intAppId);
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult);
 
         return $arrFormatResult;
     }
