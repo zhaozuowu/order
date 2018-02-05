@@ -40,6 +40,12 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
     ];
 
     /**
+     * show price switch
+     * @var bool $boolHidePrice
+     */
+    protected $boolHidePrice = false;
+
+    /**
      * method
      * @var int
      */
