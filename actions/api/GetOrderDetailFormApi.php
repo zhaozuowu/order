@@ -110,6 +110,7 @@ class Action_GetOrderDetailFormApi extends Order_Base_ApiAction
 
         $arrFormatResult['total'] = $data['total'];
 
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult['list']);
         return $arrFormatResult;
     }
 }
