@@ -93,14 +93,14 @@ class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
             $arrFormatRetItem['pickup_amount'] =  empty($arrRetItem['pickup_amount']) ? 0 :$arrRetItem['pickup_amount'];
             $arrFormatRetItem['sku_effect_type'] =  empty($arrRetItem['sku_effect_type']) ? '' :Order_Define_StockoutOrderDetail::SKU_EFFECT_TYPE[$arrRetItem['sku_effect_type']];
             $arrFormatRetItem['sku_effect_day'] =  empty($arrRetItem['sku_effect_day']) ? 0:$arrRetItem['sku_effect_day'];
-            $arrFormatRetItem['cost_untaxed_price'] =  empty($arrRetItem['cost_price']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_price']);
-            $arrFormatRetItem['cost_taxed_price'] =  empty($arrRetItem['cost_price_tax']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_price_tax']);
-            $arrFormatRetItem['total_cost_untaxed_price'] =  empty($arrRetItem['cost_total_price']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_total_price']);
-            $arrFormatRetItem['total_cost_taxed_price'] =  empty($arrRetItem['cost_total_price_tax']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_total_price_tax']);
-            $arrFormatRetItem['send_untaxed_price'] =  empty($arrRetItem['send_price']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_price']);
-            $arrFormatRetItem['send_taxed_price'] =  empty($arrRetItem['send_price_tax']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_price_tax']);
-            $arrFormatRetItem['total_send_untaxed_price'] =  empty($arrRetItem['send_total_price']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_total_price']);
-            $arrFormatRetItem['total_send_taxed_price'] =  empty($arrRetItem['send_total_price_tax']) ? 0 :Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_total_price_tax']);
+            $arrFormatRetItem['cost_untaxed_price'] =  empty($arrRetItem['cost_price']) ? 0 :sprintf('%0.2f',Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_price']));
+            $arrFormatRetItem['cost_taxed_price'] =  empty($arrRetItem['cost_price_tax']) ? 0 :sprintf('%0.2f',Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_price_tax']));
+            $arrFormatRetItem['total_cost_untaxed_price'] =  empty($arrRetItem['cost_total_price']) ? 0 :sprintf('%0.2f',Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_total_price']));
+            $arrFormatRetItem['total_cost_taxed_price'] =  empty($arrRetItem['cost_total_price_tax']) ? 0 :sprintf('%0.2f',Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_total_price_tax']));
+            $arrFormatRetItem['send_untaxed_price'] =  empty($arrRetItem['send_price']) ? 0 :sprintf('%0.2f',Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_price']));
+            $arrFormatRetItem['send_taxed_price'] =  empty($arrRetItem['send_price_tax']) ? 0 :sprintf('%0.2f',Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_price_tax']));
+            $arrFormatRetItem['total_send_untaxed_price'] =  empty($arrRetItem['send_total_price']) ? 0 :sprintf('%0.2f',Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_total_price']));
+            $arrFormatRetItem['total_send_taxed_price'] =  empty($arrRetItem['send_total_price_tax']) ? 0 :sprintf('%0.2f',Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_total_price_tax']));
             $arrFormatRetItem['delivery_order_id'] =  empty($arrRetItem['logistics_order_id']) ? 0 :$arrRetItem['logistics_order_id'];
             $arrFormatRet['list'][] = $arrFormatRetItem;
 
