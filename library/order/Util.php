@@ -44,7 +44,7 @@ class Order_Util
     }
 
     /**
-     * 对输入的Unix时间戳进行格式转换
+     * 对输入的Unix时间戳进行格式转换，到秒
      * 如果输入为0则返回默认的空字符串格式
      * @param integer $unixTime
      * @return false|string
@@ -56,6 +56,21 @@ class Order_Util
         }
 
         return date('Y-m-d H:i:s', intval($unixTime));
+    }
+
+    /**
+     * 对输入的Unix时间戳进行格式转换，只包含日期信息
+     * 如果输入为0则返回默认的空字符串格式
+     * @param integer $unixTime
+     * @return false|string
+     */
+    public static function getFormatDate($unixTime)
+    {
+        if(0 == $unixTime){
+            return Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
+        }
+
+        return date('Y-m-d', intval($unixTime));
     }
 
     /**

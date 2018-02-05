@@ -71,7 +71,7 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
             $arrRoundResult['upc_unit_text'] =
                 empty($arrListItem['upc_unit']) ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                     : Order_Define_Sku::UPC_UNIT_MAP[$arrListItem['upc_unit']]
-                        ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
+                    ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? 0
                 : intval($arrListItem['upc_unit_num']);
             $arrRoundResult['stockin_order_sku_total_price_tax_yuan'] = sprintf('%0.2f',
@@ -86,8 +86,16 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
                 : intval($arrListItem['reserve_order_sku_plan_amount']);
             $arrRoundResult['stockin_order_sku_real_amount'] = empty($arrListItem['stockin_order_sku_real_amount']) ? 0
                 : intval($arrListItem['stockin_order_sku_real_amount']);
-            $arrRoundResult['stockin_order_sku_extra_info'] = empty($arrListItem['stockin_order_sku_extra_info']) ? ''
-                : strval($arrListItem['stockin_order_sku_extra_info']);
+
+            // 数据库存放的stockin_order_sku_extra_info是json编码的Unix时间戳，转为文本形式时间给FE
+            $arrSkuExtInf = empty($arrListItem['stockin_order_sku_extra_info']) ? ''
+                : json_decode($arrListItem['stockin_order_sku_extra_info'], true);
+            foreach ($arrSkuExtInf as $item => $value) {
+                if (isset($value['expire_date'])) {
+                    $arrSkuExtInf[$item]['expire_date'] = Order_Util::getFormatDate(intval($value['expire_date']));
+                }
+            }
+            $arrRoundResult['stockin_order_sku_extra_info'] = empty($arrSkuExtInf) ? '' : json_encode($arrSkuExtInf);
 
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult['list'][] = $arrRoundResult;

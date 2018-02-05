@@ -311,7 +311,7 @@ class Service_Data_StockoutOrder
         $arrCreateParams['executor'] = empty($arrInput['executor']) ? '' : strval($arrInput['executor']);
         $arrCreateParams['executor_contact'] = empty($arrInput['executor_contact']) ? '' : strval($arrInput['executor_contact']);
         $arrCreateParams['stockout_order_source'] = empty($arrInput['business_form_order_type']) ? 0 : intval($arrInput['business_form_order_type']);
-        $arrCreateParams['stockout_order_remark'] = empty($arrInput['stockout_order_remark']) ? '' : strval($arrInput['business_form_order_remark']);
+        $arrCreateParams['stockout_order_remark'] = empty($arrInput['business_form_order_remark']) ? '' : strval($arrInput['business_form_order_remark']);
         $arrCreateParams['stockout_order_total_price'] = empty($arrInput['stockout_order_total_price']) ?
                                                             0 : intval($arrInput['stockout_order_total_price']);
         return $arrCreateParams;
@@ -353,6 +353,7 @@ class Service_Data_StockoutOrder
             $arrSkuCreateParams['send_total_price_tax'] = empty($arrItem['send_total_price_tax']) ?
                                                             0 : intval($arrItem['send_total_price_tax']);
             $arrSkuCreateParams['sku_business_form'] = empty($arrItem['sku_business_form']) ? '' : strval($arrItem['sku_business_form']);
+            $arrSkuCreateParams['sku_category_text'] = empty($arrItem['sku_category_text']) ? '' : strval($arrItem['sku_category_text']);
             $arrSkuCreateParams['sku_tax_rate'] = empty($arrItem['sku_tax_rate']) ? 0 : intval($arrItem['sku_tax_rate']);
             $arrSkuCreateParams['import'] = empty($arrItem['import']) ? 0 : intval($arrItem['import']);
             $arrSkuCreateParams['stockout_order_id'] = $intStockoutOrderId;
@@ -653,6 +654,7 @@ class Service_Data_StockoutOrder
         if (empty($arrInput['stockout_order_id'])) {
             Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
         }
+        $arrInput['stockout_order_id'] = $this->trimStockoutOrderIdPrefix($arrInput['stockout_order_id']);
         $arrConditions = $this->getOrderSkuConditions($arrInput);
         return Model_Orm_StockoutOrderSku::count($arrConditions);
     }

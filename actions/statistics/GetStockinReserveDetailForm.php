@@ -135,12 +135,14 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
                 : intval($arrListItem['sku_from_country']);
             $arrRoundResult['sku_from_country_text'] = empty($arrListItem['sku_from_country_text']) ? ''
                 : strval($arrListItem['sku_from_country_text']);
-            $arrRoundResult['sku_net'] = empty($arrListItem['sku_net']) ? ''
+            $arrRoundResult['sku_net'] = empty($arrListItem['sku_net']) ? '0'
                 : strval($arrListItem['sku_net']);
             $arrRoundResult['sku_net_unit'] = empty($arrListItem['sku_net_unit']) ? 0
                 : intval($arrListItem['sku_net_unit']);
             $arrRoundResult['sku_net_unit_text'] = empty($arrListItem['sku_net_unit_text']) ? ''
                 : strval($arrListItem['sku_net_unit_text']);
+            $arrRoundResult['sku_net_number_unit_text'] =
+                $arrRoundResult['sku_net'] . $arrRoundResult['sku_net_unit_text'];
             $arrRoundResult['upc_id'] = empty($arrListItem['upc_id']) ? ''
                 : strval($arrListItem['upc_id']);
             $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? 0
@@ -155,7 +157,7 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
             $arrRoundResult['expire_date'] =
                 intval($arrListItem['expire_date']) ?? 0;
             $arrRoundResult['expire_date_text'] =
-                Order_Util::getFormatDateTime(strval($arrListItem['expire_date']));
+                Order_Util::getFormatDate(strval($arrListItem['expire_date']));
             $arrRoundResult['reserve_order_plan_amount'] = empty($arrListItem['reserve_order_plan_amount']) ? 0
                 : intval($arrListItem['reserve_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrListItem['stockin_order_real_amount']) ? 0

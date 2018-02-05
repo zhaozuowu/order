@@ -7,8 +7,6 @@
 
 class Action_GetOrderPrintList extends Order_Base_Action
 {
-    protected $boolCheckAuth = false;
-    protected $boolCheckLogin = false;
     /**
      * input params
      * @var array
@@ -78,13 +76,14 @@ class Action_GetOrderPrintList extends Order_Base_Action
         }
         foreach($arrSkus as $arrSkuItem) {
             $arrFormatSkuItem = [];
+            $arrFormatSkuItem['sku_id'] = empty($arrSkuItem['sku_id']) ? 0 : $arrSkuItem['sku_id'];
             $arrFormatSkuItem['upc_id'] = empty($arrSkuItem['upc_id']) ? '' : $arrSkuItem['upc_id'];
             $arrFormatSkuItem['sku_name'] = empty($arrSkuItem['sku_name']) ? '' : $arrSkuItem['sku_name'];
             $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ?
                                             '' : ($arrSkuItem['sku_net'] . Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]);
             $arrFormatSkuItem['upc_unit_text'] = empty(Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']]) ?
                                                     0 : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
-            if ($intStatus > Order_Define_StockoutOrder::STAY_RECEIVED_STOCKOUT_ORDER_STATUS) {
+            if ($intStatus >= Order_Define_StockoutOrder::STAY_RECEIVED_STOCKOUT_ORDER_STATUS) {
                 $arrFormatSkuItem['pickup_amount'] = empty($arrSkuItem['pickup_amount']) ? 0 : $arrSkuItem['pickup_amount'];
             } else {
                 $arrFormatSkuItem['pickup_amount'] = '';
