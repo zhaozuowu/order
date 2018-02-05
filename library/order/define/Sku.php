@@ -98,8 +98,8 @@ class Order_Define_Sku
      * @var array
      */
     const SKU_EFFECT_TYPE_EXPIRE_MAP = [
-        self::SKU_EFFECT_TYPE_PRODUCT => '生产日期',
-        self::SKU_EFFECT_TYPE_EXPIRE => '失效日期',
+        self::SKU_EFFECT_TYPE_PRODUCT => '生产日期型',
+        self::SKU_EFFECT_TYPE_EXPIRE => '失效日期型',
     ];
 
     /**
