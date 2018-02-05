@@ -54,7 +54,7 @@ class Action_GetStockinStockoutOrderDetail extends Order_Base_Action
             // 不同的入库单类型对应的前缀
             $intStockInType = intval($arrRet['stockin_order_type']);
             // 不显示非销退入库类型的
-            if(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT != $intStockInType){
+            if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT != $intStockInType) {
                 return $arrFormatResult;
             }
 
@@ -81,10 +81,10 @@ class Action_GetStockinStockoutOrderDetail extends Order_Base_Action
                     : intval($arrRet['reserve_order_plan_time']);
             $arrRoundResult['reserve_order_plan_time_text'] =
                 Order_Util::getFormatDateTime($arrRet['reserve_order_plan_time']);
-            $arrRoundResult['stockin_order_total_price_yuan'] = sprintf('%0.2f',
-                Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price']));
-            $arrRoundResult['stockin_order_total_price_tax_yuan'] = sprintf('%0.2f',
-                Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price_tax']));
+            $arrRoundResult['stockin_order_total_price_yuan'] =
+                Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price']);
+            $arrRoundResult['stockin_order_total_price_tax_yuan'] =
+                Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price_tax']);
             $arrRoundResult['stockin_order_plan_amount'] = empty($arrRet['stockin_order_plan_amount']) ? 0
                 : intval($arrRet['stockin_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrRet['stockin_order_real_amount']) ? 0
