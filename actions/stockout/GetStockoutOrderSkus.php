@@ -52,8 +52,8 @@ class Action_GetStockoutOrderSkus extends Order_Base_Action
             $arrFormatRetItem['upc_id'] = empty($arrRetItem['upc_id']) ? '' : $arrRetItem['upc_id'];
             $arrFormatRetItem['sku_category'] = empty($arrRetItem['sku_category']) ? 0 : $arrRetItem['sku_category'];
             $arrFormatRetItem['sku_category_text'] = empty($arrRetItem['sku_category_text']) ? '' : $arrRetItem['sku_category_text'];
-            $arrFormatRetItem['cost_price'] = empty($arrRetItem['cost_price']) ? 0 : Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_price']);
-            $arrFormatRetItem['cost_price_tax'] = empty($arrRetItem['cost_price_tax']) ? 0 : Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_price_tax']);
+           //$arrFormatRetItem['cost_price'] = empty($arrRetItem['cost_price']) ? 0 : Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_price']);
+            //$arrFormatRetItem['cost_price_tax'] = empty($arrRetItem['cost_price_tax']) ? 0 : Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_price_tax']);
             $arrFormatRetItem['sku_tax_rate'] = empty($arrRetItem['sku_tax_rate']) ? 0 : Order_Define_Sku::SKU_TAX_RATE[$arrRetItem['sku_tax_rate']];
             $arrFormatRetItem['upc_unit'] = empty($arrRetItem['upc_unit']) ? 0 : $arrRetItem['upc_unit'];
             $arrFormatRetItem['upc_unit_text'] = empty($arrRetItem['upc_unit']) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$arrRetItem['upc_unit']];

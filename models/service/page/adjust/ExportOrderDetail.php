@@ -140,7 +140,7 @@ class Service_Page_Adjust_ExportOrderDetail
         $daoRalSku = new Dao_Ral_Sku();
         $arrSkuInfos = $daoRalSku->getSkuInfos($arrSkuIds);
         if(empty($arrSkuInfos)) {
-            Bd_Log::warning('获取SKU结果为空', Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED, $arrSkuIds);
+            Bd_Log::warning('get sku info failed. call ral failed', Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED, $arrSkuIds);
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED);
         }
         return $arrSkuInfos;
@@ -153,7 +153,7 @@ class Service_Page_Adjust_ExportOrderDetail
      */
     protected function getWarehouseInfos($warehouseIds)
     {
-        Bd_Log::trace(__METHOD__ . ' param ' . print_r($warehouseIds, true));
+        Bd_Log::debug(__METHOD__ . ' param ' . print_r($warehouseIds, true));
         if(empty($warehouseIds)) {
             return [];
         }
@@ -163,10 +163,10 @@ class Service_Page_Adjust_ExportOrderDetail
         $ralWarehouse = new Dao_Ral_Order_Warehouse();
         $arrWarehouseInfos = $ralWarehouse->getWareHouseList($warehouseIds);
 
-        Bd_Log::trace(__METHOD__ . ' ret ' . print_r($arrWarehouseInfos, true));
+        Bd_Log::trace(__METHOD__ . ' ret ' . json_encode($arrWarehouseInfos));
 
         if(empty($arrWarehouseInfos) || empty($arrWarehouseInfos['query_result'])) {
-            Bd_Log::warning('查询仓库信息为空' . print_r($warehouseIds, true));
+            Bd_Log::warning('get warehouse info failed. call ral failed' . json_encode($warehouseIds));
             return [];
         }
 
