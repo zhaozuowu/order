@@ -63,8 +63,8 @@ class Order_Define_StockoutOrderDetail
      * 效期类型
      */
     const  SKU_EFFECT_TYPE = [
-        '1' => '生产日期',
-        '2' =>'失效日期',
+        '1' => '生产日期型',
+        '2' =>'失效日期型',
     ];
 
 
