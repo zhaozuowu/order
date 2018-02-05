@@ -111,6 +111,7 @@ class Action_GetOrderDetailForm extends Order_Base_Action
 
         $arrFormatResult['total'] = $data['total'];
 
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult['list']);
         return $arrFormatResult;
     }
 }
