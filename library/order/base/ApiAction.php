@@ -32,5 +32,5 @@ abstract class Order_Base_ApiAction extends Order_Base_BaseAction
      * show price switch
      * @var bool $boolHidePrice
      */
-    protected $boolHidePrice = true;
+    protected $boolHidePrice = false;
 }
