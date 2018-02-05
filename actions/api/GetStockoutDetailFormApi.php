@@ -105,6 +105,7 @@ class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
             $arrFormatRet['list'][] = $arrFormatRetItem;
 
         }
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatRet['list']);
         return $arrFormatRet;
     }
 
