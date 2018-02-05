@@ -155,6 +155,9 @@ class Service_Data_StockoutOrder
     {
         $skuList = [];
         foreach ($arrStockoutDetail as $key => $item) {
+            if(empty($item['distribute_amount']) ) {
+                continue;
+            }
             $row['sku_id'] = $item['sku_id'];
             $row['frozen_amount'] = intval($item['distribute_amount']);
             $row['stockout_amount'] =intval($item['pickup_amount']);
