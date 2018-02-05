@@ -52,7 +52,7 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
             $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $this->formatSku($arrRetItem['skus'], $boolHideRealAmount);
             $arrFormatRet['list'][] = $arrFormatRetItem;
         }
-        return $arrFormatRet;        
+        return $arrFormatRet;
     }
 
     /**

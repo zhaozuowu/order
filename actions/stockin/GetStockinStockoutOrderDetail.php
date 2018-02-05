@@ -102,9 +102,7 @@ class Action_GetStockinStockoutOrderDetail extends Order_Base_Action
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult = $arrRoundResult;
         }
-        $intUserId = $this->arrSession['user_id'];
-        $intAppId = $this->arrSession['system'];
-        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $intUserId, $intAppId);
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult);
 
         return $arrFormatResult;
     }
