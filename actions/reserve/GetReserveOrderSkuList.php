@@ -71,7 +71,7 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
                 : intval($arrListItem['upc_unit']);
             $arrRoundResult['upc_unit_text'] =
                 Order_Define_Sku::UPC_UNIT_MAP[intval($arrListItem['upc_unit'])]
-                    ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
+                ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? 0
                 : intval($arrListItem['upc_unit_num']);
             $arrRoundResult['sku_net'] = empty($arrListItem['sku_net']) ? ''
@@ -80,20 +80,20 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
                 : intval($arrListItem['sku_net_unit']);
             $arrRoundResult['sku_net_unit_text'] =
                 Order_Define_Sku::SKU_NET_MAP[intval($arrListItem['sku_net_unit'])]
-                    ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
-            $arrRoundResult['sku_price_yuan'] = sprintf('%0.2f',
-                Nscm_Service_Price::convertDefaultToYuan($arrListItem['sku_price']));
-            $arrRoundResult['sku_price_tax_yuan'] = sprintf('%0.2f',
-                Nscm_Service_Price::convertDefaultToYuan($arrListItem['sku_price_tax']));
-            $arrRoundResult['reserve_order_sku_total_price_yuan'] = sprintf('%0.2f',
-                Nscm_Service_Price::convertDefaultToYuan($arrListItem['reserve_order_sku_total_price']));
-            $arrRoundResult['reserve_order_sku_total_price_tax_yuan'] = sprintf('%0.2f',
-                Nscm_Service_Price::convertDefaultToYuan($arrListItem['reserve_order_sku_total_price_tax']));
+                ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
+            $arrRoundResult['sku_price_yuan'] =
+                Nscm_Service_Price::convertDefaultToYuan($arrListItem['sku_price']);
+            $arrRoundResult['sku_price_tax_yuan'] =
+                Nscm_Service_Price::convertDefaultToYuan($arrListItem['sku_price_tax']);
+            $arrRoundResult['reserve_order_sku_total_price_yuan'] =
+                Nscm_Service_Price::convertDefaultToYuan($arrListItem['reserve_order_sku_total_price']);
+            $arrRoundResult['reserve_order_sku_total_price_tax_yuan'] =
+                Nscm_Service_Price::convertDefaultToYuan($arrListItem['reserve_order_sku_total_price_tax']);
             $arrRoundResult['reserve_order_sku_plan_amount'] =
                 empty($arrListItem['reserve_order_sku_plan_amount']) ? 0
                     : intval($arrListItem['reserve_order_sku_plan_amount']);
             $arrRoundResult['stockin_order_sku_real_amount'] = $boolHideCount ? '--'
-                    : intval($arrListItem['stockin_order_sku_real_amount']);
+                : intval($arrListItem['stockin_order_sku_real_amount']);
             $arrRoundResult['stockin_order_sku_extra_info'] =
                 empty($arrListItem['stockin_order_sku_extra_info']) ? ''
                     : strval($arrListItem['stockin_order_sku_extra_info']);

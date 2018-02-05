@@ -76,10 +76,10 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
                     : intval($arrRet['reserve_order_plan_time']);
             $arrRoundResult['reserve_order_plan_time_text'] =
                 Order_Util::getFormatDateTime($arrRet['reserve_order_plan_time']);
-            $arrRoundResult['stockin_order_total_price_yuan'] = sprintf('%0.2f',
-                Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price']));
-            $arrRoundResult['stockin_order_total_price_tax_yuan'] = sprintf('%0.2f',
-                Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price_tax']));
+            $arrRoundResult['stockin_order_total_price_yuan'] =
+                Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price']);
+            $arrRoundResult['stockin_order_total_price_tax_yuan'] =
+                Nscm_Service_Price::convertDefaultToYuan($arrRet['stockin_order_total_price_tax']);
             $arrRoundResult['stockin_order_plan_amount'] = empty($arrRet['stockin_order_plan_amount']) ? 0
                 : intval($arrRet['stockin_order_plan_amount']);
             $arrRoundResult['stockin_order_real_amount'] = empty($arrRet['stockin_order_real_amount']) ? 0
