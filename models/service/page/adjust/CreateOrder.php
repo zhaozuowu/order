@@ -35,6 +35,7 @@ class Service_Page_Adjust_CreateOrder
     {
         // 生成一个调整单号
         $arrInput['stock_adjust_order_id'] = Order_Util_Util::generateStockAdjustOrderId();
+        Bd_Log::trace('generate stock adjust order id: ' . $arrInput['stock_adjust_order_id']);
 
         // 创建调整单
         $arrOutput = $this->objStockAdjustOrder->createAdjustOrder($arrInput);

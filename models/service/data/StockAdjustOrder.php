@@ -37,7 +37,7 @@ class Service_Data_StockAdjustOrder
         $arrSkuIds = array_unique(array_column($arrInput['detail'], 'sku_id'));
 
         if(count($arrSkuIds) > Order_Define_StockAdjustOrder::STOCK_ADJUST_ORDER_MAX_SKU) {
-            Bd_Log::warning('调整SKU个数超过上限', Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH, $arrInput);
+            Bd_Log::warning('exceed the maximum number of sku amount', Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH, $arrInput);
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH);
         }
 
@@ -56,7 +56,7 @@ class Service_Data_StockAdjustOrder
 
         $arrRet = $this->insert($arrOrderArg, $arrOrderDetailArg);
 
-        Bd_Log::trace('新建调整单 ' . print_r($arrInput, true));
+        Bd_Log::trace('create stock adjust order return ' . print_r($arrRet, true));
         return $arrRet;
     }
 
@@ -70,7 +70,7 @@ class Service_Data_StockAdjustOrder
     protected function getSkuStocks($intWarehouseId, $arrSkuIds) {
         $arrStocks = $this->objDaoStock->getStockInfo($intWarehouseId, $arrSkuIds);
         if(empty($arrStocks)) {
-            Bd_Log::warning(__METHOD__ . ' 库存调整-出库 ral 调用失败' . print_r($arrStocks, true));
+            Bd_Log::warning(__METHOD__ . ' get sku stock failed. call ral failed.');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
         }
 
@@ -99,6 +99,12 @@ class Service_Data_StockAdjustOrder
         $arrSkuIds = array_unique($arrSkuIds);
 
         $arrSkuInfos = $this->objDaoSku->getSkuInfos($arrSkuIds);
+
+        if(empty($arrSkuInfos)) {
+            Bd_Log::warning(__METHOD__ . ' get sku info failed. call ral failed.');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED);
+        }
+
         return $arrSkuInfos;
     }
 
@@ -110,8 +116,8 @@ class Service_Data_StockAdjustOrder
      */
     public function insert($arrOrderArg, $arrOrderDetailArg)
     {
-        Bd_Log::debug('新建调整单' . print_r($arrOrderArg, true));
-        Bd_Log::debug('新建调整单详情' . print_r($arrOrderDetailArg, true));
+        Bd_Log::trace('insert into stock adjust order ' . json_encode($arrOrderArg));
+        Bd_Log::trace('insert into stock adjust order detail ' . json_encode($arrOrderDetailArg));
 
         // 新建调整单和调整单详情
         return Model_Orm_StockAdjustOrder::getConnection()->transaction(function () use ($arrOrderArg, $arrOrderDetailArg) {
@@ -190,7 +196,7 @@ class Service_Data_StockAdjustOrder
         if(!empty($arrInput['adjust_type'])) {
             $strAdjustType = Nscm_Define_Stock::ADJUST_TYPE_MAP[$arrInput['adjust_type']];
             if(empty($strAdjustType)) {
-                Bd_Log::warning('调整单类型不正确', Order_Error_Code::PARAMS_ERROR, $arrInput);
+                Bd_Log::warning('adjust type invalid ', Order_Error_Code::PARAMS_ERROR, $arrInput);
                 Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
             }
             $arrFormatInput['adjust_type'] = $arrInput['adjust_type'];
@@ -216,7 +222,7 @@ class Service_Data_StockAdjustOrder
     {
         $strAdjustType = Nscm_Define_Stock::ADJUST_TYPE_MAP[$arrInput['adjust_type']];
         if(empty($strAdjustType)) {
-            Bd_Log::warning('调整单类型不正确', Order_Error_Code::PARAMS_ERROR, $arrInput);
+            Bd_Log::warning('adjust type invalid ', Order_Error_Code::PARAMS_ERROR, $arrInput);
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
 
@@ -226,7 +232,7 @@ class Service_Data_StockAdjustOrder
         }
 
         if($intTotalAmount <= 0) {
-            Bd_Log::warning('调整单数量不正确', Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR, $arrInput);
+            Bd_Log::warning('adjust amount invalid ', Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR, $arrInput);
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR);
         }
 
@@ -234,7 +240,7 @@ class Service_Data_StockAdjustOrder
         $strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
 
         if(empty($intCreator) || empty($strCreatorName)) {
-            Bd_Log::warning('获取用户信息失败', Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR, $arrInput);
+            Bd_Log::warning('get user info failed ', Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR, $arrInput);
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR);
         }
 
@@ -269,26 +275,26 @@ class Service_Data_StockAdjustOrder
             $arrDetail['adjust_type'] = $arrInput['adjust_type'];
             $strAdjustType = Nscm_Define_Stock::ADJUST_TYPE_MAP[$arrDetail['adjust_type']];
             if(empty($strAdjustType)) {
-                Bd_Log::warning('detail中调整单类型不正确', Order_Error_Code::PARAMS_ERROR, $arrInput);
+                Bd_Log::warning('adjust type invalid in detail param', Order_Error_Code::PARAMS_ERROR, $arrInput);
                 Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
             }
 
             if(intval($arrDetail['adjust_amount']) <= 0) {
-                Bd_Log::warning('detail中调整数量不正确', Order_Error_Code::PARAMS_ERROR, $arrInput);
+                Bd_Log::warning('adjust amount invalid in detail param', Order_Error_Code::PARAMS_ERROR, $arrInput);
                 Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
             }
 
 
             $arrSkuInfo = $arrSkuInfos[$arrDetail['sku_id']];
             if(empty($arrSkuInfo)) {
-                Bd_Log::warning("sku id不存在" . $arrDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
+                Bd_Log::warning("sku info is empty. sku id: " . $arrDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR);
             }
 
             $arrStockInfo = $arrStockInfos[$arrDetail['sku_id']];
             if(empty($arrStockInfo) ||
                 !isset($arrStockInfo['cost_unit_price']) || !isset($arrStockInfo['cost_unit_price_tax'])) {
-                Bd_Log::warning("当前SKU没获取到成本价" . $arrDetail['sku_id'],
+                Bd_Log::warning("sku stock is empty. sku id: " . $arrDetail['sku_id'],
                     Order_Error_Code::NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED, $arrInput);
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED);
             }
@@ -336,13 +342,13 @@ class Service_Data_StockAdjustOrder
     protected function adjustStock($arrInput, $arrSkuInfos)
     {
         if(empty($arrInput['adjust_type'])) {
-            Bd_Log::warning(__METHOD__ . ' 库存调整类型不正确 '. print_r($arrInput, true));
+            Bd_Log::warning(__METHOD__ . ' adjust type invalid '. print_r($arrInput, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_TYPE_ERROR);
         }
 
         $strStockType = Nscm_Define_Stock::ADJUST_TYPE_MAP[$arrInput['adjust_type']];
         if(empty($strStockType)) {
-            Bd_Log::warning(__METHOD__ . ' 库存调整类型不正确 '. print_r($arrInput, true));
+            Bd_Log::warning(__METHOD__ . ' adjust type invalid  '. print_r($arrInput, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_TYPE_ERROR);
         }
 
@@ -356,7 +362,7 @@ class Service_Data_StockAdjustOrder
             $arrStockOut = $this->getCreateBatchStockOutArg($arrInput);
             $batchStockRet = $this->createBatchStockOut($arrStockOut);
         } else {
-            Bd_Log::warning(__METHOD__ . ' 库存调整类型不正确 '. print_r($arrInput, true));
+            Bd_Log::warning(__METHOD__ . ' adjust type invalid  '. print_r($arrInput, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_TYPE_ERROR);
         }
 
@@ -386,7 +392,7 @@ class Service_Data_StockAdjustOrder
             $arrSkuInfo = $arrSkuInfos[$intSkuId];
 
             if(empty($arrSkuInfo)) {
-                Bd_Log::warning("无效的sku id" . $arrDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
+                Bd_Log::warning("sku info is empty. sku id: " . $arrDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR);
             }
 
@@ -422,9 +428,9 @@ class Service_Data_StockAdjustOrder
     protected function createBatchStockIn($arrStockIn)
     {
         $arrRet = [];
-        Bd_Log::debug('调用库存模块参数 ' . print_r($arrStockIn,true));
+        //Bd_Log::trace('ral call stock increase ' . json_encode($arrStockIn));
         $arrRet =  Nscm_Service_Stock::stockin($arrStockIn);
-        Bd_Log::trace('调用库存模块返回值 ' . print_r($arrRet,true));
+        Bd_Log::trace('ral call stock increase return ' . print_r($arrRet,true));
         return $arrRet;
     }
 
@@ -463,7 +469,7 @@ class Service_Data_StockAdjustOrder
     protected function createBatchStockOut($arrStockOut)
     {
         $arrRet = [];
-        Bd_Log::debug('调用库存模块参数 ' . print_r($arrStockOut,true));
+        Bd_Log::trace('ral call stock decrease param: ' . json_encode($arrStockOut));
 
         $arrRet =  $this->objDaoStock->adjustStockout(
             $arrStockOut['stockin_order_id'],
@@ -471,7 +477,7 @@ class Service_Data_StockAdjustOrder
             $arrStockOut['inventory_type'],
             $arrStockOut['stockout_details']);
 
-        Bd_Log::trace('调用库存模块返回值 ' . print_r($arrRet,true));
+        Bd_Log::trace('ral call stock decrease return:  ' . print_r($arrRet,true));
     }
 
     /**
@@ -485,7 +491,7 @@ class Service_Data_StockAdjustOrder
     public function getEffectTime($arrDetail, $intSkuEffectType, $intSkuEffectDay)
     {
         if(empty($intSkuEffectType)) {
-            Bd_Log::warning('sku效期类型为空 ' . $intSkuEffectType);
+            Bd_Log::warning('sku effect type is empty ' . $intSkuEffectType);
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
         }
 
@@ -494,7 +500,7 @@ class Service_Data_StockAdjustOrder
         // 如果是生产日期型的，有效期天数必传
         if(Nscm_Define_Sku::SKU_EFFECT_FROM === $intSkuEffectType) {
             if(!is_numeric($intSkuEffectDay) || $intSkuEffectDay < 0) {
-                Bd_Log::warning('sku有效期天数不正确 ' . $intSkuEffectDay);
+                Bd_Log::warning('sku effect day invalid ' . $intSkuEffectDay);
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
             }
         }
@@ -508,7 +514,7 @@ class Service_Data_StockAdjustOrder
             $arrDetail['production_time'] = '';
             $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'];
         } else {
-            Bd_Log::warning('未识别的sku效期类型 ' . $intSkuEffectType);
+            Bd_Log::warning('sku effect type invalid ' . $intSkuEffectType);
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
         }
 
@@ -522,11 +528,11 @@ class Service_Data_StockAdjustOrder
      */
     protected function getAdjustAmountType($intAdjustType) {
         if(in_array($intAdjustType, Nscm_Define_Stock::STOCK_IN_TYPE)) {
-            return 1;
+            return Nscm_Define_Stock::TYPE_STOCK_IN;
         } else if(in_array($intAdjustType, Nscm_Define_Stock::STOCK_OUT_TYPE)) {
-            return 2;
+            return Nscm_Define_Stock::TYPE_STOCK_OUT;
         } else {
-            Bd_Log::warning(__METHOD__ . ' 库存调整类型不正确 ');
+            Bd_Log::warning(__METHOD__ . ' adjust stock type invalid ');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_TYPE_ERROR);
         }
     }

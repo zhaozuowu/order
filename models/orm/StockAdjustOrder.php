@@ -50,7 +50,7 @@ class Model_Orm_StockAdjustOrder extends Order_Base_Orm
         Bd_Log::debug(__METHOD__ . '  param ', 0, $stock_adjust_order_id);
 
         if(empty($stock_adjust_order_id)) {
-            Bd_Log::warning('调整单id不正确', Order_Error_Code::PARAMS_ERROR, $stock_adjust_order_id);
+            Bd_Log::warning('stock adjust order id invalid', Order_Error_Code::PARAMS_ERROR, $stock_adjust_order_id);
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
 
