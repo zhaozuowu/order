@@ -174,6 +174,9 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
             $arrFormatResult['list'][] = $arrRoundResult;
         }
         $arrFormatResult['total'] = $arrRet['total'];
+        $intUserId = $this->arrSession['user_id'];
+        $intAppId = $this->arrSession['system'];
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $intUserId, $intAppId);
 
         return $arrFormatResult;
     }
