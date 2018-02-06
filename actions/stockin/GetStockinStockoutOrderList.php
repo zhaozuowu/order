@@ -111,9 +111,8 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
         }
 
         $arrFormatResult['total'] = $arrRet['total'];
-        $intUserId = $this->arrSession['user_id'];
-        $intAppId = $this->arrSession['system'];
-        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult, $intUserId, $intAppId);
+        Nscm_Service_Format_Data::filterIllegalData($arrFormatResult['list']);
+
         return $arrFormatResult;
     }
 }
