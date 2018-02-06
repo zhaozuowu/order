@@ -51,7 +51,7 @@ class Model_Orm_StockoutOrderSku extends Order_Base_Orm
         'sku_net',
         'sku_net_unit',
         'upc_unit',
-        'sum(pickup_amount) as pickup_amount',
+        'sum(distribute_amount) as pickup_amount',
     ];
 
     /**
