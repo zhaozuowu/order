@@ -387,7 +387,7 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
         }
         $status = Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS;
-        if ($stockoutOrderInfo['stockout_order_status'] != $status) {
+        if (($stockoutOrderInfo['stockout_order_status'] != $status) || array_key_exists($stockoutOrderInfo['signup_status'],Order_Define_StockoutOrder::STOCKOUT_SIGINUP_STATUS_LIST)) {
             Bd_Log::warning("stockoutOrderInfo can't modify stockout_order_status by stockoutOrderId:".$strStockoutOrderId);
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
         }
@@ -414,10 +414,10 @@ class Service_Data_StockoutOrder
                 $skuRejectAmount = $item['sku_reject_amount'];
                 if ($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_ACCEPT_ALL) {
                     $skuRejectAmount = 0;
-                    $skuAcceptAmount = !empty($skuInfo->pickup_amount) ? $skuInfo->pickup_amount:$skuAcceptAmount;
+                    $skuAcceptAmount = $skuInfo->pickup_amount;
                 }elseif($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_REJECT_ALL) {
                     $skuAcceptAmount = 0;
-                    $skuRejectAmount = !empty($skuInfo->pickup_amount) ? $skuInfo->pickup_amount:$skuRejectAmount;
+                    $skuRejectAmount = $skuInfo->pickup_amount;
                 }elseif($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_ACCEPT_PART) {
                     $skuAcceptAmount = $item['sku_accept_amount'];
                     $skuRejectAmount = !empty($skuInfo->pickup_amount) ? ($skuInfo->pickup_amount - $skuAcceptAmount):$skuRejectAmount;
