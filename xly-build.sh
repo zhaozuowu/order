@@ -11,5 +11,3 @@ cp -r conf/*  output/conf/app
 cp -r index.php  output/webroot/$APP_NAME
 cd output
 find ./ -name .svn -exec rm -rf {} \;
-tar cvzf $SVN_NAME.tar.gz app webroot conf
-rm -rf app webroot php conf
