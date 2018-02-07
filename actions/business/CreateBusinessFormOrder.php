@@ -5,9 +5,8 @@
  * @author jinyu02@iwaimai.baidu.com
  */
 
-class Action_CreateBusinessFormOrder extends Order_Base_Action {
-	protected $boolCheckLogin = false;
-	protected $boolCheckAuth = false;
+class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
+
 	/**
 	 * input params
 	 * @var array

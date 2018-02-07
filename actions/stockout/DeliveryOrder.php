@@ -5,7 +5,7 @@
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
-class Action_DeliveryOrder extends Order_Base_Action
+class Action_DeliveryOrder extends Order_Base_ApiAction
 {
 
     /**
