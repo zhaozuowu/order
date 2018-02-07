@@ -5,7 +5,7 @@ BeforeBuild:
 Build:
     script : ./build.sh
 AfterBuild:
-    script :
+    script : ./xly-build.sh
 Package:
     script :
     artifacts:
