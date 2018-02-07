@@ -5,22 +5,9 @@
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
-class Action_DeliveryOrder extends Order_Base_Action
+class Action_DeliveryOrder extends Order_Base_ApiAction
 {
-
-    /**
-     * 是否验证登陆
-     *
-     * @var boolean
-     */
-    protected $boolCheckLogin = false;
-
-    /**
-     * 判断是否有权限
-     *
-     * @var boolean
-     */
-    protected $boolCheckAuth = false;
+    
     /**
      * input params
      * @var array
