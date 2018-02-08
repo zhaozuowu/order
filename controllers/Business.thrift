@@ -1,6 +1,5 @@
-namespace php BusinessThrift
-namespace java me.ele.BusinessThrift
-#namespace python BusinessThrift
+namespace php Business
+namespace java me.ele.Business
 #创建业态订单返回异常
 exception OrderUserException {
     1: string cl, #错误分类
@@ -33,7 +32,7 @@ struct ShelfInfo {
 }
 #业态订单信
 struct BusinessFormOrderInfo {
-    1:required i32 logistics_order_id,
+    1:required string logistics_order_id,
     2:required ShelfInfo shelf_info,
     3:required i32 business_form_order_type,
     4:required i32 order_supply_type,
@@ -52,7 +51,7 @@ struct BusinessFormOrderInfo {
     17:required list<BusinessFormOrderSku> skus 
 }
 #服务定义
-service BusinessThriftService {
+service BusinessService {
     Data createBusinessFormOrder(1:required BusinessFormOrderInfo objBusinessFormOrderInfo)
         throws (1: OrderUserException userException)
 }
