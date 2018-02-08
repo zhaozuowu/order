@@ -404,8 +404,20 @@ class Service_Data_StockoutOrder
             $userName = Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
             $this->addLog($userId, $userName, '完成签收:'.$strStockoutOrderId,$operationType, $strStockoutOrderId);
             $res = [];
-            if (empty($arrSignupSkus)) {
-                return $res;
+            if (empty($arrSignupSkus) && $intSignupStatus != Order_Define_StockoutOrder::STOCKOUT_SIGINUP_REJECT_ALL ) {
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SIGNUP_SKUS_NOT_EXISTS);
+            }
+            if ($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_REJECT_ALL) {
+
+                $condition = ['stockout_order_id' => $strStockoutOrderId];
+                $ormSkuInfo = $this->objOrmSku->findAll($condition);
+                foreach($ormSkuInfo as $skuInfo) {
+                   $skuInfo->upc_accept_amount = 0;
+                   $skuInfo->upc_reject_amount = $skuInfo->pickup_amount;
+                   $skuInfo->update();
+                }
+                return [];
+
             }
             foreach ($arrSignupSkus as $item) {
                 $condition = ['stockout_order_id' => $strStockoutOrderId, 'sku_id' => $item['sku_id']];
