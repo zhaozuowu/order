@@ -14,6 +14,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS => '出库单sku不存在',
         Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE => '出库单状态不允许修改',
         Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL => '出库订单更新失败',
+        Order_Error_Code::NWMS_STOCKOUT_ORDER_SIGNUP_SKUS_NOT_EXISTS => '签收数量不存在',
         Order_Error_Code::NWMS_STOCKOUT_ADJUST_SKU_STOCK_FAIL=> '库存扣减失败',
         Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL=>'仓库完成拣货失败',
         Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_AMOUNT_ERROR=>'拣货数量有误',
