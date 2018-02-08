@@ -83,6 +83,7 @@ class Dao_Ral_Stock
         }
         $ret = $this->objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_FREEZE_SKU_STOCK]) ? [] : $ret[self::API_RALER_FREEZE_SKU_STOCK];
+        Bd_Log::trace(sprintf("method[%s] ret[%s]", __METHOD__, json_encode($ret)));
         return $ret;
     }
 

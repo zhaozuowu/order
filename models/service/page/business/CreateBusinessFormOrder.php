@@ -39,6 +39,7 @@ class Service_Page_Business_CreateBusinessFormOrder {
      */
     public function execute($arrInput) {
         //同步创建业态订单
+        $this->objDsStockoutFormOrder->checkRepeatSubmit($arrInput['customer_id']);
         $arrInput['skus'] = $this->objDsSku->appendSkuInfosToSkuParams($arrInput['skus'],
                                                 $arrInput['business_form_order_type']);
         $arrInput = $this->objDsStockoutFormOrder->assembleStockoutOrder($arrInput);
@@ -50,7 +51,6 @@ class Service_Page_Business_CreateBusinessFormOrder {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR);
         }
         //异步创建出库单
-        $this->objDsStockoutFormOrder->checkRepeatSubmit($arrInput['customer_id']);
         $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER, $arrInput,
                                             strval($arrInput['stockout_order_id']));
         if (false === $ret) {

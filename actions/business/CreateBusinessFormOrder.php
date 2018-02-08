@@ -19,7 +19,7 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 		'customer_id' => 'str|required',
 		'customer_name' => 'str|required|max[32]',
 		'customer_contactor' => 'str|required|max[32]',
-		'customer_contact' => 'str|required|len[11]',
+		'customer_contact' => 'str|required|max[11]|min[11]',
 		'customer_address' => 'str|required|max[256]',
 		'customer_location' => 'str|required|max[128]',
 		'customer_location_source' => 'int|required',
@@ -28,7 +28,7 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 		'customer_region_id' => 'int|required',
 		'customer_region_name' => 'str|required|max[32]',
 		'executor' => 'str|required|max[32]',
-        'executor_contact' => 'str|required|len[11]',
+        'executor_contact' => 'str|required|max[11]|min[11]',
         'expect_arrive_time' => [
 			'validate' => 'json|decode|required',
 			'type' => 'map',
