@@ -50,6 +50,7 @@ class Service_Data_BusinessFormOrder
             == $arrInput['business_form_order_status']) {
             list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $this->getFreezeStockParams($arrInput);
             $arrStockSkus = $this->objDaoStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
+            var_dump($arrStockSkus);exit;
             $arrInput = $this->appendStockSkuInfoToOrder($arrInput, $arrStockSkus);
             $arrInput = $this->appendSkuTotalAmountToOrder($arrInput);
         }
@@ -223,7 +224,7 @@ class Service_Data_BusinessFormOrder
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR);
         }
         //无人货架信息校验
-        $arrShelfInfo = json_decode($arrInput['shelf_info'], true);
+        $arrShelfInfo = $arrInput['shelf_info'];
         if (empty($arrShelfInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR);
         }
