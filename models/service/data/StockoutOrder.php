@@ -1036,11 +1036,11 @@ class Service_Data_StockoutOrder
      */
     public function getStockoutInfoByLogisticsOrderId($strLogisticsOrderId) {
         if (empty($strLogisticsOrderId)) {
-            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+            return [];
         }
         $arrRet = Model_Orm_StockoutOrder::getStockoutOrderInfoByLogisticsOrderId($strLogisticsOrderId);
         if (empty($arrRet)) {
-            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+            return [];
         }
         $arrStockoutOrderInfo = $arrRet[0];
         $arrStockoutOrderInfo['skus'] = $this->objOrmSku->getSkuInfoById($arrStockoutOrderInfo['stockout_order_id']);

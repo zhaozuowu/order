@@ -20,6 +20,7 @@ class Controller_BusinessService extends Nscm_Base_ControllerService {
      * @return array
      */
     public function createBusinessFormOrder($arrRequest) {
+        $arrRequest = $arrRequest['objBusinessFormOrderInfo'];
         $objAction = new Action_Service_CreateBusinessFormOrder($arrRequest);
         return $objAction->execute();
     }

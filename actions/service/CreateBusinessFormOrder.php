@@ -12,7 +12,6 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 	protected $arrInputParams = [
 	    'logistics_order_id' => 'str|required',
 		'business_form_order_type' => 'int|required',
-		'business_form_order_price' => 'int|required',
 		'shelf_info' => 'str|required',
 		'business_form_order_remark' => 'str',
 		'customer_id' => 'str|required',
