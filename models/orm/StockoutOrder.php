@@ -170,7 +170,7 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
         $arrColumns = self::getAllColumns();
         $arrRet = self::findRows($arrColumns, $arrCondtions);
         if (empty($arrRet)) {
-            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+            return [];
         }
         return $arrRet;
     }
