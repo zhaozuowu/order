@@ -4,7 +4,6 @@
  * @desc sku service data
  * @author wanggang01@iwaimai.baidu.com
  */
-
 class Service_Data_Sku
 {
     /**

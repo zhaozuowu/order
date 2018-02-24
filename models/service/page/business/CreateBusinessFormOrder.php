@@ -38,8 +38,12 @@ class Service_Page_Business_CreateBusinessFormOrder {
      * @throws Order_Error
      */
     public function execute($arrInput) {
-        //同步创建业态订单
-        $this->objDsStockoutFormOrder->checkRepeatSubmit($arrInput['customer_id']);
+        //校验是否重复创建
+        $arrRet = $this->objDsStockoutFormOrder->checkRepeatSubmit($arrInput['customer_id']);
+        if (!empty($arrRet)) {
+            return $arrRet;
+        }
+        //同步创建出库单
         $arrInput['skus'] = $this->objDsSku->appendSkuInfosToSkuParams($arrInput['skus'],
                                                 $arrInput['business_form_order_type']);
         $arrInput = $this->objDsStockoutFormOrder->assembleStockoutOrder($arrInput);

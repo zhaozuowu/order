@@ -247,10 +247,15 @@ class Service_Data_StockoutOrder
     /**
      * 校验重复提交
      * @param string $strCustomerId
-     * @return void
+     * @package string $strLogisticsOrderId
+     * @return mixed
      * @throws Order_BusinessError
      */
-    public function checkRepeatSubmit($strCustomerId) {
+    public function checkRepeatSubmit($strCustomerId, $strLogisticsOrderId) {
+        $arrStockoutOrderInfo = $this->getStockoutInfoByLogisticsOrderId($strLogisticsOrderId);
+        if (!empty($arrStockoutOrderInfo)) {
+            return $arrStockoutOrderInfo;
+        }
         if ($this->objDaoRedisStockoutOrder->getValByCustomerId($strCustomerId)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT);
         }
@@ -260,7 +265,6 @@ class Service_Data_StockoutOrder
     /**
      * @param array $arrInput
      * @return array
-     * @throws Order_BusinessError
      */
     public function assembleStockoutOrder($arrInput) {
         $intStockoutOrderId = Order_Util_Util::generateStockoutOrderId();
@@ -281,6 +285,8 @@ class Service_Data_StockoutOrder
             return $arrCreateParams;
         }
         $arrCreateParams['stockout_order_status'] = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
+        $arrCreateParams['logistics_order_id'] = empty($arrInput['logistics_order_id']) ?
+                                                    0 : intval($arrInput['logistics_order_id']);
         $arrCreateParams['stockout_order_id'] = empty($arrInput['stockout_order_id']) ?
                                                     0 : intval($arrInput['stockout_order_id']);
         $arrCreateParams['shipment_order_id'] = empty($arrInput['shipment_order_id']) ?
@@ -1022,5 +1028,22 @@ class Service_Data_StockoutOrder
         $this->objRalLog->addLog($logType,$quotaIdxInt1,$operationType,$userName,$operatorId,$content);
     }
 
-
+    /**
+     * 通过物流单号获取出库单信息
+     * @param $strLogisticsOrderId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockoutInfoByLogisticsOrderId($strLogisticsOrderId) {
+        if (empty($strLogisticsOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        $arrRet = Model_Orm_StockoutOrder::getStockoutOrderInfoByLogisticsOrderId($strLogisticsOrderId);
+        if (empty($arrRet)) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        $arrStockoutOrderInfo = $arrRet[0];
+        $arrStockoutOrderInfo['skus'] = $this->objOrmSku->getSkuInfoById($arrStockoutOrderInfo['stockout_order_id']);
+        return $arrStockoutOrderInfo;
+    }
 }

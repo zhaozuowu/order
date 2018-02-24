@@ -153,4 +153,25 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
         $res = $stockoutOrderInfo->update($updateData);
         return $res;
     }
+
+    /**
+     * 通过物流单号获取出库单号
+     * @param $strLogisticsOrderId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public static function getStockoutOrderInfoByLogisticsOrderId($strLogisticsOrderId) {
+        if (empty($strLogisticsOrderId)) {
+            return [];
+        }
+        $arrCondtions = [
+            'logistics_order_id' => $strLogisticsOrderId,
+        ];
+        $arrColumns = self::getAllColumns();
+        $arrRet = self::findRows($arrColumns, $arrCondtions);
+        if (empty($arrRet)) {
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        return $arrRet;
+    }
 }

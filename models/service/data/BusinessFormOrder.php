@@ -4,7 +4,6 @@
  * @desc business form order service data
  * @author jinyu02@iwaimai.baidu.com
  */
-
 class Service_Data_BusinessFormOrder
 {
 
@@ -347,6 +346,10 @@ class Service_Data_BusinessFormOrder
             $arrSkuCreateParams['sku_net_unit'] = empty($arrItem['sku_net_unit']) ? 0 : intval($arrItem['sku_net_unit']);
             $arrSkuCreateParams['sku_business_form'] = empty($arrItem['sku_business_form']) ? '' : strval($arrItem['sku_business_form']);
             $arrSkuCreateParams['sku_tax_rate'] = empty($arrItem['sku_tax_rate']) ? 0 : intval($arrItem['sku_tax_rate']);
+            $arrSkuCreateParams['cost_price'] = empty($arrItem['cost_price']) ? 0 : intval($arrItem['cost_price']);
+            $arrSkuCreateParams['cost_total_price'] = empty($arrItem['cost_total_price']) ? 0 : intval($arrItem['cost_total_price']);
+            $arrSkuCreateParams['send_price'] = empty($arrItem['send_price']) ? 0 : intval($arrItem['send_price']);
+            $arrSkuCreateParams['send_total_price'] = empty($arrItem['send_total_price']) ? 0 : intval($arrItem['send_total_price']);
             $arrSkuCreateParams['business_form_order_id'] = $intBusinessFormOrderId;
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
         }

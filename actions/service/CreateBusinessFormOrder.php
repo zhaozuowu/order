@@ -1,12 +1,10 @@
 <?php
 /**
- * @name Action_CreateBusinessFormOrder
- * @desc Action_CreateBusinessFormOrder
+ * @name Action_Service_CreateBusinessFormOrder
+ * @desc Action_Service_CreateBusinessFormOrder
  * @author jinyu02@iwaimai.baidu.com
  */
-
-class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
-
+class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 	/**
 	 * input params
 	 * @var array
@@ -20,7 +18,7 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 		'customer_id' => 'str|required',
 		'customer_name' => 'str|required|max[32]',
 		'customer_contactor' => 'str|required|max[32]',
-		'customer_contact' => 'str|required|max[11]|min[11]',
+		'customer_contact' => 'str|required|min[11]|max[11]',
 		'customer_address' => 'str|required|max[256]',
 		'customer_location' => 'str|required|max[128]',
 		'customer_location_source' => 'int|required',
@@ -31,16 +29,15 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 		'executor' => 'str|required|max[32]',
         'executor_contact' => 'str|required|max[11]|min[11]',
         'expect_arrive_time' => [
-			'validate' => 'json|decode|required',
+			'validate' => 'json|required',
 			'type' => 'map',
 			'params' => [
 				'start' => 'int|required',
 				'end' => 'int|required',
 			],
 		],
-
 		'skus' => [
-			'validate' => 'json|decode|required',
+			'validate' => 'json|required',
 			'type' => 'array',
 			'params' => [
 				'sku_id' => 'int|required',
