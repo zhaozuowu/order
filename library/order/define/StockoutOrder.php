@@ -138,6 +138,7 @@ class Order_Define_StockoutOrder
 
     /**
      * @desc 出库单的数据来源类型集合
+     * @var array
      */
     const STOCKOUT_DATA_SOURCE_TYPES = [
         self::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER => true,
@@ -146,6 +147,7 @@ class Order_Define_StockoutOrder
 
     /**
      * @desc 出库单的数据来源类型文本
+     * @var array
      */
     const STOCKOUT_DATA_SOURCE_TYPE_MAP = [
         self::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER => '系统订单',
