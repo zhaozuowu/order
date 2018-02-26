@@ -44,6 +44,12 @@ class Service_Data_StockoutOrder
     protected $objRalStock;
 
     /**
+     * dao ral sku
+     * @var Dao_Ral_Sku
+     */
+    protected $objRalSKu;
+
+    /**
      * dao wrpc tms
      * @var Dao_Wrpc_Tms
      */
@@ -60,6 +66,7 @@ class Service_Data_StockoutOrder
         $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
         $this->objRalLog = new Dao_Ral_Log();
         $this->objWrpcTms = new Dao_Wrpc_Tms();
+        $this->objRalSKu  = new Dao_Ral_Sku();
     }
 
 
@@ -574,6 +581,52 @@ class Service_Data_StockoutOrder
         return $transaction;
     }
 
+    /**
+     * 获取配货商品列表
+     * @param $arrInput
+     * @return array
+     * @throws Nscm_Exception_Error
+     */
+    public function getDistributionSkuList($arrInput)
+    {
+        $retArr = ['total' => 0, 'list'  =>[]];
+        $warehouseId = intval($arrInput['warehouse_id']);
+        $arrSkuIds = is_array($arrInput['sku_ids']) ? $arrInput['sku_ids']:explode(",",$arrInput['sku_ids']);
+        $arrSkuList = $this->objRalSKu->getSkuInfos($arrSkuIds);
+        if(empty($arrSkuList)) {
+            return $retArr;
+        }
+        $retArr['total'] = count($arrSkuList);
+        $arrSkuList = $this->formatPageinate($arrInput['page_size'],$arrInput['page_num'],$arrSkuList);
+        $arrSkuIds = array_column($arrSkuList,'sku_id');
+        $arrStockInfo = $this->objRalStock->getStockInfo($warehouseId,$arrSkuIds);
+        $arrStockInfo = empty($arrStockInfo) ? []: array_column($arrStockInfo,null,'sku_id');
+
+        foreach($arrSkuList as $key=>$item) {
+            $arrSkuList[$key]['available_amount'] = isset($arrStockInfo[$item['sku_id']]) ? $arrStockInfo[$item['sku_id']]['available_amount']:0;
+        }
+        $retArr['list'] = $arrSkuList;
+        return $retArr;
+
+    }
+
+    /**
+     * format
+     * @param $pageSize
+     * @param $pageNum
+     * @param $arrSkuList
+     * @return array
+     */
+    private  function formatPageinate($pageSize, $pageNum, $arrSkuList)
+    {
+        $arrList = [];
+        if (empty($arrSkuList)) return $arrList;
+        $intLimit = intval($pageSize);
+        $intOffset = (intval($pageNum) - 1) * $intLimit;
+        $arrSkuList = array_slice($arrSkuList,$intOffset,$intLimit);
+        return $arrSkuList;
+
+    }
     /**
      * get stockout order info list by page and conditions
      * @param array $arrInput
