@@ -131,6 +131,28 @@ class Order_Define_StockoutOrder
     ];
 
     /**
+     * @desc 出库单的数据来源类型
+     */
+    const STOCKOUT_DATA_SOURCE_SYSTEM_ORDER = 1;
+    const STOCKOUT_DATA_SOURCE_MANUAL_INPUT = 2;
+
+    /**
+     * @desc 出库单的数据来源类型集合
+     */
+    const STOCKOUT_DATA_SOURCE_TYPES = [
+        self::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER => true,
+        self::STOCKOUT_DATA_SOURCE_MANUAL_INPUT => true,
+    ];
+
+    /**
+     * @desc 出库单的数据来源类型文本
+     */
+    const STOCKOUT_DATA_SOURCE_TYPE_MAP = [
+        self::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER => '系统订单',
+        self::STOCKOUT_DATA_SOURCE_MANUAL_INPUT => '人工录入',
+    ];
+
+    /**
      * 签收状态
      * @var array
      */

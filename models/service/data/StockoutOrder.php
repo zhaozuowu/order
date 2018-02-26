@@ -59,7 +59,7 @@ class Service_Data_StockoutOrder
         $this->objRalStock = new Dao_Ral_Stock();
         $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
         $this->objRalLog = new Dao_Ral_Log();
-        $this->objWrpcTms = new Dao_Wrpc_Tms();
+//        $this->objWrpcTms = new Dao_Wrpc_Tms();
     }
 
 
@@ -444,6 +444,7 @@ class Service_Data_StockoutOrder
      * get list search conditions by arrInput
      * @param array $arrInput
      * @return array
+     * @throws Order_BusinessError
      */
     protected function getListConditions($arrInput)
     {
@@ -475,6 +476,13 @@ class Service_Data_StockoutOrder
         }
         if (!empty($arrInput['end_time'])) {
             $arrListConditions['create_time'][] = ['<=', intval($arrInput['end_time'])];
+        }
+        if (!empty($arrInput['data_source'])) {
+            // 检查查询的数据来来源类型是否正确
+            if(!isset(Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPES[$arrInput['data_source']])){
+                Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+            }
+            $arrListConditions['data_source'] = intval($arrInput['data_source']);
         }
         return $arrListConditions;
     }
