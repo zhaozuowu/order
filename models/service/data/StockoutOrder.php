@@ -601,8 +601,11 @@ class Service_Data_StockoutOrder
         $arrSkuIds = array_column($arrSkuList,'sku_id');
         $arrStockInfo = $this->objRalStock->getStockInfo($warehouseId,$arrSkuIds);
         $arrStockInfo = empty($arrStockInfo) ? []: array_column($arrStockInfo,null,'sku_id');
-
         foreach($arrSkuList as $key=>$item) {
+            $upsList = !empty($item['min_upc']) ? $item['min_upc']:[];
+            $arrSkuList[$key]['upc_unit'] = !empty($upsList['upc_unit']) ? $upsList['upc_unit']:0;
+            $arrSkuList[$key]['upc_id'] = !empty($upsList['upc_id']) ? $upsList['upc_id']:0;
+            $arrSkuList[$key]['upc_unit_num'] = !empty($upsList['upc_unit_num']) ? $upsList['upc_unit_num']:0;
             $arrSkuList[$key]['available_amount'] = isset($arrStockInfo[$item['sku_id']]) ? $arrStockInfo[$item['sku_id']]['available_amount']:0;
         }
         $retArr['list'] = $arrSkuList;

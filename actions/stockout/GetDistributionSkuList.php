@@ -14,7 +14,7 @@ class Action_GetDistributionSkuList extends Order_Base_Action
     protected $arrInputParams = [
         'page_num' => 'int|default[1]',
         'page_size' => 'int|required|max[200]',
-        'warehouse_id' => 'int|default[0]',
+        'warehouse_id' => 'int|required',
         'sku_ids' => 'str|required',
     ];
 
@@ -45,13 +45,13 @@ class Action_GetDistributionSkuList extends Order_Base_Action
         foreach((array)$arrRet['list'] as $arrRetItem) {
             $arrFormatRetItem = [];
             $arrFormatRetItem['sku_id'] = empty($arrRetItem['sku_id']) ?  0 : intval($arrRetItem['sku_id']);
-            $arrFormatItem['upc_id'] = empty($arrRetItem['upc_id']) ? '' : $arrRetItem['upc_id'];
-            $arrFormatItem['sku_name'] = empty($arrRetItem['sku_name']) ? '' : $arrRetItem['sku_name'];
+            $arrFormatRetItem['upc_id'] = empty($arrRetItem['upc_id']) ? '' : $arrRetItem['upc_id'];
+            $arrFormatRetItem['sku_name'] = empty($arrRetItem['sku_name']) ? '' : $arrRetItem['sku_name'];
             $skuNeText = isset(Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]) ? Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]:'';
-            $arrFormatItem['sku_net'] = $arrRetItem['sku_net'].$skuNeText;
-            $arrFormatItem['upc_unit_num'] = empty($arrRetItem['upc_unit_num']) ? '' : '1*' . $arrRetItem['upc_unit_num'];
-            $arrFormatItem['upc_unit'] = isset(Order_Define_StockoutOrder::UPC_UNIT[$arrRetItem['upc_unit']]) ? Order_Define_StockoutOrder::UPC_UNIT[$arrRetItem['upc_unit']]:'';
-            $arrFormatItem['available_amount'] = empty($arrRetItem['available_amount']) ? 0:$arrRetItem['available_amount'];
+            $arrFormatRetItem['sku_net'] = $arrRetItem['sku_net'].$skuNeText;
+            $arrFormatRetItem['upc_unit_num'] = empty($arrRetItem['upc_unit_num']) ? '' : '1*' . $arrRetItem['upc_unit_num'];
+            $arrFormatRetItem['upc_unit'] = isset(Order_Define_StockoutOrder::UPC_UNIT[$arrRetItem['upc_unit']]) ? Order_Define_StockoutOrder::UPC_UNIT[$arrRetItem['upc_unit']]:'';
+            $arrFormatRetItem['available_amount'] = empty($arrRetItem['available_amount']) ? 0:$arrRetItem['available_amount'];
             $arrFormatRet['list'][] = $arrFormatRetItem;
         }
         return $arrFormatRet;
