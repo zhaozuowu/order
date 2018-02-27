@@ -1088,5 +1088,18 @@ class Service_Data_StockoutOrder
         return isset(Order_Define_StockoutOrder::CUSTOMER_LIST[$customerId]) ? Order_Define_StockoutOrder::CUSTOMER_LIST[$customerId]:[];
     }
 
+    /**
+     * 查询客户名称sug
+     * @param $orderType
+     * @return array
+     */
+    public function getCustomernameSug($orderType)
+    {
+        $customerList = Order_Define_StockoutOrder::CUSTOMER_LIST;
+        return $customerList;
+
+
+    }
+
 
 }
