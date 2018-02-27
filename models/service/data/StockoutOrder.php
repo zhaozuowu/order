@@ -1078,5 +1078,15 @@ class Service_Data_StockoutOrder
         $this->objRalLog->addLog($logType,$quotaIdxInt1,$operationType,$userName,$operatorId,$content);
     }
 
+    /**
+     * 根据客户id获取客户信息
+     * @param $customerId
+     * @return array
+     */
+    public function getCustomerInfoById($customerId)
+    {
+        return isset(Order_Define_StockoutOrder::CUSTOMER_LIST[$customerId]) ? Order_Define_StockoutOrder::CUSTOMER_LIST[$customerId]:[];
+    }
+
 
 }

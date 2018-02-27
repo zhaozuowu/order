@@ -137,4 +137,38 @@ class Order_Define_StockoutOrder
     const  STOCKOUT_SIGINUP_ACCEPT_ALL= 1;
     const  STOCKOUT_SIGINUP_REJECT_ALL= 2;
     const  STOCKOUT_SIGINUP_ACCEPT_PART= 3;
+
+    /**
+     * 客户列表
+     */
+    const  CUSTOMER_LIST = [
+        '27272727272778'=>[
+          'customer_id'=>'27272727272778',
+          'customer_name'=>'测试1',
+          'customer_contactor'=>'测试1',
+          'customer_contact'=>'13146104867',
+          'customer_address'=>'上地四街',
+        ],
+        '27272727272779'=>[
+          'customer_id'=>'27272727272779',
+          'customer_name'=>'测试2',
+          'customer_contactor'=>'测试2',
+          'customer_contact'=>'13146104868',
+          'customer_address'=>'上地四街',
+        ],
+        '27272727272780'=>[
+          'customer_id'=>'27272727272780',
+          'customer_name'=>'测试3',
+          'customer_contactor'=>'测试3',
+          'customer_contact'=>'13146104868',
+          'customer_address'=>'上地四街',
+        ],
+        '27272727272781'=>[
+          'customer_id'=>'27272727272781',
+          'customer_name'=>'测试4',
+          'customer_contactor'=>'测试4',
+          'customer_contact'=>'13146104868',
+          'customer_address'=>'上地四街',
+        ],
+    ];
 }
