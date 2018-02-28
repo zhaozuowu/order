@@ -50,7 +50,6 @@ class Service_Data_BusinessFormOrder
             == $arrInput['business_form_order_status']) {
             list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $this->getFreezeStockParams($arrInput);
             $arrStockSkus = $this->objDaoStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
-            var_dump($arrStockSkus);exit;
             $arrInput = $this->appendStockSkuInfoToOrder($arrInput, $arrStockSkus);
             $arrInput = $this->appendSkuTotalAmountToOrder($arrInput);
         }
@@ -317,7 +316,7 @@ class Service_Data_BusinessFormOrder
         $arrCreateParams['executor'] = empty($arrInput['executor']) ? '' : strval($arrInput['executor']);
         $arrCreateParams['executor_contact'] = empty($arrInput['executor_contact']) ? '' : strval($arrInput['executor_contact']);
         $arrCreateParams['warehouse_id'] = empty($arrInput['warehouse_id']) ? 0 : intval($arrInput['warehouse_id']);
-        $arrCreateParams['shelf_info'] = empty($arrInput['shelf_info']) ? '' : strval($arrInput['shelf_info']);
+        $arrCreateParams['shelf_info'] = empty($arrInput['shelf_info']) ? '' : json_encode($arrInput['shelf_info']);
         return $arrCreateParams;
     }
 

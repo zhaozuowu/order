@@ -292,7 +292,7 @@ class Service_Data_StockoutOrder
         $arrCreateParams['shipment_order_id'] = empty($arrInput['shipment_order_id']) ?
                                                     0 : intval($arrInput['shipment_order_id']);
         $arrCreateParams['shelf_info'] = empty($arrInput['shelf_info']) ?
-                                                    '' : strval($arrInput['shelf_info']);
+                                                    '' : json_encode($arrInput['shelf_info']);
         $arrCreateParams['business_form_order_id'] = empty($arrInput['business_form_order_id']) ?
                                                         0 : intval($arrInput['business_form_order_id']);
         $arrCreateParams['stockout_order_type'] = empty($arrInput['stockout_order_type']) ? 0 : intval($arrInput['stockout_order_type']);

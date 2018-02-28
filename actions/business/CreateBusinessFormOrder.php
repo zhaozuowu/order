@@ -4,7 +4,6 @@
  * @desc Action_CreateBusinessFormOrder
  * @author jinyu02@iwaimai.baidu.com
  */
-
 class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 
 	/**
