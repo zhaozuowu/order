@@ -79,6 +79,7 @@ class Action_GetOrderPrintList extends Order_Base_Action
             $arrFormatSkuItem['sku_id'] = empty($arrSkuItem['sku_id']) ? 0 : $arrSkuItem['sku_id'];
             $arrFormatSkuItem['upc_id'] = empty($arrSkuItem['upc_id']) ? '' : $arrSkuItem['upc_id'];
             $arrFormatSkuItem['sku_name'] = empty($arrSkuItem['sku_name']) ? '' : $arrSkuItem['sku_name'];
+            $arrFormatSkuItem['distribute_amount'] = empty($arrSkuItem['distribute_amount']) ? 0 : $arrSkuItem['distribute_amount'];
             $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ?
                                             '' : ($arrSkuItem['sku_net'] . Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]);
             $arrFormatSkuItem['upc_unit_text'] = empty(Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']]) ?
