@@ -12,7 +12,6 @@ class Action_GetCustomernameSug extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'order_type' => 'int|required',
     ];
 
     /**

@@ -171,4 +171,9 @@ class Order_Define_StockoutOrder
           'customer_address'=>'上地四街',
         ],
     ];
+
+    /***
+     * upc_ids数量
+     */
+    const UPC_IDS_NUM_TWO = 2;
 }

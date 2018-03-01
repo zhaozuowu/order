@@ -31,6 +31,13 @@ class Dao_Ral_Sku
      */
     const API_RALER_GET_SKU_INFOS = 'getskuinfos';
 
+
+    /**
+     * get sku info by ids(sku_ids,upc_ids)
+     * @var string
+     */
+    const API_RALER_GET_SKU_INFOS_BYIDS = 'getskuinfosbyids';
+
     /**
      * init
      */
@@ -140,5 +147,28 @@ class Dao_Ral_Sku
             Bd_Log::warning('io sku count not equal');
         }
         return $arrSkuInfos;
+    }
+
+    /**
+     * get skuinfo by ids
+     * @param $arrIds
+     * @return array
+     */
+    public function getSkuInfosByIds($arrIds)
+    {
+        $intCountInput = count($arrIds);
+        $arrIds = implode(',', $arrIds);
+        $req = [
+            self::API_RALER_GET_SKU_INFOS_BYIDS => [
+                'ids' => $arrIds,
+            ],
+        ];
+        Bd_Log::debug('ral getSkuInfosByIds input params: ' . json_encode($req));
+        $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug('ral getSkuInfosByIds out params: ' . json_encode($ret));
+        $arrSkuInfos = [];
+        $ret = empty($ret[self::API_RALER_GET_SKU_INFOS_BYIDS]) ? [] : $ret[self::API_RALER_GET_SKU_INFOS_BYIDS];
+        return $ret;
+
     }
 }
