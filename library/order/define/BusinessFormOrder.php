@@ -5,7 +5,6 @@
  * @desc 业态出库订常量定义
  * @author  zhaozuowu@iwaimai.baidu.com
  */
-
 class Order_Define_BusinessFormOrder
 {
     /**
@@ -64,13 +63,13 @@ class Order_Define_BusinessFormOrder
      * 携带设备类型为货架
      * @var integer
      */
-    const ORDER_DEVICE_TYPE_SHELF = 1;
+    const ORDER_DEVICE_TYPE_SHELF = 0;
 
     /**
      * 携带设备类型为冰柜
      * @var integer
      */
-    const ORDER_DEVICE_TYPE_REFRIGERATOR = 2;
+    const ORDER_DEVICE_TYPE_REFRIGERATOR = 1;
 
     /**
      * 携带设备类型
