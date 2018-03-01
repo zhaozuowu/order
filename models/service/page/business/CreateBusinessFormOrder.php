@@ -31,7 +31,7 @@ class Service_Page_Business_CreateBusinessFormOrder {
 
     /**
      * @param array $arrInput
-     * @return int
+     * @return array
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      * @throws Order_Error
