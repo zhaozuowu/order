@@ -24,5 +24,6 @@ class Controller_Stockout extends Ap_Controller_Abstract
         'getdistributionskulist' => 'actions/stockout/GetDistributionSkuList.php', #查询配货商品列表#
         'getcustomerbyid' => 'actions/stockout/GetCustomerById.php', #查询客户信息#
         'getcustomernamesug' => 'actions/stockout/GetCustomernameSug.php', #查询客户名称sug#
+        'createstockoutorder' => 'actions/stockout/CreateStockoutOrder.php', #手动创建出库单#
     );
 }

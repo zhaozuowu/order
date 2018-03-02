@@ -589,7 +589,7 @@ class Service_Data_StockoutOrder
      */
     public function getDistributionSkuList($arrInput)
     {
-        $retArr = ['list'  =>[],'message'=>[]];
+        $retArr = ['list'=>[]];
         $warehouseId = intval($arrInput['warehouse_id']);
         $arrIds = is_array($arrInput['ids']) ? $arrInput['ids']:explode(",",$arrInput['ids']);
         $ret = $this->objRalSKu->getSkuInfosByIds($arrIds);

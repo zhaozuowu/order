@@ -15,6 +15,9 @@ class Action_CreateStockoutOrder extends Order_Base_Action
      */
     protected $arrInputParams = [
         'stockout_order_id' => 'int',
+        'expect_arrive_start_time' => 'int|required',
+        'expect_arrive_end_time' => 'int|required',
+        'data_source' => 'int|required',
         'stockout_order_type' => 'int|required',
         'warehouse_id' => 'str|required',
         'stockout_order_remark' => 'str|required',
