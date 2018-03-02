@@ -166,6 +166,7 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
         }
         $arrCondtions = [
             'logistics_order_id' => $strLogisticsOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
         $arrColumns = self::getAllColumns();
         $arrRet = self::findRows($arrColumns, $arrCondtions);
