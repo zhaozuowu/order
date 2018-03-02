@@ -16,7 +16,7 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 		'business_form_order_remark' => 'str',
 		'customer_id' => 'str|required',
 		'customer_name' => 'str|required|max[32]',
-		'customer_contactor' => 'str|required|max[32]',
+		'customer_contactor' => 'str',
 		'customer_contact' => 'str|required|min[11]|max[11]',
 		'customer_address' => 'str|required|max[256]',
 		'customer_location' => 'str|required|max[128]',
