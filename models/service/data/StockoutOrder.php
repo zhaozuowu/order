@@ -44,6 +44,12 @@ class Service_Data_StockoutOrder
     protected $objRalStock;
 
     /**
+     * dao ral sku
+     * @var Dao_Ral_Sku
+     */
+    protected $objRalSKu;
+
+    /**
      * dao wrpc tms
      * @var Dao_Wrpc_Tms
      */
@@ -60,6 +66,7 @@ class Service_Data_StockoutOrder
         $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
         $this->objRalLog = new Dao_Ral_Log();
         $this->objWrpcTms = new Dao_Wrpc_Tms();
+        $this->objRalSKu  = new Dao_Ral_Sku();
     }
 
 
@@ -583,6 +590,55 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     * 获取配货商品列表
+     * @param $arrInput
+     * @return array
+     * @throws Nscm_Exception_Error
+     */
+    public function getDistributionSkuList($arrInput)
+    {
+        $retArr = ['list'=>[]];
+        $warehouseId = intval($arrInput['warehouse_id']);
+        $arrIds = is_array($arrInput['ids']) ? $arrInput['ids']:explode(",",$arrInput['ids']);
+        $ret = $this->objRalSKu->getSkuInfosByIds($arrIds);
+        if(empty($ret) || !empty($ret['error_no'])) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_GET_SKUINFO_FAIL,'以下编码在彩云中找不到对应商品:'.$ret['error_msg']);
+        }
+        $arrSkuList = $ret['result']['skus'];
+        //$arrSkuList = $this->formatPageinate($arrInput['page_size'],$arrInput['page_num'],$arrSkuList);
+        $arrSkuIds = array_column($arrSkuList,'sku_id');
+        $arrStockInfo = $this->objRalStock->getStockInfo($warehouseId,$arrSkuIds);
+        $arrStockInfo = empty($arrStockInfo) ? []: array_column($arrStockInfo,null,'sku_id');
+        foreach($arrSkuList as $key=>$item) {
+            $upsList = !empty($item['min_upc']) ? $item['min_upc']:[];
+            $arrSkuList[$key]['upc_unit'] = !empty($upsList['upc_unit']) ? $upsList['upc_unit']:0;
+            $arrSkuList[$key]['upc_ids'] = !empty($item['upc_ids']) ? $item['upc_ids']:[];
+            $arrSkuList[$key]['upc_unit_num'] = !empty($upsList['upc_unit_num']) ? $upsList['upc_unit_num']:0;
+            $arrSkuList[$key]['available_amount'] = isset($arrStockInfo[$item['sku_id']]) ? $arrStockInfo[$item['sku_id']]['available_amount']:0;
+        }
+        $retArr['list'] = $arrSkuList;
+        return $retArr;
+
+    }
+
+    /**
+     * format
+     * @param $pageSize
+     * @param $pageNum
+     * @param $arrSkuList
+     * @return array
+     */
+    private  function formatPageinate($pageSize, $pageNum, $arrSkuList)
+    {
+        $arrList = [];
+        if (empty($arrSkuList)) return $arrList;
+        $intLimit = intval($pageSize);
+        $intOffset = (intval($pageNum) - 1) * $intLimit;
+        $arrSkuList = array_slice($arrSkuList,$intOffset,$intLimit);
+        return $arrSkuList;
+
+    }
+    /**
      * get stockout order info list by page and conditions
      * @param array $arrInput
      * @return array
@@ -1028,6 +1084,29 @@ class Service_Data_StockoutOrder
     {
         $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE;
         $this->objRalLog->addLog($logType,$quotaIdxInt1,$operationType,$userName,$operatorId,$content);
+    }
+
+    /**
+     * 根据客户id获取客户信息
+     * @param $customerId
+     * @return array
+     */
+    public function getCustomerInfoById($customerId)
+    {
+        return isset(Order_Define_StockoutOrder::CUSTOMER_LIST[$customerId]) ? Order_Define_StockoutOrder::CUSTOMER_LIST[$customerId]:[];
+    }
+
+    /**
+     * 查询客户名称sug
+     * @param $orderType
+     * @return array
+     */
+    public function getCustomernameSug($orderType)
+    {
+        $customerList = Order_Define_StockoutOrder::CUSTOMER_LIST;
+        return $customerList;
+
+
     }
 
 
