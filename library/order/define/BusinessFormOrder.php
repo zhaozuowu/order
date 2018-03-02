@@ -78,16 +78,22 @@ class Order_Define_BusinessFormOrder
     const ORDER_DEVICE_TYPE_DOUBLE = 2;
 
     /**
+     * 携带设备类型为小货架
+     * @var integer
+     */
+    const ORDER_DEVICE_TYPE_SMALL_SHELF = 3;
+
+    /**
      * 携带设备类型为小冷柜
      * @var integer
      */
-    const ORDER_DEVICE_TYPE_SMALL_REFRIGERATOR = 3;
+    const ORDER_DEVICE_TYPE_SMALL_REFRIGERATOR = 4;
 
     /**
      * 携带设备类型为鲜食柜
      * @var integer
      */
-    const ORDER_DEVICE_TYPE_FRESH = 4;
+    const ORDER_DEVICE_TYPE_FRESH = 5;
 
 
     /**
@@ -98,6 +104,7 @@ class Order_Define_BusinessFormOrder
         self::ORDER_DEVICE_TYPE_SHELF => '货架',
         self::ORDER_DEVICE_TYPE_REFRIGERATOR => '冷柜',
         self::ORDER_DEVICE_TYPE_DOUBLE => '双货架',
+        self::ORDER_DEVICE_TYPE_SMALL_SHELF => '小货架',
         self::ORDER_DEVICE_TYPE_SMALL_REFRIGERATOR => '小冷柜',
         self::ORDER_DEVICE_TYPE_FRESH => '鲜食柜',
     ];
