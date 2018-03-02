@@ -28,7 +28,8 @@ class Service_Page_Stockout_GetCancelStatus implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $intCancelStatus = $this->objStockoutOrder->getCancelStatus($arrInput);
+        $strStockoutOrderId = $arrInput['stockout_order_id'];
+        $intCancelStatus = $this->objStockoutOrder->getCancelStatus($strStockoutOrderId);
         return [
             'is_cancelled' => $intCancelStatus,
         ];
