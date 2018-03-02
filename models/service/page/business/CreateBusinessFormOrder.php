@@ -38,6 +38,7 @@ class Service_Page_Business_CreateBusinessFormOrder {
      */
     public function execute($arrInput) {
         //校验是否重复创建
+        $arrInput['shelf_info']['devices'] = (object)$arrInput['shelf_info']['devices'];
         $arrRet = $this->objDsStockoutFormOrder->checkRepeatSubmit($arrInput['customer_id'], $arrInput['logistics_order_id']);
         if (!empty($arrRet)) {
             return $arrRet;
