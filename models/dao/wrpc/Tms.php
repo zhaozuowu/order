@@ -116,6 +116,9 @@ class Dao_Wrpc_Tms
     protected function getWarehouseRequest($arrInput) {
         $arrWarehouseRequest = [];
         $arrShelfInfo = $arrInput['shelf_info'];
+        if (empty($arrShelfInfo['devices'])) {
+            $arrShelfInfo['devices'] = (object)[];
+        }
         $arrExpectArriveTime = $arrInput['expect_arrive_time'];
         $arrWarehouseRequest['warehouseId'] = empty($arrInput['warehouse_id']) ? '' : intval($arrInput['warehouse_id']);
         $arrWarehouseRequest['businessType'] = empty($arrInput['business_form_order_type']) ? 0 : strval($arrInput['business_form_order_type']);
@@ -123,7 +126,7 @@ class Dao_Wrpc_Tms
         $arrWarehouseRequest['businessJson'] = json_encode($arrShelfInfo);
         $arrWarehouseRequest['orderRemark'] = empty($arrInput['business_form_order_remark']) ? '' : strval($arrInput['business_form_order_remark']);
         $arrWarehouseRequest['stockoutNumber'] = empty($arrInput['stockout_order_id']) ? 0 : intval($arrInput['stockout_order_id']);
-        $arrWarehouseRequest['orderNumber'] = empty($arrInput['business_form_order_id']) ? 0 : intval($arrInput['business_form_order_id']);
+        $arrWarehouseRequest['orderNumber'] = empty($arrInput['logistics_order_id']) ? 0 : intval($arrInput['logistics_order_id']);
         $arrWarehouseRequest['requireReceiveStartTime'] = empty($arrExpectArriveTime['start']) ? 0 : $arrExpectArriveTime['start'];
         $arrWarehouseRequest['requireReceiveEndTime'] = empty($arrExpectArriveTime['end']) ? 0 : $arrExpectArriveTime['end'];
         $arrWarehouseRequest['products'] = $this->getProducts($arrInput['skus']);
