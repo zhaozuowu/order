@@ -284,6 +284,7 @@ class Service_Data_StockoutOrder
         if (empty($arrInput)) {
             return $arrCreateParams;
         }
+        $arrInput['shelf_info']['devices'] = (object)$arrInput['shelf_info']['devices'];
         $arrCreateParams['stockout_order_status'] = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
         $arrCreateParams['logistics_order_id'] = empty($arrInput['logistics_order_id']) ?
                                                     0 : intval($arrInput['logistics_order_id']);
@@ -299,7 +300,7 @@ class Service_Data_StockoutOrder
         $arrCreateParams['warehouse_id'] = empty($arrInput['warehouse_id']) ? 0 : intval($arrInput['warehouse_id']);
         $arrCreateParams['warehouse_name'] = empty($arrInput['warehouse_name']) ? '' : strval($arrInput['warehouse_name']);
         $arrCreateParams['stockout_order_remark'] = empty($arrInput['stockout_order_remark']) ? '' : strval($arrInput['stockout_order_remark']);
-        $arrCreateParams['customer_id'] = empty($arrInput['customer_id']) ? 0 : intval($arrInput['customer_id']);
+        $arrCreateParams['customer_id'] = empty($arrInput['customer_id']) ? '' : strval($arrInput['customer_id']);
         $arrCreateParams['customer_name'] = empty($arrInput['customer_name']) ? '' : strval($arrInput['customer_name']);
         $arrCreateParams['customer_contactor'] = empty($arrInput['customer_contactor']) ? '' : strval($arrInput['customer_contactor']);
         $arrCreateParams['customer_contact'] = empty($arrInput['customer_contact']) ? '' : strval($arrInput['customer_contact']);
@@ -468,7 +469,7 @@ class Service_Data_StockoutOrder
             $arrListConditions['customer_name'] = $arrInput['customer_name'];
         }
         if (!empty($arrInput['customer_id'])) {
-            $arrListConditions['customer_id'] = intval($arrInput['customer_id']);
+            $arrListConditions['customer_id'] = strval($arrInput['customer_id']);
         }
         if (!empty($arrInput['is_print'])) {
             $arrListConditions['stockout_order_is_print'] = intval($arrInput['is_print']);

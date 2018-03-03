@@ -298,6 +298,7 @@ class Service_Data_BusinessFormOrder
         if (empty($arrInput)) {
             return $arrCreateParams;
         }
+        $arrInput['shelf_info']['devices'] = (object)$arrInput['shelf_info']['devices'];
         $arrCreateParams['business_form_order_id'] = Order_Util_Util::generateBusinessFormOrderId();
         $arrCreateParams['status'] = empty($arrInput['business_form_order_status']) ?
                                         0 : intval($arrInput['business_form_order_status']);
@@ -306,7 +307,7 @@ class Service_Data_BusinessFormOrder
         $arrCreateParams['business_form_order_price'] = empty($arrInput['business_form_order_price']) ?
                                                         0 : intval($arrInput['business_form_order_price']);
         $arrCreateParams['business_form_order_remark'] = empty($arrInput['business_form_order_remark']) ? '' : strval($arrInput['business_form_order_remark']);
-        $arrCreateParams['customer_id'] = empty($arrInput['customer_id']) ? 0 : intval($arrInput['customer_id']);
+        $arrCreateParams['customer_id'] = empty($arrInput['customer_id']) ? '' : strval($arrInput['customer_id']);
         $arrCreateParams['customer_name'] = empty($arrInput['customer_name']) ? '' : strval($arrInput['customer_name']);
         $arrCreateParams['customer_contactor'] = empty($arrInput['customer_contactor']) ? '' : strval($arrInput['customer_contactor']);
         $arrCreateParams['customer_contact'] = empty($arrInput['customer_contact']) ? '' : strval($arrInput['customer_contact']);
@@ -439,7 +440,7 @@ class Service_Data_BusinessFormOrder
             $arrConditions['customer_name'] = $arrInput['customer_name'];
         }
         if (!empty($arrInput['customer_id'])) {
-            $arrConditions['customer_id'] = $arrInput['customer_id'];
+            $arrConditions['customer_id'] = strval($arrInput['customer_id']);
         }
         if (!empty($arrInput['start_time'])) {
             $arrConditions['create_time'][] = ['>=', $arrInput['start_time']];
