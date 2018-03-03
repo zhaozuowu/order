@@ -19,7 +19,7 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 		'customer_id' => 'str|required',
 		'customer_name' => 'str|required|max[32]',
 		'customer_contactor' => 'str|required|max[32]',
-		'customer_contact' => 'str|required|max[11]|min[11]',
+		'customer_contact' => 'str|required',
 		'customer_address' => 'str|required|max[256]',
 		'customer_location' => 'str|required|max[128]',
 		'customer_location_source' => 'int|required',
