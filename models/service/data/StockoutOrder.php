@@ -167,6 +167,23 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     * 过滤掉没有库存的商品
+     * @param $arrSkus
+     * @return mixed
+     */
+    protected function filterNoStockSku($arrSkus) {
+        if (empty($arrSkus)) {
+            return $arrSkus;
+        }
+        foreach ((array)$arrSkus as $intKey => $arrSkuItem) {
+            if (0 == $arrSkuItem['distribute_amount']) {
+                unset($arrSkus[$intKey]);
+            }
+        }
+        return $arrSkus;
+    }
+
+    /**
      * 创建出库单
      * @param array $arrInput
      * @return mixed
@@ -179,6 +196,7 @@ class Service_Data_StockoutOrder
         if (false === $boolDuplicateFlag) {
             return false;
         }
+        $arrInput['skus'] = $this->filterNoStockSku($arrInput['skus']);
         $arrInput['shipment_order_id'] = $this->objWrpcTms->createShipmentOrder($arrInput);
         Bd_Log::trace(sprintf("method[%s] skus[%s]", __METHOD__, $arrInput['skus']));
         Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrInput) {
