@@ -38,6 +38,10 @@ class Service_Page_Business_CreateBusinessFormOrder {
      */
     public function execute($arrInput) {
         //校验是否重复创建
+        $arrInput['devices']['shelf_info'] = (object)$arrInput['devices']['shelf_info'];
+        if (count(json_encode($arrInput['devices'])) > 128) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
         $arrRet = $this->objDsStockoutFormOrder->checkRepeatSubmit($arrInput['customer_id'], $arrInput['logistics_order_id']);
         if (!empty($arrRet)) {
             return $arrRet;
