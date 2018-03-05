@@ -167,7 +167,7 @@ class Dao_Wrpc_Tms
             return [];
         }
         $arrUserInfo['npName'] = empty($arrInput['customer_name']) ? '' : strval($arrInput['customer_name']);
-        $arrUserInfo['npId'] = empty($arrInput['customer_id']) ? 0 : intval($arrInput['customer_id']);
+        $arrUserInfo['npId'] = empty($arrInput['customer_id']) ? 0 : strval($arrInput['customer_id']);
         $arrUserInfo['contactName'] = empty($arrInput['customer_contactor']) ? '' : strval($arrInput['customer_contactor']);
         $arrUserInfo['contactPhone'] = empty($arrInput['customer_contact']) ? '' : strval($arrInput['customer_contact']);
         $arrUserInfo['customerServiceName'] = empty($arrInput['executor']) ? '' : strval($arrInput['executor']);
