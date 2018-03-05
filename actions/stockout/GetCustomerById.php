@@ -48,6 +48,8 @@ class Action_GetCustomerById extends Order_Base_Action
             'customer_contactor' => empty($data['customer_contactor']) ? '' : $data['customer_contactor'],
             'customer_contact' => empty($data['customer_contact']) ? '' : $data['customer_contact'],
             'customer_address' => empty($data['customer_address']) ? '' : $data['customer_address'],
+            'business_form_order_type' => empty($data['business_form_order_type']) ? 0 : $data['business_form_order_type'],
+            'business_form_order_type_text' => empty($data['business_form_order_type_text']) ? '' : $data['business_form_order_type_text'],
 
         ];
         return $arrFormatRet;

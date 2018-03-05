@@ -172,6 +172,8 @@ class Order_Define_StockoutOrder
           'customer_contactor'=>'测试1',
           'customer_contact'=>'13146104867',
           'customer_address'=>'上地四街',
+          'business_form_order_type'=>'3',
+          'business_form_order_type_text'=>'便利店',
         ],
         '27272727272779'=>[
           'customer_id'=>'27272727272779',
@@ -179,6 +181,8 @@ class Order_Define_StockoutOrder
           'customer_contactor'=>'测试2',
           'customer_contact'=>'13146104868',
           'customer_address'=>'上地四街',
+            'business_form_order_type'=>'3',
+            'business_form_order_type_text'=>'便利店',
         ],
         '27272727272780'=>[
           'customer_id'=>'27272727272780',
@@ -186,6 +190,8 @@ class Order_Define_StockoutOrder
           'customer_contactor'=>'测试3',
           'customer_contact'=>'13146104868',
           'customer_address'=>'上地四街',
+            'business_form_order_type'=>'3',
+            'business_form_order_type_text'=>'便利店',
         ],
         '27272727272781'=>[
           'customer_id'=>'27272727272781',
@@ -193,6 +199,8 @@ class Order_Define_StockoutOrder
           'customer_contactor'=>'测试4',
           'customer_contact'=>'13146104868',
           'customer_address'=>'上地四街',
+            'business_form_order_type'=>'3',
+            'business_form_order_type_text'=>'便利店',
         ],
     ];
 

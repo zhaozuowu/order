@@ -20,6 +20,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         'business_form_order_id' => 'int',
         'customer_name' => 'str',
         'customer_id' => 'int',
+        'shipment_order_id'=>'int',
         'is_print' => 'int',
         'stockout_order_status' => 'int',
         'start_time' => 'int|required',
