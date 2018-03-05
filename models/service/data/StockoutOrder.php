@@ -444,7 +444,9 @@ class Service_Data_StockoutOrder
                 return [];
 
             }
-            foreach ($arrSignupSkus as $intSkuId => $intAmount) {
+            foreach ($arrSignupSkus as $arrSignupSkusItem) {
+                $intSkuId = intval(array_keys($arrSignupSkusItem)[0]);
+                $intAmount = intval($arrSignupSkusItem[$intSkuId]);
                 $condition = ['stockout_order_id' => $strStockoutOrderId, 'sku_id' => $intSkuId];
                 $skuInfo =  $this->objOrmSku->findOne($condition);
                 $skuAcceptAmount = $intAmount;
