@@ -4,7 +4,6 @@
  * @desc business form order service data
  * @author jinyu02@iwaimai.baidu.com
  */
-
 class Service_Data_BusinessFormOrder
 {
 
@@ -224,7 +223,7 @@ class Service_Data_BusinessFormOrder
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR);
         }
         //无人货架信息校验
-        $arrShelfInfo = json_decode($arrInput['shelf_info'], true);
+        $arrShelfInfo = $arrInput['shelf_info'];
         if (empty($arrShelfInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR);
         }
@@ -299,6 +298,7 @@ class Service_Data_BusinessFormOrder
         if (empty($arrInput)) {
             return $arrCreateParams;
         }
+        $arrInput['shelf_info']['devices'] = (object)$arrInput['shelf_info']['devices'];
         $arrCreateParams['business_form_order_id'] = Order_Util_Util::generateBusinessFormOrderId();
         $arrCreateParams['status'] = empty($arrInput['business_form_order_status']) ?
                                         0 : intval($arrInput['business_form_order_status']);
@@ -307,7 +307,7 @@ class Service_Data_BusinessFormOrder
         $arrCreateParams['business_form_order_price'] = empty($arrInput['business_form_order_price']) ?
                                                         0 : intval($arrInput['business_form_order_price']);
         $arrCreateParams['business_form_order_remark'] = empty($arrInput['business_form_order_remark']) ? '' : strval($arrInput['business_form_order_remark']);
-        $arrCreateParams['customer_id'] = empty($arrInput['customer_id']) ? 0 : intval($arrInput['customer_id']);
+        $arrCreateParams['customer_id'] = empty($arrInput['customer_id']) ? '' : strval($arrInput['customer_id']);
         $arrCreateParams['customer_name'] = empty($arrInput['customer_name']) ? '' : strval($arrInput['customer_name']);
         $arrCreateParams['customer_contactor'] = empty($arrInput['customer_contactor']) ? '' : strval($arrInput['customer_contactor']);
         $arrCreateParams['customer_contact'] = empty($arrInput['customer_contact']) ? '' : strval($arrInput['customer_contact']);
@@ -317,7 +317,7 @@ class Service_Data_BusinessFormOrder
         $arrCreateParams['executor'] = empty($arrInput['executor']) ? '' : strval($arrInput['executor']);
         $arrCreateParams['executor_contact'] = empty($arrInput['executor_contact']) ? '' : strval($arrInput['executor_contact']);
         $arrCreateParams['warehouse_id'] = empty($arrInput['warehouse_id']) ? 0 : intval($arrInput['warehouse_id']);
-        $arrCreateParams['shelf_info'] = empty($arrInput['shelf_info']) ? '' : strval($arrInput['shelf_info']);
+        $arrCreateParams['shelf_info'] = empty($arrInput['shelf_info']) ? '' : json_encode($arrInput['shelf_info']);
         return $arrCreateParams;
     }
 
@@ -347,6 +347,10 @@ class Service_Data_BusinessFormOrder
             $arrSkuCreateParams['sku_net_unit'] = empty($arrItem['sku_net_unit']) ? 0 : intval($arrItem['sku_net_unit']);
             $arrSkuCreateParams['sku_business_form'] = empty($arrItem['sku_business_form']) ? '' : strval($arrItem['sku_business_form']);
             $arrSkuCreateParams['sku_tax_rate'] = empty($arrItem['sku_tax_rate']) ? 0 : intval($arrItem['sku_tax_rate']);
+            $arrSkuCreateParams['cost_price'] = empty($arrItem['cost_price']) ? 0 : intval($arrItem['cost_price']);
+            $arrSkuCreateParams['cost_total_price'] = empty($arrItem['cost_total_price']) ? 0 : intval($arrItem['cost_total_price']);
+            $arrSkuCreateParams['send_price'] = empty($arrItem['send_price']) ? 0 : intval($arrItem['send_price']);
+            $arrSkuCreateParams['send_total_price'] = empty($arrItem['send_total_price']) ? 0 : intval($arrItem['send_total_price']);
             $arrSkuCreateParams['business_form_order_id'] = $intBusinessFormOrderId;
             $arrBatchSkuCreateParams[] = $arrSkuCreateParams;
         }
@@ -436,7 +440,7 @@ class Service_Data_BusinessFormOrder
             $arrConditions['customer_name'] = $arrInput['customer_name'];
         }
         if (!empty($arrInput['customer_id'])) {
-            $arrConditions['customer_id'] = $arrInput['customer_id'];
+            $arrConditions['customer_id'] = strval($arrInput['customer_id']);
         }
         if (!empty($arrInput['start_time'])) {
             $arrConditions['create_time'][] = ['>=', $arrInput['start_time']];
