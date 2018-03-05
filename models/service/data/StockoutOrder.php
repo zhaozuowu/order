@@ -174,6 +174,23 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     * 过滤掉没有库存的商品
+     * @param $arrSkus
+     * @return mixed
+     */
+    protected function filterNoStockSku($arrSkus) {
+        if (empty($arrSkus)) {
+            return $arrSkus;
+        }
+        foreach ((array)$arrSkus as $intKey => $arrSkuItem) {
+            if (0 == $arrSkuItem['distribute_amount']) {
+                unset($arrSkus[$intKey]);
+            }
+        }
+        return $arrSkus;
+    }
+
+    /**
      * 创建出库单
      * @param array $arrInput
      * @return mixed
@@ -186,6 +203,7 @@ class Service_Data_StockoutOrder
         if (false === $boolDuplicateFlag) {
             return false;
         }
+        $arrInput['skus'] = $this->filterNoStockSku($arrInput['skus']);
         $arrInput['shipment_order_id'] = $this->objWrpcTms->createShipmentOrder($arrInput);
         Bd_Log::trace(sprintf("method[%s] skus[%s]", __METHOD__, $arrInput['skus']));
         Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrInput) {
@@ -289,10 +307,15 @@ class Service_Data_StockoutOrder
     /**
      * 校验重复提交
      * @param string $strCustomerId
-     * @return void
+     * @package string $strLogisticsOrderId
+     * @return mixed
      * @throws Order_BusinessError
      */
-    public function checkRepeatSubmit($strCustomerId) {
+    public function checkRepeatSubmit($strCustomerId, $strLogisticsOrderId) {
+        $arrStockoutOrderInfo = $this->getStockoutInfoByLogisticsOrderId($strLogisticsOrderId);
+        if (!empty($arrStockoutOrderInfo)) {
+            return $arrStockoutOrderInfo;
+        }
         if ($this->objDaoRedisStockoutOrder->getValByCustomerId($strCustomerId)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT);
         }
@@ -302,7 +325,6 @@ class Service_Data_StockoutOrder
     /**
      * @param array $arrInput
      * @return array
-     * @throws Order_BusinessError
      */
     public function assembleStockoutOrder($arrInput) {
         $intStockoutOrderId = Order_Util_Util::generateStockoutOrderId();
@@ -322,20 +344,23 @@ class Service_Data_StockoutOrder
         if (empty($arrInput)) {
             return $arrCreateParams;
         }
+        $arrInput['shelf_info']['devices'] = (object)$arrInput['shelf_info']['devices'];
         $arrCreateParams['stockout_order_status'] = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
+        $arrCreateParams['logistics_order_id'] = empty($arrInput['logistics_order_id']) ?
+                                                    0 : intval($arrInput['logistics_order_id']);
         $arrCreateParams['stockout_order_id'] = empty($arrInput['stockout_order_id']) ?
                                                     0 : intval($arrInput['stockout_order_id']);
         $arrCreateParams['shipment_order_id'] = empty($arrInput['shipment_order_id']) ?
                                                     0 : intval($arrInput['shipment_order_id']);
         $arrCreateParams['shelf_info'] = empty($arrInput['shelf_info']) ?
-                                                    '' : strval($arrInput['shelf_info']);
+                                                    '' : json_encode($arrInput['shelf_info']);
         $arrCreateParams['business_form_order_id'] = empty($arrInput['business_form_order_id']) ?
                                                         0 : intval($arrInput['business_form_order_id']);
         $arrCreateParams['stockout_order_type'] = empty($arrInput['stockout_order_type']) ? 0 : intval($arrInput['stockout_order_type']);
         $arrCreateParams['warehouse_id'] = empty($arrInput['warehouse_id']) ? 0 : intval($arrInput['warehouse_id']);
         $arrCreateParams['warehouse_name'] = empty($arrInput['warehouse_name']) ? '' : strval($arrInput['warehouse_name']);
         $arrCreateParams['stockout_order_remark'] = empty($arrInput['stockout_order_remark']) ? '' : strval($arrInput['stockout_order_remark']);
-        $arrCreateParams['customer_id'] = empty($arrInput['customer_id']) ? 0 : intval($arrInput['customer_id']);
+        $arrCreateParams['customer_id'] = empty($arrInput['customer_id']) ? '' : strval($arrInput['customer_id']);
         $arrCreateParams['customer_name'] = empty($arrInput['customer_name']) ? '' : strval($arrInput['customer_name']);
         $arrCreateParams['customer_contactor'] = empty($arrInput['customer_contactor']) ? '' : strval($arrInput['customer_contactor']);
         $arrCreateParams['customer_contact'] = empty($arrInput['customer_contact']) ? '' : strval($arrInput['customer_contact']);
@@ -514,7 +539,7 @@ class Service_Data_StockoutOrder
             $arrListConditions['customer_name'] = $arrInput['customer_name'];
         }
         if (!empty($arrInput['customer_id'])) {
-            $arrListConditions['customer_id'] = intval($arrInput['customer_id']);
+            $arrListConditions['customer_id'] = strval($arrInput['customer_id']);
         }
         if (!empty($arrInput['is_print'])) {
             $arrListConditions['stockout_order_is_print'] = intval($arrInput['is_print']);
@@ -626,6 +651,7 @@ class Service_Data_StockoutOrder
             $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
             $this->addLog($userId, $userName, '完成拣货:'.$strStockoutOrderId.",拣货数量:".$stockoutOrderPickupAmount, $operationType, $strStockoutOrderId);
             $this->notifyTmsFnishPick($strStockoutOrderId,$pickupSkus);
+
         });
         Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
             Order_Statistics_Type::ACTION_UPDATE,
@@ -1153,6 +1179,23 @@ class Service_Data_StockoutOrder
 
 
     }
-
-
+	
+    /**
+     * 通过物流单号获取出库单信息
+     * @param $strLogisticsOrderId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockoutInfoByLogisticsOrderId($strLogisticsOrderId) {
+        if (empty($strLogisticsOrderId)) {
+            return [];
+        }
+        $arrRet = Model_Orm_StockoutOrder::getStockoutOrderInfoByLogisticsOrderId($strLogisticsOrderId);
+        if (empty($arrRet)) {
+            return [];
+        }
+        $arrStockoutOrderInfo = $arrRet[0];
+        $arrStockoutOrderInfo['skus'] = $this->objOrmSku->getSkuInfoById($arrStockoutOrderInfo['stockout_order_id']);
+        return $arrStockoutOrderInfo;
+    }
 }

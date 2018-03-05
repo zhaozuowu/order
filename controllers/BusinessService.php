@@ -1,24 +1,27 @@
 <?php
 /**
- * @name Controller_StockoutService
- * @desc 创建出库单
+ * @name Controller_BusinessService
+ * @desc 创建业态订单
  * @author  jinyu02@iwaimai.baidu.com
  */
-class Controller_BusinessService {
+class Controller_BusinessService extends Nscm_Base_ControllerService {
 
     /**
-     * @var Service_Page_Business_CreateBusinessFormOrder 
+     * 地址映射
+     * @var array
      */
-    protected $objCreateBusinessFormOrder;
+    public $arrMap = [
+        'Action_Service_CreateBusinessFormOrder' => 'actions/service/CreateBusinessFormOrder.php',
+    ];
 
     /**
-     * init
+     * 创建业态订单
+     * @param $arrRequest
+     * @return array
      */
-    public function __construct() {
-        $this->objCreateBusinessFormOrder = new Service_Page_Business_CreateBusinessFormOrder();
+    public function createBusinessFormOrder($arrRequest) {
+        $arrRequest = $arrRequest['objBusinessFormOrderInfo'];
+        $objAction = new Action_Service_CreateBusinessFormOrder($arrRequest);
+        return $objAction->execute();
     }
-
-    public function createBusinessFormOrder($request) {
-        return $this->objCreateBusinessFormOrder->execute($request);
-    } 
 }
