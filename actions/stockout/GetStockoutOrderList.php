@@ -76,12 +76,10 @@ class Action_GetStockoutOrderList extends Order_Base_Action
             $arrFormatRetItem['customer_city_name'] = empty($arrRetItem['customer_city_name']) ? '' : $arrRetItem['customer_city_name'];
             $arrFormatRetItem['data_source'] = empty($arrRetItem['data_source'])
                 ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
-                : Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPE_MAP[intval($arrRetItem['data_source'])]
-                ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
+                : Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPE_MAP[intval($arrRetItem['data_source'])];
             // 人工录入类型，不显示无关联订单与订单状态
             if( Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_MANUAL_INPUT == intval($arrRetItem['data_source'])){
                 $arrFormatRetItem['business_form_order_id'] = Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
-                $arrFormatRetItem['stockout_order_status'] = 0;
                 $arrFormatRetItem['stockout_order_status_text'] = Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             }
 

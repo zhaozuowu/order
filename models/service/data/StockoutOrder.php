@@ -205,6 +205,41 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     * 手动创建出库单
+     * @param $arrInput
+     */
+    public function createStockoutOrderByManual($arrInput)
+    {
+        $list = ['message'=>''];
+        $objDsSku = new Service_Data_Sku();
+        $skuTotalNum = count($arrInput['skus']);
+        $originSkuIds = array_column($arrInput['skus'],'sku_id');
+        $arrInput['skus'] = $objDsSku->appendSkuInfosToSkuParams($arrInput['skus'],1);
+        $dataBussniessObj = new  Service_Data_BusinessFormOrder();
+        list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $dataBussniessObj->getFreezeStockParams($arrInput);
+        $arrStockSkus = $this->objRalStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
+        if(empty($arrStockSkus) || empty($arrInput)) {
+            Bd_Log::warning(sprintf("checkSkuStock failed stockoutOrderId[%s]",
+                $intStockoutOrderId));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_CREATE_FAIL);
+        }
+        $arrInput = $dataBussniessObj->appendStockSkuInfoToOrder($arrInput, $arrStockSkus);
+        $arrInput = $dataBussniessObj->appendSkuTotalAmountToOrder($arrInput);
+        if (empty($arrInput) || empty($arrInput['skus'])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_CREATE_FAIL);
+        }
+        if($skuTotalNum != count($arrInput['skus'])) {
+            $assertSkuIds = array_column($arrInput['skus'],'sku_id');
+            $arrDiffSkuIds = array_diff($originSkuIds,$assertSkuIds);
+            $arrDiffSkuIds = implode(",",$arrDiffSkuIds);
+            $list['message'] ='以下商品不存在所选仓库'.$arrDiffSkuIds;
+        }
+        $this->createStockoutOrder($arrInput);
+        return $list;
+    }
+
+
+    /**
      * 创建出货单商品信息
      * @param array $arrSkus
      * @param integer $intStockoutOrderId
@@ -324,6 +359,15 @@ class Service_Data_StockoutOrder
         $arrCreateParams['stockout_order_remark'] = empty($arrInput['business_form_order_remark']) ? '' : strval($arrInput['business_form_order_remark']);
         $arrCreateParams['stockout_order_total_price'] = empty($arrInput['stockout_order_total_price']) ?
                                                             0 : intval($arrInput['stockout_order_total_price']);
+        if(!empty($arrInput['data_source']) && isset(Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPES[$arrInput['data_source']])) {
+            $arrCreateParams['data_source'] = $arrInput['data_source'];
+        }
+        if(!empty($arrInput['expect_arrive_start_time'])) {
+            $arrCreateParams['expect_arrive_start_time'] = intval($arrInput['expect_arrive_start_time']);
+        }
+        if(!empty($arrInput['expect_arrive_end_time'])) {
+            $arrCreateParams['expect_arrive_end_time'] = intval($arrInput['expect_arrive_end_time']);
+        }
         return $arrCreateParams;
     }
 
@@ -613,6 +657,7 @@ class Service_Data_StockoutOrder
             $upsList = !empty($item['min_upc']) ? $item['min_upc']:[];
             $arrSkuList[$key]['upc_unit'] = !empty($upsList['upc_unit']) ? $upsList['upc_unit']:0;
             $arrSkuList[$key]['upc_ids'] = !empty($item['upc_ids']) ? $item['upc_ids']:[];
+            $arrSkuList[$key]['min_upc_id'] = !empty($upsList['upc_id']) ? $upsList['upc_id']:0;
             $arrSkuList[$key]['upc_unit_num'] = !empty($upsList['upc_unit_num']) ? $upsList['upc_unit_num']:0;
             $arrSkuList[$key]['available_amount'] = isset($arrStockInfo[$item['sku_id']]) ? $arrStockInfo[$item['sku_id']]['available_amount']:0;
         }

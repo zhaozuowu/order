@@ -27,7 +27,7 @@ class Service_Page_Stockout_CreateStockoutOrder{
         if (empty($arrInput['stockout_order_id'])) {
             $arrInput['stockout_order_id'] = Order_Util_Util::generateStockoutOrderId();
         }
-        return $this->objDsStockoutOrder->createStockoutOrder($arrInput);
+        return $this->objDsStockoutOrder->createStockoutOrderByManual($arrInput);
     }
 
 }

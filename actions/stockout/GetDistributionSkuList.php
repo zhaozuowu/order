@@ -45,6 +45,7 @@ class Action_GetDistributionSkuList extends Order_Base_Action
             $arrFormatRetItem = [];
             $arrFormatRetItem['sku_id'] = empty($arrRetItem['sku_id']) ?  0 : intval($arrRetItem['sku_id']);
             $arrFormatRetItem['upc_ids'] = empty($arrRetItem['upc_ids']) ? [] : $arrRetItem['upc_ids'];
+            $arrFormatRetItem['min_upc_id'] = empty($arrRetItem['min_upc_id']) ? 0 : $arrRetItem['min_upc_id'];
             $arrFormatRetItem['sku_name'] = empty($arrRetItem['sku_name']) ? '' : $arrRetItem['sku_name'];
             $skuNeText = isset(Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]) ? Order_Define_Sku::SKU_NET_MAP[$arrRetItem['sku_net_unit']]:'';
             $arrFormatRetItem['sku_net'] = $arrRetItem['sku_net'].$skuNeText;
