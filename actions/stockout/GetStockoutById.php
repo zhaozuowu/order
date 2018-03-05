@@ -69,7 +69,7 @@ class Action_GetStockoutById extends Order_Base_Action
             '' : Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']];
         $arrFormatRet['devices'] = Order_Define_Format::formatDevices($arrShelfInfo['devices']);
         $arrFormatRet['customerinfo'] = [
-            'customer_id' => empty($arrRet['customer_id']) ? 0 : intval($arrRet['customer_id']),
+            'customer_id' => empty($arrRet['customer_id']) ? 0 : strval($arrRet['customer_id']),
             'customer_name' => empty($arrRet['customer_name']) ? '' : $arrRet['customer_name'],
             'customer_contactor' => empty($arrRet['customer_contactor']) ? '' : $arrRet['customer_contactor'],
             'customer_contact' => empty($arrRet['customer_contact']) ? '' : $arrRet['customer_contact'],

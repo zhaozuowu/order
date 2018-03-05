@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @name Service_Page_Business_CreateBusinessFormOrder
  * @desc 创建业态订单
@@ -32,14 +31,22 @@ class Service_Page_Business_CreateBusinessFormOrder {
 
     /**
      * @param array $arrInput
-     * @return int
+     * @return array
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      * @throws Order_Error
      */
     public function execute($arrInput) {
-        //同步创建业态订单
-        $this->objDsStockoutFormOrder->checkRepeatSubmit($arrInput['customer_id']);
+        //校验是否重复创建
+        $arrInput['devices']['shelf_info'] = (object)$arrInput['devices']['shelf_info'];
+        if (count(json_encode($arrInput['devices'])) > 128) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $arrRet = $this->objDsStockoutFormOrder->checkRepeatSubmit($arrInput['customer_id'], $arrInput['logistics_order_id']);
+        if (!empty($arrRet)) {
+            return $arrRet;
+        }
+        //同步创建出库单
         $arrInput['skus'] = $this->objDsSku->appendSkuInfosToSkuParams($arrInput['skus'],
                                                 $arrInput['business_form_order_type']);
         $arrInput = $this->objDsStockoutFormOrder->assembleStockoutOrder($arrInput);

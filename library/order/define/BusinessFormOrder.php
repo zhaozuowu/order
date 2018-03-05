@@ -5,7 +5,6 @@
  * @desc 业态出库订常量定义
  * @author  zhaozuowu@iwaimai.baidu.com
  */
-
 class Order_Define_BusinessFormOrder
 {
     /**
@@ -64,13 +63,38 @@ class Order_Define_BusinessFormOrder
      * 携带设备类型为货架
      * @var integer
      */
-    const ORDER_DEVICE_TYPE_SHELF = 1;
+    const ORDER_DEVICE_TYPE_SHELF = 0;
 
     /**
-     * 携带设备类型为冰柜
+     * 携带设备类型为冷柜
      * @var integer
      */
-    const ORDER_DEVICE_TYPE_REFRIGERATOR = 2;
+    const ORDER_DEVICE_TYPE_REFRIGERATOR = 1;
+
+    /**
+     * 携带设备类型为双货架
+     * @var integer
+     */
+    const ORDER_DEVICE_TYPE_DOUBLE = 2;
+
+    /**
+     * 携带设备类型为小货架
+     * @var integer
+     */
+    const ORDER_DEVICE_TYPE_SMALL_SHELF = 3;
+
+    /**
+     * 携带设备类型为小冷柜
+     * @var integer
+     */
+    const ORDER_DEVICE_TYPE_SMALL_REFRIGERATOR = 4;
+
+    /**
+     * 携带设备类型为鲜食柜
+     * @var integer
+     */
+    const ORDER_DEVICE_TYPE_FRESH = 5;
+
 
     /**
      * 携带设备类型
@@ -78,7 +102,11 @@ class Order_Define_BusinessFormOrder
      */
     const ORDER_DEVICE_MAP = [
         self::ORDER_DEVICE_TYPE_SHELF => '货架',
-        self::ORDER_DEVICE_TYPE_REFRIGERATOR => '冰柜',
+        self::ORDER_DEVICE_TYPE_REFRIGERATOR => '冷柜',
+        self::ORDER_DEVICE_TYPE_DOUBLE => '双货架',
+        self::ORDER_DEVICE_TYPE_SMALL_SHELF => '小货架',
+        self::ORDER_DEVICE_TYPE_SMALL_REFRIGERATOR => '小冷柜',
+        self::ORDER_DEVICE_TYPE_FRESH => '鲜食柜',
     ];
 
     /**

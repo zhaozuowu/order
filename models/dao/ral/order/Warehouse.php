@@ -5,7 +5,6 @@
  * @author zhaozuowu@iwaimai.baidu.com
  * Class Dao_Ral_Order_Warehouse
  */
-
 class Dao_Ral_Order_Warehouse
 {
     /**
@@ -61,7 +60,7 @@ class Dao_Ral_Order_Warehouse
     /**
      * get warehouse info by city id
      * @param integer $intCityId
-     * @return void
+     * @return array
      * @throws Nscm_Exception_Error
      */
     public function getWareHouseInfoByCityId($intCityId) {
