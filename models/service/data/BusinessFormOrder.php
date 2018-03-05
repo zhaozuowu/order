@@ -224,10 +224,6 @@ class Service_Data_BusinessFormOrder
         //无人货架信息校验
 
         $arrShelfInfo = $arrInput['shelf_info'];
-        $arrShelfInfo['devices'] = (object)$arrShelfInfo;
-        if (count(json_encode($arrShelfInfo)) > 128) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
-        }
         if (empty($arrShelfInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR);
         }
@@ -245,6 +241,10 @@ class Service_Data_BusinessFormOrder
                 || $intAmount <= 0) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR);
             }
+        }
+        $arrShelfInfo['devices'] = (object)$arrShelfInfo;
+        if (count(json_encode($arrShelfInfo)) > 128) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         //校验预计送达时间
         $arrExpectArriveTime = $arrInput['expect_arrive_time'];
