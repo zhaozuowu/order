@@ -87,11 +87,7 @@ class Service_Data_BusinessFormOrder
             if (empty($intSkuId)) {
                 continue;
             }
-            $arrSkuBusinessForm = explode(',', $arrSkuItem['sku_business_form']);
-            $arrSkuBusinessForm = empty($arrSkuBusinessForm) ? [] : $arrSkuBusinessForm;
-            if (in_array($arrInput['business_form_order_type'], $arrSkuBusinessForm)) {
-                $arrOrderSkus[$intKey]['distribute_amount'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount']);
-            }
+            $arrOrderSkus[$intKey]['distribute_amount'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount']);
             $arrOrderSkus[$intKey]['cost_price'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price']);
             $arrOrderSkus[$intKey]['cost_total_price'] =
                 $arrOrderSkus[$intKey]['cost_price']*$arrOrderSkus[$intKey]['distribute_amount'];
