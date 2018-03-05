@@ -42,7 +42,6 @@ class Service_Data_BusinessFormOrder
     {
         //参数校验并拼接参数
         $arrInput['business_form_order_status'] = Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_SUCCESS;
-        $this->checkCreateParams($arrInput);
         $arrInput = $this->checkSkuBusinessForm($arrInput);
         $arrInput = $this->appendWarehouseInfoToOrder($arrInput);
         //锁定库存
@@ -88,11 +87,7 @@ class Service_Data_BusinessFormOrder
             if (empty($intSkuId)) {
                 continue;
             }
-            $arrSkuBusinessForm = explode(',', $arrSkuItem['sku_business_form']);
-            $arrSkuBusinessForm = empty($arrSkuBusinessForm) ? [] : $arrSkuBusinessForm;
-            if (in_array($arrInput['business_form_order_type'], $arrSkuBusinessForm)) {
-                $arrOrderSkus[$intKey]['distribute_amount'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount']);
-            }
+            $arrOrderSkus[$intKey]['distribute_amount'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount']);
             $arrOrderSkus[$intKey]['cost_price'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price']);
             $arrOrderSkus[$intKey]['cost_total_price'] =
                 $arrOrderSkus[$intKey]['cost_price']*$arrOrderSkus[$intKey]['distribute_amount'];
@@ -223,6 +218,7 @@ class Service_Data_BusinessFormOrder
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR);
         }
         //无人货架信息校验
+
         $arrShelfInfo = $arrInput['shelf_info'];
         if (empty($arrShelfInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR);
@@ -241,6 +237,10 @@ class Service_Data_BusinessFormOrder
                 || $intAmount <= 0) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR);
             }
+        }
+        $arrShelfInfo['devices'] = (object)$arrShelfInfo;
+        if (count(json_encode($arrShelfInfo)) > 128) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         //校验预计送达时间
         $arrExpectArriveTime = $arrInput['expect_arrive_time'];
