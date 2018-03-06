@@ -25,9 +25,9 @@ abstract class Order_Base_ServiceAction extends Nscm_Base_ServiceAction {
     /**
      * init function
      */
-    public function init()
+    public function init($objValidator = 'Wm_Validator')
     {
-        parent::init();
+        parent::init($objValidator);
         $this->myConstruct();
     }
 
