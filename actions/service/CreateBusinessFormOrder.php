@@ -12,7 +12,7 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 	protected $arrInputParams = [
 	    'logistics_order_id' => 'str|required',
 		'business_form_order_type' => 'int|required',
-		'shelf_info' => 'required',
+		'shelf_info' => 'arr|required',
 		'business_form_order_remark' => 'str|max[128]',
 		'customer_id' => 'str|required',
 		'customer_name' => 'str|required|max[32]',
@@ -28,7 +28,7 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 		'executor' => 'str|required|max[32]',
         'executor_contact' => 'str|required|max[11]|min[11]',
         'expect_arrive_time' => [
-			'validate' => 'required',
+			'validate' => 'arr|required',
 			'type' => 'map',
 			'params' => [
 				'start' => 'int|required',
@@ -36,7 +36,7 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 			],
 		],
 		'skus' => [
-			'validate' => 'required',
+			'validate' => 'arr|required',
 			'type' => 'array',
 			'params' => [
 				'sku_id' => 'int|required',
