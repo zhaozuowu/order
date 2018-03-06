@@ -165,6 +165,7 @@ class Order_Define_StockoutOrder
     /**
      * 客户列表
      */
+
     const  CUSTOMER_LIST = [
         '27272727272778'=>[
           'customer_id'=>'27272727272778',
@@ -174,6 +175,15 @@ class Order_Define_StockoutOrder
           'customer_address'=>'上地四街',
           'business_form_order_type'=>'3',
           'business_form_order_type_text'=>'便利店',
+           'shelf_info' => self::DEFAULT_SHELF_INFO_LIST,
+           'executor'   =>'测试1',
+           'executor_contact'=>'13146104867',
+           'customer_location'=>'122,53',
+           'customer_region_id'=>'1311',
+           'customer_city_id'=>'131',
+           'customer_city_name'=>'北京市',
+           'customer_region_name'=>'海淀区',
+           'customer_location_source'=>'1',
         ],
         '27272727272779'=>[
           'customer_id'=>'27272727272779',
@@ -183,6 +193,15 @@ class Order_Define_StockoutOrder
           'customer_address'=>'上地四街',
             'business_form_order_type'=>'3',
             'business_form_order_type_text'=>'便利店',
+            'shelf_info' => self::DEFAULT_SHELF_INFO_LIST,
+            'executor'   =>'测试1',
+            'executor_contact'=>'13146104867',
+            'customer_location'=>'122,53',
+            'customer_region_id'=>'1311',
+            'customer_city_id'=>'131',
+            'customer_city_name'=>'北京市',
+            'customer_region_name'=>'海淀区',
+            'customer_location_source'=>'1',
         ],
         '27272727272780'=>[
           'customer_id'=>'27272727272780',
@@ -192,6 +211,15 @@ class Order_Define_StockoutOrder
           'customer_address'=>'上地四街',
             'business_form_order_type'=>'3',
             'business_form_order_type_text'=>'便利店',
+            'shelf_info' => self::DEFAULT_SHELF_INFO_LIST,
+            'executor'   =>'测试1',
+            'executor_contact'=>'13146104867',
+            'customer_location'=>'122,53',
+            'customer_region_id'=>'1311',
+            'customer_city_id'=>'131',
+            'customer_city_name'=>'北京市',
+            'customer_region_name'=>'海淀区',
+            'customer_location_source'=>'1',
         ],
         '27272727272781'=>[
           'customer_id'=>'27272727272781',
@@ -201,6 +229,15 @@ class Order_Define_StockoutOrder
           'customer_address'=>'上地四街',
             'business_form_order_type'=>'3',
             'business_form_order_type_text'=>'便利店',
+            'shelf_info' => self::DEFAULT_SHELF_INFO_LIST,
+            'executor'   =>'测试1',
+            'executor_contact'=>'13146104867',
+            'customer_location'=>'122,53',
+            'customer_region_id'=>'1311',
+            'customer_city_id'=>'131',
+            'customer_city_name'=>'北京市',
+            'customer_region_name'=>'海淀区',
+            'customer_location_source'=>'1',
         ],
     ];
 
@@ -208,4 +245,12 @@ class Order_Define_StockoutOrder
      * upc_ids数量
      */
     const UPC_IDS_NUM_TWO = 2;
+
+    /**
+     * 无人货架信息
+     */
+    const DEFAULT_SHELF_INFO_LIST = [
+      'supply_type'=>'',
+      'devices'=> array(),
+    ];
 }

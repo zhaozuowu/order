@@ -229,17 +229,23 @@ class Service_Data_StockoutOrder
     public function createStockoutOrderByManual($arrInput)
     {
         $list = ['message'=>''];
+        $arrInput = $this->assembleShipmentOrderInfo($arrInput);
         $objDsSku = new Service_Data_Sku();
+        $dataBussniessObj = new  Service_Data_BusinessFormOrder();
         $skuTotalNum = count($arrInput['skus']);
         $originSkuIds = array_column($arrInput['skus'],'sku_id');
-        $arrInput['skus'] = $objDsSku->appendSkuInfosToSkuParams($arrInput['skus'],1);
-        $dataBussniessObj = new  Service_Data_BusinessFormOrder();
+        $arrInput['skus'] = $objDsSku->appendSkuInfosToSkuParams($arrInput['skus'],$arrInput['business_form_order_type']);
+        $arrInput['business_form_order_status'] =  Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_SUCCESS;
+        $arrInput = $dataBussniessObj->checkSkuBusinessForm($arrInput);
+        if (Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_FAILED == $arrInput['business_form_order_status']) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR);
+        }
         list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $dataBussniessObj->getFreezeStockParams($arrInput);
         $arrStockSkus = $this->objRalStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
         if(empty($arrStockSkus) || empty($arrInput)) {
             Bd_Log::warning(sprintf("checkSkuStock failed stockoutOrderId[%s]",
                 $intStockoutOrderId));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_CREATE_FAIL);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
         }
         $arrInput = $dataBussniessObj->appendStockSkuInfoToOrder($arrInput, $arrStockSkus);
         $arrInput = $dataBussniessObj->appendSkuTotalAmountToOrder($arrInput);
@@ -554,6 +560,10 @@ class Service_Data_StockoutOrder
         }
         if (!empty($arrInput['end_time'])) {
             $arrListConditions['create_time'][] = ['<=', intval($arrInput['end_time'])];
+        }
+
+        if (!empty($arrInput['shipment_order_id'])) {
+            $arrListConditions['shipment_order_id'] = intval($arrInput['shipment_order_id']);
         }
         if (!empty($arrInput['data_source'])) {
             // 检查查询的数据来来源类型是否正确
@@ -1199,5 +1209,33 @@ class Service_Data_StockoutOrder
         $arrStockoutOrderInfo = $arrRet[0];
         $arrStockoutOrderInfo['skus'] = $this->objOrmSku->getSkuInfoById($arrStockoutOrderInfo['stockout_order_id']);
         return $arrStockoutOrderInfo;
+    }
+
+    /**
+     * 手机无人货架信息
+     * @param $arrInput
+     * @return mixed
+     */
+    private function assembleShipmentOrderInfo($arrInput)
+    {
+        $customerList = $this->getCustomerInfoById($arrInput['customer_id']);
+        if (empty($customerList)) {
+            return $arrInput;
+        }
+        $arrInput['shelf_info'] = $customerList['shelf_info'];
+        $arrInput['business_form_order_remark'] = empty($arrInput['stockout_order_remark']) ? '' : strval($arrInput['stockout_order_remark']);
+        $arrInput['logistics_order_id'] = empty($arrInput['logistics_order_id']) ? 0 : intval($arrInput['logistics_order_id']);
+        $arrInput['expect_arrive_time']['start'] = empty($arrInput['expect_arrive_start_time']) ? 0 : $arrInput['expect_arrive_start_time'];
+        $arrInput['expect_arrive_time']['end'] = empty($arrInput['expect_arrive_end_time']) ? 0 : $arrInput['expect_arrive_end_time'];
+        $arrInput['executor'] = empty($customerList['executor']) ? '' : strval($customerList['executor']);
+        $arrInput['executor_contact'] = empty($customerList['executor_contact']) ? '' : strval($customerList['executor_contact']);
+
+        $arrInput['customer_location'] = empty($customerList['customer_location']) ? '':$customerList['customer_location'];
+        $arrInput['customer_region_id'] = empty($customerList['customer_region_id']) ? '' : strval($customerList['customer_region_id']);
+        $arrInput['customer_city_id'] = empty($customerList['customer_city_id']) ? '' : intval($customerList['customer_city_id']);
+        $arrInput['customer_city_name'] = empty($customerList['customer_city_name']) ? '' : strval($customerList['customer_city_name']);
+        $arrInput['customer_region_name'] = empty($customerList['customer_region_name']) ? '' : strval($customerList['customer_region_name']);
+        $arrInput['customer_location_source'] = empty($customerList['customer_location_source']) ?  : intval($customerList['customer_location_source']);
+        return $arrInput;
     }
 }
