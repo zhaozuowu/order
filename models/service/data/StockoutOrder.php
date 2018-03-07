@@ -280,7 +280,13 @@ class Service_Data_StockoutOrder
             $arrDiffSkuIds = implode(",",$arrDiffSkuIds);
             $list['message'] ='以下商品不存在所选仓库'.$arrDiffSkuIds;
         }
-        $this->createStockoutOrder($arrInput);
+        //异步创建出库单
+        $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER, $arrInput,
+            strval($arrInput['stockout_order_id']));
+        if (false === $ret) {
+            Bd_Log::warning(sprintf("method[%s] cmd[%s] error",
+                __METHOD__, Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER));
+        }
         return $list;
     }
 
@@ -1240,6 +1246,12 @@ class Service_Data_StockoutOrder
      */
     private function assembleShipmentOrderInfo($arrInput)
     {
+        $startTime = $arrInput['expect_arrive_start_time'];
+        $endTime = $arrInput['expect_arrive_end_time'];
+        $nowTime = time();
+        if (($startTime-$nowTime<=Order_Define_Const::HALF_AN_HOUR_FORMAT_SECONDS) || ($startTime>=$endTime)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR,'参数异常');
+        }
         $arrInput['warehouse_location'] = $this->getWarehouseLocation($arrInput['warehouse_id']);
         $customerList = $this->getCustomerInfoById($arrInput['customer_id']);
         if (empty($customerList)) {
