@@ -223,6 +223,23 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     * 获取订单的操作信息
+     * @param $arrInput
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function getWarehouseLocation($warehouseId) {
+        $arrWarehouseList = $this->objWarehouseRal->getWareHouseList($warehouseId);
+        $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
+        if (empty($arrWarehouseList)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED);
+        }
+        $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
+        $warehouseLocation  = empty($arrWarehouseList[$warehouseId]) ? '':$arrWarehouseList[$warehouseId]['location'];
+        return $warehouseLocation;
+    }
+    /**
      * 手动创建出库单
      * @param $arrInput
      */
@@ -1218,6 +1235,7 @@ class Service_Data_StockoutOrder
      */
     private function assembleShipmentOrderInfo($arrInput)
     {
+        $arrInput['warehouse_location'] = $this->getWarehouseLocation($arrInput['warehouse_id']);
         $customerList = $this->getCustomerInfoById($arrInput['customer_id']);
         if (empty($customerList)) {
             return $arrInput;

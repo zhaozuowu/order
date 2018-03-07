@@ -7,8 +7,6 @@
 
 class Action_CreateStockoutOrder extends Order_Base_Action
 {
-    protected $boolCheckAuth = false;
-    protected $boolCheckLogin = false;
     /**
      * input params
      * @var array
