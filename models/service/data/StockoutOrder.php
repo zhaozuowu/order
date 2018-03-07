@@ -100,6 +100,11 @@ class Service_Data_StockoutOrder
         if ($stockoutOrderInfo['stockout_order_status'] != $stayRecevied) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
         }
+        //状态已经修改返回成功
+        if ($stockoutOrderInfo['stockout_order_status'] ==
+            Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS) {
+            return [];
+        }
         $nextStockoutOrderStatus = $this->getNextStockoutOrderStatus($stockoutOrderInfo['stockout_order_status']);//获取下一步操作状态
         if (empty($nextStockoutOrderStatus)) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);

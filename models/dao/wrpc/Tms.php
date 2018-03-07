@@ -33,6 +33,8 @@ class Dao_Wrpc_Tms
         $this->objWrpcService->setMeta(["routing-key"=>$strRoutingKey]);
         $arrParams = $this->getCreateShipmentParams($arrInput);
         $arrRet = $this->objWrpcService->processWarehouseRequest($arrParams);
+        Bd_Log::trace(sprintf("method[%s] processWarehouseRequest[%s]",
+                                __METHOD__, json_encode($arrRet)));
         if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
                                         __METHOD__, json_encode($arrRet), $strRoutingKey));
@@ -54,6 +56,7 @@ class Dao_Wrpc_Tms
         $this->objWrpcService->setMeta(["routing-key"=>$strRoutingKey]);
         $arrParams = $this->getPickingAmountParams($intShipmentOrderId, $arrPickupSkus);
         $arrRet = $this->objWrpcService->pickingAmount($arrParams);
+        Bd_Log::trace(sprintf("method[%s] pickingAmount[%s]", __METHOD__, json_encode($arrRet)));
         if (0 != $arrRet['errno']) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
                                     __METHOD__, json_encode($arrRet), $strRoutingKey));
