@@ -81,7 +81,6 @@ class Action_GetStockoutOrderList extends Order_Base_Action
             // 人工录入类型，不显示无关联订单与订单状态
             if( Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_MANUAL_INPUT == intval($arrRetItem['data_source'])){
                 $arrFormatRetItem['business_form_order_id'] = Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
-                $arrFormatRetItem['stockout_order_status_text'] = Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             }
 
             $arrFormatRet['orders'][] = $arrFormatRetItem;
