@@ -32,7 +32,7 @@ class Service_Page_Stockout_DeliveryOrder implements Order_Base_Page
         $userId = !empty($arrInput['_session']['user_id']) ? $arrInput['_session']['user_id']:0;
         $userName = !empty($arrInput['_session']['user_name']) ? $arrInput['_session']['user_name']:'' ;
         Bd_Log::debug("DeliveryOrder execute userinfo:".json_encode($arrInput));
-        $rs =  $this->objStockoutOrder->deliveryOrder($strStockoutOrderId,$userId,$userName);
+        $this->objStockoutOrder->deliveryOrder($strStockoutOrderId,$userId,$userName);
         return [
             'result' => true,
         ];
