@@ -48,6 +48,13 @@ class Service_Data_StockoutOrder
      * @var Dao_Wrpc_Tms
      */
     protected $objWrpcTms;
+
+    /**
+     * dao oms
+     * @var Dao_Ral_Oms
+     */
+    protected $daoOms;
+
     /**
      * init
      */
@@ -60,6 +67,7 @@ class Service_Data_StockoutOrder
         $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
         $this->objRalLog = new Dao_Ral_Log();
         $this->objWrpcTms = new Dao_Wrpc_Tms();
+        $this->daoOms = new Dao_Ral_Oms();
     }
 
 
@@ -189,9 +197,11 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     *
      * 创建出库单
      * @param array $arrInput
      * @return mixed
+     * @throws Exception
      * @throws Order_BusinessError
      */
     public function createStockoutOrder($arrInput)
@@ -214,6 +224,13 @@ class Service_Data_StockoutOrder
             $userName = empty($arrInput['_session']['user_name']) ? Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME:$arrInput['_session']['user_name'];
             $operatorId =empty($arrInput['_session']['user_id']) ? Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID :intval($arrInput['_session']['user_id']);
             $this->addLog($operatorId, $userName, '创建出库单', $operationType, $arrInput['stockout_order_id']);
+            if (Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER == $arrInput['data_source']) {
+                $intShipmentOrderId = intval($arrInput['shipment_order_id']);
+                $intStockoutOrderId = intval($arrInput['stockout_order_id']);
+                $intOmsOrderId = intval($arrInput['business_form_order_id']);
+                $this->daoOms->updateOmsOrderInfo($intShipmentOrderId, $intStockoutOrderId, $intOmsOrderId);
+            }
+
         });
         Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
                                             Order_Statistics_Type::ACTION_CREATE,
