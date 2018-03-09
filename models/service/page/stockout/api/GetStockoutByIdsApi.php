@@ -33,8 +33,7 @@ class Service_Page_Stockout_Api_GetStockoutByIdsApi implements Order_Base_Page
         if (empty($arrInput)) {
             return $arrRet;
         }
-        $arrStockoutOrderIds = is_array($arrInput['stockout_order_ids'])
-            ? $arrInput['stockout_order_ids'] : explode(',', $arrInput['stockout_order_ids']);
+        $arrStockoutOrderIds = explode(',', $arrInput['stockout_order_ids']);
         $arrRet = $this->objStockoutOrder->getOrderDetailByStockoutOrderIds($arrStockoutOrderIds);
         return $arrRet;
     }
