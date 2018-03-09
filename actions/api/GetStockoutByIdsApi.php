@@ -45,7 +45,7 @@ class Action_GetStockoutByIdsApi extends Order_Base_ApiAction
         $arrData = $data;
         $arrList = [];
         foreach ($arrData as $arrItem) {
-            $arrList[] = array(
+            $arrList[] = [
                 'stockout_order_id' => empty($arrItem['stockout_order_id'])
                     ? '' : Nscm_Define_OrderPrefix::SOO . $arrItem['stockout_order_id'],
                 'stockout_order_status' => empty($arrItem['stockout_order_status'])
@@ -79,7 +79,7 @@ class Action_GetStockoutByIdsApi extends Order_Base_ApiAction
                     ? '' : Order_Define_StockoutOrder::STOCKOUT_SIGINUP_STATUS_LIST[$arrItem['signup_status']],
                 'executor' => empty($arrItem['executor']) ? '' : $arrItem['executor'],
                 'executor_contact' => empty($arrItem['executor_contact']) ? '' : $arrItem['executor_contact'],
-            );
+            ];
         }
 
         $arrFilter = explode(',', $this->arrFilterResult['filter']);
