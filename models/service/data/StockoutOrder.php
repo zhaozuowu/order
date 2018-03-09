@@ -564,7 +564,6 @@ class Service_Data_StockoutOrder
         }
 
         return $arrRetList;
-
     }
 
     /**
