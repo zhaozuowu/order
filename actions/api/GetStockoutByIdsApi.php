@@ -94,7 +94,9 @@ class Action_GetStockoutByIdsApi extends Order_Base_ApiAction
         foreach ($arrData as $arrItem) {
             $arrTemp = [];
             foreach ($arrFields as $strKey) {
-                $arrTemp[$strKey] = $arrItem[$strKey];
+                if (array_key_exists($strKey, $arrItem)) {
+                    $arrTemp[$strKey] = $arrItem[$strKey];
+                }
             }
             $arrRes[] = $arrTemp;
         }
