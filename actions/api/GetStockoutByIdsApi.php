@@ -97,8 +97,7 @@ class Action_GetStockoutByIdsApi extends Order_Base_ApiAction
 
         if (!empty($this->arrFilterResult['is_md5']) && count($arrRes) > 0) {
             $arrSortIds = array_column($arrRes, 'stockout_order_id');
-            sort($arrSortIds);
-            array_multisort($arrSortIds, SORT_ASC, SORT_STRING, $arrRes);
+            array_multisort($arrSortIds, SORT_ASC, $arrRes);
             $arrRet = md5(json_encode($arrRes));
             return $arrRet;
         }
