@@ -12,7 +12,7 @@ class Action_GetCustomerById extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'customer_id' => 'int|required',
+        'customer_id' => 'str|required',
     ];
 
     /**
@@ -43,7 +43,7 @@ class Action_GetCustomerById extends Order_Base_Action
             return $ret;
         }
         $arrFormatRet = [
-            'customer_id' => empty($data['customer_id']) ? 0 : $data['customer_id'],
+            'customer_id' => empty($data['customer_id']) ? '' : $data['customer_id'],
             'customer_name' => empty($data['customer_name']) ? '' : $data['customer_name'],
             'customer_contactor' => empty($data['customer_contactor']) ? '' : $data['customer_contactor'],
             'customer_contact' => empty($data['customer_contact']) ? '' : $data['customer_contact'],

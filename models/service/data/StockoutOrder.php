@@ -1209,10 +1209,9 @@ class Service_Data_StockoutOrder
 
     /**
      * 查询客户名称sug
-     * @param $orderType
      * @return array
      */
-    public function getCustomernameSug($orderType)
+    public function getCustomernameSug()
     {
         $customerList = Order_Define_StockoutOrder::CUSTOMER_LIST;
         return $customerList;

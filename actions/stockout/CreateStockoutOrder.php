@@ -21,7 +21,7 @@ class Action_CreateStockoutOrder extends Order_Base_Action
         'warehouse_id' => 'str|required',
         'warehouse_name' => 'str|required',
         'stockout_order_remark' => 'str|required',
-        'customer_id' => 'int|required',
+        'customer_id' => 'str|required',
         'customer_name' => 'str|required',
         'customer_contactor' => 'str|required',
         'customer_contact' => 'str|required',

@@ -28,7 +28,6 @@ class Service_Page_Stockout_GetCustomernameSug implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $orderType = $arrInput['order_type'];
-        return $this->objStockoutOrder->getCustomernameSug($orderType);
+        return $this->objStockoutOrder->getCustomernameSug();
     }
 }

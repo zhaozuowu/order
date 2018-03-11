@@ -45,7 +45,7 @@ class Action_GetCustomernameSug extends Order_Base_Action
         foreach ($data as $arrRetItem ) {
              $arrFormatRetItem = [];
              $arrFormatRetItem['customer_name'] = empty($arrRetItem['customer_name']) ? '' :$arrRetItem['customer_name'];
-             $arrFormatRetItem['customer_id'] = empty($arrRetItem['customer_id']) ? 0: intval($arrRetItem['customer_id']);
+             $arrFormatRetItem['customer_id'] = empty($arrRetItem['customer_id']) ? '': ($arrRetItem['customer_id']);
             $arrFormatRet['customer_list'][] = $arrFormatRetItem;
         }
         return $arrFormatRet;
