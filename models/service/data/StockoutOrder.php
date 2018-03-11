@@ -502,6 +502,10 @@ class Service_Data_StockoutOrder
         if (!empty($arrInput['stockout_order_status'])) {
             $arrListConditions['stockout_order_status'] = intval($arrInput['stockout_order_status']);
         }
+
+        if (!empty($arrInput['logistics_order_id'])) {
+            $arrListConditions['logistics_order_id'] = $arrInput['logistics_order_id'];
+        }
         if (!empty($arrInput['start_time'])) {
             $arrListConditions['create_time'][] = ['>=', intval($arrInput['start_time'])];
         }

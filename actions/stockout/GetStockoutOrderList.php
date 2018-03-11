@@ -22,6 +22,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         'customer_id' => 'int',
         'is_print' => 'int',
         'stockout_order_status' => 'int',
+        'logistics_order_id'=>'str',
         'start_time' => 'int|required',
         'end_time' => 'int|required',
     ];
@@ -73,6 +74,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
             $arrFormatRetItem['create_time'] = empty($arrRetItem['create_time']) ? '' : date("Y-m-d H:i:s", $arrRetItem['create_time']);
             $arrFormatRetItem['customer_city_id'] = empty($arrRetItem['customer_city_id']) ? 0 : intval($arrRetItem['customer_city_id']);
             $arrFormatRetItem['customer_city_name'] = empty($arrRetItem['customer_city_name']) ? '' : $arrRetItem['customer_city_name'];
+            $arrFormatRetItem['logistics_order_id'] = empty($arrRetItem['logistics_order_id']) ? '' : $arrRetItem['logistics_order_id'];
             $arrFormatRet['orders'][] = $arrFormatRetItem;
         }
         return $arrFormatRet;
