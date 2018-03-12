@@ -61,9 +61,9 @@ class Action_GetStockoutByIdsApi extends Order_Base_ApiAction
                     ? '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrItem['stockout_order_type']],
                 'stockout_order_source' => empty($arrItem['stockout_order_source'])
                     ? '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_SOURCE_LIST[$arrItem['stockout_order_source']],
-                'stockout_create_time' => empty($arrItem['create_time'])
+                'create_time' => empty($arrItem['create_time'])
                     ? 0 : date('Y-m-d H:i:s', $arrItem['create_time']),
-                'stockout_update_time' => empty($arrItem['update_time'])
+                'update_time' => empty($arrItem['update_time'])
                     ? 0 : date('Y-m-d H:i:s', $arrItem['update_time']),
                 'stockout_expect_send_time' => date('Y-m-d H:i:s', $arrItem['expect_arrive_start_time'])
                     . "~" . date('Y-m-d H:i:s', $arrItem['expect_arrive_end_time']),
@@ -79,6 +79,7 @@ class Action_GetStockoutByIdsApi extends Order_Base_ApiAction
                     ? '' : Order_Define_StockoutOrder::STOCKOUT_SIGINUP_STATUS_LIST[$arrItem['signup_status']],
                 'executor' => empty($arrItem['executor']) ? '' : $arrItem['executor'],
                 'executor_contact' => empty($arrItem['executor_contact']) ? '' : $arrItem['executor_contact'],
+                'shipment_order_id' => strval($arrItem['shipment_order_id']),
             ];
         }
 
