@@ -23,6 +23,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         'is_print' => 'int',
         'stockout_order_status' => 'int',
         'logistics_order_id'=>'str',
+        'stockout_order_source'=>'int',
         'start_time' => 'int|required',
         'end_time' => 'int|required',
     ];
@@ -54,6 +55,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         foreach((array)$arrRet['orders'] as $arrRetItem) {
             $arrFormatRetItem = [];
             $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : Nscm_Define_OrderPrefix::SOO.$arrRetItem['stockout_order_id'];
+            $arrFormatRetItem['stockout_order_source'] = empty($arrRetItem['stockout_order_source']) ?  '' : Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_LIST[$arrRetItem['stockout_order_source']];
             $arrFormatRetItem['stockout_order_type'] = empty($arrRetItem['stockout_order_type']) ? 0 : $arrRetItem['stockout_order_type'];
             $arrFormatRetItem['stockout_order_type_text'] = empty($arrRetItem['stockout_order_type']) ? 
                                                                 '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrRetItem['stockout_order_type']];
@@ -75,6 +77,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
             $arrFormatRetItem['customer_city_id'] = empty($arrRetItem['customer_city_id']) ? 0 : intval($arrRetItem['customer_city_id']);
             $arrFormatRetItem['customer_city_name'] = empty($arrRetItem['customer_city_name']) ? '' : $arrRetItem['customer_city_name'];
             $arrFormatRetItem['logistics_order_id'] = empty($arrRetItem['logistics_order_id']) ? '' : $arrRetItem['logistics_order_id'];
+            $arrFormatRetItem['shipment_order_id'] = empty($arrRetItem['shipment_order_id']) ? 0 : $arrRetItem['shipment_order_id'];
             $arrFormatRet['orders'][] = $arrFormatRetItem;
         }
         return $arrFormatRet;

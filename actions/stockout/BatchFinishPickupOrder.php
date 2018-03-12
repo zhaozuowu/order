@@ -37,9 +37,9 @@ class Action_BatchFinishPickupOrder extends Order_Base_Action
      * @param array $data
      * @return array
      */
-    public function format($data)
+    public function format($successPickNum)
     {
-        return $data;
+        return ['successPickNum'=>$successPickNum];
     }
 
 }
