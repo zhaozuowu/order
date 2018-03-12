@@ -81,6 +81,10 @@ class Action_GetStockinOrderPrintList extends Order_Base_Action
             $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
             $arrFormatSkuItem['plan_amount'] = empty($arrSkuItem['reserve_order_sku_plan_amount']) ? 0 : $arrSkuItem['reserve_order_sku_plan_amount'];
             $arrFormatSkuItem['real_amount'] = empty($arrSkuItem['stockin_order_sku_real_amount']) ? 0 : $arrSkuItem['stockin_order_sku_real_amount'];
+            $stockinOrderSkuExtraInfo = empty($arrSkuItem['stockin_order_sku_extra_info']) ? []:json_decode($arrSkuItem['stockin_order_sku_extra_info'],true);
+            $arrFormatSkuItem['expire_date_list'] = array_map(function($item){
+                return  Order_Util::getFormatDate(strval($item['expire_date']));
+            },$stockinOrderSkuExtraInfo);
             $arrFormatSkus[] = $arrFormatSkuItem;
         }
         return $arrFormatSkus;

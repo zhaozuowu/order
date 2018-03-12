@@ -611,6 +611,24 @@ class Service_Data_StockoutOrder
         return $transaction;
     }
 
+    public function batchFinishPickup($arrStockoutOrderIds,$userId,$userName)
+    {
+        $res = [];
+        $totalPickupNum = count($arrStockoutOrderIds);
+        $arrStockoutOrderIds = $this->batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds);
+        $arrConditions = [
+            'stockout_order_id' => ['in', $arrStockoutOrderIds],
+        ];
+        $arrColumns = $this->objOrmStockoutOrder->getAllColumns();
+        $stockoutOrderInfo = $this->objOrmStockoutOrder->findRows($arrColumns, $arrConditions);
+        if (empty($stockoutOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
+        }
+
+
+
+    }
+
     /**
      * get stockout order info list by page and conditions
      * @param array $arrInput
