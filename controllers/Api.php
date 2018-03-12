@@ -10,6 +10,7 @@ class Controller_Api extends Ap_Controller_Abstract {
         'getstockoutstockindetailformapi' => 'actions/api/GetStockoutStockinDetailFormApi.php', #报表章节：销退入库明细（分页）API#@skipped#
         'getstockoutdetailformapi'=>'actions/api/GetStockoutDetailFormApi.php',  #报表章节：销售出库明细（分页）API#@skipped#
         'getorderdetailformapi' => 'actions/api/GetOrderDetailFormApi.php', #报表章节：库存调整明细（分页）API#@skipped#
-        'getstockoutbyidsapi' => 'actions/api/GetStockoutByIdsApi.php', #查询出库单详情API
+        'getstockoutbyidsapi' => 'actions/api/GetStockoutByIdsApi.php', #查询出库单API#
+        'getbusinessformorderbyids' => 'actions/api/GetBusinessFormOrderByIds.php', #查询业态订单API#
     );
 }
