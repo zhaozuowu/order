@@ -635,6 +635,7 @@ class Service_Data_StockoutOrder
         }
         $dealPickupNum = count($stockoutOrderList);
         $dealPickupNum = $totalPickupNum == $dealPickupNum ? $totalPickupNum:($dealPickupNum);
+        $failPickupNum = 0;
         $status = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
         foreach($stockoutOrderList as $stockoutOrderInfo) {
             try{
@@ -649,14 +650,15 @@ class Service_Data_StockoutOrder
                 $this->finishPickup($strStockoutOrderId,$pickupSkus,$userId,$userName);
             }catch (Exception $e) {
                 $dealPickupNum --;
+                $failPickupNum ++;
                 continue;
             }
 
         }
-        if ($dealPickupNum == 0) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL);
-        }
-        return $dealPickupNum;
+//        if ($dealPickupNum == 0) {
+//            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL);
+//        }
+        return ['successPickNum'=>$dealPickupNum,'failPickupNum'=>$failPickupNum];
     }
 
     /**

@@ -82,8 +82,8 @@ class Action_GetStockinOrderPrintList extends Order_Base_Action
             $arrFormatSkuItem['plan_amount'] = empty($arrSkuItem['reserve_order_sku_plan_amount']) ? 0 : $arrSkuItem['reserve_order_sku_plan_amount'];
             $arrFormatSkuItem['real_amount'] = empty($arrSkuItem['stockin_order_sku_real_amount']) ? 0 : $arrSkuItem['stockin_order_sku_real_amount'];
             $stockinOrderSkuExtraInfo = empty($arrSkuItem['stockin_order_sku_extra_info']) ? []:json_decode($arrSkuItem['stockin_order_sku_extra_info'],true);
-            $arrFormatSkuItem['expire_date_list'] = array_map(function($item){
-                return  Order_Util::getFormatDate(strval($item['expire_date']));
+            $arrFormatSkuItem['extra_info'] = array_map(function($item){
+                return  ['expire_date'=>Order_Util::getFormatDate(strval($item['expire_date'])),'amount'=>$item['amount']];
             },$stockinOrderSkuExtraInfo);
             $arrFormatSkus[] = $arrFormatSkuItem;
         }
