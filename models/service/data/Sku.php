@@ -77,8 +77,30 @@ class Service_Data_Sku
             $intSkuId = $arrSkuItem['sku_id'];
             if (empty($arrMapSkuInfos[$intSkuId])) {
                 unset($arrBatchSkuParams[$intKey]);
+                Order_Exception_Collector::addException(0, $intSkuId, '', Order_Exception_Const::CONCRETE_SKU_NOT_EXIST);
                 continue;
             }
+            // check is active
+            if (Nscm_Define_Sku::SKU_IS_ACTIVE != $arrMapSkuInfos[$intSkuId]['is_active']) {
+                Order_Exception_Collector::addException(0, $intSkuId, $arrMapSkuInfos[$intSkuId]['sku_name'],
+                    Order_Exception_Const::CONCRETE_SKU_NOT_OPEN);
+                continue;
+            }
+            // check business
+            $arrBusinessInfo = $arrMapSkuInfos[$intSkuId]['sku_business_form_detail'];
+            $boolBusinessIsActive = false;
+            foreach ($arrBusinessInfo as $row) {
+                if (Nscm_Define_Sku::SKU_IS_ACTIVE == $row['is_active'] && $row['type'] == $intOrderType) {
+                    $boolBusinessIsActive = true;
+                    break;
+                }
+            }
+            if (!$boolBusinessIsActive) {
+                Order_Exception_Collector::addException(0, $intSkuId, $arrMapSkuInfos[$intSkuId]['sku_name'],
+                    Order_Exception_Const::CONCRETE_SKU_BUSINESS_FAIL);
+                continue;
+            }
+
             $arrBatchSkuParams[$intKey]['sku_name'] = $arrMapSkuInfos[$intSkuId]['sku_name'];
             $arrBatchSkuParams[$intKey]['sku_net'] = $arrMapSkuInfos[$intSkuId]['sku_net'];
             $arrBatchSkuParams[$intKey]['sku_net_unit'] = $arrMapSkuInfos[$intSkuId]['sku_net_unit'];

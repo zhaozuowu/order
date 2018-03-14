@@ -23,7 +23,7 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 		'customer_location_source' => 'int|required',
 		'customer_city_id' => 'int|required',
 		'customer_city_name' => 'str|required|max[32]',
-		'customer_region_id' => 'int|required',
+		'customer_region_id' => 'int|required|min[1]',
 		'customer_region_name' => 'str|required|max[32]',
 		'executor' => 'str|required|max[32]',
         'executor_contact' => 'str|required|max[11]|min[11]',

@@ -213,7 +213,7 @@ class Service_Data_StockoutOrder
         }
         $arrInput['skus'] = $this->filterNoStockSku($arrInput['skus']);
         $arrInput['shipment_order_id'] = $this->objWrpcTms->createShipmentOrder($arrInput);
-        Bd_Log::trace(sprintf("method[%s] skus[%s]", __METHOD__, $arrInput['skus']));
+        Bd_Log::trace(sprintf("method[%s] skus[%s]", __METHOD__, json_encode($arrInput['skus'])));
         Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrInput) {
             $arrCreateParams = $this->getCreateParams($arrInput);
             Bd_Log::trace(sprintf("method[%s] arrCreateParams[%s]", __METHOD__, json_encode($arrCreateParams)));
@@ -227,14 +227,34 @@ class Service_Data_StockoutOrder
             if (Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER == $arrInput['data_source']) {
                 $intShipmentOrderId = intval($arrInput['shipment_order_id']);
                 $intStockoutOrderId = intval($arrInput['stockout_order_id']);
-                $intOmsOrderId = intval($arrInput['business_form_order_id']);
-                $this->daoOms->updateOmsOrderInfo($intShipmentOrderId, $intStockoutOrderId, $intOmsOrderId);
+                $intBusinessOrderId = intval($arrInput['business_form_order_id']);
+                $arrOmsSkus = $this->formatOmsSku($arrInput['skus']);
+                $this->daoOms->updateOmsOrderInfo($intBusinessOrderId, $intStockoutOrderId,
+                    $intShipmentOrderId, $arrOmsSkus);
             }
 
         });
         Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
                                             Order_Statistics_Type::ACTION_CREATE,
                                             $arrInput['stockout_order_id']);
+        return true;
+    }
+
+    /**
+     * format oms sku
+     * @param array[] $arrSkus
+     * @return array[]
+     */
+    private function formatOmsSku($arrSkus)
+    {
+        $arrRet = [];
+        foreach ($arrSkus as $arrSku) {
+            $arrRet[] = [
+                'sku_id' => intval($arrSku['sku_id']),
+                'sku_amount' => intval($arrSku['distribute_amount']),
+            ];
+        }
+        return $arrRet;
     }
 
     /**
@@ -309,6 +329,7 @@ class Service_Data_StockoutOrder
     public function assembleStockoutOrder($arrInput) {
         $intStockoutOrderId = Order_Util_Util::generateStockoutOrderId();
         $arrInput['stockout_order_id'] = $intStockoutOrderId;
+        Order_Exception_Collector::setOrderIdAll($intStockoutOrderId);
         $arrInput['stockout_order_type'] = Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_STOCK;
         return $arrInput;
     }

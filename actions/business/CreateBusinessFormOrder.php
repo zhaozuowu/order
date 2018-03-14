@@ -11,9 +11,8 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 	 * @var array
 	 */
 	protected $arrInputParams = [
-	    'logistics_order_id' => 'str|required',
+	    'logistics_order_id' => 'int|required',
 		'business_form_order_type' => 'int|required',
-		'business_form_order_price' => 'int|required',
 		'shelf_info' => 'json|decode|required',
 		'business_form_order_remark' => 'str',
 		'customer_id' => 'str|required',
@@ -25,7 +24,7 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 		'customer_location_source' => 'int|required',
 		'customer_city_id' => 'int|required',
 		'customer_city_name' => 'str|required|max[32]',
-		'customer_region_id' => 'int|required',
+		'customer_region_id' => 'int|required|min[1]',
 		'customer_region_name' => 'str|required|max[32]',
 		'executor' => 'str|required|max[32]',
         'executor_contact' => 'str|required|max[11]|min[11]',
@@ -61,7 +60,24 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 		$this->objPage = new Service_Page_Business_CreateBusinessFormOrder();
 	}
 
-	/**
+    /**
+     * execute
+     * @return array
+     * @throws Exception
+     */
+	public function myExecute()
+    {
+        try {
+            return parent::myExecute();
+        } catch (Exception $e) {
+            throw $e;
+        } finally {
+            $arrExceptions = Order_Exception_Collector::getExceptionInfo();
+            $this->arrData['exceptions'] = $this->formatException($arrExceptions);
+        }
+    }
+
+    /**
 	 * format result
 	 * @param array $arrRet
 	 * @return array
@@ -75,6 +91,24 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 	    $arrFormatRet['skus'] = $this->formatSkus($arrRet['skus']);
 		return $arrFormatRet;
 	}
+
+    /**
+     * format exception
+     * @param array[]
+     * @return array[]
+     */
+	private function formatException($arrExceptions)
+    {
+        $arrResult = [];
+	    foreach ($arrExceptions as $arrException) {
+	        $arrResult[] = [
+	            'sku_id' => $arrException['sku_id'],
+                'exception_info' => $arrException['exception_info'],
+                'exception_time' => $arrException['exception_time'],
+            ];
+        }
+        return $arrResult;
+    }
 
     /**
      * format skus
