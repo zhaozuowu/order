@@ -72,6 +72,7 @@ class Service_Data_Sku
         }
         foreach ((array)$arrBatchSkuParams as $intKey => $arrSkuItem) {
             if (empty($arrSkuItem['sku_id'])) {
+                unset($arrBatchSkuParams[$intKey]);
                 continue;
             }
             $intSkuId = $arrSkuItem['sku_id'];
@@ -84,6 +85,7 @@ class Service_Data_Sku
             if (Nscm_Define_Sku::SKU_IS_ACTIVE != $arrMapSkuInfos[$intSkuId]['is_active']) {
                 Order_Exception_Collector::addException(0, $intSkuId, $arrMapSkuInfos[$intSkuId]['sku_name'],
                     Order_Exception_Const::CONCRETE_SKU_NOT_OPEN);
+                unset($arrBatchSkuParams[$intKey]);
                 continue;
             }
             // check business
@@ -98,6 +100,7 @@ class Service_Data_Sku
             if (!$boolBusinessIsActive) {
                 Order_Exception_Collector::addException(0, $intSkuId, $arrMapSkuInfos[$intSkuId]['sku_name'],
                     Order_Exception_Const::CONCRETE_SKU_BUSINESS_FAIL);
+                unset($arrBatchSkuParams[$intKey]);
                 continue;
             }
 

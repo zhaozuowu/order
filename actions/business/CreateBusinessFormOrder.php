@@ -70,6 +70,13 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
         try {
             return parent::myExecute();
         } catch (Exception $e) {
+            switch ($e->getCode()) {
+                case Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR:
+                    Order_Exception_Collector::addException(0, 0, '', 0, 0, $e->getMessage());
+                    break;
+                default:
+                    break;
+            }
             throw $e;
         } finally {
             $arrExceptions = Order_Exception_Collector::getExceptionInfo();
