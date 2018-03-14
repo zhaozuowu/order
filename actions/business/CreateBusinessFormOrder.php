@@ -88,6 +88,7 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 	        return $arrFormatRet;
         }
         $arrFormatRet['stockout_order_id'] = empty($arrRet['stockout_order_id']) ? 0 : $arrRet['stockout_order_id'];
+	    $arrFormatRet['business_form_order_id'] = intval($arrRet['business_form_order_id']);
 	    $arrFormatRet['skus'] = $this->formatSkus($arrRet['skus']);
 		return $arrFormatRet;
 	}
