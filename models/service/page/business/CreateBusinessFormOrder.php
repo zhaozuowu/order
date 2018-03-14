@@ -41,6 +41,7 @@ class Service_Page_Business_CreateBusinessFormOrder {
         //校验是否重复创建
         $arrRet = $this->objDsStockoutFormOrder->checkRepeatSubmit($arrInput['customer_id'], $arrInput['logistics_order_id']);
         if (!empty($arrRet)) {
+            Bd_Log::trace(sprintf('logistics_order_id[%d] repeat!', $arrInput['logistics_order_id']));
             return $arrRet;
         }
         //同步创建出库单
