@@ -501,5 +501,23 @@ class Service_Data_BusinessFormOrder
 
     }
 
+    /**
+     * 根据业态订单id查询业态订单明细
+     * @param $arrOrderIds
+     * @return array|Model_Orm_BusinessFormOrder
+     * @throws
+     */
+    public function getBusinessFormOrderByIds($arrOrderIds)
+    {
+        $ret = [];
+        if (empty($arrOrderIds)) {
+            return $ret;
+        }
+        $arrBusFormOrderList = Model_Orm_BusinessFormOrder::getBusinessFormOrderByOrderIds($arrOrderIds);
+        if (empty($arrBusFormOrderList)) {
+            return $ret;
+        }
 
+        return $arrBusFormOrderList;
+    }
 }

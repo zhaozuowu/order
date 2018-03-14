@@ -81,5 +81,25 @@ class Model_Orm_BusinessFormOrder extends Order_Base_Orm
 
     }
 
+    /**
+     * 根据业态订单号获取业态订单号信息
+     * @param $arrOrderIds 业态订单号
+     * @return array
+     */
+    public static function getBusinessFormOrderByOrderIds($arrOrderIds)
+    {
+        Bd_Log::debug(__METHOD__ . ' called, input params: ' . json_encode(func_get_args()));
+        if (empty($arrOrderIds)) {
+            return [];
+        }
+        $condition = ['business_form_order_id' => ['in', $arrOrderIds]];
+        $arrFields = self::getAllColumns();
+        $arrList = self::findRows($arrFields, $condition);
+        if (empty($arrList)) {
+            return [];
+        }
+        Bd_Log::debug(__METHOD__ . ' return: ' . json_encode($arrList));
+        return $arrList;
+    }
 
 }

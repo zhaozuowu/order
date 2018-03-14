@@ -582,6 +582,29 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     * 根据出库单号获取出库单信息
+     * @param int $arrStockoutOrderIds 出库单id
+     * @return array
+     * @throws Nscm_Exception_Error
+     */
+    public function getOrderDetailByStockoutOrderIds($arrStockoutOrderIds)
+    {
+        $arrStockoutOrderIds = $this->batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds);
+        $ret = [];
+        if (empty($arrStockoutOrderIds)) {
+            return $ret;
+        }
+        $arrColumns = $this->objOrmStockoutOrder->getAllColumns();
+        $arrConditions = $this->getPrintConditions($arrStockoutOrderIds);
+        $arrRetList = $this->objOrmStockoutOrder->findRows($arrColumns, $arrConditions);
+        if (empty($arrRetList)) {
+            return $ret;
+        }
+
+        return $arrRetList;
+    }
+
+    /**
      * 完成拣货
      * @param $strStockoutOrderId
      * @param $pickupSkus
