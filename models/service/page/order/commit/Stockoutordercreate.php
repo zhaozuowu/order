@@ -34,8 +34,8 @@ class Service_Page_Order_Commit_Stockoutordercreate extends Wm_Lib_Wmq_CommitPag
             try {
                 $this->objDsException->writeException($arrInput['exceptions']);
             } catch (Exception $e) {
-                Bd_Log::fatal('write Exception info error, Exceptions: ' .
-                    Nscm_Lib_Util::jsonEncode($arrInput['exceptions']));
+                Bd_Log::fatal(sprintf('write Exception info error, Exceptions: [%s], code[%d], info[%s]',
+                    Nscm_Lib_Util::jsonEncode($arrInput['exceptions']), $e->getCode(), $e->getMessage()));
             }
         }
         return $boolCreateResult;
