@@ -39,6 +39,24 @@ class Order_Define_BusinessFormOrder
     ];
 
     /**
+     * 业态订单类型为无人货架
+     * @var integer
+     */
+    const BUSINESS_FORM_ORDER_TYPE_SHELF = 1;
+
+    /**
+     * 业态订单类型为前置仓
+     * @var integer
+     */
+    const BUSINESS_FORM_ORDER_TYPE_PREPOSITION = 2;
+
+    /**
+     * 业态订单类型为便利店
+     * @var integer
+     */
+    const BUSINESS_FORM_ORDER_TYPE_SHOP = 3;
+
+    /**
      * 补货类型为铺货
      * @var integer
      */
@@ -51,12 +69,20 @@ class Order_Define_BusinessFormOrder
     const ORDER_SUPPLY_TYPE_SUPPLY = 2;
 
     /**
+     * 补货类型为订货
+     * @var integer
+     */
+    const ORDER_SUPPLY_TYPE_ORDER = 4;
+
+
+    /**
      * 补货类型
      * @var array
      */
     const ORDER_SUPPLY_TYPE = [
         self::ORDER_SUPPLY_TYPE_CREATE => '铺货',
         self::ORDER_SUPPLY_TYPE_SUPPLY => '补货',
+        self::ORDER_SUPPLY_TYPE_ORDER => '订货',
     ];
 
     /**

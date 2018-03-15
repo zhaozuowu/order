@@ -304,7 +304,7 @@ class Order_Define_StockoutOrder
      * 无人货架信息
      */
     const DEFAULT_SHELF_INFO_LIST = [
-      'supply_type'=>'',
+      'supply_type'=>Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE_ORDER,
       'devices'=> array(),
     ];
 }

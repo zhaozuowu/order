@@ -502,7 +502,7 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
         }
         return Model_Orm_StockoutOrder::getConnection()->transaction(function () use
-                                            ($strStockoutOrderId, $intSignupStatus, $arrSignupSkus) {
+                                            ($strStockoutOrderId, $intSignupStatus, $arrSignupSkus,$stockoutOrderInfo) {
             $updateData = ['signup_status' => $intSignupStatus];
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
@@ -514,7 +514,11 @@ class Service_Data_StockoutOrder
             $userName = Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
             $this->addLog($userId, $userName, '完成签收:'.$strStockoutOrderId,$operationType, $strStockoutOrderId);
             $res = [];
-            if (empty($arrSignupSkus) && $intSignupStatus != Order_Define_StockoutOrder::STOCKOUT_SIGINUP_REJECT_ALL ) {
+            if (empty($arrSignupSkus) && ($intSignupStatus != Order_Define_StockoutOrder::STOCKOUT_SIGINUP_REJECT_ALL) &&
+                $stockoutOrderInfo['stockout_order_source'] == Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_SHELF ) {
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SIGNUP_SKUS_NOT_EXISTS);
+            }elseif(empty($arrSignupSkus) && ($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_ACCEPT_ALL) &&
+                $stockoutOrderInfo['stockout_order_source'] != Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_SHELF ) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SIGNUP_SKUS_NOT_EXISTS);
             }
             if ($intSignupStatus == Order_Define_StockoutOrder::STOCKOUT_SIGINUP_REJECT_ALL) {
