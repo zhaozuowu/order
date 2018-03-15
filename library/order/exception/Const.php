@@ -102,7 +102,7 @@ class Order_Exception_Const
     const MAP_TEXT = [
         self::CONCRETE_SKU_NO_QUOTATION => '【商品信息】商品无生效报价',
         self::CONCRETE_SKU_NOT_OPEN => '【商品信息】商品订货状态不可用',
-        self::CONCRETE_SKU_BUSINESS_FAIL => '【商品信息】商品无生效报价',
+        self::CONCRETE_SKU_BUSINESS_FAIL => '【商品信息】商品订货状态不可用',
         self::CONCRETE_SKU_NOT_EXIST => '【商品信息】商品不存在',
         self::CONCRETE_SKU_NO_VENDOR => '【供货商信息异常】商品无供货商',
         self::CONCRETE_WAREHOUSE => '【仓库信息异常】网点没有所对应的仓库',
