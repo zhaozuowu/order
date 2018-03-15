@@ -89,7 +89,7 @@ class Service_Data_BusinessFormOrder
             }
             if (empty($arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount'])) {
                 Order_Exception_Collector::addException($arrInput['stockout_order_id'], $intSkuId,
-                    $arrOrderSkus[$intSkuId]['sku_name'], Order_Exception_Const::CONCRETE_STOCK_NOT_ENOUGH);
+                    $arrSkuItem['sku_name'], Order_Exception_Const::CONCRETE_STOCK_NOT_ENOUGH);
             }
             $arrOrderSkus[$intKey]['distribute_amount'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount']);
             $arrOrderSkus[$intKey]['cost_price'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price']);
