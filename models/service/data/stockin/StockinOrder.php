@@ -638,7 +638,7 @@ class Service_Data_Stockin_StockinOrder
         $arrWarehouseList = $objDao->getWareHouseList($arrWarehouseIds);
         $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
         $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
-        $arrSkuColumns = ['stockin_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount','sku_net_unit'];
+        $arrSkuColumns = ['stockin_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount','sku_net_unit','stockin_order_sku_extra_info'];
         $arrReserveSkuList = Model_Orm_StockinOrderSku::findRows($arrSkuColumns, $arrConditions);
         $arrReserveSkuList = $this->arrayToKeyValue($arrReserveSkuList, 'stockin_order_id');
         foreach ($arrRetList as $key=>$item) {
