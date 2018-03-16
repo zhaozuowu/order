@@ -198,7 +198,6 @@ class Service_Data_BusinessFormOrder
     public function appendWarehouseInfoToOrder($arrInput) {
         $arrRet = $this->objWarehouseRal->getWarehouseInfoByDistrictId($arrInput['customer_region_id']);
         if (empty($arrRet)) {
-            Order_Exception_Collector::clearAllException();
             Order_Exception_Collector::addException($arrInput['stockout_order_id'], 0, '',
                 Order_Exception_Const::CONCRETE_WAREHOUSE);
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED);
@@ -225,16 +224,13 @@ class Service_Data_BusinessFormOrder
 
         $arrShelfInfo = $arrInput['shelf_info'];
         if (empty($arrShelfInfo)) {
-            Order_Exception_Collector::clearAllException();
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR);
         }
         if (!isset(Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']])) {
-            Order_Exception_Collector::clearAllException();
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_SHELF_INFO_ERROR);
         }
         if (Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE_CREATE == $arrShelfInfo['supply_type']
             && empty($arrShelfInfo['devices'])) {
-            Order_Exception_Collector::clearAllException();
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR);
         }
         foreach ((array)$arrShelfInfo['devices'] as $intKey => $intAmount) {
@@ -242,13 +238,11 @@ class Service_Data_BusinessFormOrder
             $intAmount = intval($intAmount);
             if (!isset(Order_Define_BusinessFormOrder::ORDER_DEVICE_MAP[$intKey])
                 || $intAmount <= 0) {
-                Order_Exception_Collector::clearAllException();
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR);
             }
         }
         $arrShelfInfo['devices'] = (object)$arrShelfInfo;
         if (count(json_encode($arrShelfInfo)) > 128) {
-            Order_Exception_Collector::clearAllException();
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         //校验预计送达时间
@@ -256,23 +250,19 @@ class Service_Data_BusinessFormOrder
         $intCurTime = time();
         if ($arrExpectArriveTime['start'] < $intCurTime ||
             $arrExpectArriveTime['end'] <= $arrExpectArriveTime['start']) {
-            Order_Exception_Collector::clearAllException();
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_EXPECT_ARRIVE_TIME_ERROR);
         }
         //校验位置信息
         $arrLocation = explode(',', $arrInput['customer_location']);
         if (floatval($arrLocation[1]) >= Order_Define_BusinessFormOrder::MAX_LATITUDE
             || floatval($arrLocation[1]) <= Order_Define_BusinessFormOrder::MIN_LATITUDE) {
-            Order_Exception_Collector::clearAllException();
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_LATITUDE_ERROR);
         }
         if (floatval($arrLocation[0]) >= Order_Define_BusinessFormOrder::MAX_LONGITUDE
             || floatval($arrLocation[0]) <= Order_Define_BusinessFormOrder::MIN_LONGITUDE) {
-            Order_Exception_Collector::clearAllException();
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_LONGITUDE_ERROR);
         }
         if (!isset(Order_Define_BusinessFormOrder::CUSTOMER_LOCATION_SOURCE_TYPE[$arrInput['customer_location_source']])) {
-            Order_Exception_Collector::clearAllException();
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_CUSTOMER_LOCATION_SOURCE_ERROR);
         }
     }
