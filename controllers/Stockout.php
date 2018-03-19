@@ -12,6 +12,7 @@ class Controller_Stockout extends Ap_Controller_Abstract
         'finishorder' => 'actions/stockout/FinishOrder.php', #TMS完成门店签收#@skipped#
         'getstockoutbyid' => 'actions/stockout/GetStockoutById.php', #查询出库单明细#
         'finishpickuporder' => 'actions/stockout/FinishPickupOrder.php', #仓库完成拣货#
+        'batchfinishpickuporder'=>'actions/stockout/BatchFinishPickupOrder.php',#仓库批量完成拣货#
         'deletestockoutorder' => 'actions/stockout/DeleteStockoutOrder.php', #作废出库单#
         'statistical' => 'actions/stockout/Statistical.php', #出库单状态统计#
         'getloglist'  => 'actions/stockout/GetLogList.php', #查询出库单日志#

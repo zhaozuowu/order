@@ -23,6 +23,8 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         'shipment_order_id'=>'int',
         'is_print' => 'int',
         'stockout_order_status' => 'int',
+        'logistics_order_id'=>'str',
+        'stockout_order_source'=>'int',
         'start_time' => 'int|required',
         'end_time' => 'int|required',
         'data_source' => 'int',
@@ -54,7 +56,8 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         $arrFormatRet['orders'] = [];
         foreach ((array)$arrRet['orders'] as $arrRetItem) {
             $arrFormatRetItem = [];
-            $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ? '' : Nscm_Define_OrderPrefix::SOO . $arrRetItem['stockout_order_id'];
+            $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : Nscm_Define_OrderPrefix::SOO.$arrRetItem['stockout_order_id'];
+            $arrFormatRetItem['stockout_order_source'] = empty($arrRetItem['stockout_order_source']) ?  '' : Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_LIST[$arrRetItem['stockout_order_source']];
             $arrFormatRetItem['stockout_order_type'] = empty($arrRetItem['stockout_order_type']) ? 0 : $arrRetItem['stockout_order_type'];
             $arrFormatRetItem['stockout_order_type_text'] = empty($arrRetItem['stockout_order_type']) ?
                 '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrRetItem['stockout_order_type']];
@@ -82,6 +85,8 @@ class Action_GetStockoutOrderList extends Order_Base_Action
             if( Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_MANUAL_INPUT == intval($arrRetItem['data_source'])){
                 $arrFormatRetItem['business_form_order_id'] = Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             }
+            $arrFormatRetItem['logistics_order_id'] = empty($arrRetItem['logistics_order_id']) ? '' : $arrRetItem['logistics_order_id'];
+            $arrFormatRetItem['shipment_order_id'] = empty($arrRetItem['shipment_order_id']) ? 0 : $arrRetItem['shipment_order_id'];
 
             $arrFormatRet['orders'][] = $arrFormatRetItem;
         }
