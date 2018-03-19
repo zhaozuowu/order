@@ -135,6 +135,7 @@ class Order_Define_StockoutOrder
      */
     const STOCKOUT_DATA_SOURCE_SYSTEM_ORDER = 1;
     const STOCKOUT_DATA_SOURCE_MANUAL_INPUT = 2;
+    const STOCKOUT_DATA_SOURCE_BUSINESS = 3;
     /**
      * 签收状态
      * @var array

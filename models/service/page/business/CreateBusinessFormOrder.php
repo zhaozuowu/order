@@ -37,7 +37,6 @@ class Service_Page_Business_CreateBusinessFormOrder {
      * @throws Order_Error
      */
     public function execute($arrInput) {
-        $arrInput['data_source'] = Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER;
         //校验是否重复创建
         $arrRet = $this->objDsStockoutFormOrder->checkRepeatSubmit($arrInput['customer_id'], $arrInput['logistics_order_id']);
         if (!empty($arrRet)) {

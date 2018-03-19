@@ -58,7 +58,17 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 		$this->objPage = new Service_Page_Business_CreateBusinessFormOrder();
 	}
 
-	/**
+    /**
+     * my execute; append data source
+     * @return array
+     */
+	public function myExecute()
+    {
+        $this->arrFilterResult['data_source'] = Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_BUSINESS;
+        return parent::myExecute();
+    }
+
+    /**
 	 * format result
 	 * @param array $arrRet
 	 * @return array
