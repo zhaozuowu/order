@@ -385,6 +385,7 @@ class Service_Data_StockoutOrder
         $arrCreateParams['stockout_order_remark'] = empty($arrInput['business_form_order_remark']) ? '' : strval($arrInput['business_form_order_remark']);
         $arrCreateParams['stockout_order_total_price'] = empty($arrInput['stockout_order_total_price']) ?
                                                             0 : intval($arrInput['stockout_order_total_price']);
+        $arrCreateParams['data_source'] = $arrInput['data_source'] ?? 0;
         return $arrCreateParams;
     }
 
