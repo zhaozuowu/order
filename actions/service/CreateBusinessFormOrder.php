@@ -64,7 +64,7 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
      */
 	public function myExecute()
     {
-        $this->arrFilterResult['data_source'] = Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_BUSINESS;
+        $this->arrFilterResult['data_source'] = Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER;
         return parent::myExecute();
     }
 

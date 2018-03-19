@@ -224,7 +224,7 @@ class Service_Data_StockoutOrder
             $userName = empty($arrInput['_session']['user_name']) ? Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME:$arrInput['_session']['user_name'];
             $operatorId =empty($arrInput['_session']['user_id']) ? Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID :intval($arrInput['_session']['user_id']);
             $this->addLog($operatorId, $userName, '创建出库单', $operationType, $arrInput['stockout_order_id']);
-            if (Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER == $arrInput['data_source']) {
+            if (Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_OMS == $arrInput['data_source']) {
                 $intShipmentOrderId = intval($arrInput['shipment_order_id']);
                 $intStockoutOrderId = intval($arrInput['stockout_order_id']);
                 $intBusinessOrderId = intval($arrInput['business_form_order_id']);

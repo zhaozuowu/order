@@ -78,7 +78,6 @@ class Service_Data_BusinessFormOrder
         if (empty($arrInput['skus']) || empty($arrStockSkus)) {
             $arrInput['business_form_order_status'] =
                 Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_FAILED;
-            return $arrInput;
         }
         $arrMapSkuIdToStockInfo = Order_Util_Util::arrayToKeyValue($arrStockSkus, 'sku_id');
         $arrOrderSkus = $arrInput['skus'];

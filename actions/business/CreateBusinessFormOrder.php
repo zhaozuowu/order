@@ -68,7 +68,7 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 	public function myExecute()
     {
         try {
-            $this->arrFilterResult['data_source'] = Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER;
+            $this->arrFilterResult['data_source'] = Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_OMS;
             return parent::myExecute();
         } catch (Exception $e) {
             switch ($e->getCode()) {
