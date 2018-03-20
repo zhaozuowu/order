@@ -78,9 +78,8 @@ class Action_GetStockoutOrderList extends Order_Base_Action
             $arrFormatRetItem['create_time'] = empty($arrRetItem['create_time']) ? '' : date("Y-m-d H:i:s", $arrRetItem['create_time']);
             $arrFormatRetItem['customer_city_id'] = empty($arrRetItem['customer_city_id']) ? 0 : intval($arrRetItem['customer_city_id']);
             $arrFormatRetItem['customer_city_name'] = empty($arrRetItem['customer_city_name']) ? '' : $arrRetItem['customer_city_name'];
-            $arrFormatRetItem['data_source'] = empty($arrRetItem['data_source'])
-                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
-                : Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPE_MAP[intval($arrRetItem['data_source'])];
+            $arrFormatRetItem['data_source'] = isset(Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPE_MAP[intval($arrRetItem['data_source'])]) ? Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPE_MAP[intval($arrRetItem['data_source'])]:
+                Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPE_MAP[Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER];
             // 人工录入类型，不显示无关联订单与订单状态
             if( Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_MANUAL_INPUT == intval($arrRetItem['data_source'])){
                 $arrFormatRetItem['business_form_order_id'] = Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
