@@ -541,6 +541,13 @@ class Service_Data_StockoutOrder
         if (!empty($arrInput['stockout_order_status'])) {
             $arrListConditions['stockout_order_status'] = intval($arrInput['stockout_order_status']);
         }
+
+        if (!empty($arrInput['logistics_order_id'])) {
+            $arrListConditions['logistics_order_id'] = $arrInput['logistics_order_id'];
+        }
+        if (!empty($arrInput['stockout_order_source'])) {
+            $arrListConditions['stockout_order_source'] = $arrInput['stockout_order_source'];
+        }
         if (!empty($arrInput['start_time'])) {
             $arrListConditions['create_time'][] = ['>=', intval($arrInput['start_time'])];
         }
@@ -669,6 +676,70 @@ class Service_Data_StockoutOrder
         return $transaction;
     }
 
+    /**
+     * @param $arrStockoutOrderIds
+     * @param $userId
+     * @param $userName
+     * @throws Order_BusinessError
+     */
+    public function batchFinishPickup($arrStockoutOrderIds, $userId, $userName)
+    {
+        $res = [];
+        $totalPickupNum = count($arrStockoutOrderIds);
+        $arrStockoutOrderIds = $this->batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds);
+        $arrConditions = [
+            'stockout_order_id' => ['in', $arrStockoutOrderIds],
+        ];
+        $arrColumns = $this->objOrmStockoutOrder->getAllColumns();
+        $stockoutOrderList= $this->objOrmStockoutOrder->findRows($arrColumns, $arrConditions);
+        if (empty($stockoutOrderList)) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
+        }
+        $dealPickupNum = count($stockoutOrderList);
+        $dealPickupNum = $totalPickupNum == $dealPickupNum ? $totalPickupNum:($dealPickupNum);
+        $failPickupNum = 0;
+        $status = Order_Define_StockoutOrder::STAY_PICKING_STOCKOUT_ORDER_STATUS;
+        foreach($stockoutOrderList as $stockoutOrderInfo) {
+            try{
+                $strStockoutOrderId = $stockoutOrderInfo['stockout_order_id'];
+                $arrConditions = ['stockout_order_id' => $strStockoutOrderId];
+                $arrColumns = $this->objOrmSku->getAllColumns();
+                $skuList = $this->objOrmSku->findRows($arrColumns, $arrConditions);
+                if (empty($skuList)) {
+                    Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS);
+                }
+                $pickupSkus = $this->appendSkuDistributeAmount($skuList);
+                $this->finishPickup($strStockoutOrderId,$pickupSkus,$userId,$userName);
+            }catch (Exception $e) {
+                $dealPickupNum --;
+                $failPickupNum ++;
+                continue;
+            }
+
+        }
+//        if ($dealPickupNum == 0) {
+//            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL);
+//        }
+        return ['successPickNum'=>$dealPickupNum,'failPickupNum'=>$failPickupNum];
+    }
+
+    /**
+     * 拼接获取下单数量
+     * @param $skuList
+     * @return array
+     */
+    public function appendSkuDistributeAmount($skuList) {
+        if (empty($skuList)) {
+            return [];
+        }
+        $list = [];
+        foreach($skuList as $key=>$item) {
+             $tmp['sku_id'] = $item['sku_id'];
+             $tmp['pickup_amount'] = $item['distribute_amount'];
+             $list[] = $tmp;
+        }
+        return $list;
+    }
     /**
      * get stockout order info list by page and conditions
      * @param array $arrInput
