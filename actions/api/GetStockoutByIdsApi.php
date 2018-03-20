@@ -55,7 +55,7 @@ class Action_GetStockoutByIdsApi extends Order_Base_ApiAction
                 'business_form_order_id' => empty($arrItem['business_form_order_id'])
                     ? 0 : intval($arrItem['business_form_order_id']),
                 'warehouse_id' => empty($arrItem['warehouse_id']) ? 0 : $arrItem['warehouse_id'],
-                'warehouse_session_privilege' => boolval(!Nscm_Service_Auth::checkWarehouse([$arrItem['warehouse_id']])),
+                //'warehouse_session_privilege' => boolval(!Nscm_Service_Auth::checkWarehouse([$arrItem['warehouse_id']])),
                 'warehouse_name' => empty($arrItem['warehouse_name']) ? '' : $arrItem['warehouse_name'],
                 'stockout_order_type' => empty($arrItem['stockout_order_type'])
                     ? '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrItem['stockout_order_type']],
