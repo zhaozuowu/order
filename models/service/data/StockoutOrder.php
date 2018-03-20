@@ -267,7 +267,7 @@ class Service_Data_StockoutOrder
         if(empty($arrStockSkus) || empty($arrInput)) {
             Bd_Log::warning(sprintf("checkSkuStock failed stockoutOrderId[%s]",
                 $intStockoutOrderId));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_CREATE_FAIL);
         }
         $arrInput = $dataBussniessObj->appendStockSkuInfoToOrder($arrInput, $arrStockSkus);
         $arrInput = $dataBussniessObj->appendSkuTotalAmountToOrder($arrInput);
