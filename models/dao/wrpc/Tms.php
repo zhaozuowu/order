@@ -132,6 +132,9 @@ class Dao_Wrpc_Tms
         $arrWarehouseRequest['requireReceiveEndTime'] = empty($arrExpectArriveTime['end']) ? 0 : $arrExpectArriveTime['end'];
         $arrWarehouseRequest['products'] = $this->getProducts($arrInput['skus']);
         $arrWarehouseRequest['userInfo'] = $this->getUserInfo($arrInput);
+        if (!empty($arrInput['orderTime'])) {
+            $arrWarehouseRequest['orderTime'] = $arrInput['orderTime'];
+        }
         return $arrWarehouseRequest;
     }
 

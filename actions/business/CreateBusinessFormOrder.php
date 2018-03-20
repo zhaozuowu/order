@@ -16,7 +16,7 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 		'shelf_info' => 'json|decode|required',
 		'business_form_order_remark' => 'str',
 		'customer_id' => 'str|required',
-		'customer_name' => 'str|required|max[32]',
+		'customer_name' => 'str|required|max[128]',
 		'customer_contactor' => 'str|required|max[32]',
 		'customer_contact' => 'str|required',
 		'customer_address' => 'str|required|max[256]',

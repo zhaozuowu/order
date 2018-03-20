@@ -65,6 +65,7 @@ class Service_Data_BusinessFormOrder
             Model_Orm_BusinessFormOrderSku::batchInsert($arrBatchSkuCreateParams, false);
         });
         $arrInput['business_form_order_id'] = $arrCreateParams['business_form_order_id'];
+        $arrInput['orderTime'] = time(); //回传给tms的下单时间
         return $arrInput;
     }
 
