@@ -60,8 +60,7 @@ class DeleteStockoutOrder
 
     }
 
-    public
-    function deleteStockoutOrder($stockoutOrderInfo)
+    public function deleteStockoutOrder($stockoutOrderInfo)
     {
 
         $updateData = [
