@@ -131,6 +131,12 @@ class Order_Define_StockoutOrder
     ];
 
     /**
+     * @desc 出库单的数据来源类型
+     */
+    const STOCKOUT_DATA_SOURCE_SYSTEM_ORDER = 1;
+    const STOCKOUT_DATA_SOURCE_MANUAL_INPUT = 2;
+    const STOCKOUT_DATA_SOURCE_OMS = 3;
+    /**
      * 签收状态
      * @var array
      */

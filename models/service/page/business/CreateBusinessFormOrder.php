@@ -40,6 +40,7 @@ class Service_Page_Business_CreateBusinessFormOrder {
         //校验是否重复创建
         $arrRet = $this->objDsStockoutFormOrder->checkRepeatSubmit($arrInput['customer_id'], $arrInput['logistics_order_id']);
         if (!empty($arrRet)) {
+            Bd_Log::trace(sprintf('logistics_order_id[%d] repeat!', $arrInput['logistics_order_id']));
             return $arrRet;
         }
         //同步创建出库单
@@ -54,6 +55,7 @@ class Service_Page_Business_CreateBusinessFormOrder {
                                         $arrInput['business_form_order_id']));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR);
         }
+        $arrInput['exceptions'] = Order_Exception_Collector::getExceptionInfo(false);
         //异步创建出库单
         $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_CREATE_STOCKOUT_ORDER, $arrInput,
                                             strval($arrInput['stockout_order_id']));

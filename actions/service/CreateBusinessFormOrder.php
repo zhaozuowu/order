@@ -23,7 +23,7 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 		'customer_location_source' => 'int|required',
 		'customer_city_id' => 'int|required',
 		'customer_city_name' => 'str|required|len[32]',
-		'customer_region_id' => 'int|required',
+		'customer_region_id' => 'int|required|min[1]',
 		'customer_region_name' => 'str|required|len[32]',
 		'executor' => 'str|required|max[32]',
         'executor_contact' => 'str|required|len[11]|min[11]',
@@ -58,7 +58,17 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 		$this->objPage = new Service_Page_Business_CreateBusinessFormOrder();
 	}
 
-	/**
+    /**
+     * my execute; append data source
+     * @return array
+     */
+	public function myExecute()
+    {
+        $this->arrFilterResult['data_source'] = Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER;
+        return parent::myExecute();
+    }
+
+    /**
 	 * format result
 	 * @param array $arrRet
 	 * @return array

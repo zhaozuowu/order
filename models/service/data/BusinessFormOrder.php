@@ -79,7 +79,6 @@ class Service_Data_BusinessFormOrder
         if (empty($arrInput['skus']) || empty($arrStockSkus)) {
             $arrInput['business_form_order_status'] =
                 Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_FAILED;
-            return $arrInput;
         }
         $arrMapSkuIdToStockInfo = Order_Util_Util::arrayToKeyValue($arrStockSkus, 'sku_id');
         $arrOrderSkus = $arrInput['skus'];
@@ -87,6 +86,10 @@ class Service_Data_BusinessFormOrder
             $intSkuId = $arrSkuItem['sku_id'];
             if (empty($intSkuId)) {
                 continue;
+            }
+            if (empty($arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount'])) {
+                Order_Exception_Collector::addException($arrInput['stockout_order_id'], $intSkuId,
+                    $arrSkuItem['sku_name'], Order_Exception_Const::CONCRETE_STOCK_NOT_ENOUGH);
             }
             $arrOrderSkus[$intKey]['distribute_amount'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['frozen_amount']);
             $arrOrderSkus[$intKey]['cost_price'] = intval($arrMapSkuIdToStockInfo[$intSkuId]['cost_unit_price']);
@@ -193,11 +196,10 @@ class Service_Data_BusinessFormOrder
      * @throws Order_BusinessError
      */
     public function appendWarehouseInfoToOrder($arrInput) {
-        if (empty($arrInput['customer_region_id'])) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_CUSTOMER_REGION_ID_ERROR);
-        }
         $arrRet = $this->objWarehouseRal->getWarehouseInfoByDistrictId($arrInput['customer_region_id']);
         if (empty($arrRet)) {
+            Order_Exception_Collector::addException($arrInput['stockout_order_id'], 0, '',
+                Order_Exception_Const::CONCRETE_WAREHOUSE);
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED);
         }
         $arrInput['warehouse_id'] = $arrRet[0]['warehouse_id'];
@@ -489,5 +491,23 @@ class Service_Data_BusinessFormOrder
 
     }
 
+    /**
+     * 根据业态订单id查询业态订单明细
+     * @param $arrOrderIds
+     * @return array|Model_Orm_BusinessFormOrder
+     * @throws
+     */
+    public function getBusinessFormOrderByIds($arrOrderIds)
+    {
+        $ret = [];
+        if (empty($arrOrderIds)) {
+            return $ret;
+        }
+        $arrBusFormOrderList = Model_Orm_BusinessFormOrder::getBusinessFormOrderByOrderIds($arrOrderIds);
+        if (empty($arrBusFormOrderList)) {
+            return $ret;
+        }
 
+        return $arrBusFormOrderList;
+    }
 }
