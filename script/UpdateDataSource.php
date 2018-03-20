@@ -20,7 +20,7 @@ try {
 
 class UpdateDataSource
 {
-    const LIMIT = 20;
+    const LIMIT = 100;
     /**
      * run
      */
@@ -39,8 +39,9 @@ class UpdateDataSource
         $arrNewColumn = [
             'data_source' => Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER,
         ];
-        $arrAllIds = Model_Orm_StockoutOrder::findColumn('id', $arrCondition);
-        Bd_Log::trace(sprintf('all ids total[%d]', $intOffset, self::LIMIT, count($arrAllIds)));
+        $arrAllIds = Model_Orm_StockoutOrder::findColumn('id', $arrCondition, $arrOrderBy);
+        $intTotal = count($arrAllIds);
+        Bd_Log::trace(sprintf('all ids total[%d]', $intTotal));
         do {
             $arrIds = array_slice($arrAllIds, $intOffset, self::LIMIT);
             if (empty($arrIds)) {
@@ -50,7 +51,8 @@ class UpdateDataSource
                 'id' => ['in', $arrIds],
             ];
             Model_Orm_StockoutOrder::updateAll($arrNewColumn, $arrUpdateCondition);
-            Bd_Log::trace(sprintf('batch update finish. id:[%s]', implode(', ', $arrIds)));
+            Bd_Log::trace(sprintf('batch update finish. id:[%s], offset[%d], limit[%d], real[%d], total[%d]',
+                implode(', ', $arrIds), $intOffset, self::LIMIT, count($arrIds), $intTotal));
             $intOffset += self::LIMIT;
             sleep(1);
         } while (!empty($arrIds));
