@@ -17,6 +17,7 @@ class DeleteStockoutOrder
         $this->objOrmStockoutOrder = new Model_Orm_StockoutOrder();
         $this->objData = new Service_Data_StockoutOrder();
         $this->objOrmSku = new Model_Orm_StockoutOrderSku();
+        $this->strStockoutOrderId = getenv('strStockoutOrderId', '');
 
     }
 
@@ -35,6 +36,11 @@ class DeleteStockoutOrder
                 'data_source' =>Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_OMS,
                 'stockout_order_status'=>['in', $allowOrderStatus],
             ];
+
+            if (!empty($this->strStockoutOrderId)) {
+                $this->strStockoutOrderId = explode(',',$this->strStockoutOrderId);
+                $condition['stockout_order_id'] = ['in',$this->strStockoutOrderId];
+            }
             $stockoutOrderInfo = $this->objOrmStockoutOrder->find($condition)->select(['stockout_order_id','destroy_order_status','stockout_order_status','warehouse_id'])->rows();
             if(empty($stockoutOrderInfo)) {
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
