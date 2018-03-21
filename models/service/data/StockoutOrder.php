@@ -642,10 +642,10 @@ class Service_Data_StockoutOrder
         }
         if (!empty($arrInput['data_source'])) {
             // 检查查询的数据来来源类型是否正确
-            if(!isset(Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPES[$arrInput['data_source']])){
-                Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+            $arrListConditions['data_source']= ['in',[Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_MANUAL_INPUT]];
+            if($arrInput['data_source'] != Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_MANUAL_INPUT) {
+                $arrListConditions['data_source']= ['in', [Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER,Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_OMS]];
             }
-            $arrListConditions['data_source'] = intval($arrInput['data_source']);
         }
         return $arrListConditions;
     }
