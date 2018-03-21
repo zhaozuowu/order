@@ -456,15 +456,13 @@ class Service_Data_StockoutOrder
         $arrCreateParams['stockout_order_remark'] = empty($arrInput['business_form_order_remark']) ? '' : strval($arrInput['business_form_order_remark']);
         $arrCreateParams['stockout_order_total_price'] = empty($arrInput['stockout_order_total_price']) ?
                                                             0 : intval($arrInput['stockout_order_total_price']);
-        if(!empty($arrInput['data_source']) && isset(Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPES[$arrInput['data_source']])) {
-            $arrCreateParams['data_source'] = $arrInput['data_source'];
-        }
         if(!empty($arrInput['expect_arrive_start_time'])) {
             $arrCreateParams['expect_arrive_start_time'] = intval($arrInput['expect_arrive_start_time']);
         }
         if(!empty($arrInput['expect_arrive_end_time'])) {
             $arrCreateParams['expect_arrive_end_time'] = intval($arrInput['expect_arrive_end_time']);
         }
+        $arrCreateParams['data_source'] = $arrInput['data_source'] ?? 0;
         return $arrCreateParams;
     }
 
