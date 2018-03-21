@@ -57,11 +57,12 @@ class Service_Data_Sku
      * 拼接sku详细信息
      * @param array $arrBatchSkuParams
      * @param integer $intOrderType
+     * @param bool $ischeckBusiness
      * @return array
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function appendSkuInfosToSkuParams($arrBatchSkuParams, $intOrderType) {
+    public function appendSkuInfosToSkuParams($arrBatchSkuParams, $intOrderType,$ischeckBusiness = true) {
         if (empty($arrBatchSkuParams)) {
             return [];
         }
@@ -88,22 +89,24 @@ class Service_Data_Sku
                 unset($arrBatchSkuParams[$intKey]);
                 continue;
             }
-            // check business
-            $arrBusinessInfo = $arrMapSkuInfos[$intSkuId]['sku_business_form_detail'];
-            $boolBusinessIsActive = false;
-            foreach ($arrBusinessInfo as $row) {
-                if (Nscm_Define_Sku::SKU_IS_ACTIVE == $row['is_active'] && $row['type'] == $intOrderType) {
-                    $boolBusinessIsActive = true;
-                    break;
+
+            if ($ischeckBusiness) {
+                // check business
+                $arrBusinessInfo = $arrMapSkuInfos[$intSkuId]['sku_business_form_detail'];
+                $boolBusinessIsActive = false;
+                foreach ($arrBusinessInfo as $row) {
+                    if (Nscm_Define_Sku::SKU_IS_ACTIVE == $row['is_active'] && $row['type'] == $intOrderType) {
+                        $boolBusinessIsActive = true;
+                        break;
+                    }
+                }
+                if (!$boolBusinessIsActive) {
+                    Order_Exception_Collector::addException(0, $intSkuId, $arrMapSkuInfos[$intSkuId]['sku_name'],
+                        Order_Exception_Const::CONCRETE_SKU_BUSINESS_FAIL);
+                    unset($arrBatchSkuParams[$intKey]);
+                    continue;
                 }
             }
-            if (!$boolBusinessIsActive) {
-                Order_Exception_Collector::addException(0, $intSkuId, $arrMapSkuInfos[$intSkuId]['sku_name'],
-                    Order_Exception_Const::CONCRETE_SKU_BUSINESS_FAIL);
-                unset($arrBatchSkuParams[$intKey]);
-                continue;
-            }
-
             $arrBatchSkuParams[$intKey]['sku_name'] = $arrMapSkuInfos[$intSkuId]['sku_name'];
             $arrBatchSkuParams[$intKey]['sku_net'] = $arrMapSkuInfos[$intSkuId]['sku_net'];
             $arrBatchSkuParams[$intKey]['sku_net_unit'] = $arrMapSkuInfos[$intSkuId]['sku_net_unit'];
