@@ -135,6 +135,7 @@ class Order_Define_StockoutOrder
      */
     const STOCKOUT_DATA_SOURCE_SYSTEM_ORDER = 1;
     const STOCKOUT_DATA_SOURCE_MANUAL_INPUT = 2;
+    const STOCKOUT_DATA_SOURCE_OMS = 3;
 
     /**
      * @desc 出库单的数据来源类型集合
@@ -153,7 +154,6 @@ class Order_Define_StockoutOrder
         self::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER => '系统订单',
         self::STOCKOUT_DATA_SOURCE_MANUAL_INPUT => '人工录入',
     ];
-
     /**
      * 签收状态
      * @var array

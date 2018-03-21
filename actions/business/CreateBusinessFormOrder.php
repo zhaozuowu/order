@@ -11,24 +11,23 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 	 * @var array
 	 */
 	protected $arrInputParams = [
-	    'logistics_order_id' => 'str|required',
+	    'logistics_order_id' => 'int|required',
 		'business_form_order_type' => 'int|required',
-		'business_form_order_price' => 'int|required',
 		'shelf_info' => 'json|decode|required',
 		'business_form_order_remark' => 'str',
 		'customer_id' => 'str|required',
-		'customer_name' => 'str|required|max[128]',
-		'customer_contactor' => 'str|required|max[32]',
+		'customer_name' => 'str|required|len[128]',
+		'customer_contactor' => 'str|required|len[32]',
 		'customer_contact' => 'str|required',
-		'customer_address' => 'str|required|max[256]',
-		'customer_location' => 'str|required|max[128]',
+		'customer_address' => 'str|required|len[255]',
+		'customer_location' => 'str|required|len[128]',
 		'customer_location_source' => 'int|required',
 		'customer_city_id' => 'int|required',
-		'customer_city_name' => 'str|required|max[32]',
-		'customer_region_id' => 'int|required',
-		'customer_region_name' => 'str|required|max[32]',
-		'executor' => 'str|required|max[32]',
-        'executor_contact' => 'str|required|max[11]|min[11]',
+		'customer_city_name' => 'str|required|len[32]',
+		'customer_region_id' => 'int|required|min[1]',
+		'customer_region_name' => 'str|required|len[32]',
+		'executor' => 'str|required|len[32]',
+        'executor_contact' => 'str|required|len[11]|min[11]',
         'expect_arrive_time' => [
 			'validate' => 'json|decode|required',
 			'type' => 'map',
@@ -61,7 +60,32 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 		$this->objPage = new Service_Page_Business_CreateBusinessFormOrder();
 	}
 
-	/**
+    /**
+     * execute
+     * @return array
+     * @throws Exception
+     */
+	public function myExecute()
+    {
+        try {
+            $this->arrFilterResult['data_source'] = Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_OMS;
+            return parent::myExecute();
+        } catch (Exception $e) {
+            switch ($e->getCode()) {
+                case Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR:
+                    Bd_Log::trace('nwms business form order create error');
+                    break;
+                default:
+                    break;
+            }
+            throw $e;
+        } finally {
+            $arrExceptions = Order_Exception_Collector::getExceptionInfo();
+            $this->arrData['exceptions'] = $this->formatException($arrExceptions);
+        }
+    }
+
+    /**
 	 * format result
 	 * @param array $arrRet
 	 * @return array
@@ -72,9 +96,28 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 	        return $arrFormatRet;
         }
         $arrFormatRet['stockout_order_id'] = empty($arrRet['stockout_order_id']) ? 0 : $arrRet['stockout_order_id'];
+	    $arrFormatRet['business_form_order_id'] = intval($arrRet['business_form_order_id']);
 	    $arrFormatRet['skus'] = $this->formatSkus($arrRet['skus']);
 		return $arrFormatRet;
 	}
+
+    /**
+     * format exception
+     * @param array[]
+     * @return array[]
+     */
+	private function formatException($arrExceptions)
+    {
+        $arrResult = [];
+	    foreach ($arrExceptions as $arrException) {
+	        $arrResult[] = [
+	            'sku_id' => $arrException['sku_id'],
+                'exception_info' => $arrException['exception_info'],
+                'exception_time' => $arrException['exception_time'],
+            ];
+        }
+        return $arrResult;
+    }
 
     /**
      * format skus
