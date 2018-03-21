@@ -293,7 +293,7 @@ class Service_Data_StockoutOrder
         $dataBussniessObj = new  Service_Data_BusinessFormOrder();
         $skuTotalNum = count($arrInput['skus']);
         $originSkuIds = array_column($arrInput['skus'],'sku_id');
-        $arrInput['skus'] = $objDsSku->appendSkuInfosToSkuParams($arrInput['skus'],$arrInput['business_form_order_type']);
+        $arrInput['skus'] = $objDsSku->appendSkuInfosToSkuParams($arrInput['skus'],$arrInput['business_form_order_type'],false);
         $arrInput['business_form_order_status'] =  Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_SUCCESS;
         $arrInput = $dataBussniessObj->checkSkuBusinessForm($arrInput);
         if (Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_FAILED == $arrInput['business_form_order_status']) {
