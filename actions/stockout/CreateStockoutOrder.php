@@ -7,18 +7,21 @@
 
 class Action_CreateStockoutOrder extends Order_Base_Action
 {
-    protected $boolCheckAuth = false;
-    protected $boolCheckLogin = false;
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
         'stockout_order_id' => 'int',
+        'business_form_order_type'=>'int|required',
+        'expect_arrive_start_time' => 'int|required',
+        'expect_arrive_end_time' => 'int|required',
+        'data_source' => 'int|required',
         'stockout_order_type' => 'int|required',
         'warehouse_id' => 'str|required',
+        'warehouse_name' => 'str|required',
         'stockout_order_remark' => 'str|required',
-        'customer_id' => 'int|required',
+        'customer_id' => 'str|required',
         'customer_name' => 'str|required',
         'customer_contactor' => 'str|required',
         'customer_contact' => 'str|required',

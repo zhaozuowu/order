@@ -30,7 +30,7 @@ class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
         'sku_name'=>'str',
         'sku_id'=>'int',
         'customer_name'=>'str',
-        'customer_id'=>'int',
+        'customer_id'=>'str',
         'customer_name'=>'str',
     ];
 
@@ -73,7 +73,7 @@ class Action_GetStockoutDetailFormApi extends Order_Base_ApiAction
             $arrFormatRetItem['business_form_create_time'] = empty($arrRetItem['order_create_time']) ?  0 : date('Y-m-d H:i:s',$arrRetItem['order_create_time']);
             $arrFormatRetItem['expect_send_time'] = date('Y-m-d H:i:s',$arrRetItem['expect_arrive_start_time']).'~'.date('Y-m-d H:i:s',$arrRetItem['expect_arrive_end_time']);
             $arrFormatRetItem['customer_name'] = empty($arrRetItem['customer_name']) ? '':$arrRetItem['customer_name'];
-            $arrFormatRetItem['customer_id'] = empty($arrRetItem['customer_id']) ? 0 :$arrRetItem['customer_id'];
+            $arrFormatRetItem['customer_id'] = empty($arrRetItem['customer_id']) ? '' :$arrRetItem['customer_id'];
             $arrFormatRetItem['customer_contactor'] = empty($arrRetItem['customer_contactor']) ? '' :$arrRetItem['customer_contactor'];
             $arrFormatRetItem['customer_contact'] = empty($arrRetItem['customer_contact']) ? '' :$arrRetItem['customer_contact']; 
             $arrFormatRetItem['sku_id'] = empty($arrRetItem['sku_id']) ? 0 :$arrRetItem['sku_id'];

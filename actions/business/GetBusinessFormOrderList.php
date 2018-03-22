@@ -19,7 +19,7 @@ class Action_GetBusinessFormOrderList extends Order_Base_Action
         'business_form_order_id' => 'int',
         'business_form_order_type' => 'int',
         'customer_name' => 'str',
-        'customer_id' => 'int',
+        'customer_id' => 'str',
         'start_time' => 'int|required',
         'end_time' => 'int|required',
     ];

@@ -136,6 +136,24 @@ class Order_Define_StockoutOrder
     const STOCKOUT_DATA_SOURCE_SYSTEM_ORDER = 1;
     const STOCKOUT_DATA_SOURCE_MANUAL_INPUT = 2;
     const STOCKOUT_DATA_SOURCE_OMS = 3;
+
+    /**
+     * @desc 出库单的数据来源类型集合
+     * @var array
+     */
+    const STOCKOUT_DATA_SOURCE_TYPES = [
+        self::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER => true,
+        self::STOCKOUT_DATA_SOURCE_MANUAL_INPUT => true,
+    ];
+
+    /**
+     * @desc 出库单的数据来源类型文本
+     * @var array
+     */
+    const STOCKOUT_DATA_SOURCE_TYPE_MAP = [
+        self::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER => '系统订单',
+        self::STOCKOUT_DATA_SOURCE_MANUAL_INPUT => '人工录入',
+    ];
     /**
      * 签收状态
      * @var array
@@ -143,4 +161,96 @@ class Order_Define_StockoutOrder
     const  STOCKOUT_SIGINUP_ACCEPT_ALL= 1;
     const  STOCKOUT_SIGINUP_REJECT_ALL= 2;
     const  STOCKOUT_SIGINUP_ACCEPT_PART= 3;
+
+    /**
+     * 客户列表
+     */
+
+    const  CUSTOMER_LIST = [
+        'SH03001'=>[
+          'customer_id'=>'SH03001',
+          'customer_name'=>'南京东路店',
+          'customer_contactor'=>'余谨祥',
+          'customer_contact'=>'18201701706',
+          'customer_address'=>'上海市黄浦区汉口路409号',
+          'business_form_order_type'=>'3',
+          'business_form_order_type_text'=>'便利店',
+           'shelf_info' => self::DEFAULT_SHELF_INFO_LIST,
+           'executor'   =>'余谨祥',
+           'executor_contact'=>'18201701706',
+           'customer_location'=>'121.489496,31.240967',
+           'customer_region_id'=>'5251',
+           'customer_city_id'=>'1',
+           'customer_city_name'=>'上海',
+           'customer_region_name'=>'黄浦区',
+           'customer_location_source'=>'2',
+        ],
+        'NJ03001'=>[
+          'customer_id'=>'NJ03001',
+          'customer_name'=>'珠江路店',
+          'customer_contactor'=>'施高峰',
+          'customer_contact'=>'18052520777',
+          'customer_address'=>'江苏省南京市玄武区珠江路291号',
+            'business_form_order_type'=>'3',
+            'business_form_order_type_text'=>'便利店',
+            'shelf_info' => self::DEFAULT_SHELF_INFO_LIST,
+            'executor'   =>'施高峰',
+            'executor_contact'=>'18052520777',
+            'customer_location'=>'118.799224,32.055611',
+            'customer_region_id'=>'5267',
+            'customer_city_id'=>'6',
+            'customer_city_name'=>'南京',
+            'customer_region_name'=>'玄武区',
+            'customer_location_source'=>'2',
+        ],
+        'CZ03001'=>[
+          'customer_id'=>'CZ03001',
+          'customer_name'=>'南大街店',
+          'customer_contactor'=>'施乃康',
+          'customer_contact'=>'15861161658',
+          'customer_address'=>'江苏省常州市钟楼区广化街190-198号',
+            'business_form_order_type'=>'3',
+            'business_form_order_type_text'=>'便利店',
+            'shelf_info' => self::DEFAULT_SHELF_INFO_LIST,
+            'executor'   =>'施乃康',
+            'executor_contact'=>'15861161658',
+            'customer_location'=>'119.958925,31.778679',
+            'customer_region_id'=>'5290',
+            'customer_city_id'=>'59',
+            'customer_city_name'=>'常州',
+            'customer_region_name'=>'钟楼区',
+            'customer_location_source'=>'2',
+        ],
+        'CZ03002'=>[
+          'customer_id'=>'CZ03002',
+          'customer_name'=>'新北店',
+          'customer_contactor'=>'谈欢欢',
+          'customer_contact'=>'13861010119',
+          'customer_address'=>'江苏省常州市新北区三井街道竹山路福地聚龙苑36号',
+            'business_form_order_type'=>'3',
+            'business_form_order_type_text'=>'便利店',
+            'shelf_info' => self::DEFAULT_SHELF_INFO_LIST,
+            'executor'   =>'谈欢欢',
+            'executor_contact'=>'13861010119',
+            'customer_location'=>'119.974091,31.821031',
+            'customer_region_id'=>'5292',
+            'customer_city_id'=>'59',
+            'customer_city_name'=>'常州',
+            'customer_region_name'=>'新北区',
+            'customer_location_source'=>'2',
+        ],
+    ];
+
+    /***
+     * upc_ids数量
+     */
+    const UPC_IDS_NUM_TWO = 2;
+
+    /**
+     * 无人货架信息
+     */
+    const DEFAULT_SHELF_INFO_LIST = [
+      'supply_type'=>Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE_ORDER,
+      'devices'=> array(),
+    ];
 }

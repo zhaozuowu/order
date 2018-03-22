@@ -46,4 +46,9 @@ class  Order_Define_Const
      */
     const DEFAULT_SYSTEM_OPERATION_NAME = '系统';
     const DEFAULT_SYSTEM_OPERATION_ID = '11111111';
+
+    /**
+     * 半个小时转化撑秒
+     */
+    const HALF_AN_HOUR_FORMAT_SECONDS = 1800;
 }

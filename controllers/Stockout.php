@@ -22,5 +22,9 @@ class Controller_Stockout extends Ap_Controller_Abstract
         'getskuprintlist' => 'actions/stockout/GetSkuPrintList.php', #出库单总拣打印#
         'getstockoutdetail'=>'actions/stockout/GetStockoutDetail.php', #销售出库明细#
         'getstockoutorderskus' => 'actions/stockout/GetStockoutOrderSkus.php', #查询出库单商品列表#
+        'getdistributionskulist' => 'actions/stockout/GetDistributionSkuList.php', #查询配货商品列表#
+        'getcustomerbyid' => 'actions/stockout/GetCustomerById.php', #查询客户信息#
+        'getcustomernamesug' => 'actions/stockout/GetCustomernameSug.php', #查询客户名称sug#
+        'createstockoutorder' => 'actions/stockout/CreateStockoutOrder.php', #手动创建出库单#
     );
 }

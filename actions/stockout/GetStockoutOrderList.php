@@ -19,13 +19,15 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         'stockout_order_id' => 'str',
         'business_form_order_id' => 'int',
         'customer_name' => 'str',
-        'customer_id' => 'int',
+        'customer_id' => 'str',
+        'shipment_order_id'=>'int',
         'is_print' => 'int',
         'stockout_order_status' => 'int',
         'logistics_order_id'=>'str',
         'stockout_order_source'=>'int',
         'start_time' => 'int|required',
         'end_time' => 'int|required',
+        'data_source' => 'int',
     ];
 
     /**
@@ -52,22 +54,22 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         $arrFormatRet = [];
         $arrFormatRet['total'] = $arrRet['total'];
         $arrFormatRet['orders'] = [];
-        foreach((array)$arrRet['orders'] as $arrRetItem) {
+        foreach ((array)$arrRet['orders'] as $arrRetItem) {
             $arrFormatRetItem = [];
             $arrFormatRetItem['stockout_order_id'] = empty($arrRetItem['stockout_order_id']) ?  '' : Nscm_Define_OrderPrefix::SOO.$arrRetItem['stockout_order_id'];
             $arrFormatRetItem['stockout_order_source'] = empty($arrRetItem['stockout_order_source']) ?  '' : Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_LIST[$arrRetItem['stockout_order_source']];
             $arrFormatRetItem['stockout_order_type'] = empty($arrRetItem['stockout_order_type']) ? 0 : $arrRetItem['stockout_order_type'];
-            $arrFormatRetItem['stockout_order_type_text'] = empty($arrRetItem['stockout_order_type']) ? 
-                                                                '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrRetItem['stockout_order_type']];
+            $arrFormatRetItem['stockout_order_type_text'] = empty($arrRetItem['stockout_order_type']) ?
+                '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrRetItem['stockout_order_type']];
             $arrFormatRetItem['business_form_order_id'] = empty($arrRetItem['business_form_order_id']) ? 0 : $arrRetItem['business_form_order_id'];
             $arrFormatRetItem['stockout_order_status'] = empty($arrRetItem['stockout_order_status']) ? 0 : $arrRetItem['stockout_order_status'];
-            $arrFormatRetItem['stockout_order_status_text'] = empty($arrRetItem['stockout_order_status']) ? 
-                                                                '' : Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST[$arrRetItem['stockout_order_status']];
+            $arrFormatRetItem['stockout_order_status_text'] = empty($arrRetItem['stockout_order_status']) ?
+                '' : Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST[$arrRetItem['stockout_order_status']];
             $arrFormatRetItem['is_print'] = empty($arrRetItem['stockout_order_is_print']) ? 0 : $arrRetItem['stockout_order_is_print'];
             $arrFormatRetItem['is_print_text'] = empty($arrRetItem['stockout_order_is_print']) ?
-                                                    '' : Order_Define_StockoutOrder::STOCKOUT_PRINT_STATUS[$arrRetItem['stockout_order_is_print']];
+                '' : Order_Define_StockoutOrder::STOCKOUT_PRINT_STATUS[$arrRetItem['stockout_order_is_print']];
             $arrFormatRetItem['warehouse_name'] = empty($arrRetItem['warehouse_name']) ? '' : $arrRetItem['warehouse_name'];
-            $arrFormatRetItem['signup_status']  =  empty($arrRetItem['signup_status'])  ? '':Order_Define_StockoutOrder::STOCKOUT_SIGINUP_STATUS_LIST[$arrRetItem['signup_status']];
+            $arrFormatRetItem['signup_status'] = empty($arrRetItem['signup_status']) ? '' : Order_Define_StockoutOrder::STOCKOUT_SIGINUP_STATUS_LIST[$arrRetItem['signup_status']];
             $arrFormatRetItem['customer_id'] = empty($arrRetItem['customer_id']) ? '' : $arrRetItem['customer_id'];
             $arrFormatRetItem['customer_name'] = empty($arrRetItem['customer_name']) ? '' : $arrRetItem['customer_name'];
             $arrFormatRetItem['stockout_order_amount'] = empty($arrRetItem['stockout_order_amount']) ? 0 : $arrRetItem['stockout_order_amount'];
@@ -76,8 +78,15 @@ class Action_GetStockoutOrderList extends Order_Base_Action
             $arrFormatRetItem['create_time'] = empty($arrRetItem['create_time']) ? '' : date("Y-m-d H:i:s", $arrRetItem['create_time']);
             $arrFormatRetItem['customer_city_id'] = empty($arrRetItem['customer_city_id']) ? 0 : intval($arrRetItem['customer_city_id']);
             $arrFormatRetItem['customer_city_name'] = empty($arrRetItem['customer_city_name']) ? '' : $arrRetItem['customer_city_name'];
+            $arrFormatRetItem['data_source'] = isset(Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPE_MAP[intval($arrRetItem['data_source'])]) ? Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPE_MAP[intval($arrRetItem['data_source'])]:
+                Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_TYPE_MAP[Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER];
+            // 人工录入类型，不显示无关联订单与订单状态
+            if( Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_MANUAL_INPUT == intval($arrRetItem['data_source'])){
+                $arrFormatRetItem['business_form_order_id'] = Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
+            }
             $arrFormatRetItem['logistics_order_id'] = empty($arrRetItem['logistics_order_id']) ? '' : $arrRetItem['logistics_order_id'];
             $arrFormatRetItem['shipment_order_id'] = empty($arrRetItem['shipment_order_id']) ? 0 : $arrRetItem['shipment_order_id'];
+
             $arrFormatRet['orders'][] = $arrFormatRetItem;
         }
         return $arrFormatRet;

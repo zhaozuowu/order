@@ -84,13 +84,6 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const  STOCKOUT_ORDER_GET_SKUINFO_FAIL = 320001;
-
-    /**
-     * 获取彩云系统商品详情信息失败
-     * @var integer
-     */
-    const  STOCKOUT_ORDER_GET_SKUINFO_ = 320002;
-
     /**
      * nscm采购单号已经被接收
      * @var integer

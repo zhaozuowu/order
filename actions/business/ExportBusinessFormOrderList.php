@@ -30,7 +30,7 @@ class Action_ExportBusinessFormOrderList extends Order_Base_Action
         'business_form_order_status' => 'int',
         'business_form_order_type' => 'int',
         'customer_name' => 'str',
-        'customer_id' => 'int',
+        'customer_id' => 'str',
         'start_time' => 'int',
         'end_time' => 'int',
     ];
@@ -68,7 +68,7 @@ class Action_ExportBusinessFormOrderList extends Order_Base_Action
             $arrFormatItem['business_form_order_status'] = empty($arrItem['status']) ? '' : Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_STATUS_LIST[$arrItem['status']];
             $arrFormatItem['business_form_order_type'] = empty($arrItem['business_form_order_type']) ? '' : Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_LIST[$arrItem['business_form_order_type']];
             $arrFormatItem['warehouse_name'] = empty($arrItem['warehouse_name']) ? '' : $arrItem['warehouse_name'];
-            $arrFormatItem['customer_id'] = empty($arrItem['customer_id']) ? '' : intval($arrItem['customer_id']);
+            $arrFormatItem['customer_id'] = empty($arrItem['customer_id']) ? '' : $arrItem['customer_id'];
             $arrFormatItem['customer_name'] = empty($arrItem['customer_name']) ? '' : ($arrItem['customer_name']);
             $arrFormatItem['order_amount'] = empty($arrItem['order_amount']) ? 0 : intval($arrItem['order_amount']);
             $arrFormatItem['distribute_amount'] = empty($arrItem['distribute_amount']) ? 0 : intval($arrItem['distribute_amount']);
