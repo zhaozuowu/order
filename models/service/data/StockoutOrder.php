@@ -1500,9 +1500,14 @@ class Service_Data_StockoutOrder
         if (Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS != $ormStockOutOrderInfo->stockout_order_status
                 && Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL == $ormStockOutOrderInfo->stockout_order_pre_cancel
                 && Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_SYS == $ormStockOutOrderInfo->stockout_order_cancel_type) {
+            Bd_Log::trace('rollback cancel stockout order, order id: ' . $intStockOutOrderId);
             $ormStockOutOrderInfo->updatePreCancelType(
                 Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_DEFAULT,
                 Order_Define_StockoutOrder::STOCKOUT_ORDER_DEFAULT_PRE_CANCEL);
+        } else {
+            // @alarm
+            Bd_Log::warning('rollback cancel stockout order something wrong, order info: '
+                . json_encode($ormStockOutOrderInfo->toArray()));
         }
         return [];
     }
