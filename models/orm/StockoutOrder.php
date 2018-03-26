@@ -202,4 +202,17 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
         $this->stockout_order_cancel_type = $intStockOutOrderCancelType;
         return $this->update();
     }
+
+    /**
+     * update pre cancel and cancel type
+     * @param $intStockoutOrderCancelType
+     * @param $intStockoutOrderPreCancel
+     * @return bool
+     */
+    public function updatePreCancelType($intStockoutOrderCancelType, $intStockoutOrderPreCancel)
+    {
+        $this->stockout_order_cancel_type = $intStockoutOrderCancelType;
+        $this->stockout_order_pre_cancel = $intStockoutOrderPreCancel;
+        return $this->update();
+    }
 }

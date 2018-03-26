@@ -257,6 +257,7 @@ class Order_Define_StockoutOrder
     /**
      * 预取消标识
      */
+    const STOCKOUT_ORDER_DEFAULT_PRE_CANCEL = 0;
     const STOCKOUT_ORDER_IS_PRE_CANCEL = 1;
     const STOCKOUT_ORDER_NOT_PRE_CANCEL = 2;
 
@@ -280,6 +281,7 @@ class Order_Define_StockoutOrder
     /**
      * 预取消来源
      */
+    const STOCKOUT_ORDER_CANCEL_TYPE_DEFAULT = 0;
     const STOCKOUT_ORDER_CANCEL_TYPE_SYS = 1;
     const STOCKOUT_ORDER_NOT_PRE_MANUAL = 2;
 }

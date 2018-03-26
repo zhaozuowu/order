@@ -14,6 +14,7 @@ class Controller_Api extends Ap_Controller_Abstract {
         'getbusinessformorderbyids' => 'actions/api/GetBusinessFormOrderByIds.php', #查询业态订单API#
         'cancelstockoutorderapi' => 'actions/api/CancelStockOutorderApi.php', #确认取消出库单API#@skipped#
         'precancelstockoutorderapi' => 'actions/api/PreCancelStockOutOrderApi.php', #预取消出库单API#@skipped#
+        'rollbackcancelstockoutorderapi' => 'actions/api/RollbackCancelStockOutOrderApi.php', #回滚取消出库单API#@skipped#
 
     );
 }

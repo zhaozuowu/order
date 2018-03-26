@@ -1483,4 +1483,27 @@ class Service_Data_StockoutOrder
         }
         return [];
     }
+
+    /**
+     * rollback cancel order
+     * @param $intStockOutOrderId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function rollbackCancelOrder($intStockOutOrderId)
+    {
+        $intStockOutOrderId = intval($intStockOutOrderId);
+        $ormStockOutOrderInfo = Model_Orm_StockoutOrder::getOrderInfoObjectById($intStockOutOrderId);
+        if (empty($ormStockOutOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
+        }
+        if (Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS != $ormStockOutOrderInfo->stockout_order_status
+                && Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL == $ormStockOutOrderInfo->stockout_order_pre_cancel
+                && Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_SYS == $ormStockOutOrderInfo->stockout_order_cancel_type) {
+            $ormStockOutOrderInfo->updatePreCancelType(
+                Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_DEFAULT,
+                Order_Define_StockoutOrder::STOCKOUT_ORDER_DEFAULT_PRE_CANCEL);
+        }
+        return [];
+    }
 }
