@@ -253,4 +253,33 @@ class Order_Define_StockoutOrder
       'supply_type'=>Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE_ORDER,
       'devices'=> array(),
     ];
+
+    /**
+     * 预取消标识
+     */
+    const STOCKOUT_ORDER_IS_PRE_CANCEL = 1;
+    const STOCKOUT_ORDER_NOT_PRE_CANCEL = 2;
+
+    /**
+     * @desc 预取消标识字段映射
+     * @var array
+     */
+    const STOCKOUT_ORDER_PRE_CANCEL_MAP = [
+        self::STOCKOUT_ORDER_IS_PRE_CANCEL => '预取消',
+        self::STOCKOUT_ORDER_NOT_PRE_CANCEL => '非预取消',
+    ];
+
+    /**
+     * @desc 预取消标识字段映射
+     * @var array
+     */
+    const STOCKOUT_ORDER_CANCEL_TYPE_MAP= [
+        self::STOCKOUT_ORDER_CANCEL_TYPE_SYS => '系统取消',
+        self::STOCKOUT_ORDER_NOT_PRE_MANUAL => '人工取消',
+    ];
+    /**
+     * 预取消来源
+     */
+    const STOCKOUT_ORDER_CANCEL_TYPE_SYS = 1;
+    const STOCKOUT_ORDER_NOT_PRE_MANUAL = 2;
 }
