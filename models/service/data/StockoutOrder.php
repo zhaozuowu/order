@@ -1476,10 +1476,13 @@ class Service_Data_StockoutOrder
             && Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS != $intStockOutOrderStatus) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT);
         }
-        if (!in_array($intStockOutOrderCancelType, array_keys(Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_MAP))
-            && !in_array($intStockOutOrderPreCancel, array_keys(Order_Define_StockoutOrder::STOCKOUT_ORDER_PRE_CANCEL_MAP))
+        if ($intStockOutOrderCancelType == Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_DEFAULT
+            && $intStockOutOrderPreCancel == Order_Define_StockoutOrder::STOCKOUT_ORDER_DEFAULT_PRE_CANCEL
             && Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS != $intStockOutOrderStatus) {
-            $objStockOutOrderInfo->preCancelStockOutOrder();
+            $objStockOutOrderInfo->updatePreCancelType(
+                Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_SYS,
+                Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL
+            );
         }
         return [];
     }

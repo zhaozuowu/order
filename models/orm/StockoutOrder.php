@@ -192,18 +192,6 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
     }
 
     /**
-     * 预取消出库单
-     * @param  integer $intStockOutOrderCancelType
-     * @return integer
-     */
-    public function preCancelStockOutOrder($intStockOutOrderCancelType = Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_SYS)
-    {
-        $this->stockout_order_pre_cancel = Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL;
-        $this->stockout_order_cancel_type = $intStockOutOrderCancelType;
-        return $this->update();
-    }
-
-    /**
      * update pre cancel and cancel type
      * @param $intStockoutOrderCancelType
      * @param $intStockoutOrderPreCancel
