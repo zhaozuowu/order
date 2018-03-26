@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @name Service_Page_Stockout_Api_GetStockoutByIdsApi
- * @desc 查询出库单明细
- * @author huabang.xue@ele.me
+ * @name Service_Page_Stockout_Api_CacelStockoutOrder
+ * @desc 确认取消出库单
+ * @author zhaozuowu@iwaimai.baidu.com
  */
-class Service_Page_Stockout_Api_GetStockoutByIdsApi implements Order_Base_Page
+class Service_Page_Stockout_Api_CacelStockoutOrder implements Order_Base_Page
 {
     /**
      * @var Service_Data_StockoutOrder
@@ -29,12 +29,8 @@ class Service_Page_Stockout_Api_GetStockoutByIdsApi implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $arrRet = [];
-        if (empty($arrInput)) {
-            return $arrRet;
-        }
-        $arrStockoutOrderIds = explode(',', $arrInput['stockout_order_ids']);
-        $arrRet = $this->objStockoutOrder->getOrderDetailByStockoutOrderIds($arrStockoutOrderIds);
+        $remark = empty($arrInput['remark']) ? '': $arrInput['remark'];
+        $arrRet = $this->objStockoutOrder->cacelStockoutOrder($arrInput['stockout_order_id'],$remark);
         return $arrRet;
     }
 }
