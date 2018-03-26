@@ -67,14 +67,14 @@ class Service_Data_StockoutOrder
     public function __construct()
     {
         $this->objOrmStockoutOrder = new Model_Orm_StockoutOrder();
-//        $this->objOrmSku = new Model_Orm_StockoutOrderSku();
-//        $this->objDaoRedisStockoutOrder = new Dao_Redis_StockoutOrder();
-//        $this->objRalStock = new Dao_Ral_Stock();
-//        $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
-//        $this->objRalLog = new Dao_Ral_Log();
-//        $this->objWrpcTms = new Dao_Wrpc_Tms();
-//        $this->objRalSKu  = new Dao_Ral_Sku();
-//        $this->daoOms = new Dao_Ral_Oms();
+        $this->objOrmSku = new Model_Orm_StockoutOrderSku();
+        $this->objDaoRedisStockoutOrder = new Dao_Redis_StockoutOrder();
+        $this->objRalStock = new Dao_Ral_Stock();
+        $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
+        $this->objRalLog = new Dao_Ral_Log();
+        $this->objWrpcTms = new Dao_Wrpc_Tms();
+        $this->objRalSKu  = new Dao_Ral_Sku();
+        $this->daoOms = new Dao_Ral_Oms();
     }
 
 
