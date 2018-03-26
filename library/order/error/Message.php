@@ -18,6 +18,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_STOCKOUT_ADJUST_SKU_STOCK_FAIL=> '库存扣减失败',
         Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL=>'仓库完成拣货失败',
         Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_AMOUNT_ERROR=>'拣货数量有误',
+        Order_Error_Code::NWMS_STOCKOUT_ORDER_PRE_CANCEL_ERROR=>'预取消状态有误',
         Order_Error_Code::QUERY_TIME_SPAN_ERROR => '查询时间范围错误',
         Order_Error_Code::PURCHASE_ORDER_HAS_BEEN_RECEIVED => 'nscm采购单号已经被接收',
         Order_Error_Code::PURCHASE_ORDER_NOT_EXIST => '采购单不存在',

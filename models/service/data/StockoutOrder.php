@@ -803,6 +803,56 @@ class Service_Data_StockoutOrder
     }
 
     /**
+     * 系统确认作废出库单
+     * @param $strStockoutOrderId
+     * @param $remark
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function confirmCancelStockoutOrder($strStockoutOrderId,$remark)
+    {
+        $res = [];
+        $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
+        if (empty($stockoutOrderInfo)) {
+            Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
+        }
+
+        if ($stockoutOrderInfo['stockout_order_status'] == Order_Define_StockoutOrder::STOCKOUT_ORDER_DESTORYED) {
+            return $res;
+        }
+        if($stockoutOrderInfo['stockout_order_cancel_type'] != Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_PRE_CANCEL_ERROR);
+        }
+        $updateData = [
+            'stockout_order_status' => Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS,
+            'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
+        ];
+        Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($strStockoutOrderId,$updateData,$stockoutOrderInfo,$remark) {
+
+            $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
+            if (empty($result)) {
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
+            }
+            $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_INSERT_SUCCESS;
+            $userId = Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
+            $userName = Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
+            $mark = '作废出库单:'.$remark;
+            //释放库存(已出库不释放库存)
+            if ($stockoutOrderInfo['stockout_order_status'] >= Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS) {
+                return [];
+            }
+            $this->addLog($userId, $userName, $mark, $operationType, $strStockoutOrderId);
+            $this->notifyCancelfreezeskustock($strStockoutOrderId,$stockoutOrderInfo['warehouse_id']);
+        });
+        Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
+            Order_Statistics_Type::ACTION_UPDATE,
+            $strStockoutOrderId);//更新报表
+
+        return [];
+    }
+
+    /**
      * format
      * @param $pageSize
      * @param $pageNum

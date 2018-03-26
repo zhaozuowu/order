@@ -12,5 +12,6 @@ class Controller_Api extends Ap_Controller_Abstract {
         'getorderdetailformapi' => 'actions/api/GetOrderDetailFormApi.php', #报表章节：库存调整明细（分页）API#@skipped#
         'getstockoutbyidsapi' => 'actions/api/GetStockoutByIdsApi.php', #查询出库单API#
         'getbusinessformorderbyids' => 'actions/api/GetBusinessFormOrderByIds.php', #查询业态订单API#
+        'cancelstockoutorder' => 'actions/api/CancelStockoutorder.php', #确认取消出库单#
     );
 }

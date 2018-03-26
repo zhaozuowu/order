@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_CacelStockout
+ * @name Action_CancelStockout
  * @desc 确认取消出库单
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
-class Action_CacelStockout extends Order_Base_ApiAction
+class Action_CancelStockoutorder extends Order_Base_ApiAction
 {
     /**
      * input params

@@ -30,7 +30,7 @@ class Service_Page_Stockout_Api_CacelStockoutOrder implements Order_Base_Page
     public function execute($arrInput)
     {
         $remark = empty($arrInput['remark']) ? '': $arrInput['remark'];
-        $arrRet = $this->objStockoutOrder->cacelStockoutOrder($arrInput['stockout_order_id'],$remark);
+        $arrRet = $this->objStockoutOrder->confirmCancelStockoutOrder($arrInput['stockout_order_id'],$remark);
         return $arrRet;
     }
 }

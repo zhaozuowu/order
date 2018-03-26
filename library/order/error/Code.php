@@ -80,6 +80,11 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_STOCKOUT_ORDER_FINISH_PICKUP_AMOUNT_ERROR = 310012;
 
     /**
+     * 预取消状态有误
+     */
+    const NWMS_STOCKOUT_ORDER_PRE_CANCEL_ERROR = 310014;
+
+    /**
      * 获取彩云系统商品详情信息失败
      * @var integer
      */
