@@ -814,14 +814,12 @@ class Service_Data_StockoutOrder
         $res = [];
         $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
         if (empty($stockoutOrderInfo)) {
-            Bd_Log::warning(__METHOD__ . ' get stockoutOrderInfo by stockout_order_id:' . $strStockoutOrderId . 'no data');
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
         }
-
         if ($stockoutOrderInfo['stockout_order_status'] == Order_Define_StockoutOrder::STOCKOUT_ORDER_DESTORYED) {
             return $res;
         }
-        if($stockoutOrderInfo['stockout_order_cancel_type'] != Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL) {
+        if($stockoutOrderInfo['stockout_order_pre_cancel'] != Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_PRE_CANCEL_ERROR);
         }
         $updateData = [
