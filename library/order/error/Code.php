@@ -399,4 +399,9 @@ class Order_Error_Code extends Wm_Error_Code
      * 该预约单不存在，请确认后输入
      */
     const NWMS_ORDER_RESERVE_ORDER_NOT_EXIST = 360002;
+
+    /**
+     * 出库单已打印，无法取消
+     */
+    const NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT = 310013;
 }

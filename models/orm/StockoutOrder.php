@@ -11,6 +11,8 @@
  * @property string $warehouse_name
  * @property int $stockout_order_source
  * @property int $expect_send_time
+ * @property int $stockout_order_pre_cancel
+ * @property int $stockout_order_cancel_type
  * @property int $stockout_order_amount
  * @property int $stockout_order_distribute_amount
  * @property int $stockout_order_pickup_amount
@@ -52,7 +54,7 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
     public static $clusterName = 'nwms_order_cluster';
     /**
      * 根据出库单号获取出库单信息
-     * @param $stockoutOrderId 出库单号
+     * @param  integer $stockoutOrderId 出库单号
      * @return array
      */
     public function getStockoutOrderInfoById($stockoutOrderId)
@@ -74,6 +76,19 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
         return $stockoutOrderInfo;
 
 
+    }
+
+    /**
+     * 根据出库单号获取出库单信息-object
+     * @param  integer $intStockOutOrderId
+     * @return Model_Orm_StockoutOrder
+     */
+    public static function getOrderInfoObjectById($intStockOutOrderId)
+    {
+        $condition = [
+            'stockout_order_id' => $intStockOutOrderId,
+        ];
+        return self::findOne($condition);
     }
 
     /**
@@ -174,5 +189,17 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
             return [];
         }
         return $arrRet;
+    }
+
+    /**
+     * 预取消出库单
+     * @param  integer $intStockOutOrderCancelType
+     * @return integer
+     */
+    public function preCancelStockOutOrder($intStockOutOrderCancelType = Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_SYS)
+    {
+        $this->stockout_order_pre_cancel = Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL;
+        $this->stockout_order_cancel_type = $intStockOutOrderCancelType;
+        return $this->update();
     }
 }
