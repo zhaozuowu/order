@@ -1424,12 +1424,13 @@ class Service_Data_StockoutOrder
         $intStockOutOrderIsPrint = $objStockOutOrderInfo->stockout_order_is_print;
         $intStockOutOrderPreCancel = $objStockOutOrderInfo->stockout_order_pre_cancel;
         $intStockOutOrderCancelType = $objStockOutOrderInfo->stockout_order_cancel_type;
-        if (Order_Define_StockoutOrder::STOCKOUT_ORDER_NOT_PRINT == $intStockOutOrderIsPrint) {
+        if (Order_Define_StockoutOrder::STOCKOUT_ORDER_NOT_PRINT == $intStockOutOrderIsPrint
+            && Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS != $intStockOutOrderStatus) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT);
         }
         if (!in_array($intStockOutOrderCancelType, array_keys(Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_MAP))
             && !in_array($intStockOutOrderPreCancel, array_keys(Order_Define_StockoutOrder::STOCKOUT_ORDER_PRE_CANCEL_MAP))
-            && Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS == $intStockOutOrderStatus) {
+            && Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS != $intStockOutOrderStatus) {
             $objStockOutOrderInfo->preCancelStockOutOrder();
         }
         return [];
