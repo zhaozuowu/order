@@ -67,14 +67,14 @@ class Service_Data_StockoutOrder
     public function __construct()
     {
         $this->objOrmStockoutOrder = new Model_Orm_StockoutOrder();
-        $this->objOrmSku = new Model_Orm_StockoutOrderSku();
-        $this->objDaoRedisStockoutOrder = new Dao_Redis_StockoutOrder();
-        $this->objRalStock = new Dao_Ral_Stock();
-        $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
-        $this->objRalLog = new Dao_Ral_Log();
-        $this->objWrpcTms = new Dao_Wrpc_Tms();
-        $this->objRalSKu  = new Dao_Ral_Sku();
-        $this->daoOms = new Dao_Ral_Oms();
+//        $this->objOrmSku = new Model_Orm_StockoutOrderSku();
+//        $this->objDaoRedisStockoutOrder = new Dao_Redis_StockoutOrder();
+//        $this->objRalStock = new Dao_Ral_Stock();
+//        $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
+//        $this->objRalLog = new Dao_Ral_Log();
+//        $this->objWrpcTms = new Dao_Wrpc_Tms();
+//        $this->objRalSKu  = new Dao_Ral_Sku();
+//        $this->daoOms = new Dao_Ral_Oms();
     }
 
 
@@ -1406,5 +1406,32 @@ class Service_Data_StockoutOrder
         $arrInput['customer_region_name'] = empty($customerList['customer_region_name']) ? '' : strval($customerList['customer_region_name']);
         $arrInput['customer_location_source'] = empty($customerList['customer_location_source']) ?  : intval($customerList['customer_location_source']);
         return $arrInput;
+    }
+
+    /**
+     * 预取消出库单
+     * @param  integer $intStockOutOrderId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function preCancelOrder($intStockOutOrderId)
+    {
+        $objStockOutOrderInfo = Model_Orm_StockoutOrder::getOrderInfoObjectById($intStockOutOrderId);
+        if (empty($objStockOutOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
+        }
+        $intStockOutOrderStatus = $objStockOutOrderInfo->stockout_order_status;
+        $intStockOutOrderIsPrint = $objStockOutOrderInfo->stockout_order_is_print;
+        $intStockOutOrderPreCancel = $objStockOutOrderInfo->stockout_order_pre_cancel;
+        $intStockOutOrderCancelType = $objStockOutOrderInfo->stockout_order_cancel_type;
+        if (Order_Define_StockoutOrder::STOCKOUT_ORDER_NOT_PRINT == $intStockOutOrderIsPrint) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT);
+        }
+        if (!in_array($intStockOutOrderCancelType, array_keys(Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_MAP))
+            && !in_array($intStockOutOrderPreCancel, array_keys(Order_Define_StockoutOrder::STOCKOUT_ORDER_PRE_CANCEL_MAP))
+            && Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS == $intStockOutOrderStatus) {
+            $objStockOutOrderInfo->preCancelStockOutOrder();
+        }
+        return [];
     }
 }
