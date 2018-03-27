@@ -290,14 +290,10 @@ class Service_Data_Stockin_StockinOrder
             $strWarehouseName, $intCityId, $strCityName, $intStockinTime, $intReserveOrderPlanTime,
             $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockinOrderCreatorId, $strStockinOrderCreatorName,
             $strStockinOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
-            $intVendorId = $intStockinOrderType == Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE ? $intSourceSupplierId : 0;
-            $arrStock = $this->notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $intVendorId, $arrDbSkuInfoList);
-            $intStockinBatchId = $arrStock['stockin_batch_id'];
             Model_Orm_StockinOrder::createStockinOrder(
                 $intStockinOrderId,
                 $intStockinOrderType,
                 $intSourceOrderId,
-                $intStockinBatchId,
                 $intSourceSupplierId,
                 $strSourceInfo,
                 $intStockinOrderStatus,
@@ -708,5 +704,92 @@ class Service_Data_Stockin_StockinOrder
             }
         }
         return $arrKeyValue;
+    }
+
+    /**
+     * 创建系统销退入库单
+     * @
+     */
+    /**
+     * @param  array   $arrSourceOrderSkuList
+     * @param  array   $arrSourceOrderInfo
+     * @param  array   $arrSkuInfoList
+     * @param  string  $strStockInOrderRemark
+     * @return integer $intStockInOrderId
+     * @throws Order_BusinessError
+     * @throws Order_Error
+     * @throws Exception
+     */
+    public function createSysStockInOrder($arrSourceOrderSkuList, $arrSourceOrderInfo, $arrSkuInfoList, $strStockInOrderRemark)
+    {
+        $intStockInOrderId = Order_Util_Util::generateStockinOrderCode();
+        $arrSourceOrderSkus = $this->assemblePrice($intWarehouseId, $arrSourceOrderSkus, $intType);
+        $arrDbSkuInfoList = $this->getDbStockinSkus($intStockInOrderId, $arrSourceOrderSkus, $arrSkuInfoList, $intType);
+        $intStockinOrderRealAmount = $this->calculateTotalSkuAmount($arrDbSkuInfoList);
+        if (empty($intStockinOrderRealAmount)) {
+            Order_BusinessError::throwException(Order_Error_Code::TOTAL_COUNT_CANNOT_EMPTY);
+        }
+        $intStockinOrderTotalPrice = $this->calculateTotalPrice($arrDbSkuInfoList);
+        $intStockinOrderTotalPriceTax = $this->calculateTotalPriceTax($arrDbSkuInfoList);
+        $intStockinOrderType = intval($intType);
+        if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
+            $intSourceOrderId = intval($arrSourceOrderInfo['reserve_order_id']);
+            $intStockinOrderPlanAmount = $arrSourceOrderInfo['reserve_order_plan_amount'];
+            $intSourceSupplierId = $arrSourceOrderInfo['vendor_id'];
+            $intReserveOrderPlanTime = $arrSourceOrderInfo['reserve_order_plan_time'];
+        } else {
+            $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
+            $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockout_order_pickup_amount'];
+            $intSourceSupplierId = $arrSourceOrderInfo['customer_id'];
+            $intReserveOrderPlanTime = 0;
+        }
+        $arrSourceInfo = $this->getSourceInfo($arrSourceOrderInfo, $intType);
+        $strSourceInfo = json_encode($arrSourceInfo);
+        $intStockinOrderStatus = Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH;
+        $intWarehouseId = intval($intWarehouseId);
+        $objDaoWarehouse = new Dao_Ral_Order_Warehouse();
+        $arrWarehouseInfo = $objDaoWarehouse->getWarehouseInfoByWarehouseId($intWarehouseId);
+        if (empty($arrWarehouseInfo)) {
+            Order_Error::throwException(Order_Error_Code::RAL_ERROR);
+        }
+        $strWarehouseName = $arrWarehouseInfo['warehouse_name'];
+        $intCityId = $arrWarehouseInfo['city']['id'];
+        $strCityName = $arrWarehouseInfo['city']['name'];
+        $intStockInTime = time();
+        $intStockInOrderCreatorId = 0;
+        $strStockInOrderCreatorName = 'System';
+        $strStockInOrderRemark = strval($strStockInOrderRemark);
+        Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockInOrderId, $intStockinOrderType,
+            $intSourceOrderId, $intSourceSupplierId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId,
+            $strWarehouseName, $intCityId, $strCityName, $intStockInTime, $intReserveOrderPlanTime,
+            $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockInOrderCreatorId, $strStockInOrderCreatorName,
+            $strStockInOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
+            $intVendorId = $intStockinOrderType == Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE ? $intSourceSupplierId : 0;
+            $arrStock = $this->notifyStock($intStockInOrderId, $intStockinOrderType, $intWarehouseId, $intVendorId, $arrDbSkuInfoList);
+            $intStockinBatchId = $arrStock['stockin_batch_id'];
+            Model_Orm_StockinOrder::createStockinOrder(
+                $intStockInOrderId,
+                $intStockinOrderType,
+                $intSourceOrderId,
+                $intStockinBatchId,
+                $intSourceSupplierId,
+                $strSourceInfo,
+                $intStockinOrderStatus,
+                $intCityId,
+                $strCityName,
+                $intWarehouseId,
+                $strWarehouseName,
+                $intStockInTime,
+                $intReserveOrderPlanTime,
+                $intStockinOrderPlanAmount,
+                $intStockinOrderRealAmount,
+                $intStockInOrderCreatorId,
+                $strStockInOrderCreatorName,
+                $strStockInOrderRemark,
+                $intStockinOrderTotalPrice,
+                $intStockinOrderTotalPriceTax);
+            Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockInOrderId);
+        });
+        return $intStockInOrderId;
     }
 }

@@ -1,3 +1,4 @@
+
 <?php
 /**
  * @name Action_CreateStockInOrderApi
@@ -12,7 +13,6 @@ class Action_CreateStockInOrderApi extends Order_Base_ApiAction
      * @var int
      */
     protected $intMethod = Order_Define_Const::METHOD_POST;
-
     /**
      * 验证参数
      * @var array
@@ -45,7 +45,7 @@ class Action_CreateStockInOrderApi extends Order_Base_ApiAction
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Stockin_CreateStockinOrder();
+        $this->objPage = new Service_Page_StockIn_CreateSysStockInOrder();
     }
 
 }
