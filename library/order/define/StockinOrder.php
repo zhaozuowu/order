@@ -18,6 +18,11 @@ class Order_Define_StockinOrder
      * @var int
      */
     const STOCKIN_ORDER_TYPE_STOCKOUT = 2;
+    /**
+     * type stock out
+     * @var int
+     */
+    const STOCKIN_ORDER_TYPE_SYS = 3;
 
     /**
      * type return

@@ -43,6 +43,11 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
      */
     public function execute($arrInput)
     {
+        $intWarehouseId = $arrInput['warehouse_id'];
+        $strStockinOrderRemark = $arrInput['stockin_order_remark'];
+        $arrSkuInfoList = $arrInput['sku_info_list'];
+        $intCreatorId = $arrInput['_session']['user_id'];
+        $strCreatorName = $arrInput['_session']['user_name'];
         if (preg_match('/^(SOO|ASN)(\d{13})$/', $arrInput['source_order_id'], $matches)) {
             if (Nscm_Define_OrderPrefix::ASN == $matches[1]) {
                 $intType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE;
@@ -50,6 +55,9 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
                 $intType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
             }
             $intSourceOrderId = intval($matches[2]);
+        } else if (preg_match('/^\d{13}$/', $arrInput['source_order_id'], $matches)) {
+            $intType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_SYS;
+            $intSourceOrderId = intval($arrInput['source_order_id']);
         } else {
             Order_Error::throwException(Order_Error_Code::SOURCE_ORDER_TYPE_ERROR);
         }
@@ -65,6 +73,17 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
                 Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_STATUS_NOT_ALLOW_STOCKIN);
             }
 
+        } else if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_SYS == $intType) {
+            $arrRet = $this->objDataStockout->getOrderAndSkuListByStockoutOrderId($intSourceOrderId);
+            $arrSourceOrderInfo = $arrRet['stockout_order_info'];
+            $arrSourceOrderSkus = $arrRet['stockout_order_sku'];
+            if (Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS == $arrSourceOrderInfo['stockout_order_status']) {
+                Order_BusinessError::throwException(Order_Error_Code::INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN);
+            }
+            if (Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS != $arrSourceOrderInfo['stockout_order_status']) {
+                Order_BusinessError::throwException(Order_Error_Code::INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN);
+            }
+            $intWarehouseId = $arrSourceOrderInfo['warehouse_id'];
         } else {
             $arrRet = $this->objDataStockout->getOrderAndSkuListByStockoutOrderId($intSourceOrderId);
             $arrSourceOrderInfo = $arrRet['stockout_order_info'];
@@ -77,11 +96,7 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
         if (empty($arrSourceOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
         }
-        $intWarehouseId = $arrInput['warehouse_id'];
-        $strStockinOrderRemark = $arrInput['stockin_order_remark'];
-        $arrSkuInfoList = $arrInput['sku_info_list'];
-        $intCreatorId = $arrInput['_session']['user_id'];
-        $strCreatorName = $arrInput['_session']['user_name'];
+
         $this->objDataStockin->createStockinOrder($arrSourceOrderInfo, $arrSourceOrderSkus, $intWarehouseId,
             $strStockinOrderRemark, $arrSkuInfoList, $intCreatorId, $strCreatorName, $intType);
     }

@@ -70,6 +70,8 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED => '获取商品信息失败',
         Order_Error_Code::NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED => '部分商品没有库存信息',
         Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH => '调整SKU个数超过100个',
+        //销退入库错误码
+        Order_Error_Code::INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN => '已作废出库单不允许入库',
 
     ];
 
