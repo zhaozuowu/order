@@ -16,7 +16,7 @@ class Service_Page_StockIn_CreateSysStockInOrder
      */
     private $objDataStockIn;
 
-    public function __construct()
+    public function nstruct()
     {
         $this->objDataStockOut = new Service_Data_StockoutOrder();
         $this->objDataStockIn = new Service_Data_Stockin_StockinOrder();
@@ -26,6 +26,7 @@ class Service_Page_StockIn_CreateSysStockInOrder
      * @param $arrInput
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
+     * @throws Exception
      */
     public function execute($arrInput)
     {
@@ -43,6 +44,6 @@ class Service_Page_StockIn_CreateSysStockInOrder
             Order_BusinessError::throwException(Order_Error_Code::INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN);
         }
         $this->objDataStockIn->createSysStockInOrder($arrSourceOrderSkuList, $arrSourceOrderInfo,
-            $arrInput['sku_info_list'], $arrInput['stockin_order_remark']);
+            $arrInput['shipment_order_id'], $arrInput['sku_info_list'], $arrInput['stockin_order_remark']);
     }
 }

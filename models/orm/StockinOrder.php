@@ -119,74 +119,42 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         return self::insert($arrRow);
     }
 
-    /**
-     * create stay stock in order
-     * @param int $intStockInOrderId
-     * @param int $intStockInOrderType
-     * @param int $intSourceOrderId
-     * @param int $intStockInBatchId
-     * @param int $intSourceSupplierId
-     * @param string $strSourceInfo
-     * @param int $intStockInOrderStatus
-     * @param int $intCityId
-     * @param string $strCityName
-     * @param int $intWarehouseId
-     * @param string $strWarehouseName
-     * @param int $intStockInTime
-     * @param int $intReserveOrderPlanTime
-     * @param int $intStockInOrderPlanAmount
-     * @param int $intStockInOrderRealAmount
-     * @param int $intStockInOrderCreatorId
-     * @param string $strStockInOrderCreatorName
-     * @param string $strStockInOrderRemark
-     * @param int $intStockInOrderTotalPrice
-     * @param  int $intStockInOrderTotalPriceTax
-     * @return int
-     */
     public static function createStayStockInOrder(
         $intStockInOrderId,
         $intStockInOrderType,
         $intSourceOrderId,
-        $intStockInBatchId,
-        $intSourceSupplierId,
         $strSourceInfo,
-        $intStockInOrderStatus,
+        $intStockinOrderStatus,
         $intCityId,
         $strCityName,
         $intWarehouseId,
         $strWarehouseName,
-        $intStockInTime,
-        $intReserveOrderPlanTime,
-        $intStockInOrderPlanAmount,
-        $intStockInOrderRealAmount,
+        $intStockinOrderPlanAmount,
         $intStockInOrderCreatorId,
         $strStockInOrderCreatorName,
         $strStockInOrderRemark,
-        $intStockInOrderTotalPrice,
-        $intStockInOrderTotalPriceTax
+        $intStockinOrderTotalPrice,
+        $intStockinOrderTotalPriceTax,
+        $intShipmentOrderId
     )
     {
         $arrRow = [
             'stockin_order_id' => intval($intStockInOrderId),
             'stockin_order_type' => intval($intStockInOrderType),
             'source_order_id' => intval($intSourceOrderId),
-            'stockin_batch_id' => intval($intStockInBatchId),
-            'source_supplier_id' => intval($intSourceSupplierId),
+            'shipment_order_id' => intval($intShipmentOrderId),
             'source_info' => strval($strSourceInfo),
-            'stockin_order_status' => intval($intStockInOrderStatus),
+            'stockin_order_status' => intval($intStockinOrderStatus),
             'city_id' => intval($intCityId),
             'city_name' => strval($strCityName),
             'warehouse_id' => intval($intWarehouseId),
             'warehouse_name' => strval($strWarehouseName),
-            'stockin_time' => $intStockInTime,
-            'reserve_order_plan_time' => $intReserveOrderPlanTime,
-            'stockin_order_plan_amount' => $intStockInOrderPlanAmount,
-            'stockin_order_real_amount' => $intStockInOrderRealAmount,
+            'stockin_order_plan_amount' => $intStockinOrderPlanAmount,
             'stockin_order_creator_id' => $intStockInOrderCreatorId,
             'stockin_order_creator_name' => $strStockInOrderCreatorName,
             'stockin_order_remark' => $strStockInOrderRemark,
-            'stockin_order_total_price' => $intStockInOrderTotalPrice,
-            'stockin_order_total_price_tax' => $intStockInOrderTotalPriceTax,
+            'stockin_order_total_price' => $intStockinOrderTotalPrice,
+            'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
         ];
         return self::insert($arrRow);
     }
