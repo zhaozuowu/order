@@ -764,6 +764,8 @@ class Service_Data_Stockin_StockinOrder
         $intStockinOrderTotalPriceTax = $this->calculateTotalPriceTax($arrDbSkuInfoList);
         $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
         $arrSourceInfo = $this->getSourceInfo($arrSourceOrderInfo, Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT);
+        $strCustomerId = $arrSourceOrderInfo['customer_id'];
+        $strCustomerName = $arrSourceOrderInfo['customer_name'];
         $strSourceInfo = json_encode($arrSourceInfo);
         $intStockinOrderStatus = Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_WAITING;
         $arrWarehouseInfo = $this->getWarehouseInfoById($intWarehouseId);
@@ -779,7 +781,7 @@ class Service_Data_Stockin_StockinOrder
         $strStockInOrderRemark = strval($strStockInOrderRemark);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockInOrderId, $intStockInOrderType,
             $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId,
-            $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId,
+            $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId, $strCustomerName, $strCustomerId,
             $intStockinOrderPlanAmount, $intStockInOrderCreatorId, $strStockInOrderCreatorName,
             $strStockInOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
             Model_Orm_StockinOrder::createStayStockInOrder(
@@ -798,7 +800,9 @@ class Service_Data_Stockin_StockinOrder
                 $strStockInOrderRemark,
                 $intStockinOrderTotalPrice,
                 $intStockinOrderTotalPriceTax,
-                $intShipmentOrderId);
+                $intShipmentOrderId,
+                $strCustomerId,
+                $strCustomerName);
             Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockInOrderId);
         });
         return $intStockInOrderId;

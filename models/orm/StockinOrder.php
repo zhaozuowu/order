@@ -119,6 +119,27 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         return self::insert($arrRow);
     }
 
+    /**
+     * @param int    $intStockInOrderId 入库单id
+     * @param int    $intStockInOrderType 入库单类型
+     * @param int    $intSourceOrderId 出库单id
+     * @param string $strSourceInfo 来源订单json字符串
+     * @param int    $intStockinOrderStatus 入库单状态
+     * @param int    $intCityId 城市id
+     * @param string $strCityName 城市名称
+     * @param int    $intWarehouseId 入库仓库id
+     * @param string $strWarehouseName 入库仓库名称
+     * @param int    $intStockinOrderPlanAmount 计划入库数量
+     * @param int    $intStockInOrderCreatorId 操作人员id
+     * @param string $strStockInOrderCreatorName 操作人员名称
+     * @param string $strStockInOrderRemark 备注
+     * @param int    $intStockinOrderTotalPrice 入库单未税总价格
+     * @param int    $intStockinOrderTotalPriceTax 入库单含税总价
+     * @param int    $intShipmentOrderId 运单号
+     * @param string $strCustomerId 客户id
+     * @param string $strCustomerName 客户名称
+     * @return int
+     */
     public static function createStayStockInOrder(
         $intStockInOrderId,
         $intStockInOrderType,
@@ -135,7 +156,9 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $strStockInOrderRemark,
         $intStockinOrderTotalPrice,
         $intStockinOrderTotalPriceTax,
-        $intShipmentOrderId
+        $intShipmentOrderId,
+        $strCustomerId,
+        $strCustomerName
     )
     {
         $arrRow = [
@@ -155,6 +178,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_remark' => $strStockInOrderRemark,
             'stockin_order_total_price' => $intStockinOrderTotalPrice,
             'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
+            'customer_id' => $strCustomerId,
+            'customer_name' => $strCustomerName,
         ];
         return self::insert($arrRow);
     }
