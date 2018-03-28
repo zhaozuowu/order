@@ -253,4 +253,22 @@ class Order_Define_StockoutOrder
       'supply_type'=>Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE_ORDER,
       'devices'=> array(),
     ];
+
+    /**
+     * stockout_order_stock_status history
+     * @var int
+     */
+    const STOCK_STATUS_HISTORY = 0;
+
+    /**
+     * stockout_order_stock_status unsure
+     * @var int
+     */
+    const STOCK_STATUS_UNSURE = 1;
+
+    /**
+     * stockout_order_stock_status sure
+     * @var int
+     */
+    const STOCK_STATUS_SURE = 2;
 }
