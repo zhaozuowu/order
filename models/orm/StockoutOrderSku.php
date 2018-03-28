@@ -16,6 +16,7 @@
  * @property int $upc_unit_num
  * @property int $send_price
  * @property int $send_total_price
+ * @property string $sku_extra_info
  * @property int $create_time
  * @property int $update_time
  * @property int $is_delete
@@ -71,6 +72,30 @@ class Model_Orm_StockoutOrderSku extends Order_Base_Orm
         return $res;
     }
 
+    /**
+     * get all stockout sku by stockout order id
+     * @param int $intStockoutOrderId
+     * @return Model_Orm_StockoutOrderSku[]
+     */
+    public static function getAllStockoutSkuByStockoutId($intStockoutOrderId)
+    {
+        $arrCondition = [
+            'stockout_order_id' => $intStockoutOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        return self::findAll($arrCondition);
+    }
+
+    /**
+     * update sku extra info
+     * @param string $strExtraInfo
+     * @return int
+     */
+    public function updateSkuExtraInfo($strExtraInfo)
+    {
+        $this->sku_extra_info = $strExtraInfo;
+        return $this->update();
+    }
 
     /**
      * 根据出库单号获取出库sku信息

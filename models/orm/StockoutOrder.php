@@ -22,6 +22,7 @@
  * @property string $customer_contact
  * @property string $customer_address
  * @property int $stockout_order_is_print
+ * @property int $stockout_order_stock_status
  * @property int $create_time
  * @property int $update_time
  * @property int $is_delete
@@ -50,6 +51,32 @@ class Model_Orm_StockoutOrder extends Order_Base_Orm
     public static $tableName = 'stockout_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * get stockout order object by order id
+     * @param int $intStockoutOrderId
+     * @return Model_Orm_StockoutOrder
+     */
+    public static function getStockoutOrderObjByOrderId($intStockoutOrderId)
+    {
+        $arrCondition = [
+            'stockout_order_id' => $intStockoutOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        return self::findOne($arrCondition);
+    }
+
+    /**
+     * update stockout order stock status
+     * @param $intStatus
+     * @return bool
+     */
+    public function updateStockoutOrderStockStatus($intStatus)
+    {
+        $this->stockout_order_stock_status = $intStatus;
+        return $this->update();
+    }
+
     /**
      * 根据出库单号获取出库单信息
      * @param $stockoutOrderId 出库单号
