@@ -726,13 +726,24 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /*
-     * 更新一个或多个入库单为已打印
+     * @desc 更新一个或多个入库单为已打印
+     * @name updateStockinOrderIsPrint
+     * @param array $arrStockinOrderIds
+     * @return bool
      */
     public function updateStockinOrderIsPrint($arrStockinOrderIds)
     {
-        $arrConditions = $this->getPrintConditions($arrStockinOrderIds);
-        $updateData = ['stockin_order_is_print' => Order_Define_StockinOrder::STOCKIN_ORDER_IS_PRINT];
-        $this->objOrmStockin->updateDataByConditions($arrConditions, $updateData);
+        $arrStockinOrderIds = $this->batchTrimStockinOrderIdPrefix($arrStockinOrderIds);
+        Model_Orm_StockinOrder::getConnection()->transaction(function() use($arrStockinOrderIds) {
+            foreach ($arrStockinOrderIds as $intOrderId) {
+                $objStockin = Model_Orm_StockinOrder::findOne(['stockin_order_id' => $intOrderId]);
+                if (!empty($objStockin)) {
+                    $objStockin->stockin_order_is_print = Order_Define_StockinOrder::STOCKIN_ORDER_IS_PRINT;
+                    $objStockin->update();
+                }
+            }
+        });
+
         return true;
     }
 }

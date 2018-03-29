@@ -12,7 +12,7 @@ class Action_UpdateStockinOrderIsPrint extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'stockin_order_ids' => 'regex|patern[/(ASN|SIO)\d{13}(\,(ASN|SIO)\d{13})*/]',
+        'stockin_order_ids' => 'regex|patern[/^(ASN|SIO)\d{13}(\,(ASN|SIO)\d{13})*$/]',
     ];
 
     /**
