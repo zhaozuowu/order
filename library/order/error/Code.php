@@ -399,4 +399,9 @@ class Order_Error_Code extends Wm_Error_Code
      * 已作废出库单不允许入库
      */
     const INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN = 370001;
+
+    /**
+     * 未出库出库单不允许入库
+     */
+    const NOT_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN = 370002;
 }

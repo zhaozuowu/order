@@ -18,7 +18,7 @@ class Action_CreateStockInOrderApi extends Order_Base_ApiAction
      * @var array
      */
     protected $arrInputParams = [
-        'source_order_id' => 'regex|patern[/^((SOO)\d{13})?$/]',
+        'source_order_id' => 'int|required',
         'shipment_order_id' => 'int|required',
         'stockin_order_remark' => 'strutf8',
         'stockin_order_return_type' => 'int|required',
@@ -38,7 +38,7 @@ class Action_CreateStockInOrderApi extends Order_Base_ApiAction
      */
     public function format($data)
     {
-
+        return $data;
     }
 
     /**

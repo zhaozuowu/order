@@ -734,9 +734,12 @@ class Service_Data_Stockin_StockinOrder
      * @throws Exception
      */
     public function createSysStockInOrder($arrSourceOrderSkuList, $arrSourceOrderInfo, $intShipmentOrderId,
-                                          $arrRequestSkuInfoList, $strStockInOrderRemark)
+                                          $arrRequestSkuInfoList, $strStockInOrderRemark, $intStockInOrderReturnType)
     {
         if (empty($intShipmentOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        if (empty($intStockInOrderReturnType)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         if (empty($arrSourceOrderSkuList)) {
@@ -780,7 +783,7 @@ class Service_Data_Stockin_StockinOrder
         $intStockInOrderType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_SYS;
         $strStockInOrderRemark = strval($strStockInOrderRemark);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockInOrderId, $intStockInOrderType,
-            $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId,
+            $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intStockInOrderReturnType,
             $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId, $strCustomerName, $strCustomerId,
             $intStockinOrderPlanAmount, $intStockInOrderCreatorId, $strStockInOrderCreatorName,
             $strStockInOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
@@ -788,6 +791,7 @@ class Service_Data_Stockin_StockinOrder
                 $intStockInOrderId,
                 $intStockInOrderType,
                 $intSourceOrderId,
+                $intStockInOrderReturnType,
                 $strSourceInfo,
                 $intStockinOrderStatus,
                 $intCityId,
