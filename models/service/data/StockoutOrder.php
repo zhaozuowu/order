@@ -382,15 +382,26 @@ class Service_Data_StockoutOrder
      * @return mixed
      * @throws Order_BusinessError
      */
-    public function checkRepeatSubmit($strCustomerId, $strLogisticsOrderId) {
+    public function checkRepeatSubmit($strLogisticsOrderId) {
+        $arrStockoutOrderInfo = $this->objDaoRedisStockoutOrder->getCacheStockoutInfoByLogisticsOrderId($strLogisticsOrderId);
+        if (!empty($arrStockoutOrderInfo)) {
+            return $arrStockoutOrderInfo;
+        }
         $arrStockoutOrderInfo = $this->getStockoutInfoByLogisticsOrderId($strLogisticsOrderId);
         if (!empty($arrStockoutOrderInfo)) {
             return $arrStockoutOrderInfo;
         }
-        if ($this->objDaoRedisStockoutOrder->getValByCustomerId($strCustomerId)) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT);
-        }
-        $this->objDaoRedisStockoutOrder->setCustomerId($strCustomerId);
+    }
+
+    /**
+     * 缓存出库单需要返回的数据
+     * @param array $arrInput
+     * @return void
+     */
+    public function cacheStockoutInfo($arrInput) {
+        $arrRetStockoutInfo = Order_Define_Format::formatStockoutInfo($arrInput);
+        $intLogisticsOrderId = $arrInput['logistics_order_id'];
+        $this->objDaoRedisStockoutOrder->setCacheStockoutInfo($intLogisticsOrderId, $arrRetStockoutInfo);
     }
 
     /**
