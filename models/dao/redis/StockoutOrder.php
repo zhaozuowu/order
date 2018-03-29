@@ -66,7 +66,7 @@ class Dao_Redis_StockoutOrder extends Order_Base_Redis
      * @return array
      */
     public function getCacheStockoutInfoByLogisticsOrderId($intLogisticsOrderId) {
-        $strRedisKey = self::getCacheStockoutInfoByLogisticsOrderId($intLogisticsOrderId);
+        $strRedisKey = self::REDIS_LOGISTICS_STOCKOUT_INFO . $intLogisticsOrderId;
         $strRet = $this->objRedisConn->get($strRedisKey);
         $arrRet = json_decode($strRet, true);
         return $arrRet;
