@@ -408,4 +408,8 @@ class Order_Error_Code extends Wm_Error_Code
      * 入库单不存在
      */
     const STOCKIN_ORDER_NOT_EXISTED = 370003;
+    /**
+     * 入库单已作废,无法入库
+     */
+    const STOCKIN_ORDER_STATUS_INVALID = 370004;
 }

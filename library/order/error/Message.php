@@ -74,6 +74,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN => '已作废出库单不允许入库',
         Order_Error_Code::NOT_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN => '未出库出库单不允许入库',
         Order_Error_Code::STOCKIN_ORDER_NOT_EXISTED => '入库单不存在',
+        Order_Error_Code::STOCKIN_ORDER_STATUS_INVALID => '入库单已作废,无法入库',
 
     ];
 
