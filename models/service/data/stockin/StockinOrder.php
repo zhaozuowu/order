@@ -905,4 +905,83 @@ class Service_Data_Stockin_StockinOrder
         }
         return $arrWarehouseInfo;
     }
+
+    /**
+     * @param  string $strStockInOrderId 入库单id
+     * @param  array  $arrSkuInfoList 入库sku信息
+     * @throws Exception
+     * @throws Order_BusinessError
+     * @throws Order_Error
+     */
+    public function confirmStockInOrder($strStockInOrderId, $arrSkuInfoList)
+    {
+        if (empty($strStockInOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        if (empty($intStockInOrderAmount) || 0 >= $intStockInOrderAmount) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $intStockInOrderId = $this->trimStockInOrderIdPrefix($strStockInOrderId);
+        $arrStockInOrderInfo = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intStockInOrderId);
+        if (empty($arrStockInOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_NOT_EXISTED);
+        }
+        $intStockInTime = time();
+        $intStockInOrderRealAmount = $this->calculateStockInOrderRealAmount($arrSkuInfoList);
+        $arrDbSkuInfoList = $this->assembleDbSkuInfoList($arrSkuInfoList, $intStockInOrderId);
+        Model_Orm_StockinOrder::getConnection()->transaction(function () use (
+            $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList) {
+            Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount);
+            Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
+        });
+    }
+
+    /**
+     * @param  string $strStockInOrder
+     * @return int
+     */
+    private function trimStockInOrderIdPrefix($strStockInOrder)
+    {
+        return intval(trim('SIO', $strStockInOrder));
+    }
+
+    /**
+     * @param  array $arrSkuInfoList
+     * @return int
+     * @throws Order_Error
+     */
+    private function calculateStockInOrderRealAmount($arrSkuInfoList)
+    {
+        $intRealAmount = 0;
+        foreach ($arrSkuInfoList['real_stockin_info'] as $arrRealSkuInfo) {
+            $intAmount = $arrRealSkuInfo['amount'];
+            $intAmountGood = $arrRealSkuInfo['sku_good_amount'];
+            $intAmountDefective = $arrRealSkuInfo['sku_defective_amount'];
+            if (0 != ($intAmount - $intAmountGood - $intAmountDefective)) {
+                Bd_Log::trace(sprintf("sku amount is invalid %s", json_encode($arrSkuInfoList['real_stockin_info'])));
+                Order_Error::throwException(Order_Error_Code::SYS_ERROR);
+            }
+            $intRealAmount += $intAmount;
+        }
+        if (0 == $intRealAmount) {
+            Bd_Log::trace(sprintf("sku amount is invalid %s", json_encode($arrSkuInfoList)));
+            Order_Error::throwException(Order_Error_Code::SYS_ERROR);
+        }
+        return $intRealAmount;
+    }
+
+    private function assembleDbSkuInfoList($arrSkuInfoList, $intStockInOrderId)
+    {
+        $arrDbSkuInfoList = [];
+        foreach ($arrSkuInfoList as $arrSkuInfo) {
+            $arrDbSkuInfo = [
+                'stockin_order_id' => $intStockInOrderId,
+                'sku_id' => $arrSkuInfo['sku_id'],
+                'stockin_order_sku_real_amount' => $arrSkuInfo['amount'],
+                'stockin_order_sku_extra_info' => json_encode($arrSkuInfo['real_stockin_info']),
+            ];
+            $arrDbSkuInfoList[] = $arrDbSkuInfo;
+        }
+        return $arrDbSkuInfoList;
+    }
 }

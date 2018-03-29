@@ -73,6 +73,7 @@ class Order_Error_Message extends Wm_Error_Message
         //销退入库错误码
         Order_Error_Code::INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN => '已作废出库单不允许入库',
         Order_Error_Code::NOT_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN => '未出库出库单不允许入库',
+        Order_Error_Code::STOCKIN_ORDER_NOT_EXISTED => '入库单不存在',
 
     ];
 

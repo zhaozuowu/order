@@ -136,4 +136,19 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
         $arrResult['list'] = $arrRowsAndTotal['rows'];
         return $arrResult;
     }
+
+    public static function confirmStockInOrderSkuList($arrDbSkuInfoList)
+    {
+        foreach ($arrDbSkuInfoList as $arrDbSkuInfo) {
+            $arrCondition = [
+                'stockin_order_id' => $arrDbSkuInfo['stockin_order_id'],
+                'sku_id' => $arrDbSkuInfo['sku_id'],
+            ];
+            $arrUpdateInfo = [
+                'stockin_order_sku_real_amount' => $arrDbSkuInfo['stockin_order_sku_real_amount'],
+                'stockin_order_real_amount' => $arrDbSkuInfo['stockin_order_sku_extra_info'],
+            ];
+            self::findOne($arrCondition)->update($arrUpdateInfo);
+        }
+    }
 }

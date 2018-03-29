@@ -341,4 +341,17 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         return true;
     }
 
+    public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount)
+    {
+        $arrCondition = [
+            'stockin_order_id' => $intStockInOrderId,
+        ];
+        $arrUpdateInfo = [
+            'stockin_time' => $intStockInTime,
+            'stockin_order_real_amount' => $intStockInOrderRealAmount,
+            'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
+        ];
+        self::findOne($arrCondition)->update($arrUpdateInfo);
+    }
+
 }

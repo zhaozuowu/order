@@ -404,4 +404,8 @@ class Order_Error_Code extends Wm_Error_Code
      * 未出库出库单不允许入库
      */
     const NOT_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN = 370002;
+    /**
+     * 入库单不存在
+     */
+    const STOCKIN_ORDER_NOT_EXISTED = 370003;
 }
