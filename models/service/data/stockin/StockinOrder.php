@@ -7,6 +7,19 @@
 
 class Service_Data_Stockin_StockinOrder
 {
+    /*
+     * @var object stockin orm
+     */
+    protected $objOrmStockin;
+
+    /*
+     * init object
+     */
+    public function __construct()
+    {
+        $this->objOrmStockin = new Model_Orm_StockinOrder();
+    }
+
     /**
      * calculate stock in order sku info
      * @param int $intStockinOrderId
@@ -685,7 +698,9 @@ class Service_Data_Stockin_StockinOrder
     private function batchTrimStockinOrderIdPrefix($arrStockinOrderIds)
     {
         foreach ($arrStockinOrderIds as $intKey => $strStockinOrderId) {
-            $arrStockinOrderIds[$intKey] = intval(Order_Util::trimStockinOrderIdPrefix($strStockinOrderId));
+            $strStockinOrderId = Order_Util::trimStockinOrderIdPrefix($strStockinOrderId);
+            $strStockinOrderId = Order_Util::trimReserveOrderIdPrefix($strStockinOrderId);
+            $arrStockinOrderIds[$intKey] = intval($strStockinOrderId);
         }
         return $arrStockinOrderIds;
     }
@@ -708,5 +723,16 @@ class Service_Data_Stockin_StockinOrder
             }
         }
         return $arrKeyValue;
+    }
+
+    /*
+     * 更新一个或多个入库单为已打印
+     */
+    public function updateStockinOrderIsPrint($arrStockinOrderIds)
+    {
+        $arrConditions = $this->getPrintConditions($arrStockinOrderIds);
+        $updateData = ['stockin_order_is_print' => Order_Define_StockinOrder::STOCKIN_ORDER_IS_PRINT];
+        $this->objOrmStockin->updateDataByConditions($arrConditions, $updateData);
+        return true;
     }
 }
