@@ -7,19 +7,6 @@
 
 class Service_Data_Stockin_StockinOrder
 {
-    /*
-     * @var object stockin orm
-     */
-    protected $objOrmStockin;
-
-    /*
-     * init object
-     */
-    public function __construct()
-    {
-        $this->objOrmStockin = new Model_Orm_StockinOrder();
-    }
-
     /**
      * calculate stock in order sku info
      * @param int $intStockinOrderId
