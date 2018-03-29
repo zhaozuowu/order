@@ -56,7 +56,7 @@ class Order_Define_Format
             $arrFormatSkuItem['sku_id'] = empty($arrSkuItem['sku_id']) ? 0 : $arrSkuItem['sku_id'];
             $arrFormatSkuItem['cost_price_tax'] = empty($arrSkuItem['cost_price_tax']) ?
                 0 : $arrSkuItem['cost_price_tax'];
-            $arrFormatSkuItem['cost_price_untax'] = empty($arrSkuItem['cost_price']) ?
+            $arrFormatSkuItem['cost_price'] = empty($arrSkuItem['cost_price']) ?
                 0 : $arrSkuItem['cost_price'];
             $arrFormatSkuItem['order_amount'] = empty($arrSkuItem['order_amount']) ?
                 0 : $arrSkuItem['order_amount'];
