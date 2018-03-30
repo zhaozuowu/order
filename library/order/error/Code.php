@@ -385,6 +385,18 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_ORDER_STOCKOUT_SHELF_ERROR = 340024;
 
     /**
+     * 商品实际入库数与良品数和非良品数的和不匹配
+     * @var integer
+     */
+    const NWMS_STOCKIN_SKU_AMOUNT_DEFECTS_NOT_MATCH = 340025;
+
+    /**
+     * 商品列表为空
+     * @var integer
+     */
+    const NWMS_SKU_LIST_EMPTY = 340026;
+
+    /**
      * 查询返回结果为空
      * @var integer
      */

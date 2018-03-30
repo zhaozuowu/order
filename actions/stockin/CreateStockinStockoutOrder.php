@@ -14,7 +14,8 @@ class Action_CreateStockinStockoutOrder extends Order_Base_Action
     protected $arrInputParams = [
         'source_order_id' => 'regex|patern[/^SOO\d{13}$/]',
         'warehouse_id' => 'int|required',
-        //'stockin_order_type' => 'int|min[1]|max[3]',
+        // 2 - SOO - 销退入库类型
+        // 'stockin_order_type' => 'int|max[2]|min[2]',
         'stockin_order_remark' => 'strutf8',
         'sku_info_list' => [
             'validate' => 'json|required|decode',
@@ -25,8 +26,10 @@ class Action_CreateStockinStockoutOrder extends Order_Base_Action
                     'validate' => 'arr|required|decode',
                     'type' => 'array',
                     'params' => [
-                        'amount' => 'int|required',
+                        'amount' => 'int|required|min[0]',
                         'expire_date' => 'int|required',
+                        'sku_good_amount' => 'int|required|min[0]',
+                        'sku_defective_amount' => 'int|required|min[0]',
                     ]
                 ],
             ],
@@ -44,7 +47,7 @@ class Action_CreateStockinStockoutOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Stockin_CreateStockinOrder();
+        $this->objPage = new Service_Page_Stockin_CreateStockinStockoutOrder();
     }
 
     /**

@@ -59,6 +59,8 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_STOCKOUT_LONGITUDE_ERROR => '经度超出范围',
         Order_Error_Code::NWMS_ORDER_CUSTOMER_LOCATION_SOURCE_ERROR => '坐标来源标识错误',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR => '无人货架信息错误',
+        Order_Error_Code::NWMS_STOCKIN_SKU_AMOUNT_DEFECTS_NOT_MATCH => '商品实际入库数与良品数和非良品数的和不相等',
+        Order_Error_Code::NWMS_SKU_LIST_EMPTY => '商品列表为空',
         // 库存调整错误码 开始
         Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL => '库存调整-出库失败',
         Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR => '库存调整-sku效期类型不正确',

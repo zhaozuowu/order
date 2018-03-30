@@ -13,7 +13,7 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
      */
     protected $arrInputParams = [
         // 2 - SOO - 销退入库类型
-        'stockin_order_type' => 'int|2',
+        'stockin_order_type' => 'int|min[2]|max[2]',
         'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
         'warehouse_ids' => 'str|required',
         'source_supplier_id' => 'int|min[0]',
