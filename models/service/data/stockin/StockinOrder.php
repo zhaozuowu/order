@@ -778,8 +778,8 @@ class Service_Data_Stockin_StockinOrder
         foreach ($arrRequestSkuInfoList as $arrRequestSkuInfo) {
             $arrRequestSkuInfoMap[$arrRequestSkuInfo['sku_id']] = $arrRequestSkuInfo['sku_amount'];
         }
-        $arrSkuPriceList = $this->getSkuPrice($arrSkuIds, $intWarehouseId);
         $arrSkuInfoList = $this->getSkuInfoList($arrSkuIds);
+        $arrSkuPriceList = $this->getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList);
         $arrDbSkuInfoList = $this->assembleDbSkuList($arrSourceOrderSkuList, $arrRequestSkuInfoList, $arrSkuInfoList,
                     $arrSkuPriceList);
         list($intOrderReturnReason, $strOrderReturnReasonText) = $this->getOrderReturnReason($arrSourceOrderSkuList, $arrRequestSkuInfoList);
@@ -839,11 +839,13 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
-     * @param $arrSkuIds
-     * @param $intWarehouseId
+     * @param  array $arrSkuIds
+     * @param  int   $intWarehouseId
+     * @param  array $arrSkuInfoList
      * @return array
+     * @throws Nscm_Exception_Error
      */
-    private function getSkuPrice($arrSkuIds, $intWarehouseId)
+    private function getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList)
     {
         $arrRes = [];
         //先从仓库获取成本价
@@ -852,11 +854,39 @@ class Service_Data_Stockin_StockinOrder
         $arrSkuIdsNotInWarehouse = array_diff($arrSkuIds, $arrSkuIdsInWarehouse);
         //仓库中无此商品，则去彩云获取最新含有此sku有效报价的价格
         if (!empty($arrSkuIdsNotInWarehouse)) {
-            $this->getVendorSkuPrice($arrSkuIdsNotInWarehouse);
+            $arrSkuPriceInVendor = $this->getVendorSkuPrice($arrSkuIdsNotInWarehouse, $arrSkuInfoList);
+            $arrRes = array_merge($arrSkuPriceInWarehouse, $arrSkuPriceInVendor);
         }
         return $arrRes;
     }
 
+    /**
+     * get vendor sku price
+     * @param  array $arrSkuIds
+     * @param  array $arrSkuInfoList
+     * @return array
+     * @throws Nscm_Exception_Error
+     */
+    private function getVendorSkuPrice($arrSkuIds, $arrSkuInfoList)
+    {
+        $arrRes = [];
+        if (!empty($arrSkuIds)) {
+            $daoStock = new Dao_Ral_Vendor();
+            $arrRet = $daoStock->getSkuPrice($arrSkuIds);
+            $arrRes = [];
+            foreach ($arrRet as $row) {
+                $arrRes[$row['sku_id']] = [
+                    'sku_price' => Nscm_Service_Price::convertFenToDefault($row['quotation_sku_price']),
+                    'sku_price_tax' => Nscm_Service_Price::convertFenToDefault(
+                        Nscm_Service_Price::calculateUnitPrice(
+                            $row['quotation_sku_price'],
+                            Order_Define_Sku::SKU_TAX_NUM[$arrSkuInfoList[$row['sku_id']]['sku_tax_rate']]
+                    )),
+                ];
+            }
+        }
+        return $arrRes;
+    }
     /**
      * @param  array $arrSkuIds
      * @return array
