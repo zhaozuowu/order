@@ -730,16 +730,18 @@ class Service_Data_Stockin_StockinOrder
      * @
      */
     /**
+     * @param  integer $intStockInOrderId
      * @param  array   $arrSourceOrderSkuList
      * @param  array   $arrSourceOrderInfo
      * @param  array   $arrRequestSkuInfoList
      * @param  int     $intShipmentOrderId
      * @param  string  $strStockInOrderRemark
+     * @param integer $intStockInOrderReturnType
      * @return integer $intStockInOrderId
      * @throws Order_Error
      * @throws Exception
      */
-    public function createSysStockInOrder($arrSourceOrderSkuList, $arrSourceOrderInfo, $intShipmentOrderId,
+    public function createSysStockInOrder($intStockInOrderId, $arrSourceOrderSkuList, $arrSourceOrderInfo, $intShipmentOrderId,
                                           $arrRequestSkuInfoList, $strStockInOrderRemark, $intStockInOrderReturnType)
     {
         if (empty($intShipmentOrderId)) {
@@ -757,7 +759,6 @@ class Service_Data_Stockin_StockinOrder
         if (empty($arrRequestSkuInfoList)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
-        $intStockInOrderId = Order_Util_Util::generateStockinOrderCode();
         $intWarehouseId = $arrSourceOrderInfo['warehouse_id'];
         $arrSkuIds = array_column($arrRequestSkuInfoList, 'sku_id');
         foreach ($arrRequestSkuInfoList as $arrRequestSkuInfo) {
@@ -1016,5 +1017,26 @@ class Service_Data_Stockin_StockinOrder
         });
 
         return true;
+    }
+
+    /**
+     * @param  int $intStockOutOrderId
+     * @return int
+     */
+    public function getStockInOrderIdByStockOutId($intStockOutOrderId)
+    {
+        $objRedisRal = new Dao_Redis_StockInOrder();
+        return $objRedisRal->getValBySourceOrderId($intStockOutOrderId);
+    }
+
+    /**
+     * @param  int $intStockOutOrderId
+     * @param  int $intStockInOrderId
+     * @return void
+     */
+    public function setStockInOrderIdByStockOutId($intStockOutOrderId, $intStockInOrderId)
+    {
+        $objRedisRal = new Dao_Redis_StockInOrder();
+        $objRedisRal->setStockInOrderId($intStockOutOrderId, $intStockInOrderId);
     }
 }
