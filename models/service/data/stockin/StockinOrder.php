@@ -754,18 +754,14 @@ class Service_Data_Stockin_StockinOrder
      * @param  array   $arrRequestSkuInfoList
      * @param  int     $intShipmentOrderId
      * @param  string  $strStockInOrderRemark
-     * @param integer $intStockInOrderReturnType
      * @return integer $intStockInOrderId
      * @throws Order_Error
      * @throws Exception
      */
     public function createSysStockInOrder($intStockInOrderId, $arrSourceOrderSkuList, $arrSourceOrderInfo, $intShipmentOrderId,
-                                          $arrRequestSkuInfoList, $strStockInOrderRemark, $intStockInOrderReturnType)
+                                          $arrRequestSkuInfoList, $strStockInOrderRemark)
     {
         if (empty($intShipmentOrderId)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
-        }
-        if (empty($intStockInOrderReturnType)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         if (empty($arrSourceOrderSkuList)) {
@@ -786,6 +782,7 @@ class Service_Data_Stockin_StockinOrder
         $arrSkuInfoList = $this->getSkuInfoList($arrSkuIds);
         $arrDbSkuInfoList = $this->assembleDbSkuList($arrSourceOrderSkuList, $arrRequestSkuInfoList, $arrSkuInfoList,
                     $arrSkuPriceList);
+        list($intOrderReturnReason, $strOrderReturnReasonText) = $this->getOrderReturnReason($arrSourceOrderSkuList, $arrRequestSkuInfoList);
 
         $intStockinOrderPlanAmount = $this->calculateTotalSkuPlanAmount($arrDbSkuInfoList);
         $intStockinOrderTotalPrice = $this->calculateTotalPrice($arrDbSkuInfoList);
@@ -808,15 +805,16 @@ class Service_Data_Stockin_StockinOrder
         $intStockInOrderType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_SYS;
         $strStockInOrderRemark = strval($strStockInOrderRemark);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockInOrderId, $intStockInOrderType,
-            $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intStockInOrderReturnType,
+            $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intOrderReturnReason,
             $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId, $strCustomerName, $strCustomerId,
-            $intStockinOrderPlanAmount, $intStockInOrderCreatorId, $strStockInOrderCreatorName,
+            $intStockinOrderPlanAmount, $intStockInOrderCreatorId, $strStockInOrderCreatorName, $strOrderReturnReasonText,
             $strStockInOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
             Model_Orm_StockinOrder::createStayStockInOrder(
                 $intStockInOrderId,
                 $intStockInOrderType,
                 $intSourceOrderId,
-                $intStockInOrderReturnType,
+                $intOrderReturnReason,
+                $strOrderReturnReasonText,
                 $strSourceInfo,
                 $intStockinOrderStatus,
                 $intCityId,
@@ -901,7 +899,6 @@ class Service_Data_Stockin_StockinOrder
             $arrDbSku['stockin_order_sku_total_price'] = $arrRequestSkuInfoList[$intSkuId] * $arrSkuPriceInfo['sku_price'];
             $arrDbSku['stockin_order_sku_total_price_tax'] = $arrRequestSkuInfoList[$intSkuId] * $arrSkuPriceInfo['sku_price_tax'];
             if (isset($arrSourceOrderSkuMap[$intSkuId])) {
-                $arrDbSku['stockout_order_sku_amount'] = $arrSourceOrderSkuMap[$intSkuId];
                 if ($arrSourceOrderSkuMap[$intSkuId] > $arrRequestSkuInfoList[$intSkuId]) { //部分拒收
                     $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_PART_REJECT;
                 } else { //全部拒收
@@ -1056,5 +1053,50 @@ class Service_Data_Stockin_StockinOrder
     {
         $objRedisRal = new Dao_Redis_StockInOrder();
         $objRedisRal->setStockInOrderId($intStockOutOrderId, $intStockInOrderId);
+    }
+
+    private function getOrderReturnReason($arrSourceOrderSkuList, $arrRequestSkuInfoList)
+    {
+        $arrSourceOrderSkuMap = [];
+        foreach ($arrSourceOrderSkuList as $arrSourceOrderSku) {
+            $arrSourceOrderSkuMap[$arrSourceOrderSku['sku_id']] = $arrSourceOrderSku['order_amount'];
+        }
+        $arrOrderRejectedReason = [];
+        $arrOrderReturnReason = [];
+        $arrOrderReturnReasonText = [];
+        $boolIsOffShelf = false;
+        foreach ($arrRequestSkuInfoList as $intSkuId => $intSkuAmount) {
+            if (isset($arrSourceOrderSkuMap[$intSkuId])) {
+                if ($arrSourceOrderSkuMap[$intSkuId] > $arrRequestSkuInfoList[$intSkuId]) { //部分拒收
+                    $arrOrderRejectedReason[Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_PART_REJECT] = 0;
+                } else { //全部拒收
+                    $arrOrderRejectedReason[Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_ALL_REJECT] = 0;
+                }
+            } else {
+                $boolIsOffShelf = true;
+            }
+        }
+        if (!empty($arrOrderRejectedReason)) {
+            if (1 == count($arrOrderRejectedReason)
+                && key_exists(Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_ALL_REJECT, $arrOrderRejectedReason)) {
+                $intReturnReason = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_ALL_REJECT;
+            } else {
+                $intReturnReason = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_PART_REJECT;
+            }
+            $arrOrderReturnReason[] = $intReturnReason;
+            $arrOrderReturnReasonText[] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_MAP[$intReturnReason];
+        }
+        if ($boolIsOffShelf) {
+            $intReturnReason = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_OFF_SHELF;
+            $arrOrderReturnReason[] = $intReturnReason;
+            $arrOrderReturnReasonText[] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_MAP[$intReturnReason];
+        }
+        $intOrderReturnReason = array_sum($arrOrderReturnReason);
+        $strOrderReturnReasonText = implode(',', $arrOrderReturnReasonText);
+
+        return [
+            'stockin_order_reason' => $intOrderReturnReason,
+            'stockin_order_reason_text' => $strOrderReturnReasonText,
+        ];
     }
 }

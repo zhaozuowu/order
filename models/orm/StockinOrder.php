@@ -123,7 +123,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param int    $intStockInOrderId 入库单id
      * @param int    $intStockInOrderType 入库单类型
      * @param int    $intSourceOrderId 出库单id
-     * @param int    $intStockInOrderReturnType 销退入库原因
+     * @param int    $intOrderReturnReason 销退入库原因
+     * @param string $strOrderReturnReasonText 销退入库原因
      * @param string $strSourceInfo 来源订单json字符串
      * @param int    $intStockinOrderStatus 入库单状态
      * @param int    $intCityId 城市id
@@ -145,7 +146,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intStockInOrderId,
         $intStockInOrderType,
         $intSourceOrderId,
-        $intStockInOrderReturnType,
+        $intOrderReturnReason,
+        $strOrderReturnReasonText,
         $strSourceInfo,
         $intStockinOrderStatus,
         $intCityId,
@@ -167,7 +169,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_id' => intval($intStockInOrderId),
             'stockin_order_type' => intval($intStockInOrderType),
             'source_order_id' => intval($intSourceOrderId),
-            'stockin_order_reason' => intval($intStockInOrderReturnType),
+            'stockin_order_reason' => intval($intOrderReturnReason),
+            'stockin_order_reason_text' => strval($strOrderReturnReasonText),
             'shipment_order_id' => intval($intShipmentOrderId),
             'source_info' => strval($strSourceInfo),
             'stockin_order_status' => intval($intStockinOrderStatus),
