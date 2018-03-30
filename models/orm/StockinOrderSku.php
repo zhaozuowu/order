@@ -137,6 +137,10 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
         return $arrResult;
     }
 
+    /**
+     * 确认销退入库单sku修改信息
+     * @param  array $arrDbSkuInfoList
+     */
     public static function confirmStockInOrderSkuList($arrDbSkuInfoList)
     {
         foreach ($arrDbSkuInfoList as $arrDbSkuInfo) {
