@@ -274,6 +274,8 @@ class Order_Statistics_Column
                 ],
                 'stockin_order_real_amount' => 'amount',
                 'expire_date',
+                'sku_good_amount',
+                'sku_defective_amount',
             ],
         ],
     ];
@@ -324,6 +326,7 @@ class Order_Statistics_Column
             'customer_id',
             'customer_contactor',
             'customer_contact',
+            'stockout_order_remark',
 
         ],
         'slave' => [
