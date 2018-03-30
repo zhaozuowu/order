@@ -120,24 +120,24 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     }
 
     /**
-     * @param int    $intStockInOrderId 入库单id
-     * @param int    $intStockInOrderType 入库单类型
-     * @param int    $intSourceOrderId 出库单id
-     * @param int    $intOrderReturnReason 销退入库原因
+     * @param int $intStockInOrderId 入库单id
+     * @param int $intStockInOrderType 入库单类型
+     * @param int $intSourceOrderId 出库单id
+     * @param int $intOrderReturnReason 销退入库原因
      * @param string $strOrderReturnReasonText 销退入库原因
      * @param string $strSourceInfo 来源订单json字符串
-     * @param int    $intStockinOrderStatus 入库单状态
-     * @param int    $intCityId 城市id
+     * @param int $intStockinOrderStatus 入库单状态
+     * @param int $intCityId 城市id
      * @param string $strCityName 城市名称
-     * @param int    $intWarehouseId 入库仓库id
+     * @param int $intWarehouseId 入库仓库id
      * @param string $strWarehouseName 入库仓库名称
-     * @param int    $intStockinOrderPlanAmount 计划入库数量
-     * @param int    $intStockInOrderCreatorId 操作人员id
+     * @param int $intStockinOrderPlanAmount 计划入库数量
+     * @param int $intStockInOrderCreatorId 操作人员id
      * @param string $strStockInOrderCreatorName 操作人员名称
      * @param string $strStockInOrderRemark 备注
-     * @param int    $intStockinOrderTotalPrice 入库单未税总价格
-     * @param int    $intStockinOrderTotalPriceTax 入库单含税总价
-     * @param int    $intShipmentOrderId 运单号
+     * @param int $intStockinOrderTotalPrice 入库单未税总价格
+     * @param int $intStockinOrderTotalPriceTax 入库单含税总价
+     * @param int $intShipmentOrderId 运单号
      * @param string $strCustomerId 客户id
      * @param string $strCustomerName 客户名称
      * @return int
@@ -192,9 +192,10 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
     /**
      * 获取入库单列表（分页）
-     *
      * @param $arrStockinOrderType
      * @param $intStockinOrderId
+     * @param $intStockinOrderSourceType
+     * @param $intStockinOrderStatus
      * @param $arrWarehouseId
      * @param $intSourceSupplierId
      * @param $arrSourceOrderIdInfo
@@ -208,6 +209,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     public static function getStockinOrderList(
         $arrStockinOrderType,
         $intStockinOrderId,
+        $intStockinOrderSourceType,
+        $intStockinOrderStatus,
         $arrWarehouseId,
         $intSourceSupplierId,
         $arrSourceOrderIdInfo,
@@ -233,6 +236,14 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             $arrCondition['stockin_order_type'] = [
                 'in',
                 $arrStockinOrderType];
+        }
+
+        if (!empty($intStockinOrderSourceType)) {
+            $arrCondition['stockin_order_source'] = $intStockinOrderSourceType;
+        }
+
+        if (!empty($intStockinOrderStatus)) {
+            $arrCondition['stockin_order_status'] = $intStockinOrderStatus;
         }
 
         if (!empty($arrWarehouseId)) {

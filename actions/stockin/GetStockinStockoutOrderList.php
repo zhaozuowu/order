@@ -15,6 +15,8 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
         // 2 - SOO - 销退入库类型
         'stockin_order_type' => 'int|min[2]|max[2]',
         'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
+        'stockin_order_source_type' => 'int|min[0]|max[3]',
+        'stockin_order_status' => 'int|min[0]|max[30]',
         'warehouse_ids' => 'str|required',
         'source_supplier_id' => 'int|min[0]',
         'source_order_id' => 'regex|patern[/^(SOO\d{13})?$/]',

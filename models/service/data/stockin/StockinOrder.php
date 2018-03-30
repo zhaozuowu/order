@@ -484,6 +484,8 @@ class Service_Data_Stockin_StockinOrder
      * 获取入库单列表（分页）
      * @param $strStockinOrderType
      * @param $strStockinOrderId,
+     * @param $intStockinOrderSourceType
+     * @param $intStockinOrderStatus
      * @param $strWarehouseId
      * @param $intSourceSupplierId
      * @param $strSourceOrderId
@@ -499,6 +501,8 @@ class Service_Data_Stockin_StockinOrder
     public function getStockinOrderList(
         $strStockinOrderType,
         $strStockinOrderId,
+        $intStockinOrderSourceType,
+        $intStockinOrderStatus,
         $strWarehouseId,
         $intSourceSupplierId,
         $strSourceOrderId,
@@ -518,6 +522,19 @@ class Service_Data_Stockin_StockinOrder
         if(empty($strWarehouseId)){
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
+
+        // 如果填写则校验参数类型
+        if (!empty($intStockinOrderSourceType)
+            && !isset(Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_DEFINE[$intStockinOrderSourceType])) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+
+        // 如果填写则校验参数类型
+        if (!empty($intStockinOrderStatus)
+            && !isset(Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_DEFINE[$intStockinOrderStatus])) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+
         $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
 
         // 拆解出关联入库单号,较复杂的订单号ID场景处理，根据入库单类型进行，如果类型和查询入库单类型不匹配抛出参数异常
@@ -557,6 +574,8 @@ class Service_Data_Stockin_StockinOrder
         return Model_Orm_StockinOrder::getStockinOrderList(
             $arrStockinOrderType,
             $intStockinOrderId,
+            $intStockinOrderSourceType,
+            $intStockinOrderStatus,
             $arrWarehouseId,
             $intSourceSupplierId,
             $arrSourceOrderIdInfo,

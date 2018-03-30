@@ -141,6 +141,15 @@ class Order_Define_StockinOrder
     const STOCKIN_ORDER_STATUS_FINISHED         = 30;   // 已完成
 
     /**
+     * 入库单状态类型定义
+     */
+    const STOCKIN_ORDER_STATUS_DEFINE = [
+        self::STOCKIN_ORDER_STATUS_WAIT         => true,
+        self::STOCKIN_ORDER_STATUS_DESTROYED    => true,
+        self::STOCKIN_ORDER_STATUS_FINISHED     => true,
+    ];
+
+    /**
      * 入库单状态文本映射表
      */
     const STOCKIN_ORDER_STATUS_MAP = [
@@ -149,4 +158,28 @@ class Order_Define_StockinOrder
         self::STOCKIN_ORDER_STATUS_FINISHED     => '已完成',
     ];
 
+    /**
+     * 入库单来源
+     */
+    const STOCKIN_ORDER_SOURCE_SHELF    = 1;    // 无人货架
+    const STOCKIN_ORDER_SOURCE_PRE_CANG = 2;    // 前置仓
+    const STOCKIN_ORDER_SOURCE_SHOP     = 3;    // 便利店
+
+    /**
+     * 入库单来源类型定义
+     */
+    const STOCKIN_ORDER_SOURCE_DEFINE = [
+        self::STOCKIN_ORDER_SOURCE_SHELF    => true,
+        self::STOCKIN_ORDER_SOURCE_PRE_CANG => true,
+        self::STOCKIN_ORDER_SOURCE_SHOP     => true,
+    ];
+
+    /**
+     * 入库单来源类型文本映射表
+     */
+    const STOCKIN_ORDER_SOURCE_MAP = [
+        self::STOCKIN_ORDER_SOURCE_SHELF    => '无人货架',
+        self::STOCKIN_ORDER_SOURCE_PRE_CANG => '前置仓',
+        self::STOCKIN_ORDER_SOURCE_SHOP     => '便利店',
+    ];
 }
