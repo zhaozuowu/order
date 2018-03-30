@@ -703,7 +703,9 @@ class Service_Data_Stockin_StockinOrder
     private function batchTrimStockinOrderIdPrefix($arrStockinOrderIds)
     {
         foreach ($arrStockinOrderIds as $intKey => $strStockinOrderId) {
-            $arrStockinOrderIds[$intKey] = intval(Order_Util::trimStockinOrderIdPrefix($strStockinOrderId));
+            $strStockinOrderId = Order_Util::trimStockinOrderIdPrefix($strStockinOrderId);
+            $strStockinOrderId = Order_Util::trimReserveOrderIdPrefix($strStockinOrderId);
+            $arrStockinOrderIds[$intKey] = intval($strStockinOrderId);
         }
         return $arrStockinOrderIds;
     }
@@ -726,5 +728,27 @@ class Service_Data_Stockin_StockinOrder
             }
         }
         return $arrKeyValue;
+    }
+
+    /*
+     * @desc 更新一个或多个入库单为已打印
+     * @name updateStockinOrderIsPrint
+     * @param array $arrStockinOrderIds
+     * @return bool
+     */
+    public function updateStockinOrderIsPrint($arrStockinOrderIds)
+    {
+        $arrStockinOrderIds = $this->batchTrimStockinOrderIdPrefix($arrStockinOrderIds);
+        Model_Orm_StockinOrder::getConnection()->transaction(function() use($arrStockinOrderIds) {
+            foreach ($arrStockinOrderIds as $intOrderId) {
+                $objStockin = Model_Orm_StockinOrder::findOne(['stockin_order_id' => $intOrderId]);
+                if (!empty($objStockin)) {
+                    $objStockin->stockin_order_is_print = Order_Define_StockinOrder::STOCKIN_ORDER_IS_PRINT;
+                    $objStockin->update();
+                }
+            }
+        });
+
+        return true;
     }
 }
