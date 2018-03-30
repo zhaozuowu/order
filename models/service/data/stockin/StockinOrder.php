@@ -778,8 +778,8 @@ class Service_Data_Stockin_StockinOrder
         foreach ($arrRequestSkuInfoList as $arrRequestSkuInfo) {
             $arrRequestSkuInfoMap[$arrRequestSkuInfo['sku_id']] = $arrRequestSkuInfo['sku_amount'];
         }
-        $arrSkuPriceList = $this->getSkuPrice($arrSkuIds, $intWarehouseId);
         $arrSkuInfoList = $this->getSkuInfoList($arrSkuIds);
+        $arrSkuPriceList = $this->getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList);
         $arrDbSkuInfoList = $this->assembleDbSkuList($arrSourceOrderSkuList, $arrRequestSkuInfoList, $arrSkuInfoList,
                     $arrSkuPriceList);
         list($intOrderReturnReason, $strOrderReturnReasonText) = $this->getOrderReturnReason($arrSourceOrderSkuList, $arrRequestSkuInfoList);
@@ -832,15 +832,20 @@ class Service_Data_Stockin_StockinOrder
                 $strCustomerName);
             Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockInOrderId);
         });
+        $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
+        $intType = Order_Statistics_Type::ACTION_CREATE;
+        Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
         return $intStockInOrderId;
     }
 
     /**
-     * @param $arrSkuIds
-     * @param $intWarehouseId
+     * @param  array $arrSkuIds
+     * @param  int   $intWarehouseId
+     * @param  array $arrSkuInfoList
      * @return array
+     * @throws Nscm_Exception_Error
      */
-    private function getSkuPrice($arrSkuIds, $intWarehouseId)
+    private function getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList)
     {
         $arrRes = [];
         //先从仓库获取成本价
@@ -849,11 +854,39 @@ class Service_Data_Stockin_StockinOrder
         $arrSkuIdsNotInWarehouse = array_diff($arrSkuIds, $arrSkuIdsInWarehouse);
         //仓库中无此商品，则去彩云获取最新含有此sku有效报价的价格
         if (!empty($arrSkuIdsNotInWarehouse)) {
-
+            $arrSkuPriceInVendor = $this->getVendorSkuPrice($arrSkuIdsNotInWarehouse, $arrSkuInfoList);
+            $arrRes = array_merge($arrSkuPriceInWarehouse, $arrSkuPriceInVendor);
         }
         return $arrRes;
     }
 
+    /**
+     * get vendor sku price
+     * @param  array $arrSkuIds
+     * @param  array $arrSkuInfoList
+     * @return array
+     * @throws Nscm_Exception_Error
+     */
+    private function getVendorSkuPrice($arrSkuIds, $arrSkuInfoList)
+    {
+        $arrRes = [];
+        if (!empty($arrSkuIds)) {
+            $daoStock = new Dao_Ral_Vendor();
+            $arrRet = $daoStock->getSkuPrice($arrSkuIds);
+            $arrRes = [];
+            foreach ($arrRet as $row) {
+                $arrRes[$row['sku_id']] = [
+                    'sku_price' => Nscm_Service_Price::convertFenToDefault($row['quotation_sku_price']),
+                    'sku_price_tax' => Nscm_Service_Price::convertFenToDefault(
+                        Nscm_Service_Price::calculateUnitPrice(
+                            $row['quotation_sku_price'],
+                            Order_Define_Sku::SKU_TAX_NUM[$arrSkuInfoList[$row['sku_id']]['sku_tax_rate']]
+                    )),
+                ];
+            }
+        }
+        return $arrRes;
+    }
     /**
      * @param  array $arrSkuIds
      * @return array
@@ -900,12 +933,12 @@ class Service_Data_Stockin_StockinOrder
             $arrDbSku['stockin_order_sku_total_price_tax'] = $arrRequestSkuInfoList[$intSkuId] * $arrSkuPriceInfo['sku_price_tax'];
             if (isset($arrSourceOrderSkuMap[$intSkuId])) {
                 if ($arrSourceOrderSkuMap[$intSkuId] > $arrRequestSkuInfoList[$intSkuId]) { //部分拒收
-                    $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_PART_REJECT;
+                    $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT;
                 } else { //全部拒收
-                    $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_ALL_REJECT;
+                    $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REJECT_ALL;
                 }
             } else { //汰换 = 下架
-                $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_OFF_SHELF;
+                $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_CHANGE;
             }
             $arrDbSkuList[] = $arrDbSku;
         }
@@ -960,6 +993,9 @@ class Service_Data_Stockin_StockinOrder
                 Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount);
                 Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
             });
+            $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
+            $intType = Order_Statistics_Type::ACTION_UPDATE;
+            Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
         }
     }
 
@@ -1068,9 +1104,9 @@ class Service_Data_Stockin_StockinOrder
         foreach ($arrRequestSkuInfoList as $intSkuId => $intSkuAmount) {
             if (isset($arrSourceOrderSkuMap[$intSkuId])) {
                 if ($arrSourceOrderSkuMap[$intSkuId] > $arrRequestSkuInfoList[$intSkuId]) { //部分拒收
-                    $arrOrderRejectedReason[Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_PART_REJECT] = 0;
+                    $arrOrderRejectedReason[Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT] = 0;
                 } else { //全部拒收
-                    $arrOrderRejectedReason[Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_ALL_REJECT] = 0;
+                    $arrOrderRejectedReason[Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REJECT_ALL] = 0;
                 }
             } else {
                 $boolIsOffShelf = true;
@@ -1078,18 +1114,18 @@ class Service_Data_Stockin_StockinOrder
         }
         if (!empty($arrOrderRejectedReason)) {
             if (1 == count($arrOrderRejectedReason)
-                && key_exists(Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_ALL_REJECT, $arrOrderRejectedReason)) {
-                $intReturnReason = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_ALL_REJECT;
+                && key_exists(Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REJECT_ALL, $arrOrderRejectedReason)) {
+                $intReturnReason = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REJECT_ALL;
             } else {
-                $intReturnReason = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_PART_REJECT;
+                $intReturnReason = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT;
             }
             $arrOrderReturnReason[] = $intReturnReason;
-            $arrOrderReturnReasonText[] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_MAP[$intReturnReason];
+            $arrOrderReturnReasonText[] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_MAP[$intReturnReason];
         }
         if ($boolIsOffShelf) {
-            $intReturnReason = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_OFF_SHELF;
+            $intReturnReason = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_CHANGE;
             $arrOrderReturnReason[] = $intReturnReason;
-            $arrOrderReturnReasonText[] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_MAP[$intReturnReason];
+            $arrOrderReturnReasonText[] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_MAP[$intReturnReason];
         }
         $intOrderReturnReason = array_sum($arrOrderReturnReason);
         $strOrderReturnReasonText = implode(',', $arrOrderReturnReasonText);
