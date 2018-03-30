@@ -21,7 +21,6 @@ class Action_CreateStockInOrderApi extends Order_Base_ApiAction
         'stockout_order_id' => 'int|required',
         'shipment_order_id' => 'int|required',
         'stockin_order_remark' => 'strutf8',
-        'stockin_order_return_type' => 'int|required',
         'sku_info_list' => [
             'validate' => 'json|required|decode',
             'type' => 'array',
