@@ -106,6 +106,10 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
                     : strval($arrListItem['stockin_time_text']);
             $arrRoundResult['stockin_batch_id'] = empty($arrListItem['stockin_batch_id']) ? 0
                 : intval($arrListItem['stockin_batch_id']);
+            $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? 0
+                : intval($arrListItem['stockin_order_status']);
+            $arrRoundResult['stockin_order_status_text'] = empty($arrListItem['stockin_order_status_text']) ? ''
+                : strval($arrListItem['stockin_order_status_text']);
             $arrRoundResult['client_name'] = empty($arrListItem['client_name']) ? ''
                 : strval($arrListItem['client_name']);
             $arrRoundResult['client_id'] = empty($arrListItem['client_id']) ? 0
@@ -167,7 +171,10 @@ class Action_GetStockoutStockinDetailForm extends Order_Base_Action
                 Nscm_Service_Price::convertDefaultToYuan($arrListItem['stockin_order_sku_total_price']);
             $arrRoundResult['stockin_order_sku_total_price_tax_yuan'] =
                 Nscm_Service_Price::convertDefaultToYuan($arrListItem['stockin_order_sku_total_price_tax']);
-
+            $arrRoundResult['sku_good_amount'] = empty($arrListItem['sku_good_amount']) ? 0
+                : intval($arrListItem['sku_good_amount']);
+            $arrRoundResult['sku_defective_amount'] = empty($arrListItem['sku_defective_amount']) ? 0
+                : intval($arrListItem['sku_defective_amount']);
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult['list'][] = $arrRoundResult;
         }

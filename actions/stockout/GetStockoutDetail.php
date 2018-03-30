@@ -97,6 +97,7 @@ class Action_GetStockoutDetail extends Order_Base_Action
             $arrFormatRetItem['total_send_untaxed_price'] =  empty($arrRetItem['send_total_price']) ? 0 :sprintf('%0.2f',Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_total_price']));
             $arrFormatRetItem['total_send_taxed_price'] =  empty($arrRetItem['send_total_price_tax']) ? 0 :sprintf('%0.2f',Nscm_Service_Price::convertDefaultToYuan($arrRetItem['send_total_price_tax']));
             $arrFormatRetItem['delivery_order_id'] =  empty($arrRetItem['logistics_order_id']) ? 0 :$arrRetItem['logistics_order_id'];
+            $arrFormatRetItem['stockout_order_remark'] =  empty($arrRetItem['stockout_order_remark']) ? '' :$arrRetItem['stockout_order_remark'];
             $arrFormatRet['list'][] = $arrFormatRetItem;
 
         }
