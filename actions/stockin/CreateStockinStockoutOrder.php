@@ -47,7 +47,7 @@ class Action_CreateStockinStockoutOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Stockin_CreateStockinStockoutOrder();
+        $this->objPage = new Service_Page_Stockin_CreateStockinOrder();
     }
 
     /**
