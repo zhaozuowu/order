@@ -85,6 +85,26 @@ class Order_Define_StockinOrder
         self::STOCKIN_ORDER_TYPE_STOCKOUT => '销退入库'
     ];
 
+    /**
+     * 销退入库原因定义
+     */
+    const STOCKIN_STOCKOUT_REASON_REJECT_ALL        = 1;    // 整单拒收
+    const STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT    = 2;    // 部分拒收
+    const STOCKIN_STOCKOUT_REASON_CHANGE            = 4;    // 汰换
+    const STOCKIN_STOCKOUT_REASON_REMOVE_SITE       = 8;    // 撤点
+    const STOCKIN_STOCKOUT_REASON_RETURNED          = 16;   // 退货
+
+    /**
+     * 销退入库原因映射表
+     */
+    const STOCKIN_STOCKOUT_REASON_MAP = [
+        self::STOCKIN_STOCKOUT_REASON_REJECT_ALL        => '整单拒收',
+        self::STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT    => '部分拒收',
+        self::STOCKIN_STOCKOUT_REASON_CHANGE            => '汰换',
+        self::STOCKIN_STOCKOUT_REASON_REMOVE_SITE       => '撤点',
+        self::STOCKIN_STOCKOUT_REASON_RETURNED          => '退货',
+    ];
+
     //入库单打印状态，未打印
     const STOCKIN_ORDER_NOT_PRINT = 1;
     //入库单打印状态，已打印

@@ -13,7 +13,6 @@ class Service_Data_Stockin_StockinOrder
      * @param array $sourceOrderSkuInfo
      * @param array $arrSkuInfo
      * @throws Order_BusinessError
-     * @throws Order_Error
      * @return array
      */
     private function formatStockinOrderSkuInfo($intStockinOrderId, $sourceOrderSkuInfo, $arrSkuInfo, $intOrderType = 1)
@@ -28,15 +27,34 @@ class Service_Data_Stockin_StockinOrder
         $arrDbStockinOrderSkuExtraInfo = [];
         // amount
         $intTotalAmount = 0;
+        $intSkuGoodAmount = 0;
+        $intSkuDefectiveAmount = 0;
         $i = 0;
         foreach ($arrSkuInfo['real_stockin_info'] as $arrRealStockinInfo) {
             if (0 == $arrRealStockinInfo['amount'] && count($arrSkuInfo['real_stockin_info']) > 1) {
                 Order_BusinessError::throwException(Order_Error_Code::SKU_AMOUNT_CANNOT_EMPTY);
             }
+            $intSkuAmount = intval($arrRealStockinInfo['amount']);
+            if(Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT == $intOrderType){
+                // 销退入库校验良品状态
+                $intSkuGoodAmount = intval($arrRealStockinInfo['sku_good_amount']);
+                $intSkuDefectiveAmount = intval($arrRealStockinInfo['sku_defective_amount']);
+            } else {
+                // 预约入库则认为全为良品
+                $intSkuGoodAmount = $intSkuAmount;
+                $intSkuDefectiveAmount = 0;
+            }
             $arrDbStockinOrderSkuExtraInfo[] = [
-                'amount' => $arrRealStockinInfo['amount'],
+                'amount' => $intSkuAmount,
                 'expire_date' => $arrRealStockinInfo['expire_date'],
+                'sku_good_amount' => $intSkuGoodAmount,
+                'sku_defective_amount' => $intSkuDefectiveAmount,
             ];
+
+            if($intSkuAmount != ($intSkuGoodAmount + $intSkuDefectiveAmount)){
+                // 校验良品非良品合法性
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKIN_SKU_AMOUNT_DEFECTS_NOT_MATCH);
+            }
             $i++;
             $intTotalAmount += intval($arrRealStockinInfo['amount']);
             if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intOrderType
