@@ -45,7 +45,7 @@ class Service_Page_StockIn_CreateSysStockInOrder
                 Order_BusinessError::throwException(Order_Error_Code::INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN);
             }
             if (Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS != $arrSourceOrderInfo['stockout_order_status']) {
-                Order_BusinessError::throwException(Order_Error_Code::INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN);
+                Order_BusinessError::throwException(Order_Error_Code::NOT_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN);
             }
             $this->objDataStockIn->createSysStockInOrder($intStockInOrderId, $arrSourceOrderSkuList, $arrSourceOrderInfo,
                 $arrInput['shipment_order_id'], $arrInput['sku_info_list'], $arrInput['stockin_order_remark']);
