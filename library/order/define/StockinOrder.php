@@ -85,6 +85,20 @@ class Order_Define_StockinOrder
         self::STOCKIN_ORDER_TYPE_STOCKOUT => '销退入库'
     ];
 
+    //入库单打印状态，未打印
+    const STOCKIN_ORDER_NOT_PRINT = 1;
+    //入库单打印状态，已打印
+    const STOCKIN_ORDER_IS_PRINT = 2;
+
+    /**
+     * 入库单打印状态列表
+     * @var array
+     */
+    const STOCKIN_PRINT_STATUS = [
+        self::STOCKIN_ORDER_NOT_PRINT => '未打印',
+        self::STOCKIN_ORDER_IS_PRINT => '已打印',
+    ];
+
     /**
      * 销退入库SKU原因
      * 全部拒收

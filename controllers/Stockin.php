@@ -16,5 +16,6 @@ class Controller_Stockin extends Ap_Controller_Abstract {
         'getstockinorderprintlist' => 'actions/stockin/GetStockinOrderPrintList.php', #入库单打印#
         'getstockinstockoutorderprintlist' => 'actions/stockin/GetStockinStockoutOrderPrintList.php', #销退入库单打印#
         'confirmstockinorder' => 'actions/stockin/ConfirmStockinOrder.php', #销退入库单打印#
+        'updatestockinorderisprint' => 'actions/stockin/UpdateStockinOrderIsPrint.php', #更新入库单为已打印#
     );
 }
