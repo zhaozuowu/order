@@ -31,7 +31,7 @@ class Service_Page_StockIn_CreateSysStockInOrder
      */
     public function execute($arrInput)
     {
-        $intSourceOrderId = intval($arrInput['source_order_id']);
+        $intSourceOrderId = intval($arrInput['stockout_order_id']);
         $intStockInOrderId = $this->objDataStockIn->getStockInOrderIdByStockOutId($intSourceOrderId);
         if (empty($intStockInOrderId)) {
             $arrRet = $this->objDataStockOut->getOrderAndSkuListByStockoutOrderId($intSourceOrderId);
