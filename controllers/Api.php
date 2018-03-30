@@ -13,5 +13,6 @@ class Controller_Api extends Ap_Controller_Abstract {
         'getstockinstockoutorderinfoapi' => 'actions/api/GetStockinStockoutOrderInfoApi.php', #查询销退入库单（包括商品列表）详情API#@skipped#
         'getstockoutbyidsapi' => 'actions/api/GetStockoutByIdsApi.php', #查询出库单API#
         'getbusinessformorderbyids' => 'actions/api/GetBusinessFormOrderByIds.php', #查询业态订单API#
+        'createstockinorderapi' => 'actions/api/CreateStockInOrderApi.php', #创建自动销退入库单#@skipped#
     );
 }

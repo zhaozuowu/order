@@ -18,6 +18,11 @@ class Order_Define_StockinOrder
      * @var int
      */
     const STOCKIN_ORDER_TYPE_STOCKOUT = 2;
+    /**
+     * type stock out
+     * @var int
+     */
+    const STOCKIN_ORDER_TYPE_SYS = 3;
 
     /**
      * type return
@@ -48,6 +53,17 @@ class Order_Define_StockinOrder
     const STOCKIN_ORDER_STATUS_FINISH = 30;
 
     /**
+     * waiting stock in
+     * @var int
+     */
+    const STOCKIN_ORDER_STATUS_WAITING = 10;
+    /**
+     * waiting stock in
+     * @var int
+     */
+    const STOCKIN_ORDER_STATUS_CANCEL = 20;
+
+    /**
      * stock in sku exp date max
      */
     const STOCKIN_SKU_EXP_DATE_MAX = 2;
@@ -58,6 +74,8 @@ class Order_Define_StockinOrder
      */
     const STOCKIN_STATUS_MAP = [
         self::STOCKIN_ORDER_STATUS_FINISH => '已完成',
+        self::STOCKIN_ORDER_STATUS_CANCEL => '已作废',
+        self::STOCKIN_ORDER_STATUS_WAITING => '待入库',
     ];
 
     /**
@@ -66,7 +84,8 @@ class Order_Define_StockinOrder
      */
     const  STOCKIN_ORDER_TYPE_MAP = [
         self::STOCKIN_ORDER_TYPE_RESERVE => '采购入库',
-        self::STOCKIN_ORDER_TYPE_STOCKOUT => '销退入库'
+        self::STOCKIN_ORDER_TYPE_STOCKOUT => '销退入库',
+        self::STOCKIN_ORDER_TYPE_SYS => '系统销退入库',
     ];
 
     /**

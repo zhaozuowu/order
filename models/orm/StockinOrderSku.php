@@ -137,7 +137,6 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
         return $arrResult;
     }
 
-
     /**
      * 获取入库单商品列表（不分页）
      * @param $intStockinOrderId
@@ -157,7 +156,7 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
         // 只查询未软删除的
         $arrCondition = [
             'stockin_order_id' => $intStockinOrderId,
-            'is_delete'  => Order_Define_Const::NOT_DELETE,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
 
         // 排序条件
@@ -176,5 +175,20 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
         $arrResult['total'] = $arrRowsAndTotal['total'];
         $arrResult['list'] = $arrRowsAndTotal['rows'];
         return $arrResult;
+    }
+
+    public static function confirmStockInOrderSkuList($arrDbSkuInfoList)
+    {
+        foreach ($arrDbSkuInfoList as $arrDbSkuInfo) {
+            $arrCondition = [
+                'stockin_order_id' => $arrDbSkuInfo['stockin_order_id'],
+                'sku_id' => $arrDbSkuInfo['sku_id'],
+            ];
+            $arrUpdateInfo = [
+                'stockin_order_sku_real_amount' => $arrDbSkuInfo['stockin_order_sku_real_amount'],
+                'stockin_order_real_amount' => $arrDbSkuInfo['stockin_order_sku_extra_info'],
+            ];
+            self::findOne($arrCondition)->update($arrUpdateInfo);
+        }
     }
 }
