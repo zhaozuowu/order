@@ -79,6 +79,17 @@ class Order_Define_StockinOrder
     const STOCKIN_STOCKOUT_REASON_RETURNED          = 16;   // 退货
 
     /**
+     * 销退入库原因类型定义
+     */
+    const STOCKIN_STOCKOUT_REASON_DEFINE = [
+        self::STOCKIN_STOCKOUT_REASON_REJECT_ALL        => true,
+        self::STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT    => true,
+        self::STOCKIN_STOCKOUT_REASON_CHANGE            => true,
+        self::STOCKIN_STOCKOUT_REASON_REMOVE_SITE       => true,
+        self::STOCKIN_STOCKOUT_REASON_RETURNED          => true,
+    ];
+
+    /**
      * 销退入库原因映射表
      */
     const STOCKIN_STOCKOUT_REASON_MAP = [
@@ -102,4 +113,21 @@ class Order_Define_StockinOrder
         self::STOCKIN_ORDER_NOT_PRINT => '未打印',
         self::STOCKIN_ORDER_IS_PRINT => '已打印',
     ];
+
+    /**
+     * 入库单状态
+     */
+    const STOCKIN_ORDER_STATUS_WAIT             = 10;   // 待入库
+    const STOCKIN_ORDER_STATUS_DESTROYED        = 20;   // 已作废
+    const STOCKIN_ORDER_STATUS_FINISHED         = 30;   // 已完成
+
+    /**
+     * 入库单状态文本映射表
+     */
+    const STOCKIN_ORDER_STATUS_MAP = [
+        self::STOCKIN_ORDER_STATUS_WAIT         => '待入库',
+        self::STOCKIN_ORDER_STATUS_DESTROYED    => '已作废',
+        self::STOCKIN_ORDER_STATUS_FINISHED     => '已完成',
+    ];
+
 }
