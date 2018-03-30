@@ -849,7 +849,7 @@ class Service_Data_Stockin_StockinOrder
         $arrSkuIdsNotInWarehouse = array_diff($arrSkuIds, $arrSkuIdsInWarehouse);
         //仓库中无此商品，则去彩云获取最新含有此sku有效报价的价格
         if (!empty($arrSkuIdsNotInWarehouse)) {
-
+            $this->getVendorSkuPrice($arrSkuIdsNotInWarehouse);
         }
         return $arrRes;
     }
@@ -900,12 +900,12 @@ class Service_Data_Stockin_StockinOrder
             $arrDbSku['stockin_order_sku_total_price_tax'] = $arrRequestSkuInfoList[$intSkuId] * $arrSkuPriceInfo['sku_price_tax'];
             if (isset($arrSourceOrderSkuMap[$intSkuId])) {
                 if ($arrSourceOrderSkuMap[$intSkuId] > $arrRequestSkuInfoList[$intSkuId]) { //部分拒收
-                    $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_PART_REJECT;
+                    $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT;
                 } else { //全部拒收
-                    $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_ALL_REJECT;
+                    $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REJECT_ALL;
                 }
             } else { //汰换 = 下架
-                $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_OFF_SHELF;
+                $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_CHANGE;
             }
             $arrDbSkuList[] = $arrDbSku;
         }
@@ -1068,9 +1068,9 @@ class Service_Data_Stockin_StockinOrder
         foreach ($arrRequestSkuInfoList as $intSkuId => $intSkuAmount) {
             if (isset($arrSourceOrderSkuMap[$intSkuId])) {
                 if ($arrSourceOrderSkuMap[$intSkuId] > $arrRequestSkuInfoList[$intSkuId]) { //部分拒收
-                    $arrOrderRejectedReason[Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_PART_REJECT] = 0;
+                    $arrOrderRejectedReason[Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT] = 0;
                 } else { //全部拒收
-                    $arrOrderRejectedReason[Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_ALL_REJECT] = 0;
+                    $arrOrderRejectedReason[Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REJECT_ALL] = 0;
                 }
             } else {
                 $boolIsOffShelf = true;
@@ -1078,18 +1078,18 @@ class Service_Data_Stockin_StockinOrder
         }
         if (!empty($arrOrderRejectedReason)) {
             if (1 == count($arrOrderRejectedReason)
-                && key_exists(Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_ALL_REJECT, $arrOrderRejectedReason)) {
-                $intReturnReason = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_ALL_REJECT;
+                && key_exists(Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REJECT_ALL, $arrOrderRejectedReason)) {
+                $intReturnReason = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REJECT_ALL;
             } else {
-                $intReturnReason = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_PART_REJECT;
+                $intReturnReason = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT;
             }
             $arrOrderReturnReason[] = $intReturnReason;
-            $arrOrderReturnReasonText[] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_MAP[$intReturnReason];
+            $arrOrderReturnReasonText[] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_MAP[$intReturnReason];
         }
         if ($boolIsOffShelf) {
-            $intReturnReason = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_OFF_SHELF;
+            $intReturnReason = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_CHANGE;
             $arrOrderReturnReason[] = $intReturnReason;
-            $arrOrderReturnReasonText[] = Order_Define_StockinOrder::STOCKIN_ORDER_SKU_RETURN_REASON_MAP[$intReturnReason];
+            $arrOrderReturnReasonText[] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_MAP[$intReturnReason];
         }
         $intOrderReturnReason = array_sum($arrOrderReturnReason);
         $strOrderReturnReasonText = implode(',', $arrOrderReturnReasonText);
