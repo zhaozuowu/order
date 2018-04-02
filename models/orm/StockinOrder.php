@@ -355,6 +355,12 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         return true;
     }
 
+    /**
+     * 系统销退入库单确认入库
+     * @param int $intStockInOrderId
+     * @param int $intStockInTime
+     * @param int $intStockInOrderRealAmount
+     */
     public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount)
     {
         $arrCondition = [
@@ -366,6 +372,23 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
         ];
         self::findOne($arrCondition)->update($arrUpdateInfo);
+    }
+
+    /**
+     * 通过source order id 获取入库单详情
+     * @param $intSourceOrderId
+     * @return array
+     */
+    public static function getStockInOrderInfoBySourceOrderId($intSourceOrderId)
+    {
+        $objStockInOrder = self::findOne([
+            'source_order_id' => $intSourceOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ]);
+        if (!empty($objStockInOrder)) {
+            return $objStockInOrder->toArray();
+        }
+        return [];
     }
 
 }

@@ -38,6 +38,6 @@ class Dao_Redis_StockInOrder extends Order_Base_Redis
      */
     public function getValBySourceOrderId($intSourceOrderId) {
         $strRedisKey = self::REDIS_STOCKIN_ORDER_ID_KEY_PREFIX . strval($intSourceOrderId);
-        return $this->objRedisConn->get($strRedisKey);
+        return intval($this->objRedisConn->get($strRedisKey));
     }
 }

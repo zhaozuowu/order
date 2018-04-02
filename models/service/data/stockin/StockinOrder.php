@@ -1111,8 +1111,17 @@ class Service_Data_Stockin_StockinOrder
      */
     public function getStockInOrderIdByStockOutId($intStockOutOrderId)
     {
+        //从redis中获取
         $objRedisRal = new Dao_Redis_StockInOrder();
-        return $objRedisRal->getValBySourceOrderId($intStockOutOrderId);
+        $intStockInOrderId = $objRedisRal->getValBySourceOrderId($intStockOutOrderId);
+        //从DB中获取
+        if (empty($intStockInOrderId)) {
+            $intStockInOrderInfo = Model_Orm_StockinOrder::getStockInOrderInfoBySourceOrderId($intStockOutOrderId);
+            if (!empty($intStockInOrderInfo)) {
+                $intStockInOrderId = $intStockInOrderInfo['stockin_order_id'];
+            }
+        }
+        return $intStockInOrderId;
     }
 
     /**
