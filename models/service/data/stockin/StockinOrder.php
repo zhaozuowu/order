@@ -809,14 +809,15 @@ class Service_Data_Stockin_StockinOrder
         }
         $intWarehouseId = $arrSourceOrderInfo['warehouse_id'];
         $arrSkuIds = array_column($arrRequestSkuInfoList, 'sku_id');
+        $arrRequestSkuInfoMap = [];
         foreach ($arrRequestSkuInfoList as $arrRequestSkuInfo) {
             $arrRequestSkuInfoMap[$arrRequestSkuInfo['sku_id']] = $arrRequestSkuInfo['sku_amount'];
         }
         $arrSkuInfoList = $this->getSkuInfoList($arrSkuIds);
         $arrSkuPriceList = $this->getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList);
-        $arrDbSkuInfoList = $this->assembleDbSkuList($arrSourceOrderSkuList, $arrRequestSkuInfoList, $arrSkuInfoList,
+        $arrDbSkuInfoList = $this->assembleDbSkuList($arrSourceOrderSkuList, $arrRequestSkuInfoMap, $arrSkuInfoList,
                     $arrSkuPriceList);
-        list($intOrderReturnReason, $strOrderReturnReasonText) = $this->getOrderReturnReason($arrSourceOrderSkuList, $arrRequestSkuInfoList);
+        list($intOrderReturnReason, $strOrderReturnReasonText) = $this->getOrderReturnReason($arrSourceOrderSkuList, $arrRequestSkuInfoMap);
 
         $intStockinOrderPlanAmount = $this->calculateTotalSkuPlanAmount($arrDbSkuInfoList);
         $intStockinOrderTotalPrice = $this->calculateTotalPrice($arrDbSkuInfoList);
@@ -963,8 +964,8 @@ class Service_Data_Stockin_StockinOrder
                 'sku_tax_rate' => $arrSkuInfo['sku_tax_rate'],
                 'reserve_order_sku_plan_amount' => $arrRequestSkuInfoList[$intSkuId],
             ];
-            $arrDbSku['stockin_order_sku_total_price'] = $arrRequestSkuInfoList[$intSkuId] * $arrSkuPriceInfo['sku_price'];
-            $arrDbSku['stockin_order_sku_total_price_tax'] = $arrRequestSkuInfoList[$intSkuId] * $arrSkuPriceInfo['sku_price_tax'];
+            $arrDbSku['stockin_order_sku_total_price'] = bcmul($arrRequestSkuInfoList[$intSkuId], $arrSkuPriceInfo['sku_price']);
+            $arrDbSku['stockin_order_sku_total_price_tax'] = bcmul($arrRequestSkuInfoList[$intSkuId], $arrSkuPriceInfo['sku_price_tax']);
             if (isset($arrSourceOrderSkuMap[$intSkuId])) {
                 if ($arrSourceOrderSkuMap[$intSkuId] > $arrRequestSkuInfoList[$intSkuId]) { //部分拒收
                     $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT;
