@@ -91,7 +91,7 @@ class Action_GetOrderDetailFormApi extends Order_Base_ApiAction
             $arrFormatDetail['unit_price']    = empty($detail['unit_price']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price']);
             $arrFormatDetail['unit_price_tax']    = empty($detail['unit_price_tax']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price_tax']);
             $arrFormatDetail['is_defective']    = $detail['is_defective'];
-            $arrFormatDetail['is_defective_text']    = $detail['is_defective'] == Order_Define_Const::HIGH_QUALITY ? Order_Define_Const::QUALITY_TEXT[Order_Define_Const::HIGH_QUALITY] : Order_Define_Const::QUALITY_TEXT[Order_Define_Const::INFERIOR_QUALITY];
+            $arrFormatDetail['is_defective_text']    = $detail['is_defective'] == Nscm_Define_Stock::QUALITY_GOOD ? Nscm_Define_Stock::QUALITY_TEXT_MAP[Nscm_Define_Stock::QUALITY_GOOD] : Nscm_Define_Stock::QUALITY_TEXT_MAP[Nscm_Define_Stock::QUALITY_DEFECTIVE];
 
             if(empty($detail['adjust_amount']) || empty($detail['unit_price']) || empty($detail['unit_price_tax'])) {
                 $arrFormatResult['total_unit_price']    = '';
