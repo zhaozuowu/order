@@ -1028,7 +1028,7 @@ class Service_Data_Stockin_StockinOrder
         if (empty($arrSkuInfoList)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
-        $intStockInOrderId = $this->trimStockInOrderIdPrefix($strStockInOrderId);
+        $intStockInOrderId = Order_Util::trimStockinOrderIdPrefix($strStockInOrderId);
         $arrStockInOrderInfo = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intStockInOrderId);
         if (empty($arrStockInOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_NOT_EXISTED);
@@ -1050,15 +1050,6 @@ class Service_Data_Stockin_StockinOrder
             $intType = Order_Statistics_Type::ACTION_UPDATE;
             Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
         }
-    }
-
-    /**
-     * @param  string $strStockInOrder
-     * @return int
-     */
-    private function trimStockInOrderIdPrefix($strStockInOrder)
-    {
-        return intval(trim('SIO', $strStockInOrder));
     }
 
     /**
