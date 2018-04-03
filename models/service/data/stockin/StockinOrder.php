@@ -490,6 +490,8 @@ class Service_Data_Stockin_StockinOrder
      * @param $strWarehouseId
      * @param $intSourceSupplierId
      * @param $strSourceOrderId
+     * @param $strCustomerName
+     * @param $strCustomerId
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
@@ -508,6 +510,8 @@ class Service_Data_Stockin_StockinOrder
         $intStockinOrderStatus,
         $strWarehouseId,
         $intSourceSupplierId,
+        $strCustomerName,
+        $strCustomerId,
         $strSourceOrderId,
         $arrCreateTime,
         $arrOrderPlanTime,
@@ -593,6 +597,8 @@ class Service_Data_Stockin_StockinOrder
             $intStockinOrderStatus,
             $arrWarehouseId,
             $intSourceSupplierId,
+            $strCustomerName,
+            $strCustomerId,
             $arrSourceOrderIdInfo,
             $arrCreateTime,
             $arrOrderPlanTime,
