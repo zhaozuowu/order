@@ -1021,19 +1021,20 @@ class Service_Data_Stockin_StockinOrder
     /**
      * @param  string $strStockInOrderId 入库单id
      * @param  array  $arrSkuInfoList 入库sku信息
+     * @param  string $strRemark 入库备注
      * @throws Exception
      * @throws Order_BusinessError
      * @throws Order_Error
      */
-    public function confirmStockInOrder($strStockInOrderId, $arrSkuInfoList)
+    public function confirmStockInOrder($strStockInOrderId, $arrSkuInfoList, $strRemark)
     {
         if (empty($strStockInOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
-        if (empty($intStockInOrderAmount) || 0 >= $intStockInOrderAmount) {
+        if (empty($arrSkuInfoList)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
-        $intStockInOrderId = $this->trimStockInOrderIdPrefix($strStockInOrderId);
+        $intStockInOrderId = Order_Util::trimStockinOrderIdPrefix($strStockInOrderId);
         $arrStockInOrderInfo = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intStockInOrderId);
         if (empty($arrStockInOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_NOT_EXISTED);
@@ -1041,28 +1042,23 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_CANCEL == $arrStockInOrderInfo['stockin_order_status']) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_STATUS_INVALID);
         }
+        if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH == $arrStockInOrderInfo['stockin_order_status']) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_STATUS_FINISHED);
+        }
         if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH != $arrStockInOrderInfo['stockin_order_status']) {
             $intStockInTime = time();
             $intStockInOrderRealAmount = $this->calculateStockInOrderRealAmount($arrSkuInfoList);
             $arrDbSkuInfoList = $this->assembleDbSkuInfoList($arrSkuInfoList, $intStockInOrderId);
             Model_Orm_StockinOrder::getConnection()->transaction(function () use (
-                $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList) {
-                Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount);
+                $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList, $strRemark) {
+                Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime,
+                    $intStockInOrderRealAmount, $strRemark);
                 Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
             });
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
             $intType = Order_Statistics_Type::ACTION_UPDATE;
             Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
         }
-    }
-
-    /**
-     * @param  string $strStockInOrder
-     * @return int
-     */
-    private function trimStockInOrderIdPrefix($strStockInOrder)
-    {
-        return intval(trim('SIO', $strStockInOrder));
     }
 
     /**

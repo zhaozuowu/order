@@ -13,6 +13,7 @@ class Action_ConfirmStockinOrder extends Order_Base_Action
      */
     protected $arrInputParams = [
         'stockin_order_id' => 'regex|patern[/^((SIO)\d{13})?$/]',
+        'stockin_order_remark' => 'strutf8',
         'sku_info_list' => [
             'validate' => 'json|required|decode',
             'type' => 'array',
