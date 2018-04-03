@@ -28,8 +28,7 @@ class Service_Page_adjust_GetStockInfo
      */
     public function execute($arrInput)
     {
-        $arrOutput = $this->objStock->getStockInfo($arrInput['warehouse_id'], $arrInput['sku_ids']);
-
+        $arrOutput = $this->objStock->getStockPeriodStock($arrInput['warehouse_id'], $arrInput['sku_ids']);
         return $arrOutput;
     }
 }

@@ -458,7 +458,7 @@ class Service_Data_StockAdjustOrder
 
             $arrStockSkuInfo = [
                 'sku_id' => $arrDetail['sku_id'],
-                'stockout_amount' => $arrDetail['adjust_amount'],
+                'adjust_amount' => $arrDetail['adjust_amount'],
                 'is_defective' => $arrDetail['is_defective'],
                 'expiration_time' => $arrDetail['expire_time'],
             ];
@@ -480,7 +480,7 @@ class Service_Data_StockAdjustOrder
         Bd_Log::trace('ral call stock decrease param: ' . json_encode($arrStockOut));
 
         $arrRet =  $this->objDaoStock->adjustStockout(
-            $arrStockOut['stockin_order_id'],
+            $arrStockOut['stockout_order_id'],
             $arrStockOut['warehouse_id'],
             $arrStockOut['inventory_type'],
             $arrStockOut['stockout_details']);
@@ -520,7 +520,8 @@ class Service_Data_StockAdjustOrder
         } else if(Nscm_Define_Sku::SKU_EFFECT_TO === $intSkuEffectType) {
             // 到效期型
             $arrDetail['production_time'] = '';
-            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'];
+            // 根据PM要求，到效期类型的商品，失效期为当天23点59分59秒
+            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'] + 3600 * 24 -1;
         } else {
             Bd_Log::warning('sku effect type invalid ' . $intSkuEffectType);
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
