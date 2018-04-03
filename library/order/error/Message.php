@@ -47,6 +47,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_PARAMS_ERROR => '创建业态订单参数错误',
         Order_Error_Code::NWMS_ORDER_PRINT_LIST_ORDER_IDS_ERROR => '打印列表无法获取数据ID',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT => '重复创建出库单',
+        Order_Error_Code::TIME_PARAMS_LESS_THAN_ONE => '至少要有一个时间传入参数',
         Order_Error_Code::NWMS_ORDER_QUERY_RESULT_EMPTY => '查询结果为空',
         Order_Error_Code::NWMS_ORDER_RESERVE_ORDER_NOT_EXIST => '该预约单不存在，请确认后输入',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_SKU_BUSINESS_FORM_DETAIL_ERROR => 'sku业态详细信息错误',
@@ -62,6 +63,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR => '无人货架信息错误',
         Order_Error_Code::NWMS_STOCKIN_SKU_AMOUNT_DEFECTS_NOT_MATCH => '商品实际入库数与良品数和非良品数的和不相等',
         Order_Error_Code::NWMS_SKU_LIST_EMPTY => '商品列表为空',
+        Order_Error_Code::NWMS_STOCKIN_DATA_SOURCE_TYPE_ERROR => '入库单数据来源错误',
         // 库存调整错误码 开始
         Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL => '库存调整-出库失败',
         Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR => '库存调整-sku效期类型不正确',

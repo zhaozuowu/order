@@ -402,6 +402,17 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_SKU_LIST_EMPTY = 340026;
 
     /**
+     * 入库单数据来源错误
+     */
+    const NWMS_STOCKIN_DATA_SOURCE_TYPE_ERROR = 340027;
+
+    /**
+     * 至少要有一个时间传入参数
+     */
+    const TIME_PARAMS_LESS_THAN_ONE = 340028;
+
+
+    /**
      * 查询返回结果为空
      * @var integer
      */

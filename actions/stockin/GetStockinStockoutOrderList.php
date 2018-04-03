@@ -14,6 +14,7 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
     protected $arrInputParams = [
         // 2 - SOO - 销退入库类型
         'stockin_order_type' => 'int|min[2]|max[2]',
+        'data_source' => 'int|min[0]',
         'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
         'stockin_order_source_type' => 'int|min[0]|max[3]',
         'stockin_order_status' => 'int|min[0]|max[30]',
@@ -24,8 +25,10 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
         'create_time_end' => 'int|min[0]',
         'stockin_order_plan_time_start' => 'int|min[0]',
         'stockin_order_plan_time_end' => 'int|min[0]',
-        'stockin_time_start' => 'int|min[0]|required',
-        'stockin_time_end' => 'int|min[0]|required',
+        'stockin_time_start' => 'int|min[0]',
+        'stockin_time_end' => 'int|min[0]',
+        'stockin_destory_time_start' => 'int|min[0]',
+        'stockin_destory_time_end' => 'int|min[0]',
         'page_num' => 'int|default[1]|min[1]|optional',
         'page_size' => 'int|required|min[1]|max[200]',
     ];
@@ -90,6 +93,11 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
                 !isset(Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_DEFINE[$arrListItem['stockin_order_source']])
                         ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                         : Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_MAP[intval($arrListItem['stockin_order_source'])];
+            $arrRoundResult['stockin_destory_time_text'] = Order_Util::getFormatDateTime($arrListItem['stockin_destory_time']);
+            $arrRoundResult['data_source_text'] =
+                !isset(Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_DEFINE[intval($arrListItem['data_source'])])
+                    ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                    : Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_MAP[intval($arrListItem['data_source'])];
             $arrRoundResult['city_id'] = empty($arrListItem['city_id']) ? 0
                 : intval($arrListItem['city_id']);
             $arrRoundResult['city_name'] = empty($arrListItem['city_name']) ? ''

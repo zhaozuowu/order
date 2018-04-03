@@ -193,6 +193,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     /**
      * 获取入库单列表（分页）
      * @param $arrStockinOrderType
+     * @param $intDataSource
      * @param $intStockinOrderId
      * @param $intStockinOrderSourceType
      * @param $intStockinOrderStatus
@@ -202,12 +203,15 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
+     * @param $arrStockinDestoryTime
      * @param $intPageNum
      * @param $intPageSize
      * @return mixed
+     * @throws Order_BusinessError
      */
     public static function getStockinOrderList(
         $arrStockinOrderType,
+        $intDataSource,
         $intStockinOrderId,
         $intStockinOrderSourceType,
         $intStockinOrderStatus,
@@ -217,12 +221,20 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrCreateTime,
         $arrOrderPlanTime,
         $arrStockinTime,
+        $arrStockinDestoryTime,
         $intPageNum,
         $intPageSize)
     {
         // 拼装查询条件
         if (!empty($intStockinOrderId)) {
             $arrCondition['stockin_order_id'] = $intStockinOrderId;
+        }
+
+        if (!empty($intDataSource)) {
+            if(!isset(Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_DEFINE[$intDataSource])){
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKIN_DATA_SOURCE_TYPE_ERROR);
+            }
+            $arrCondition['data_source'] = $intDataSource;
         }
 
         if (!empty($arrSourceOrderIdInfo)) {
@@ -256,6 +268,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             $arrCondition['source_supplier_id'] = $intSourceSupplierId;
         }
 
+        $intTimesCount = 0;
         if (!empty($arrCreateTime['start'])
             && !empty($arrCreateTime['end'])) {
             $arrCondition['create_time'] = [
@@ -263,6 +276,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
                 $arrCreateTime['start'],
                 $arrCreateTime['end']
             ];
+            $intTimesCount++;
         }
 
         if (!empty($arrOrderPlanTime['start'])
@@ -272,6 +286,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
                 $arrOrderPlanTime['start'],
                 $arrOrderPlanTime['end']
             ];
+            $intTimesCount++;
         }
 
         if (!empty($arrStockinTime['start'])
@@ -281,6 +296,22 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
                 $arrStockinTime['start'],
                 $arrStockinTime['end'],
             ];
+            $intTimesCount++;
+        }
+
+        if (!empty($arrStockinDestoryTime['start'])
+            && !empty($arrStockinDestoryTime['end'])) {
+            $arrCondition['stockin_destory_time'] = [
+                'between',
+                $arrStockinDestoryTime['start'],
+                $arrStockinDestoryTime['end'],
+            ];
+            $intTimesCount++;
+        }
+
+        // 至少要有一个必传的时间段
+        if(1 > $intTimesCount){
+            Order_BusinessError::throwException(Order_Error_Code::TIME_PARAMS_LESS_THAN_ONE);
         }
 
         // 只查询未软删除的

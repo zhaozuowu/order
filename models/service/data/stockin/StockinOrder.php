@@ -483,6 +483,7 @@ class Service_Data_Stockin_StockinOrder
     /**
      * 获取入库单列表（分页）
      * @param $strStockinOrderType
+     * @param $intDataSource
      * @param $strStockinOrderId,
      * @param $intStockinOrderSourceType
      * @param $intStockinOrderStatus
@@ -492,6 +493,7 @@ class Service_Data_Stockin_StockinOrder
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
+     * @param $arrStockinDestoryTime
      * @param $intPageNum
      * @param $intPageSize
      * @return mixed
@@ -500,6 +502,7 @@ class Service_Data_Stockin_StockinOrder
      */
     public function getStockinOrderList(
         $strStockinOrderType,
+        $intDataSource,
         $strStockinOrderId,
         $intStockinOrderSourceType,
         $intStockinOrderStatus,
@@ -509,6 +512,7 @@ class Service_Data_Stockin_StockinOrder
         $arrCreateTime,
         $arrOrderPlanTime,
         $arrStockinTime,
+        $arrStockinDestoryTime,
         $intPageNum,
         $intPageSize)
     {
@@ -550,6 +554,9 @@ class Service_Data_Stockin_StockinOrder
         $arrStockinTime['start'] = intval($arrStockinTime['start']);
         $arrStockinTime['end'] = intval($arrStockinTime['end']);
 
+        $arrStockinDestoryTime['start'] = intval($arrStockinDestoryTime['end']);
+        $arrStockinDestoryTime['end'] = intval($arrStockinDestoryTime['end']);
+
         if (false === Order_Util::verifyUnixTimeSpan(
                 $arrCreateTime['start'],
                 $arrCreateTime['end'])) {
@@ -571,8 +578,16 @@ class Service_Data_Stockin_StockinOrder
                 Order_Error_Code::QUERY_TIME_SPAN_ERROR);
         }
 
+        if (false === Order_Util::verifyUnixTimeSpan(
+                $arrStockinDestoryTime['start'],
+                $arrStockinDestoryTime['end'])) {
+            Order_BusinessError::throwException(
+                Order_Error_Code::QUERY_TIME_SPAN_ERROR);
+        }
+
         return Model_Orm_StockinOrder::getStockinOrderList(
             $arrStockinOrderType,
+            $intDataSource,
             $intStockinOrderId,
             $intStockinOrderSourceType,
             $intStockinOrderStatus,
@@ -582,6 +597,7 @@ class Service_Data_Stockin_StockinOrder
             $arrCreateTime,
             $arrOrderPlanTime,
             $arrStockinTime,
+            $arrStockinDestoryTime,
             $intPageNum,
             $intPageSize);
     }

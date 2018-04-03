@@ -182,4 +182,26 @@ class Order_Define_StockinOrder
         self::STOCKIN_ORDER_SOURCE_PRE_CANG => '前置仓',
         self::STOCKIN_ORDER_SOURCE_SHOP     => '便利店',
     ];
+
+    /**
+     * 订单来源类型
+     */
+    const STOCKIN_DATA_SOURCE_FROM_SYSTEM   = 1;    // 系统对接
+    const STOCKIN_DATA_SOURCE_MANUAL_CREATE = 2;    // 手工创建
+
+    /**
+     * 订单数据来源类型定义
+     */
+    const STOCKIN_DATA_SOURCE_DEFINE = [
+        self::STOCKIN_DATA_SOURCE_FROM_SYSTEM   => 1,
+        self::STOCKIN_DATA_SOURCE_MANUAL_CREATE => 2,
+    ];
+
+    /**
+     * 订单数据来源类型文本映射
+     */
+    const STOCKIN_DATA_SOURCE_MAP = [
+        self::STOCKIN_DATA_SOURCE_FROM_SYSTEM   => '系统对接',
+        self::STOCKIN_DATA_SOURCE_MANUAL_CREATE => '手工创建',
+    ];
 }
