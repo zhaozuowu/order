@@ -60,6 +60,8 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_STOCKOUT_LONGITUDE_ERROR => '经度超出范围',
         Order_Error_Code::NWMS_ORDER_CUSTOMER_LOCATION_SOURCE_ERROR => '坐标来源标识错误',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_SHELF_ERROR => '无人货架信息错误',
+        Order_Error_Code::NWMS_STOCKIN_SKU_AMOUNT_DEFECTS_NOT_MATCH => '商品实际入库数与良品数和非良品数的和不相等',
+        Order_Error_Code::NWMS_SKU_LIST_EMPTY => '商品列表为空',
         // 库存调整错误码 开始
         Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL => '库存调整-出库失败',
         Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR => '库存调整-sku效期类型不正确',
@@ -72,7 +74,11 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED => '部分商品没有库存信息',
         Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH => '调整SKU个数超过100个',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT => '出库单已打印，无法取消',
-
+        //销退入库错误码
+        Order_Error_Code::INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN => '已作废出库单不允许入库',
+        Order_Error_Code::NOT_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN => '未出库出库单不允许入库',
+        Order_Error_Code::STOCKIN_ORDER_NOT_EXISTED => '入库单不存在',
+        Order_Error_Code::STOCKIN_ORDER_STATUS_INVALID => '入库单已作废,无法入库',
     ];
 
 }

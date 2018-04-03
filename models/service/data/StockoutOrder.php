@@ -77,6 +77,123 @@ class Service_Data_StockoutOrder
         $this->daoOms = new Dao_Ral_Oms();
     }
 
+    /**
+     * assemble sku info
+     * @param array $arrSkuExtraInfo
+     * @return array
+     */
+    public function assembleRecvSkuDetail($arrSkuExtraInfo)
+    {
+        $arrResult = [];
+        if (!is_array($arrSkuExtraInfo)) {
+            return $arrResult;
+        }
+        foreach ($arrSkuExtraInfo as $arrRow) {
+            $arrInfo = [];
+            if (is_array($arrRow['sku_extra_info'])) {
+                foreach ($arrRow['sku_extra_info'] as $arrRowSkuExtraInfo) {
+                    $arrInfo[] = [
+                        'product_time' => intval($arrRowSkuExtraInfo['product_time']),
+                        'expire_time' => intval($arrRowSkuExtraInfo['expire_time']),
+                        'good_amount' => intval($arrRowSkuExtraInfo['good_amount']),
+                        'defective_amount' => intval($arrRowSkuExtraInfo['defective_amount']),
+                    ];
+                }
+            }
+            $intSkuId = intval($arrRow['sku_id']);
+            if (isset($arrResult[$intSkuId])) {
+                Bd_Log::warning(sprintf('assemble recv sku detail sku_id repeat, old info[%s], new info[%s]',
+                    json_encode($arrResult[$intSkuId]), json_encode($arrInfo)));
+            }
+            $arrResult[$intSkuId] = [
+                'sku_id' => $intSkuId,
+                'sku_extra_info' => $arrInfo,
+            ];
+        }
+        return $arrResult;
+    }
+
+    /**
+     * @todo wait for interface document
+     * assemble oms delivery order
+     * @param array $arrSkuInfo
+     * @return array
+     */
+    private function assembleOmsDeliveryOrder($arrSkuInfo)
+    {
+        $arrRet = [];
+        foreach ($arrSkuInfo as $arrRow) {
+            // @todo
+        }
+        return $arrRet;
+    }
+
+    /**
+     * check stock status allow write db
+     * @param int $intStockStatus
+     * @return bool
+     */
+    private function checkStockStatusAllowWriteDb($intStockStatus)
+    {
+        switch (intval($intStockStatus)) {
+            case Order_Define_StockoutOrder::STOCK_STATUS_SURE:
+                Bd_log::warning('recv sku detail order repeat');
+                return false;
+            case Order_Define_StockoutOrder::STOCK_STATUS_UNSURE:
+                Bd_Log::trace('recv sku detail stock status unsure');
+                return true;
+            case Order_Define_StockoutOrder::STOCK_STATUS_HISTORY:
+            default:
+                Bd_Log::warning('recv sku detail history data');
+                return false;
+        }
+    }
+
+    /**
+     * @param $intStockoutOrderId
+     * @param $arrStockoutSkuInfo
+     * @throws Exception
+     */
+    public function recvSkuDetail($intStockoutOrderId, $arrStockoutSkuInfo)
+    {
+        $intStockoutOrderId = intval($intStockoutOrderId);
+        $arrStockoutSkuInfo = $this->assembleRecvSkuDetail($arrStockoutSkuInfo);
+        // check stockout order info
+        $ormStockoutOrder = Model_Orm_StockoutOrder::getStockoutOrderObjByOrderId($intStockoutOrderId);
+        if (empty($ormStockoutOrder)) {
+            Bd_Log::warning('recv sku detail stockout id not exist: ' . $intStockoutOrderId);
+            return;
+        }
+        // status
+        if (!$this->checkStockStatusAllowWriteDb($ormStockoutOrder->stockout_order_stock_status))
+        {
+            return;
+        }
+        // notify oms, next version
+        //$daoOms = new Dao_Ral_Oms();
+        //$daoOms->deliveryOrder($intStockoutOrderId, $this->assembleOmsDeliveryOrder($arrStockoutSkuInfo));
+
+        // write to db
+        $arrOrmStockoutSku = Model_Orm_StockoutOrderSku::getAllStockoutSkuByStockoutId($intStockoutOrderId);
+        Model_Orm_StockoutOrder::getConnection()->transaction(function ()
+        use($intStockoutOrderId, $arrStockoutSkuInfo, $ormStockoutOrder, $arrOrmStockoutSku) {
+            $ormStockoutOrder->updateStockoutOrderStockStatus(Order_Define_StockoutOrder::STOCK_STATUS_SURE);
+            foreach ($arrOrmStockoutSku as $key => $ormStockSku) {
+                if (isset($arrStockoutSkuInfo[$ormStockSku->sku_id])) {
+                    $ormStockSku->updateSkuExtraInfo(Nscm_Lib_Util::jsonEncode(
+                        $arrStockoutSkuInfo[$ormStockSku->sku_id]['sku_extra_info']));
+                    unset($arrStockoutSkuInfo[$ormStockSku->sku_id]);
+                } else {
+                    // sku in db, but not in input param
+                    Bd_Log::warning('recv sku detail sku in db but not in input param, sku_id:' . $ormStockSku->sku_id);
+                }
+            }
+            if (!empty($arrStockoutSkuInfo)) {
+                Bd_Log::warning('recv sku detail in input param but no int db: ' . json_encode($arrStockoutSkuInfo));
+            }
+        });
+
+    }
 
     /**
      * 获取下一步操作的出库单操作状态
@@ -281,6 +398,25 @@ class Service_Data_StockoutOrder
         $warehouseLocation  = empty($arrWarehouseList[$warehouseId]) ? '':$arrWarehouseList[$warehouseId]['location'];
         return $warehouseLocation;
     }
+
+    /**
+     * 根据仓库id获取仓库的地址
+     * @param $strWarehouseId
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function getWarehouseAddrById($strWarehouseId) {
+        $arrWarehouseList = $this->objWarehouseRal->getWareHouseList($strWarehouseId);
+        $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
+        if (empty($arrWarehouseList)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED);
+        }
+        $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
+        $strWarehouseAddr  = empty($arrWarehouseList[$strWarehouseId]) ? '' : $arrWarehouseList[$strWarehouseId]['address'];
+        return $strWarehouseAddr;
+    }
+
     /**
      * 手动创建出库单
      * @param $arrInput
@@ -474,6 +610,7 @@ class Service_Data_StockoutOrder
             $arrCreateParams['expect_arrive_end_time'] = intval($arrInput['expect_arrive_end_time']);
         }
         $arrCreateParams['data_source'] = $arrInput['data_source'] ?? 0;
+        $arrCreateParams['stockout_order_stock_status'] = Order_Define_StockoutOrder::STOCK_STATUS_UNSURE;
         return $arrCreateParams;
     }
 

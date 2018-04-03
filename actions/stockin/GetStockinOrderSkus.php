@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_GetStockinOrderSkuList
- * @desc 获取入库单商品列表（分页）
+ * @name Action_GetStockinOrderSkus
+ * @desc 获取入库单商品列表（不分页）
  * @author chenwende@iwaimai.baidu.com
  */
 
-class Action_GetStockinOrderSkuList extends Order_Base_Action
+class Action_GetStockinOrderSkus extends Order_Base_Action
 {
     /**
      * input params
@@ -13,8 +13,6 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
      */
     protected $arrInputParams = [
         'stockin_order_id' => 'regex|patern[/^SIO\d{13}$/]',
-        'page_num' => 'int|default[1]|min[1]|optional',
-        'page_size' => 'int|required|min[0]|max[200]',
     ];
 
     /**
@@ -39,7 +37,7 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
      */
     function myConstruct()
     {
-        $this->objPage = new Service_Page_Stockin_GetStockinOrderSkuList();
+        $this->objPage = new Service_Page_Stockin_GetStockinOrderSkus();
     }
 
     /**

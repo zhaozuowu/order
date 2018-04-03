@@ -120,10 +120,82 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     }
 
     /**
+     * @param int $intStockInOrderId 入库单id
+     * @param int $intStockInOrderType 入库单类型
+     * @param int $intSourceOrderId 出库单id
+     * @param int $intOrderReturnReason 销退入库原因
+     * @param string $strOrderReturnReasonText 销退入库原因
+     * @param string $strSourceInfo 来源订单json字符串
+     * @param int $intStockinOrderStatus 入库单状态
+     * @param int $intCityId 城市id
+     * @param string $strCityName 城市名称
+     * @param int $intWarehouseId 入库仓库id
+     * @param string $strWarehouseName 入库仓库名称
+     * @param int $intStockinOrderPlanAmount 计划入库数量
+     * @param int $intStockInOrderCreatorId 操作人员id
+     * @param string $strStockInOrderCreatorName 操作人员名称
+     * @param string $strStockInOrderRemark 备注
+     * @param int $intStockinOrderTotalPrice 入库单未税总价格
+     * @param int $intStockinOrderTotalPriceTax 入库单含税总价
+     * @param int $intShipmentOrderId 运单号
+     * @param string $strCustomerId 客户id
+     * @param string $strCustomerName 客户名称
+     * @return int
+     */
+    public static function createStayStockInOrder(
+        $intStockInOrderId,
+        $intStockInOrderType,
+        $intSourceOrderId,
+        $intOrderReturnReason,
+        $strOrderReturnReasonText,
+        $strSourceInfo,
+        $intStockinOrderStatus,
+        $intCityId,
+        $strCityName,
+        $intWarehouseId,
+        $strWarehouseName,
+        $intStockinOrderPlanAmount,
+        $intStockInOrderCreatorId,
+        $strStockInOrderCreatorName,
+        $strStockInOrderRemark,
+        $intStockinOrderTotalPrice,
+        $intStockinOrderTotalPriceTax,
+        $intShipmentOrderId,
+        $strCustomerId,
+        $strCustomerName
+    )
+    {
+        $arrRow = [
+            'stockin_order_id' => intval($intStockInOrderId),
+            'stockin_order_type' => intval($intStockInOrderType),
+            'source_order_id' => intval($intSourceOrderId),
+            'stockin_order_reason' => intval($intOrderReturnReason),
+            'stockin_order_reason_text' => strval($strOrderReturnReasonText),
+            'shipment_order_id' => intval($intShipmentOrderId),
+            'source_info' => strval($strSourceInfo),
+            'stockin_order_status' => intval($intStockinOrderStatus),
+            'city_id' => intval($intCityId),
+            'city_name' => strval($strCityName),
+            'warehouse_id' => intval($intWarehouseId),
+            'warehouse_name' => strval($strWarehouseName),
+            'stockin_order_plan_amount' => $intStockinOrderPlanAmount,
+            'stockin_order_creator_id' => $intStockInOrderCreatorId,
+            'stockin_order_creator_name' => $strStockInOrderCreatorName,
+            'stockin_order_remark' => $strStockInOrderRemark,
+            'stockin_order_total_price' => $intStockinOrderTotalPrice,
+            'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
+            'customer_id' => $strCustomerId,
+            'customer_name' => $strCustomerName,
+        ];
+        return self::insert($arrRow);
+    }
+
+    /**
      * 获取入库单列表（分页）
-     *
      * @param $arrStockinOrderType
      * @param $intStockinOrderId
+     * @param $intStockinOrderSourceType
+     * @param $intStockinOrderStatus
      * @param $arrWarehouseId
      * @param $intSourceSupplierId
      * @param $arrSourceOrderIdInfo
@@ -137,6 +209,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     public static function getStockinOrderList(
         $arrStockinOrderType,
         $intStockinOrderId,
+        $intStockinOrderSourceType,
+        $intStockinOrderStatus,
         $arrWarehouseId,
         $intSourceSupplierId,
         $arrSourceOrderIdInfo,
@@ -162,6 +236,14 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             $arrCondition['stockin_order_type'] = [
                 'in',
                 $arrStockinOrderType];
+        }
+
+        if (!empty($intStockinOrderSourceType)) {
+            $arrCondition['stockin_order_source'] = $intStockinOrderSourceType;
+        }
+
+        if (!empty($intStockinOrderStatus)) {
+            $arrCondition['stockin_order_status'] = $intStockinOrderStatus;
         }
 
         if (!empty($arrWarehouseId)) {
@@ -271,6 +353,42 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         }
 
         return true;
+    }
+
+    /**
+     * 系统销退入库单确认入库
+     * @param int $intStockInOrderId
+     * @param int $intStockInTime
+     * @param int $intStockInOrderRealAmount
+     */
+    public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount)
+    {
+        $arrCondition = [
+            'stockin_order_id' => $intStockInOrderId,
+        ];
+        $arrUpdateInfo = [
+            'stockin_time' => $intStockInTime,
+            'stockin_order_real_amount' => $intStockInOrderRealAmount,
+            'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
+        ];
+        self::findOne($arrCondition)->update($arrUpdateInfo);
+    }
+
+    /**
+     * 通过source order id 获取入库单详情
+     * @param $intSourceOrderId
+     * @return array
+     */
+    public static function getStockInOrderInfoBySourceOrderId($intSourceOrderId)
+    {
+        $objStockInOrder = self::findOne([
+            'source_order_id' => $intSourceOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ]);
+        if (!empty($objStockInOrder)) {
+            return $objStockInOrder->toArray();
+        }
+        return [];
     }
 
 }

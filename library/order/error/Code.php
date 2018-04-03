@@ -390,6 +390,18 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_ORDER_STOCKOUT_SHELF_ERROR = 340024;
 
     /**
+     * 商品实际入库数与良品数和非良品数的和不匹配
+     * @var integer
+     */
+    const NWMS_STOCKIN_SKU_AMOUNT_DEFECTS_NOT_MATCH = 340025;
+
+    /**
+     * 商品列表为空
+     * @var integer
+     */
+    const NWMS_SKU_LIST_EMPTY = 340026;
+
+    /**
      * 查询返回结果为空
      * @var integer
      */
@@ -404,4 +416,24 @@ class Order_Error_Code extends Wm_Error_Code
      * 出库单已打印，无法取消
      */
     const NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT = 310013;
+
+    /**
+     *已作废出库单不允许入库
+     */
+    const INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN = 370001;
+
+    /**
+     * 未出库出库单不允许入库
+     */
+    const NOT_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN = 370002;
+
+    /**
+     * 入库单不存在
+     */
+    const STOCKIN_ORDER_NOT_EXISTED = 370003;
+
+    /**
+     * 入库单已作废,无法入库
+     */
+    const STOCKIN_ORDER_STATUS_INVALID = 370004;
 }

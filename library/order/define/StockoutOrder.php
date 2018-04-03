@@ -255,6 +255,7 @@ class Order_Define_StockoutOrder
     ];
 
     /**
+<<<<<<< HEAD
      * 预取消标识
      */
     const STOCKOUT_ORDER_DEFAULT_PRE_CANCEL = 0;
@@ -284,4 +285,22 @@ class Order_Define_StockoutOrder
     const STOCKOUT_ORDER_CANCEL_TYPE_DEFAULT = 0;
     const STOCKOUT_ORDER_CANCEL_TYPE_SYS = 1;
     const STOCKOUT_ORDER_NOT_PRE_MANUAL = 2;
+
+    /**
+     * stockout_order_stock_status history
+     * @var int
+     */
+    const STOCK_STATUS_HISTORY = 0;
+
+    /**
+     * stockout_order_stock_status unsure
+     * @var int
+     */
+    const STOCK_STATUS_UNSURE = 1;
+
+    /**
+     * stockout_order_stock_status sure
+     * @var int
+     */
+    const STOCK_STATUS_SURE = 2;
 }

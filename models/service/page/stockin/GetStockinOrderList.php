@@ -34,31 +34,30 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
     {
         $strStockinOrderType = $arrInput['stockin_order_type'];
         $strStockinOrderId = $arrInput['stockin_order_id'];
+        $intStockinOrderSourceType = intval($arrInput['stockin_order_source_type']);
+        $intStockinOrderStatus = intval($arrInput['stockin_order_status']);
         $strWarehouseId = $arrInput['warehouse_ids'];
         $intSourceSupplierId = $arrInput['source_supplier_id'];
         $strSourceOrderId = $arrInput['source_order_id'];
-
         $arrCreateTime = [
             'start' => $arrInput['create_time_start'],
             'end' => $arrInput['create_time_end'],
         ];
-
         $arrOrderPlanTime = [
             'start' => $arrInput['stockin_order_plan_time_start'],
             'end' => $arrInput['stockin_order_plan_time_end'],
         ];
-
         $arrStockinTime = [
             'start' => $arrInput['stockin_time_start'],
             'end' => $arrInput['stockin_time_end'],
         ];
-
         $intPageNum = $arrInput['page_num'];
         $intPageSize = $arrInput['page_size'];
-
         return $this->objServiceData->getStockinOrderList(
             $strStockinOrderType,
             $strStockinOrderId,
+            $intStockinOrderSourceType,
+            $intStockinOrderStatus,
             $strWarehouseId,
             $intSourceSupplierId,
             $strSourceOrderId,
