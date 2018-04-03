@@ -169,6 +169,7 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
                 : intval($arrListItem['sku_good_amount']);
             $arrRoundResult['sku_defective_amount'] = empty($arrListItem['sku_defective_amount']) ? 0
                 : intval($arrListItem['sku_defective_amount']);
+            $arrRoundResult['stockin_order_remark'] = strval($arrListItem['stockin_order_remark']);
 
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult['list'][] = $arrRoundResult;
