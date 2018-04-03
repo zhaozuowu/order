@@ -63,6 +63,7 @@ class Order_Statistics_Column
                 'replace' => 'source_info',
                 'key' => 'vendor_id',
             ],
+            'stockin_order_remark',
         ],
         'slave' => [
             'sku_id',
@@ -196,6 +197,7 @@ class Order_Statistics_Column
                 'replace' => 'source_info',
                 'key' => 'customer_contact',
             ],
+            'stockin_order_remark',
         ],
         'slave' => [
             'sku_id',
