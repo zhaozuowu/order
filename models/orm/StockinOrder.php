@@ -388,17 +388,19 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
     /**
      * 系统销退入库单确认入库
-     * @param int $intStockInOrderId
-     * @param int $intStockInTime
-     * @param int $intStockInOrderRealAmount
+     * @param int    $intStockInOrderId
+     * @param int    $intStockInTime
+     * @param int    $intStockInOrderRealAmount
+     * @param string $strRemark
      */
-    public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount)
+    public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $strRemark)
     {
         $arrCondition = [
             'stockin_order_id' => $intStockInOrderId,
         ];
         $arrUpdateInfo = [
             'stockin_time' => $intStockInTime,
+            'stockin_order_remark' => $strRemark,
             'stockin_order_real_amount' => $intStockInOrderRealAmount,
             'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
         ];

@@ -1015,16 +1015,17 @@ class Service_Data_Stockin_StockinOrder
     /**
      * @param  string $strStockInOrderId 入库单id
      * @param  array  $arrSkuInfoList 入库sku信息
+     * @param  string $strRemark 入库备注
      * @throws Exception
      * @throws Order_BusinessError
      * @throws Order_Error
      */
-    public function confirmStockInOrder($strStockInOrderId, $arrSkuInfoList)
+    public function confirmStockInOrder($strStockInOrderId, $arrSkuInfoList, $strRemark)
     {
         if (empty($strStockInOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
-        if (empty($intStockInOrderAmount) || 0 >= $intStockInOrderAmount) {
+        if (empty($arrSkuInfoList)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         $intStockInOrderId = $this->trimStockInOrderIdPrefix($strStockInOrderId);
@@ -1040,8 +1041,9 @@ class Service_Data_Stockin_StockinOrder
             $intStockInOrderRealAmount = $this->calculateStockInOrderRealAmount($arrSkuInfoList);
             $arrDbSkuInfoList = $this->assembleDbSkuInfoList($arrSkuInfoList, $intStockInOrderId);
             Model_Orm_StockinOrder::getConnection()->transaction(function () use (
-                $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList) {
-                Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount);
+                $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList, $strRemark) {
+                Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime,
+                    $intStockInOrderRealAmount, $strRemark);
                 Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
             });
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
