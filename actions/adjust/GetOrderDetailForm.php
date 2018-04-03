@@ -90,6 +90,9 @@ class Action_GetOrderDetailForm extends Order_Base_Action
             $arrFormatDetail['adjust_amount']    = empty($detail['adjust_amount']) ? '' : strval($detail['adjust_amount']);
             $arrFormatDetail['unit_price']    = empty($detail['unit_price']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price']);
             $arrFormatDetail['unit_price_tax']    = empty($detail['unit_price_tax']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price_tax']);
+            $arrFormatDetail['is_defective']    = $detail['is_defective'];
+            $arrFormatDetail['is_defective_text']    = $detail['is_defective'] == Order_Define_Const::HIGH_QUALITY ? Order_Define_Const::QUALITY_TEXT[Order_Define_Const::HIGH_QUALITY] : Order_Define_Const::QUALITY_TEXT[Order_Define_Const::INFERIOR_QUALITY];
+            $arrFormatDetail['remark']    = $detail['remark'];
 
 
             if(empty($detail['adjust_amount']) || empty($detail['unit_price']) || empty($detail['unit_price_tax'])) {

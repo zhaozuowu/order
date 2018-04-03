@@ -87,6 +87,9 @@ class Service_Data_StockAdjustOrderDetail
         if(!empty($arrInput['sku_id'])) {
             $arrFormatInput['sku_id'] = $arrInput['sku_id'];
         }
+        if(!empty($arrInput['is_defective'])) {
+            $arrFormatInput['is_defective'] = $arrInput['is_defective'];
+        }
         if(!empty($arrInput['adjust_type'])) {
             $intAdjustType = Nscm_Define_Stock::ADJUST_TYPE_MAP[$arrInput['adjust_type']];
             if(empty($intAdjustType)) {
