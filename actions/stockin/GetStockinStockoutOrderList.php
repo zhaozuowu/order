@@ -86,6 +86,10 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
                 : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
             $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? 0
                 : intval($arrListItem['stockin_order_status']);
+            $arrRoundResult['stockin_order_source_type_text'] =
+                !isset(Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_DEFINE[$arrListItem['stockin_order_source']])
+                        ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                        : Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_MAP[intval($arrListItem['stockin_order_source'])];
             $arrRoundResult['city_id'] = empty($arrListItem['city_id']) ? 0
                 : intval($arrListItem['city_id']);
             $arrRoundResult['city_name'] = empty($arrListItem['city_name']) ? ''
