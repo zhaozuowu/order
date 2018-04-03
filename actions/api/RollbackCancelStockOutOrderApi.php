@@ -36,6 +36,6 @@ class Action_RollBackCancelStockOutOrderApi extends Order_Base_ApiAction
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Stockout_RollBackCancelStockOutOrder();
+        $this->objPage = new Service_Page_Stockout_RollbackCancelStockOutOrder();
     }
 }
