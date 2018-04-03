@@ -447,4 +447,9 @@ class Order_Error_Code extends Wm_Error_Code
      * 入库单已作废,无法入库
      */
     const STOCKIN_ORDER_STATUS_INVALID = 370004;
+
+    /**
+     * 此订单已入库完成，无需再次入库
+     */
+    const STOCKIN_ORDER_STATUS_FINISHED = 370005;
 }

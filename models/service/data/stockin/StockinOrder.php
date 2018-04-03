@@ -1036,6 +1036,9 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_CANCEL == $arrStockInOrderInfo['stockin_order_status']) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_STATUS_INVALID);
         }
+        if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH == $arrStockInOrderInfo['stockin_order_status']) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_STATUS_FINISHED);
+        }
         if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH != $arrStockInOrderInfo['stockin_order_status']) {
             $intStockInTime = time();
             $intStockInOrderRealAmount = $this->calculateStockInOrderRealAmount($arrSkuInfoList);
