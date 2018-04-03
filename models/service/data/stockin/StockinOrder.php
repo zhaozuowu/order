@@ -554,7 +554,7 @@ class Service_Data_Stockin_StockinOrder
         $arrStockinTime['start'] = intval($arrStockinTime['start']);
         $arrStockinTime['end'] = intval($arrStockinTime['end']);
 
-        $arrStockinDestoryTime['start'] = intval($arrStockinDestoryTime['end']);
+        $arrStockinDestoryTime['start'] = intval($arrStockinDestoryTime['start']);
         $arrStockinDestoryTime['end'] = intval($arrStockinDestoryTime['end']);
 
         if (false === Order_Util::verifyUnixTimeSpan(
