@@ -985,10 +985,12 @@ class Service_Data_Stockin_StockinOrder
                 'sku_price_tax' => $arrSkuPriceInfo['sku_price_tax'],
                 'sku_tax_rate' => $arrSkuInfo['sku_tax_rate'],
                 'reserve_order_sku_plan_amount' => $arrRequestSkuInfoList[$intSkuId],
+                'stockout_order_sku_amount' => 0,
             ];
             $arrDbSku['stockin_order_sku_total_price'] = bcmul($arrRequestSkuInfoList[$intSkuId], $arrSkuPriceInfo['sku_price']);
             $arrDbSku['stockin_order_sku_total_price_tax'] = bcmul($arrRequestSkuInfoList[$intSkuId], $arrSkuPriceInfo['sku_price_tax']);
             if (isset($arrSourceOrderSkuMap[$intSkuId])) {
+                $arrDbSku['stockout_order_sku_amount'] = $arrSourceOrderSkuMap[$intSkuId];
                 if ($arrSourceOrderSkuMap[$intSkuId] > $arrRequestSkuInfoList[$intSkuId]) { //部分拒收
                     $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT;
                 } else { //全部拒收
