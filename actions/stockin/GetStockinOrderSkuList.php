@@ -91,33 +91,34 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
             // 数据库存放的stockin_order_sku_extra_info是json编码的Unix时间戳，转为文本形式时间给FE
             $arrSkuExtInf = empty($arrListItem['stockin_order_sku_extra_info']) ? ''
                 : json_decode($arrListItem['stockin_order_sku_extra_info'], true);
+
+            $arrSkuExtInfRet = [];
             foreach ($arrSkuExtInf as $item => $value) {
-                $arrSkuExtInfRet = [];
                 if (isset($value['amount'])) {
-                    $arrSkuExtInfRet['amount'] = isset($value['amount']) ? intval($value['amount']) : 0;
+                // $arrSkuExtInfRet['amount'] = isset($value['amount']) ? intval($value['amount']) : 0;
                 } else {
                     continue;
                 }
+
                 $strSkuExpireDate = isset($value['expire_date'])
                     ? Order_Util::getFormatDate(intval($value['expire_date']))
                     : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
                 if (!empty($value['sku_good_amount'])) {
-                    $arrSkuExtInfRet['sku_info'][] = [
+                    $arrSkuExtInfRet[] = [
                         'expire_date' => $strSkuExpireDate,
                         'sku_quality_amount' => isset($value['sku_good_amount']) ? intval($value['sku_good_amount']) : 0,
                         'sku_quality_type_text' => Order_Define_Sku::SKU_QUALITY_TYPE_MAP[Order_Define_Sku::SKU_QUALITY_TYPE_GOOD],
                     ];
                 }
                 if (!empty($value['sku_defective_amount'])) {
-                    $arrSkuExtInfRet['sku_info'][] = [
+                    $arrSkuExtInfRet[] = [
                         'expire_date' => $strSkuExpireDate,
                         'sku_quality_amount' => isset($value['sku_defective_amount']) ? intval($value['sku_defective_amount']) : 0,
                         'sku_quality_type_text' => Order_Define_Sku::SKU_QUALITY_TYPE_MAP[Order_Define_Sku::SKU_QUALITY_TYPE_DEFECTIVE],
                     ];
                 }
-                // $arrRoundResult['stockin_order_sku_extra_info'][] = empty($arrSkuExtInfRet) ? '' : ($arrSkuExtInfRet);
-                $arrRoundResult['stockin_order_sku_extra_info'][] = empty($arrSkuExtInfRet) ? '' : json_encode($arrSkuExtInfRet, JSON_UNESCAPED_UNICODE);
             }
+            $arrRoundResult['stockin_order_sku_extra_info'] = empty($arrSkuExtInfRet) ? '' : json_encode($arrSkuExtInfRet, JSON_UNESCAPED_UNICODE);
 
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult['list'][] = $arrRoundResult;
