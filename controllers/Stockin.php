@@ -13,6 +13,7 @@ class Controller_Stockin extends Ap_Controller_Abstract {
         'getstockinorderdetail' => 'actions/stockin/GetStockinOrderDetail.php', #查询入库单详情#
         'getstockinstockoutorderdetail' => 'actions/stockin/GetStockinStockoutOrderDetail.php', #查询销退入库单详情#
         'getstockinorderskulist' => 'actions/stockin/GetStockinOrderSkuList.php', #查询入库单商品（分页）#
+        'getstockinstockoutorderskulist' => 'actions/stockin/GetStockinStockoutOrderSkuList.php', #查询入库单商品（分页）#
         'getstockinorderskus' => 'actions/stockin/GetStockinOrderSkus.php', #查询入库单商品（不分页）#
         'getstockinorderprintlist' => 'actions/stockin/GetStockinOrderPrintList.php', #入库单打印#
         'getstockinstockoutorderprintlist' => 'actions/stockin/GetStockinStockoutOrderPrintList.php', #销退入库单打印#
