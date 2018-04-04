@@ -456,12 +456,18 @@ class Service_Data_StockAdjustOrder
             $arrDetail = $this->getEffectTime(
                 $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
-            $arrStockSkuInfo = [
-                'sku_id' => $arrDetail['sku_id'],
+            if(empty($arrStockSkuInfo['sku_id'])) {
+                $arrStockSkuInfo['sku_id'] = $arrDetail['sku_id'];
+                $arrStockSkuInfo['adjust_info'] = [];
+            }
+
+            $arrAdjustInfo = [
                 'adjust_amount' => $arrDetail['adjust_amount'],
                 'is_defective' => $arrDetail['is_defective'],
                 'expiration_time' => $arrDetail['expire_time'],
             ];
+
+            $arrStockSkuInfo['adjust_info'][] = $arrAdjustInfo;
 
             $arrStockOut['stockout_details'][] = $arrStockSkuInfo;
         }
@@ -477,7 +483,7 @@ class Service_Data_StockAdjustOrder
     protected function createBatchStockOut($arrStockOut)
     {
         $arrRet = [];
-        Bd_Log::trace('ral call stock decrease param: ' . json_encode($arrStockOut));
+        Bd_Log::trace('ral call stock decrease param: ' . print_r($arrStockOut, true));
 
         $arrRet =  $this->objDaoStock->adjustStockout(
             $arrStockOut['stockout_order_id'],
