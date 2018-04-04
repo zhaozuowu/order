@@ -51,14 +51,5 @@ class  Order_Define_Const
      * 半个小时转化撑秒
      */
     const HALF_AN_HOUR_FORMAT_SECONDS = 1800;
-
-    /**
-     * 产品质量
-     */
-    const HIGH_QUALITY = 1;
-    const INFERIOR_QUALITY = 2;
-    const QUALITY_TEXT = [
-        self::HIGH_QUALITY => '良品',
-        self::INFERIOR_QUALITY => '不良品',
-    ];
+    
 }
