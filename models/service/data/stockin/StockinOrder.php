@@ -1228,7 +1228,7 @@ class Service_Data_Stockin_StockinOrder
         $arrStockInSkuList = [];
         $arrDbStockInSkuList = $this->getStockinOrderSkuList($intStockInOrderId, 1, 0);
 
-        foreach ($arrDbStockInSkuList as $arrDbStockInSkuInfo) {
+        foreach ($arrDbStockInSkuList['list'] as $arrDbStockInSkuInfo) {
             $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = [
                 'unit_price' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price']),
                 'unit_price_tax' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price_tax']),
