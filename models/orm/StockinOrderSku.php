@@ -190,7 +190,6 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
             ];
             $arrUpdateInfo = [
                 'stockin_order_sku_real_amount' => $arrDbSkuInfo['stockin_order_sku_real_amount'],
-                'stockin_order_real_amount' => $arrDbSkuInfo['stockin_order_sku_extra_info'],
             ];
             self::findOne($arrCondition)->update($arrUpdateInfo);
         }
