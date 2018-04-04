@@ -29,8 +29,8 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
         'stockin_order_plan_time_end' => 'int|min[0]',
         'stockin_time_start' => 'int|min[0]',
         'stockin_time_end' => 'int|min[0]',
-        'stockin_destory_time_start' => 'int|min[0]',
-        'stockin_destory_time_end' => 'int|min[0]',
+        'stockin_destroy_time_start' => 'int|min[0]',
+        'stockin_destroy_time_end' => 'int|min[0]',
         'page_num' => 'int|default[1]|min[1]|optional',
         'page_size' => 'int|required|min[1]|max[200]',
     ];
@@ -101,7 +101,7 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
                 !isset(Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_DEFINE[$arrListItem['stockin_order_source']])
                         ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                         : Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_MAP[intval($arrListItem['stockin_order_source'])];
-            $arrRoundResult['stockin_destory_time_text'] = Order_Util::getFormatDateTime($arrListItem['stockin_destory_time']);
+            $arrRoundResult['stockin_destroy_time_text'] = Order_Util::getFormatDateTime($arrListItem['stockin_destroy_time']);
             $arrRoundResult['data_source_text'] =
                 !isset(Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_DEFINE[intval($arrListItem['data_source'])])
                     ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR

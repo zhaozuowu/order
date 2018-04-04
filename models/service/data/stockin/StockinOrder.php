@@ -495,7 +495,7 @@ class Service_Data_Stockin_StockinOrder
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
-     * @param $arrStockinDestoryTime
+     * @param $arrStockinDestroyTime
      * @param $intPageNum
      * @param $intPageSize
      * @return mixed
@@ -516,7 +516,7 @@ class Service_Data_Stockin_StockinOrder
         $arrCreateTime,
         $arrOrderPlanTime,
         $arrStockinTime,
-        $arrStockinDestoryTime,
+        $arrStockinDestroyTime,
         $intPageNum,
         $intPageSize)
     {
@@ -558,8 +558,8 @@ class Service_Data_Stockin_StockinOrder
         $arrStockinTime['start'] = intval($arrStockinTime['start']);
         $arrStockinTime['end'] = intval($arrStockinTime['end']);
 
-        $arrStockinDestoryTime['start'] = intval($arrStockinDestoryTime['start']);
-        $arrStockinDestoryTime['end'] = intval($arrStockinDestoryTime['end']);
+        $arrStockinDestroyTime['start'] = intval($arrStockinDestroyTime['start']);
+        $arrStockinDestroyTime['end'] = intval($arrStockinDestroyTime['end']);
 
         if (false === Order_Util::verifyUnixTimeSpan(
                 $arrCreateTime['start'],
@@ -583,8 +583,8 @@ class Service_Data_Stockin_StockinOrder
         }
 
         if (false === Order_Util::verifyUnixTimeSpan(
-                $arrStockinDestoryTime['start'],
-                $arrStockinDestoryTime['end'])) {
+                $arrStockinDestroyTime['start'],
+                $arrStockinDestroyTime['end'])) {
             Order_BusinessError::throwException(
                 Order_Error_Code::QUERY_TIME_SPAN_ERROR);
         }
@@ -603,7 +603,7 @@ class Service_Data_Stockin_StockinOrder
             $arrCreateTime,
             $arrOrderPlanTime,
             $arrStockinTime,
-            $arrStockinDestoryTime,
+            $arrStockinDestroyTime,
             $intPageNum,
             $intPageSize);
     }
