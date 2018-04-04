@@ -20,6 +20,8 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
         'stockin_order_status' => 'int|min[0]|max[30]',
         'warehouse_ids' => 'str|required',
         'source_supplier_id' => 'int|min[0]',
+        'customer_name' => 'str',
+        'customer_id' => 'str',
         'source_order_id' => 'regex|patern[/^(SOO\d{13})?$/]',
         'create_time_start' => 'int|min[0]',
         'create_time_end' => 'int|min[0]',
@@ -71,8 +73,14 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
             $arrRoundResult['stockin_order_type_text'] =
                 Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[intval($arrListItem['stockin_order_type'])]
                 ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
-            $arrRoundResult['source_info'] = empty($arrListItem['source_info']) ? ''
-                : strval($arrListItem['source_info']);
+//            $arrRoundResult['source_info'] = empty($arrListItem['source_info']) ? ''
+//                : strval($arrListItem['source_info']);
+            $arrRoundResult['customer_name'] = empty($arrListItem['customer_name'])
+                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : $arrListItem['customer_name'];
+            $arrRoundResult['customer_id'] = empty($arrListItem['customer_id'])
+                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : $arrListItem['customer_id'];
             // 不同的入库单类型对应的前缀
             $intStockInType = intval($arrListItem['stockin_order_type']);
             if (!empty($intStockInType)) {

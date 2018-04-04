@@ -199,6 +199,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param $intStockinOrderStatus
      * @param $arrWarehouseId
      * @param $intSourceSupplierId
+     * @param $strCustomerName
+     * @param $strCustomerId
      * @param $arrSourceOrderIdInfo
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
@@ -217,6 +219,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intStockinOrderStatus,
         $arrWarehouseId,
         $intSourceSupplierId,
+        $strCustomerName,
+        $strCustomerId,
         $arrSourceOrderIdInfo,
         $arrCreateTime,
         $arrOrderPlanTime,
@@ -266,6 +270,20 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
         if (!empty($intSourceSupplierId)) {
             $arrCondition['source_supplier_id'] = $intSourceSupplierId;
+        }
+
+        if (!empty($strCustomerName)) {
+            $arrCondition['customer_name'] = [
+                'like',
+                '%' . $strCustomerName . '%'
+            ];
+        }
+
+        if (!empty($strCustomerId)) {
+            $arrCondition['customer_id'] = [
+                'like',
+                '%' . $strCustomerId . '%'
+            ];
         }
 
         $intTimesCount = 0;
