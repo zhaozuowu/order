@@ -906,7 +906,6 @@ class Service_Data_Stockin_StockinOrder
      */
     private function getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList)
     {
-        $arrRes = [];
         //先从仓库获取成本价
         $arrSkuPriceInWarehouse = $this->getStockPrice($intWarehouseId, $arrSkuIds);
         $arrSkuIdsInWarehouse = array_column($arrSkuPriceInWarehouse, 'sku_id');
@@ -914,9 +913,11 @@ class Service_Data_Stockin_StockinOrder
         //仓库中无此商品，则去彩云获取最新含有此sku有效报价的价格
         if (!empty($arrSkuIdsNotInWarehouse)) {
             $arrSkuPriceInVendor = $this->getVendorSkuPrice($arrSkuIdsNotInWarehouse, $arrSkuInfoList);
-            $arrRes = array_merge($arrSkuPriceInWarehouse, $arrSkuPriceInVendor);
+            foreach ($arrSkuPriceInVendor as $intSkuId => $item) {
+                $arrSkuPriceInWarehouse[$intSkuId] = $item;
+            }
         }
-        return $arrRes;
+        return $arrSkuPriceInWarehouse;
     }
 
     /**
