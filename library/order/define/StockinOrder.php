@@ -19,10 +19,15 @@ class Order_Define_StockinOrder
      */
     const STOCKIN_ORDER_TYPE_STOCKOUT = 2;
     /**
-     * type stock out
+     * stock in system type
      * @var int
      */
-    const STOCKIN_ORDER_TYPE_SYS = 3;
+    const STOCKIN_ORDER_SYS_TYPE_SYS = 1;
+    /**
+     * stock in system type
+     * @var int
+     */
+    const STOCKIN_ORDER_SYS_TYPE_MANUAL = 0;
 
     /**
      * type return
@@ -85,7 +90,14 @@ class Order_Define_StockinOrder
     const  STOCKIN_ORDER_TYPE_MAP = [
         self::STOCKIN_ORDER_TYPE_RESERVE => '采购入库',
         self::STOCKIN_ORDER_TYPE_STOCKOUT => '销退入库',
-        self::STOCKIN_ORDER_TYPE_SYS => '系统销退入库',
+    ];
+    /**
+     * 销退入库单类型
+     * @var
+     */
+    const  STOCKIN_ORDER_SYS_TYPE_MAP = [
+        self::STOCKIN_ORDER_SYS_TYPE_SYS => '系统销退入库',
+        self::STOCKIN_ORDER_SYS_TYPE_MANUAL => '手动销退入库',
     ];
 
     /**

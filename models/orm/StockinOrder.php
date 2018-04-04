@@ -122,6 +122,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     /**
      * @param int $intStockInOrderId 入库单id
      * @param int $intStockInOrderType 入库单类型
+     * @param int $intStockInOrderSysType 销退入库单类型
      * @param int $intSourceOrderId 出库单id
      * @param int $intOrderReturnReason 销退入库原因
      * @param string $strOrderReturnReasonText 销退入库原因
@@ -145,6 +146,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     public static function createStayStockInOrder(
         $intStockInOrderId,
         $intStockInOrderType,
+        $intStockInOrderSysType,
         $intSourceOrderId,
         $intOrderReturnReason,
         $strOrderReturnReasonText,
@@ -168,6 +170,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrRow = [
             'stockin_order_id' => intval($intStockInOrderId),
             'stockin_order_type' => intval($intStockInOrderType),
+            'stockin_order_system_type' => intval($intStockInOrderSysType),
             'source_order_id' => intval($intSourceOrderId),
             'stockin_order_reason' => intval($intOrderReturnReason),
             'stockin_order_reason_text' => strval($strOrderReturnReasonText),

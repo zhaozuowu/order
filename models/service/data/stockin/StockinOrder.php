@@ -859,16 +859,18 @@ class Service_Data_Stockin_StockinOrder
         $strCityName = $arrWarehouseInfo['city']['name'];
         $intStockInOrderCreatorId = 0;
         $strStockInOrderCreatorName = 'System';
-        $intStockInOrderType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_SYS;
+        $intStockInOrderType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
+        $intStockInOrderSysType = Order_Define_StockinOrder::STOCKIN_ORDER_SYS_TYPE_SYS;
         $strStockInOrderRemark = strval($strStockInOrderRemark);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockInOrderId, $intStockInOrderType,
-            $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intOrderReturnReason,
+            $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intOrderReturnReason, $intStockInOrderSysType,
             $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId, $strCustomerName, $strCustomerId,
             $intStockinOrderPlanAmount, $intStockInOrderCreatorId, $strStockInOrderCreatorName, $strOrderReturnReasonText,
             $strStockInOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
             Model_Orm_StockinOrder::createStayStockInOrder(
                 $intStockInOrderId,
                 $intStockInOrderType,
+                $intStockInOrderSysType,
                 $intSourceOrderId,
                 $intOrderReturnReason,
                 $strOrderReturnReasonText,
