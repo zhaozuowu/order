@@ -1246,14 +1246,14 @@ class Service_Data_Stockin_StockinOrder
                 'unit_price_tax' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['unit_price_tax'],
             ];
             foreach ($arrRealSkuInfo as $arrSkuInfoItem) {
-                if (0 != $arrSkuInfo['sku_good_amount']) {
+                if (0 != $arrSkuInfoItem['sku_good_amount']) {
                     $arrStockInSkuListItem['batch_info'][] = [
                         'expire_time' => $arrSkuInfoItem['expire_date'],
                         'amount' => $arrSkuInfoItem['sku_good_amount'],
                         'is_defective' => Nscm_Define_Stock::QUALITY_GOOD,
                     ];
                 }
-                if (0 != $arrSkuInfo['sku_defective_amount']) {
+                if (0 != $arrSkuInfoItem['sku_defective_amount']) {
                     $arrStockInSkuListItem['batch_info'][] = [
                         'expire_time' => $arrSkuInfoItem['expire_date'],
                         'amount' => $arrSkuInfoItem['sku_defective_amount'],
