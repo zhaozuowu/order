@@ -59,6 +59,12 @@ class Dao_Ral_Stock
     const  API_RALER_ADJUST_STOCKOUT = 'adjuststockout';
 
     /**
+     * 库存调整-出库
+     * @var string
+     */
+    const  API_RALER_STOCK_IN = 'stockin';
+
+    /**
      * freeze sku stock
      * @param integer $intStockoutOrderId
      * @param integer $intWarehouseId
@@ -246,6 +252,39 @@ class Dao_Ral_Stock
         $ret = $this->objApiRal->getData($req);
         Bd_Log::debug("cancelfreezeskustock res:".json_encode($ret).",request data:".json_encode($req));
         $ret = empty($ret[self::API_RALER_CANCEL_FREEZESKU_STOCK]) ? [] : $ret[self::API_RALER_CANCEL_FREEZESKU_STOCK];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
+        }
+        return $ret;
+    }
+
+    /**
+     * 入库单入库库存通知质量状态
+     * @param int   $intStockInOrderId 入库单号
+     * @param int   $intStockInOrderType 入库单类型 1--采购入库 2--销退入库 3--盘盈入库
+     * @param int   $intWarehouseId 入库所属仓库id
+     * @param array $arrStockInSkuList 入库sku-list
+     * @param int   $intVendorId 供货商id 采购入库时
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function stockIn($intStockInOrderId, $intStockInOrderType, $intWarehouseId, $arrStockInSkuList, $intVendorId = 0)
+    {
+        $ret = [];
+        if (empty($intStockInOrderId) || empty($intStockInOrderType) || empty($intWarehouseId) || empty($arrStockInSkuList)) {
+            return $ret;
+        }
+        $req[self::API_RALER_STOCK_IN] = [
+            'stockin_order_id' => $intStockInOrderId,
+            'stockin_order_type' => $intStockInOrderType,
+            'warehouse_id' => $intWarehouseId,
+            'vendor_id' => $intVendorId,
+            'stockin_sku_info' => $arrStockInSkuList,
+        ];
+        $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug("stockin res:".json_encode($ret).",request data:".json_encode($req));
+        $ret = empty($ret[self::API_RALER_STOCK_IN]) ? [] : $ret[self::API_RALER_STOCK_IN];
         if (empty($ret) || !empty($ret['error_no'])) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
         }

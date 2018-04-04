@@ -1047,12 +1047,20 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH == $arrStockInOrderInfo['stockin_order_status']) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_STATUS_FINISHED);
         }
+        $intWarehouseId = $arrStockInOrderInfo['warehouse_id'];
         if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH != $arrStockInOrderInfo['stockin_order_status']) {
             $intStockInTime = time();
             $intStockInOrderRealAmount = $this->calculateStockInOrderRealAmount($arrSkuInfoList);
             $arrDbSkuInfoList = $this->assembleDbSkuInfoList($arrSkuInfoList, $intStockInOrderId);
+            $arrStockInSkuList = $this->getStockInSkuList($intStockInOrderId, $arrSkuInfoList);
             Model_Orm_StockinOrder::getConnection()->transaction(function () use (
-                $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList, $strRemark) {
+                $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList, $strRemark,
+                $intWarehouseId, $arrStockInSkuList) {
+                $objRalStock = new Dao_Ral_Stock();
+                $objRalStock->stockIn($intStockInOrderId,
+                    Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN,
+                    $intWarehouseId,
+                    $arrStockInSkuList);
                 Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime,
                     $intStockInOrderRealAmount, $strRemark);
                 Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
@@ -1064,6 +1072,7 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
+     * 计算入库单真是入库总数
      * @param  array $arrSkuInfoList
      * @return int
      * @throws Order_Error
@@ -1198,5 +1207,56 @@ class Service_Data_Stockin_StockinOrder
             'stockin_order_reason' => $intOrderReturnReason,
             'stockin_order_reason_text' => $strOrderReturnReasonText,
         ];
+    }
+
+    /**
+     * 拼接入库库存时sku信息
+     * @param  int  $intStockInOrderId
+     * @param  array $arrSkuInfoListRequest
+     * @return array
+     * @throws Order_BusinessError
+     * @throws Order_Error
+     */
+    private function getStockInSkuList($intStockInOrderId, $arrSkuInfoListRequest)
+    {
+        $arrStockInSkuList = [];
+        $arrDbStockInSkuList = $this->getStockinOrderSkuList($intStockInOrderId, 1, 0);
+
+        foreach ($arrDbStockInSkuList as $arrDbStockInSkuInfo) {
+            $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = [
+                'unit_price' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price']),
+                'unit_price_tax' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price_tax']),
+            ];
+        }
+
+        foreach ($arrSkuInfoListRequest as $arrSkuInfo) {
+            if (!isset($arrDbStockInSkuMap[$arrSkuInfo['sku_id']])) {
+                Order_Error::throwException(Order_Error_Code::SYS_ERROR);
+            }
+            $arrRealSkuInfo = $arrSkuInfo['real_stockin_info'];
+            $arrStockInSkuListItem = [
+                'sku_id' => $arrSkuInfo['sku_id'],
+                'unit_price' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['unit_price'],
+                'unit_price_tax' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['unit_price_tax'],
+            ];
+            foreach ($arrRealSkuInfo as $arrSkuInfoItem) {
+                if (0 != $arrSkuInfo['sku_good_amount']) {
+                    $arrStockInSkuListItem['batch_info'][] = [
+                        'expire_time' => $arrSkuInfoItem['expire_date'],
+                        'amount' => $arrSkuInfoItem['sku_good_amount'],
+                        'is_defective' => Nscm_Define_Stock::QUALITY_GOOD,
+                    ];
+                }
+                if (0 != $arrSkuInfo['sku_defective_amount']) {
+                    $arrStockInSkuListItem['batch_info'][] = [
+                        'expire_time' => $arrSkuInfoItem['expire_date'],
+                        'amount' => $arrSkuInfoItem['sku_defective_amount'],
+                        'is_defective' => Nscm_Define_Stock::QUALITY_DEFECTIVE,
+                    ];
+                }
+            }
+            $arrStockInSkuList[] = $arrStockInSkuListItem;
+        }
+        return $arrStockInSkuList;
     }
 }
