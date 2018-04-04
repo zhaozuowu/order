@@ -27,7 +27,9 @@ class Dao_Redis_StockInOrder extends Order_Base_Redis
      */
     public function setStockInOrderId($intSourceOrderId, $intStockInOrderId) {
         $strRedisKey = self::REDIS_STOCKIN_ORDER_ID_KEY_PREFIX . strval($intSourceOrderId);
-        $this->objRedisConn->set($strRedisKey, $intStockInOrderId);
+        Bd_Log::debug(sprintf('set redis, key[%s], data:%s', $strRedisKey, $intStockInOrderId));
+        $boolRes = $this->objRedisConn->set($strRedisKey, $intStockInOrderId);
+        Bd_Log::debug('set redis result: ' . json_encode($boolRes));
         $this->objRedisConn->expire($strRedisKey, self::EXPIRE_TIME);
     }
 
@@ -38,6 +40,9 @@ class Dao_Redis_StockInOrder extends Order_Base_Redis
      */
     public function getValBySourceOrderId($intSourceOrderId) {
         $strRedisKey = self::REDIS_STOCKIN_ORDER_ID_KEY_PREFIX . strval($intSourceOrderId);
-        return intval($this->objRedisConn->get($strRedisKey));
+        Bd_Log::debug(sprintf('get from redis, key[%s]', $strRedisKey));
+        $intStockInOrderId = intval($this->objRedisConn->get($strRedisKey));
+        Bd_Log::debug(sprintf('get from redis, result: `%s`', $intStockInOrderId));
+        return $intStockInOrderId;
     }
 }
