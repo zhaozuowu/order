@@ -1083,20 +1083,23 @@ class Service_Data_Stockin_StockinOrder
     private function calculateStockInOrderRealAmount($arrSkuInfoList)
     {
         $intRealAmount = 0;
-        foreach ($arrSkuInfoList['real_stockin_info'] as $arrRealSkuInfo) {
-            $intAmount = $arrRealSkuInfo['amount'];
-            $intAmountGood = $arrRealSkuInfo['sku_good_amount'];
-            $intAmountDefective = $arrRealSkuInfo['sku_defective_amount'];
-            if (0 != ($intAmount - $intAmountGood - $intAmountDefective)) {
-                Bd_Log::trace(sprintf("sku amount is invalid %s", json_encode($arrSkuInfoList['real_stockin_info'])));
+        foreach ($arrSkuInfoList as $arrSkuInfo) {
+            foreach ($arrSkuInfo['real_stockin_info'] as $arrRealSkuInfo) {
+                $intAmount = $arrRealSkuInfo['amount'];
+                $intAmountGood = $arrRealSkuInfo['sku_good_amount'];
+                $intAmountDefective = $arrRealSkuInfo['sku_defective_amount'];
+                if (0 != ($intAmount - $intAmountGood - $intAmountDefective)) {
+                    Bd_Log::trace(sprintf("sku amount is invalid %s", json_encode($arrSkuInfoList['real_stockin_info'])));
+                    Order_Error::throwException(Order_Error_Code::SYS_ERROR);
+                }
+                $intRealAmount += $intAmount;
+            }
+            if (0 == $intRealAmount) {
+                Bd_Log::trace(sprintf("sku amount is invalid %s", json_encode($arrSkuInfoList)));
                 Order_Error::throwException(Order_Error_Code::SYS_ERROR);
             }
-            $intRealAmount += $intAmount;
         }
-        if (0 == $intRealAmount) {
-            Bd_Log::trace(sprintf("sku amount is invalid %s", json_encode($arrSkuInfoList)));
-            Order_Error::throwException(Order_Error_Code::SYS_ERROR);
-        }
+
         return $intRealAmount;
     }
 
