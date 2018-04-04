@@ -908,7 +908,7 @@ class Service_Data_Stockin_StockinOrder
     {
         //先从仓库获取成本价
         $arrSkuPriceInWarehouse = $this->getStockPrice($intWarehouseId, $arrSkuIds);
-        $arrSkuIdsInWarehouse = array_column($arrSkuPriceInWarehouse, 'sku_id');
+        $arrSkuIdsInWarehouse = array_keys($arrSkuPriceInWarehouse);
         $arrSkuIdsNotInWarehouse = array_diff($arrSkuIds, $arrSkuIdsInWarehouse);
         //仓库中无此商品，则去彩云获取最新含有此sku有效报价的价格
         if (!empty($arrSkuIdsNotInWarehouse)) {
