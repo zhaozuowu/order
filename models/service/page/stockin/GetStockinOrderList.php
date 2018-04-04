@@ -54,9 +54,9 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
             'start' => $arrInput['stockin_time_start'],
             'end' => $arrInput['stockin_time_end'],
         ];
-        $arrStockinDestoryTime = [
-            'start' => $arrInput['stockin_destory_time_start'],
-            'end' => $arrInput['stockin_destory_time_end'],
+        $arrStockinDestroyTime = [
+            'start' => $arrInput['stockin_destroy_time_start'],
+            'end' => $arrInput['stockin_destroy_time_end'],
         ];
         $intPageNum = $arrInput['page_num'];
         $intPageSize = $arrInput['page_size'];
@@ -74,7 +74,7 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
             $arrCreateTime,
             $arrOrderPlanTime,
             $arrStockinTime,
-            $arrStockinDestoryTime,
+            $arrStockinDestroyTime,
             $intPageNum,
             $intPageSize);
     }

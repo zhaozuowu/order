@@ -208,7 +208,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
-     * @param $arrStockinDestoryTime
+     * @param $arrStockinDestroyTime
      * @param $intPageNum
      * @param $intPageSize
      * @return mixed
@@ -228,7 +228,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrCreateTime,
         $arrOrderPlanTime,
         $arrStockinTime,
-        $arrStockinDestoryTime,
+        $arrStockinDestroyTime,
         $intPageNum,
         $intPageSize)
     {
@@ -320,12 +320,12 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             $intTimesCount++;
         }
 
-        if (!empty($arrStockinDestoryTime['start'])
-            && !empty($arrStockinDestoryTime['end'])) {
-            $arrCondition['stockin_destory_time'] = [
+        if (!empty($arrStockinDestroyTime['start'])
+            && !empty($arrStockinDestroyTime['end'])) {
+            $arrCondition['stockin_destroy_time'] = [
                 'between',
-                $arrStockinDestoryTime['start'],
-                $arrStockinDestoryTime['end'],
+                $arrStockinDestroyTime['start'],
+                $arrStockinDestroyTime['end'],
             ];
             $intTimesCount++;
         }
