@@ -259,11 +259,11 @@ class Dao_Ral_Stock
     }
 
     /**
-     * @param int $intStockInOrderId 入库单号
-     * @param int $intStockInOrderType 入库单类型 1--采购入库 2--销退入库 3--盘盈入库
-     * @param int $intWarehouseId 入库所属仓库id
-     * @param int $arrStockInSkuList 入库sku-list
-     * @param int $intVendorId 供货商id 采购入库时
+     * @param int   $intStockInOrderId 入库单号
+     * @param int   $intStockInOrderType 入库单类型 1--采购入库 2--销退入库 3--盘盈入库
+     * @param int   $intWarehouseId 入库所属仓库id
+     * @param array $arrStockInSkuList 入库sku-list
+     * @param int   $intVendorId 供货商id 采购入库时
      * @return array
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
