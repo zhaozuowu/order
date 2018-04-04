@@ -66,7 +66,7 @@ class Dao_Ral_Vendor
             return $ret;
         }
         $req[self::API_RALER_SKU_PRICE]  = [
-            implode(',', $arrSkuIds),
+            'sku_ids' => implode(',', $arrSkuIds),
         ];
         $ret = $this->objApiRal->getData($req);
         $ret = !empty($ret[self::API_RALER_VENDOR_SUG])?$ret[self::API_RALER_VENDOR_SUG]:[];
