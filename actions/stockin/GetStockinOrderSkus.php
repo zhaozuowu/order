@@ -84,6 +84,8 @@ class Action_GetStockinOrderSkus extends Order_Base_Action
                 : intval($arrListItem['reserve_order_sku_plan_amount']);
             $arrRoundResult['stockin_order_sku_real_amount'] = empty($arrListItem['stockin_order_sku_real_amount']) ? 0
                 : intval($arrListItem['stockin_order_sku_real_amount']);
+            $arrRoundResult['stockout_order_sku_amount'] = empty($arrListItem['stockout_order_sku_amount']) ? 0
+                : intval($arrListItem['stockout_order_sku_amount']);
             // 数据库存放的stockin_order_sku_extra_info是json编码的Unix时间戳，转为文本形式时间给FE
             $arrSkuExtInf = empty($arrListItem['stockin_order_sku_extra_info']) ? ''
                 : json_decode($arrListItem['stockin_order_sku_extra_info'], true);
