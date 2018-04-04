@@ -259,6 +259,7 @@ class Dao_Ral_Stock
     }
 
     /**
+     * 入库单入库库存通知质量状态
      * @param int   $intStockInOrderId 入库单号
      * @param int   $intStockInOrderType 入库单类型 1--采购入库 2--销退入库 3--盘盈入库
      * @param int   $intWarehouseId 入库所属仓库id

@@ -1072,6 +1072,7 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
+     * 计算入库单真是入库总数
      * @param  array $arrSkuInfoList
      * @return int
      * @throws Order_Error
@@ -1209,6 +1210,7 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
+     * 拼接入库库存时sku信息
      * @param  int  $intStockInOrderId
      * @param  array $arrSkuInfoListRequest
      * @return array
