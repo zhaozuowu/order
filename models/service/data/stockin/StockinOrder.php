@@ -982,7 +982,7 @@ class Service_Data_Stockin_StockinOrder
     {
         $arrSourceOrderSkuMap = [];
         foreach ($arrSourceOrderSkuList as $arrSourceOrderSku) {
-            $arrSourceOrderSkuMap[$arrSourceOrderSku['sku_id']] = $arrSourceOrderSku['order_amount'];
+            $arrSourceOrderSkuMap[$arrSourceOrderSku['sku_id']] = $arrSourceOrderSku['pickup_amount'];
         }
         $arrDbSkuList = [];
         foreach ($arrSkuPriceList as $intSkuId => $arrSkuPriceInfo) {
@@ -1186,7 +1186,7 @@ class Service_Data_Stockin_StockinOrder
     {
         $arrSourceOrderSkuMap = [];
         foreach ($arrSourceOrderSkuList as $arrSourceOrderSku) {
-            $arrSourceOrderSkuMap[$arrSourceOrderSku['sku_id']] = $arrSourceOrderSku['order_amount'];
+            $arrSourceOrderSkuMap[$arrSourceOrderSku['sku_id']] = $arrSourceOrderSku['pickup_amount'];
         }
         $arrOrderRejectedReason = [];
         $arrOrderReturnReason = [];
