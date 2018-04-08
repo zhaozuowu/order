@@ -19,17 +19,6 @@ class Order_Define_StockinOrder
      */
     const STOCKIN_ORDER_TYPE_STOCKOUT = 2;
     /**
-     * stock in system type
-     * @var int
-     */
-    const STOCKIN_ORDER_SYS_TYPE_SYS = 1;
-    /**
-     * stock in system type
-     * @var int
-     */
-    const STOCKIN_ORDER_SYS_TYPE_MANUAL = 2;
-
-    /**
      * type return
      * @var int
      */
@@ -91,15 +80,6 @@ class Order_Define_StockinOrder
         self::STOCKIN_ORDER_TYPE_RESERVE => '采购入库',
         self::STOCKIN_ORDER_TYPE_STOCKOUT => '销退入库',
     ];
-    /**
-     * 销退入库单类型
-     * @var
-     */
-    const  STOCKIN_ORDER_SYS_TYPE_MAP = [
-        self::STOCKIN_ORDER_SYS_TYPE_SYS => '系统销退入库',
-        self::STOCKIN_ORDER_SYS_TYPE_MANUAL => '手动销退入库',
-    ];
-
     /**
      * 销退入库原因定义
      */
@@ -168,31 +148,6 @@ class Order_Define_StockinOrder
         self::STOCKIN_ORDER_STATUS_WAIT         => '待入库',
         self::STOCKIN_ORDER_STATUS_DESTROYED    => '已作废',
         self::STOCKIN_ORDER_STATUS_FINISHED     => '已完成',
-    ];
-
-    /**
-     * 入库单来源
-     */
-    const STOCKIN_ORDER_SOURCE_SHELF    = 1;    // 无人货架
-    const STOCKIN_ORDER_SOURCE_PRE_CANG = 2;    // 前置仓
-    const STOCKIN_ORDER_SOURCE_SHOP     = 3;    // 便利店
-
-    /**
-     * 入库单来源类型定义
-     */
-    const STOCKIN_ORDER_SOURCE_DEFINE = [
-        self::STOCKIN_ORDER_SOURCE_SHELF    => true,
-        self::STOCKIN_ORDER_SOURCE_PRE_CANG => true,
-        self::STOCKIN_ORDER_SOURCE_SHOP     => true,
-    ];
-
-    /**
-     * 入库单来源类型文本映射表
-     */
-    const STOCKIN_ORDER_SOURCE_MAP = [
-        self::STOCKIN_ORDER_SOURCE_SHELF    => '无人货架',
-        self::STOCKIN_ORDER_SOURCE_PRE_CANG => '前置仓',
-        self::STOCKIN_ORDER_SOURCE_SHOP     => '便利店',
     ];
 
     /**

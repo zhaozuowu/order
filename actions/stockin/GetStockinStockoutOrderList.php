@@ -99,8 +99,8 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
             $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? 0
                 : intval($arrListItem['stockin_order_status']);
             $arrRoundResult['stockin_order_source_type_text'] =
-                isset(Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_DEFINE[$arrListItem['stockin_order_source']])
-                    ? Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_MAP[intval($arrListItem['stockin_order_source'])]
+                isset(Nscm_Define_NWmsStockInOrder::STOCKIN_ORDER_SOURCE_DEFINE[$arrListItem['stockin_order_source']])
+                    ? Nscm_Define_NWmsStockInOrder::STOCKIN_ORDER_SOURCE_MAP[intval($arrListItem['stockin_order_source'])]
                     : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['stockin_destroy_time_text'] = Order_Util::getFormatDateTime($arrListItem['stockin_destroy_time']);
             $arrRoundResult['data_source_text'] =

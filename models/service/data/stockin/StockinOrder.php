@@ -294,7 +294,7 @@ class Service_Data_Stockin_StockinOrder
         // 目前预约单无客户名称
         $strCustomerName = '';
         // 目前手动创建的入库单（预约单入库/手动销退入库类型 - 设置系统类型为手动销退入库）
-        $intStockInOrderSysType = Order_Define_StockinOrder::STOCKIN_ORDER_SYS_TYPE_MANUAL;
+        $intStockInOrderDataSourceType = Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_MANUAL_CREATE;
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
             $intSourceOrderId = intval($arrSourceOrderInfo['reserve_order_id']);
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['reserve_order_plan_amount'];
@@ -325,7 +325,7 @@ class Service_Data_Stockin_StockinOrder
         $strStockinOrderCreatorName = strval($strCreatorName);
         $strStockinOrderRemark = strval($strStockinOrderRemark);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockinOrderId, $intStockinOrderType,
-            $intStockInOrderSysType, $intSourceOrderId, $intSourceSupplierId, $strSourceInfo, $intStockinOrderStatus,
+            $intStockInOrderDataSourceType, $intSourceOrderId, $intSourceSupplierId, $strSourceInfo, $intStockinOrderStatus,
             $intWarehouseId, $strWarehouseName, $intCityId, $strCityName, $intStockinTime, $intReserveOrderPlanTime,
             $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockinOrderCreatorId, $strStockinOrderCreatorName,
             $strStockinOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax,
@@ -336,7 +336,7 @@ class Service_Data_Stockin_StockinOrder
             Model_Orm_StockinOrder::createStockinOrder(
                 $intStockinOrderId,
                 $intStockinOrderType,
-                $intStockInOrderSysType,
+                $intStockInOrderDataSourceType,
                 $intSourceOrderId,
                 $intStockinBatchId,
                 $intSourceSupplierId,
@@ -547,7 +547,7 @@ class Service_Data_Stockin_StockinOrder
 
         // 如果填写则校验参数类型
         if (!empty($intStockinOrderSourceType)
-            && !isset(Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_DEFINE[$intStockinOrderSourceType])) {
+            && !isset(Nscm_Define_NWmsStockInOrder::STOCKIN_ORDER_SOURCE_DEFINE[$intStockinOrderSourceType])) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
 
@@ -825,12 +825,13 @@ class Service_Data_Stockin_StockinOrder
      * @param  array   $arrRequestSkuInfoList
      * @param  int     $intShipmentOrderId
      * @param  string  $strStockInOrderRemark
+     * @param  integer $intStockInOrderSource
      * @return integer $intStockInOrderId
      * @throws Order_Error
      * @throws Exception
      */
     public function createSysStockInOrder($intStockInOrderId, $arrSourceOrderSkuList, $arrSourceOrderInfo, $intShipmentOrderId,
-                                          $arrRequestSkuInfoList, $strStockInOrderRemark)
+                                          $arrRequestSkuInfoList, $strStockInOrderRemark, $intStockInOrderSource)
     {
         if (empty($intShipmentOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
@@ -842,7 +843,10 @@ class Service_Data_Stockin_StockinOrder
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         if (empty($arrRequestSkuInfoList)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR, 'sku list is invalided');
+        }
+        if (empty($intStockInOrderSource)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR, 'stock in order source is invalided');
         }
         $intWarehouseId = $arrSourceOrderInfo['warehouse_id'];
         $arrSkuIds = array_column($arrRequestSkuInfoList, 'sku_id');
@@ -875,17 +879,18 @@ class Service_Data_Stockin_StockinOrder
         $intStockInOrderCreatorId = 0;
         $strStockInOrderCreatorName = 'System';
         $intStockInOrderType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
-        $intStockInOrderSysType = Order_Define_StockinOrder::STOCKIN_ORDER_SYS_TYPE_SYS;
+        $intStockInOrderDataSourceType = Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_FROM_SYSTEM;
         $strStockInOrderRemark = strval($strStockInOrderRemark);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockInOrderId, $intStockInOrderType,
-            $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intOrderReturnReason, $intStockInOrderSysType,
-            $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId, $strCustomerName, $strCustomerId,
+            $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intOrderReturnReason, $intStockInOrderDataSourceType,
+            $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId, $strCustomerName, $strCustomerId, $intStockInOrderSource,
             $intStockinOrderPlanAmount, $intStockInOrderCreatorId, $strStockInOrderCreatorName, $strOrderReturnReasonText,
             $strStockInOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
             Model_Orm_StockinOrder::createStayStockInOrder(
                 $intStockInOrderId,
                 $intStockInOrderType,
-                $intStockInOrderSysType,
+                $intStockInOrderDataSourceType,
+                $intStockInOrderSource,
                 $intSourceOrderId,
                 $intOrderReturnReason,
                 $strOrderReturnReasonText,
