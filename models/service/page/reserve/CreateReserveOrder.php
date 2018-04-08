@@ -27,10 +27,18 @@ class Service_Page_Reserve_CreateReserveOrder implements Order_Base_Page
     public function execute($arrInput)
     {
         $arrReserve = $arrInput;
-        $arrRes = $this->objDataReserve->saveCreateReserveOrder($arrReserve);
-        $strKey = $arrRes['key'];
-        $intReserveOrderId = $arrRes['purchase_order_id'];
-        $this->objDataReserve->sendReserveInfoToWmq($strKey);
+        try {
+            $arrRes = $this->objDataReserve->saveCreateReserveOrder($arrReserve);
+            $strKey = $arrRes['key'];
+            $intReserveOrderId = $arrRes['purchase_order_id'];
+            $this->objDataReserve->sendReserveInfoToWmq($strKey);
+        } catch (Order_BusinessError $e) {
+            if (Order_Error_Code::PURCHASE_ORDER_HAS_BEEN_RECEIVED == $e->getCode()) {
+                $intReserveOrderId = $e->getArrArgs()['reserve_order_id'];
+            } else {
+                throw $e;
+            }
+        }
         $arrRet = [
             'purchase_order_id' => $intReserveOrderId,
         ];
