@@ -51,6 +51,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * create stock in order
      * @param int $intStockinOrderId
      * @param int $intStockinOrderType
+     * @param int $intStockInOrderSysType
      * @param int $intSourceOrderId
      * @param int $intStockinBatchId
      * @param int $intSourceSupplierId
@@ -76,6 +77,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     public static function createStockinOrder(
         $intStockinOrderId,
         $intStockinOrderType,
+        $intStockInOrderSysType,
         $intSourceOrderId,
         $intStockinBatchId,
         $intSourceSupplierId,
@@ -101,6 +103,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrRow = [
             'stockin_order_id' => intval($intStockinOrderId),
             'stockin_order_type' => intval($intStockinOrderType),
+            'stockin_order_system_type' => intval($intStockInOrderSysType),
             'source_order_id' => intval($intSourceOrderId),
             'stockin_batch_id' => intval($intStockinBatchId),
             'source_supplier_id' => intval($intSourceSupplierId),
@@ -205,6 +208,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param $intDataSource
      * @param $intStockinOrderId
      * @param $intStockinOrderSourceType
+     * @param $intStockinOrderSystemType
      * @param $intStockinOrderStatus
      * @param $arrWarehouseId
      * @param $intSourceSupplierId
@@ -226,6 +230,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intDataSource,
         $intStockinOrderId,
         $intStockinOrderSourceType,
+        $intStockinOrderSystemType,
         $intStockinOrderStatus,
         $arrWarehouseId,
         $intSourceSupplierId,
@@ -267,6 +272,10 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
         if (!empty($intStockinOrderSourceType)) {
             $arrCondition['stockin_order_source'] = $intStockinOrderSourceType;
+        }
+
+        if (!empty($intStockinOrderSystemType)) {
+            $arrCondition['stockin_order_system_type'] = $intStockinOrderSystemType;
         }
 
         if (!empty($intStockinOrderStatus)) {

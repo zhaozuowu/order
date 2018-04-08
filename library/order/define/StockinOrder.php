@@ -27,7 +27,7 @@ class Order_Define_StockinOrder
      * stock in system type
      * @var int
      */
-    const STOCKIN_ORDER_SYS_TYPE_MANUAL = 0;
+    const STOCKIN_ORDER_SYS_TYPE_MANUAL = 2;
 
     /**
      * type return

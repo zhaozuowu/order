@@ -17,6 +17,7 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
         'data_source' => 'int|min[0]',
         'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
         'stockin_order_source_type' => 'int|min[0]|max[3]',
+        'stockin_order_system_type' => 'int|min[0]|max[2]',
         'stockin_order_status' => 'int|min[0]|max[30]',
         'warehouse_ids' => 'str|required',
         'source_supplier_id' => 'int|min[0]',
@@ -99,9 +100,13 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
             $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? 0
                 : intval($arrListItem['stockin_order_status']);
             $arrRoundResult['stockin_order_source_type_text'] =
-                !isset(Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_DEFINE[$arrListItem['stockin_order_source']])
-                        ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
-                        : Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_MAP[intval($arrListItem['stockin_order_source'])];
+                isset(Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_DEFINE[$arrListItem['stockin_order_source']])
+                    ? Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_MAP[intval($arrListItem['stockin_order_source'])]
+                    : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
+            $arrRoundResult['stockin_order_system_type_text'] =
+                isset(Order_Define_StockinOrder::STOCKIN_ORDER_SYS_TYPE_MAP[$arrListItem['stockin_order_system_type']])
+                    ? Order_Define_StockinOrder::STOCKIN_ORDER_SYS_TYPE_MAP[intval($arrListItem['stockin_order_system_type'])]
+                    : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['stockin_destroy_time_text'] = Order_Util::getFormatDateTime($arrListItem['stockin_destroy_time']);
             $arrRoundResult['data_source_text'] =
                 !isset(Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_DEFINE[intval($arrListItem['data_source'])])
