@@ -22,7 +22,7 @@ class Action_Createdecreaseorder extends Order_Base_Action
             'params'                => [
                 'sku_id'                    => 'int|required',
                 'production_or_expire_time' => 'int|required',
-                'adjust_amount'             => 'int|required',
+                'adjust_amount'             => 'int|required|min[1]',
                 'is_defective'              => 'int|required|min[1]|max[2]',
             ],
         ],

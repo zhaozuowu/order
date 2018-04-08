@@ -522,7 +522,8 @@ class Service_Data_StockAdjustOrder
         if(Nscm_Define_Sku::SKU_EFFECT_FROM === $intSkuEffectType) {
             // 生产日期型
             $arrDetail['production_time'] = $arrDetail['production_or_expire_time'];
-            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'] + $intSkuEffectDay * 3600 * 24;
+            // 根据PM要求，1月1号生产的商品，保质期1天，失效时间为1月1号 23点59分59秒
+            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'] + $intSkuEffectDay * 3600 * 24 -1;
         } else if(Nscm_Define_Sku::SKU_EFFECT_TO === $intSkuEffectType) {
             // 到效期型
             $arrDetail['production_time'] = '';
