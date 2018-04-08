@@ -496,6 +496,7 @@ class Service_Data_Stockin_StockinOrder
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
      * @param $arrStockinDestroyTime
+     * @param $intPrintStatus
      * @param $intPageNum
      * @param $intPageSize
      * @return mixed
@@ -517,6 +518,7 @@ class Service_Data_Stockin_StockinOrder
         $arrOrderPlanTime,
         $arrStockinTime,
         $arrStockinDestroyTime,
+        $intPrintStatus,
         $intPageNum,
         $intPageSize)
     {
@@ -604,6 +606,7 @@ class Service_Data_Stockin_StockinOrder
             $arrOrderPlanTime,
             $arrStockinTime,
             $arrStockinDestroyTime,
+            $intPrintStatus,
             $intPageNum,
             $intPageSize);
     }

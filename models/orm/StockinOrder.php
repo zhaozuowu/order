@@ -209,6 +209,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
      * @param $arrStockinDestroyTime
+     * @param $intPrintStatus
      * @param $intPageNum
      * @param $intPageSize
      * @return mixed
@@ -229,6 +230,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrOrderPlanTime,
         $arrStockinTime,
         $arrStockinDestroyTime,
+        $intPrintStatus,
         $intPageNum,
         $intPageSize)
     {
@@ -328,6 +330,10 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
                 $arrStockinDestroyTime['end'],
             ];
             $intTimesCount++;
+        }
+
+        if (!empty($intPrintStatus)) {
+            $arrCondition['stockin_order_is_print'] = $intPrintStatus;
         }
 
         // 至少要有一个必传的时间段

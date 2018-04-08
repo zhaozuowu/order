@@ -31,6 +31,7 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
         'stockin_time_end' => 'int|min[0]',
         'stockin_destroy_time_start' => 'int|min[0]',
         'stockin_destroy_time_end' => 'int|min[0]',
+        'print_status' => 'int|min[0]',
         'page_num' => 'int|default[1]|min[1]|optional',
         'page_size' => 'int|required|min[1]|max[200]',
     ];
@@ -128,6 +129,10 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
                 Order_Util::getFormatDateTime($arrListItem['create_time']);
             $arrRoundResult['stockin_order_creator_name'] = empty($arrListItem['stockin_order_creator_name']) ? ''
                 : strval($arrListItem['stockin_order_creator_name']);
+            $arrRoundResult['print_status_text'] =
+                isset(Order_Define_StockinOrder::STOCKIN_PRINT_STATUS[intval($arrListItem['stockin_order_is_print'])])
+                ? Order_Define_StockinOrder::STOCKIN_PRINT_STATUS[intval($arrListItem['stockin_order_is_print'])]
+                : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
 
             $arrFormatResult['list'][] = $arrRoundResult;
         }
