@@ -36,7 +36,6 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
         $intDataSource = intval($arrInput['data_source']);
         $strStockinOrderId = $arrInput['stockin_order_id'];
         $intStockinOrderSourceType = intval($arrInput['stockin_order_source_type']);
-        $intStockinOrderSystemType = intval($arrInput['stockin_order_system_type']);
         $intStockinOrderStatus = intval($arrInput['stockin_order_status']);
         $strWarehouseId = $arrInput['warehouse_ids'];
         $intSourceSupplierId = $arrInput['source_supplier_id'];
@@ -67,7 +66,6 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
             $intDataSource,
             $strStockinOrderId,
             $intStockinOrderSourceType,
-            $intStockinOrderSystemType,
             $intStockinOrderStatus,
             $strWarehouseId,
             $intSourceSupplierId,

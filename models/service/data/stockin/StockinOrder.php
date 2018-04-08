@@ -498,7 +498,6 @@ class Service_Data_Stockin_StockinOrder
      * @param $intDataSource
      * @param $strStockinOrderId,
      * @param $intStockinOrderSourceType
-     * @param $intStockinOrderSystemType
      * @param $intStockinOrderStatus
      * @param $strWarehouseId
      * @param $intSourceSupplierId
@@ -521,7 +520,6 @@ class Service_Data_Stockin_StockinOrder
         $intDataSource,
         $strStockinOrderId,
         $intStockinOrderSourceType,
-        $intStockinOrderSystemType,
         $intStockinOrderStatus,
         $strWarehouseId,
         $intSourceSupplierId,
@@ -550,12 +548,6 @@ class Service_Data_Stockin_StockinOrder
         // 如果填写则校验参数类型
         if (!empty($intStockinOrderSourceType)
             && !isset(Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_DEFINE[$intStockinOrderSourceType])) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
-        }
-
-        // 如果填写则校验参数类型
-        if (!empty($intStockinOrderSystemType)
-            && !isset(Order_Define_StockinOrder::STOCKIN_ORDER_SYS_TYPE_MAP[$intStockinOrderSystemType])) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
 
@@ -616,7 +608,6 @@ class Service_Data_Stockin_StockinOrder
             $intDataSource,
             $intStockinOrderId,
             $intStockinOrderSourceType,
-            $intStockinOrderSystemType,
             $intStockinOrderStatus,
             $arrWarehouseId,
             $intSourceSupplierId,
