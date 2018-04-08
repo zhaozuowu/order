@@ -289,6 +289,10 @@ class Service_Data_Stockin_StockinOrder
         $intStockinOrderTotalPrice = $this->calculateTotalPrice($arrDbSkuInfoList);
         $intStockinOrderTotalPriceTax = $this->calculateTotalPriceTax($arrDbSkuInfoList);
         $intStockinOrderType = intval($intType);
+        // 目前预约单无客户id
+        $intCustomerId = 0;
+        // 目前预约单无客户名称
+        $strCustomerName = '';
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
             $intSourceOrderId = intval($arrSourceOrderInfo['reserve_order_id']);
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['reserve_order_plan_amount'];
@@ -298,6 +302,8 @@ class Service_Data_Stockin_StockinOrder
             $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockout_order_pickup_amount'];
             $intSourceSupplierId = $arrSourceOrderInfo['customer_id'];
+            $intCustomerId = $arrSourceOrderInfo['customer_id'];
+            $strCustomerName = $arrSourceOrderInfo['customer_name'];
             $intReserveOrderPlanTime = 0;
         }
         $arrSourceInfo = $this->getSourceInfo($arrSourceOrderInfo, $intType);
@@ -320,7 +326,8 @@ class Service_Data_Stockin_StockinOrder
             $intSourceOrderId, $intSourceSupplierId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId,
             $strWarehouseName, $intCityId, $strCityName, $intStockinTime, $intReserveOrderPlanTime,
             $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockinOrderCreatorId, $strStockinOrderCreatorName,
-            $strStockinOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
+            $strStockinOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax,
+            $intCustomerId,$strCustomerName) {
             $intVendorId = $intStockinOrderType == Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE ? $intSourceSupplierId : 0;
             $arrStock = $this->notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $intVendorId, $arrDbSkuInfoList);
             $intStockinBatchId = $arrStock['stockin_batch_id'];
@@ -344,7 +351,9 @@ class Service_Data_Stockin_StockinOrder
                 $strStockinOrderCreatorName,
                 $strStockinOrderRemark,
                 $intStockinOrderTotalPrice,
-                $intStockinOrderTotalPriceTax);
+                $intStockinOrderTotalPriceTax,
+                $intCustomerId,
+                $strCustomerName);
             Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockinOrderId);
             if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
                 $ormStockinOrder = Model_Orm_ReserveOrder::findReserveOrder($intSourceOrderId);
