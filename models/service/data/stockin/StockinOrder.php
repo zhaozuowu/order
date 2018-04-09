@@ -289,6 +289,12 @@ class Service_Data_Stockin_StockinOrder
         $intStockinOrderTotalPrice = $this->calculateTotalPrice($arrDbSkuInfoList);
         $intStockinOrderTotalPriceTax = $this->calculateTotalPriceTax($arrDbSkuInfoList);
         $intStockinOrderType = intval($intType);
+        // 目前预约单无客户id
+        $intCustomerId = 0;
+        // 目前预约单无客户名称
+        $strCustomerName = '';
+        // 目前手动创建的入库单（预约单入库/手动销退入库类型 - 设置系统类型为手动销退入库）
+        $intStockInOrderDataSourceType = Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_MANUAL_CREATE;
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
             $intSourceOrderId = intval($arrSourceOrderInfo['reserve_order_id']);
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['reserve_order_plan_amount'];
@@ -298,6 +304,8 @@ class Service_Data_Stockin_StockinOrder
             $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockout_order_pickup_amount'];
             $intSourceSupplierId = $arrSourceOrderInfo['customer_id'];
+            $intCustomerId = $arrSourceOrderInfo['customer_id'];
+            $strCustomerName = $arrSourceOrderInfo['customer_name'];
             $intReserveOrderPlanTime = 0;
         }
         $arrSourceInfo = $this->getSourceInfo($arrSourceOrderInfo, $intType);
@@ -317,16 +325,18 @@ class Service_Data_Stockin_StockinOrder
         $strStockinOrderCreatorName = strval($strCreatorName);
         $strStockinOrderRemark = strval($strStockinOrderRemark);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockinOrderId, $intStockinOrderType,
-            $intSourceOrderId, $intSourceSupplierId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId,
-            $strWarehouseName, $intCityId, $strCityName, $intStockinTime, $intReserveOrderPlanTime,
+            $intStockInOrderDataSourceType, $intSourceOrderId, $intSourceSupplierId, $strSourceInfo, $intStockinOrderStatus,
+            $intWarehouseId, $strWarehouseName, $intCityId, $strCityName, $intStockinTime, $intReserveOrderPlanTime,
             $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockinOrderCreatorId, $strStockinOrderCreatorName,
-            $strStockinOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
+            $strStockinOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax,
+            $intCustomerId,$strCustomerName) {
             $intVendorId = $intStockinOrderType == Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE ? $intSourceSupplierId : 0;
             $arrStock = $this->notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $intVendorId, $arrDbSkuInfoList);
             $intStockinBatchId = $arrStock['stockin_batch_id'];
             Model_Orm_StockinOrder::createStockinOrder(
                 $intStockinOrderId,
                 $intStockinOrderType,
+                $intStockInOrderDataSourceType,
                 $intSourceOrderId,
                 $intStockinBatchId,
                 $intSourceSupplierId,
@@ -344,7 +354,9 @@ class Service_Data_Stockin_StockinOrder
                 $strStockinOrderCreatorName,
                 $strStockinOrderRemark,
                 $intStockinOrderTotalPrice,
-                $intStockinOrderTotalPriceTax);
+                $intStockinOrderTotalPriceTax,
+                $intCustomerId,
+                $strCustomerName);
             Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockinOrderId);
             if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
                 $ormStockinOrder = Model_Orm_ReserveOrder::findReserveOrder($intSourceOrderId);
@@ -495,7 +507,8 @@ class Service_Data_Stockin_StockinOrder
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
-     * @param $arrStockinDestoryTime
+     * @param $arrStockinDestroyTime
+     * @param $intPrintStatus
      * @param $intPageNum
      * @param $intPageSize
      * @return mixed
@@ -516,7 +529,8 @@ class Service_Data_Stockin_StockinOrder
         $arrCreateTime,
         $arrOrderPlanTime,
         $arrStockinTime,
-        $arrStockinDestoryTime,
+        $arrStockinDestroyTime,
+        $intPrintStatus,
         $intPageNum,
         $intPageSize)
     {
@@ -533,7 +547,7 @@ class Service_Data_Stockin_StockinOrder
 
         // 如果填写则校验参数类型
         if (!empty($intStockinOrderSourceType)
-            && !isset(Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_DEFINE[$intStockinOrderSourceType])) {
+            && !isset(Nscm_Define_NWmsStockInOrder::STOCKIN_ORDER_SOURCE_DEFINE[$intStockinOrderSourceType])) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
 
@@ -558,8 +572,8 @@ class Service_Data_Stockin_StockinOrder
         $arrStockinTime['start'] = intval($arrStockinTime['start']);
         $arrStockinTime['end'] = intval($arrStockinTime['end']);
 
-        $arrStockinDestoryTime['start'] = intval($arrStockinDestoryTime['start']);
-        $arrStockinDestoryTime['end'] = intval($arrStockinDestoryTime['end']);
+        $arrStockinDestroyTime['start'] = intval($arrStockinDestroyTime['start']);
+        $arrStockinDestroyTime['end'] = intval($arrStockinDestroyTime['end']);
 
         if (false === Order_Util::verifyUnixTimeSpan(
                 $arrCreateTime['start'],
@@ -583,8 +597,8 @@ class Service_Data_Stockin_StockinOrder
         }
 
         if (false === Order_Util::verifyUnixTimeSpan(
-                $arrStockinDestoryTime['start'],
-                $arrStockinDestoryTime['end'])) {
+                $arrStockinDestroyTime['start'],
+                $arrStockinDestroyTime['end'])) {
             Order_BusinessError::throwException(
                 Order_Error_Code::QUERY_TIME_SPAN_ERROR);
         }
@@ -603,7 +617,8 @@ class Service_Data_Stockin_StockinOrder
             $arrCreateTime,
             $arrOrderPlanTime,
             $arrStockinTime,
-            $arrStockinDestoryTime,
+            $arrStockinDestroyTime,
+            $intPrintStatus,
             $intPageNum,
             $intPageSize);
     }
@@ -810,12 +825,13 @@ class Service_Data_Stockin_StockinOrder
      * @param  array   $arrRequestSkuInfoList
      * @param  int     $intShipmentOrderId
      * @param  string  $strStockInOrderRemark
+     * @param  integer $intStockInOrderSource
      * @return integer $intStockInOrderId
      * @throws Order_Error
      * @throws Exception
      */
     public function createSysStockInOrder($intStockInOrderId, $arrSourceOrderSkuList, $arrSourceOrderInfo, $intShipmentOrderId,
-                                          $arrRequestSkuInfoList, $strStockInOrderRemark)
+                                          $arrRequestSkuInfoList, $strStockInOrderRemark, $intStockInOrderSource)
     {
         if (empty($intShipmentOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
@@ -827,7 +843,10 @@ class Service_Data_Stockin_StockinOrder
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         if (empty($arrRequestSkuInfoList)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR, 'sku list is invalided');
+        }
+        if (empty($intStockInOrderSource)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR, 'stock in order source is invalided');
         }
         $intWarehouseId = $arrSourceOrderInfo['warehouse_id'];
         $arrSkuIds = array_column($arrRequestSkuInfoList, 'sku_id');
@@ -859,16 +878,19 @@ class Service_Data_Stockin_StockinOrder
         $strCityName = $arrWarehouseInfo['city']['name'];
         $intStockInOrderCreatorId = 0;
         $strStockInOrderCreatorName = 'System';
-        $intStockInOrderType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_SYS;
+        $intStockInOrderType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
+        $intStockInOrderDataSourceType = Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_FROM_SYSTEM;
         $strStockInOrderRemark = strval($strStockInOrderRemark);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockInOrderId, $intStockInOrderType,
-            $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intOrderReturnReason,
-            $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId, $strCustomerName, $strCustomerId,
+            $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intOrderReturnReason, $intStockInOrderDataSourceType,
+            $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId, $strCustomerName, $strCustomerId, $intStockInOrderSource,
             $intStockinOrderPlanAmount, $intStockInOrderCreatorId, $strStockInOrderCreatorName, $strOrderReturnReasonText,
             $strStockInOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
             Model_Orm_StockinOrder::createStayStockInOrder(
                 $intStockInOrderId,
                 $intStockInOrderType,
+                $intStockInOrderDataSourceType,
+                $intStockInOrderSource,
                 $intSourceOrderId,
                 $intOrderReturnReason,
                 $strOrderReturnReasonText,
@@ -904,17 +926,18 @@ class Service_Data_Stockin_StockinOrder
      */
     private function getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList)
     {
-        $arrRes = [];
         //先从仓库获取成本价
         $arrSkuPriceInWarehouse = $this->getStockPrice($intWarehouseId, $arrSkuIds);
-        $arrSkuIdsInWarehouse = array_column($arrSkuPriceInWarehouse, 'sku_id');
+        $arrSkuIdsInWarehouse = array_keys($arrSkuPriceInWarehouse);
         $arrSkuIdsNotInWarehouse = array_diff($arrSkuIds, $arrSkuIdsInWarehouse);
         //仓库中无此商品，则去彩云获取最新含有此sku有效报价的价格
         if (!empty($arrSkuIdsNotInWarehouse)) {
             $arrSkuPriceInVendor = $this->getVendorSkuPrice($arrSkuIdsNotInWarehouse, $arrSkuInfoList);
-            $arrRes = array_merge($arrSkuPriceInWarehouse, $arrSkuPriceInVendor);
+            foreach ($arrSkuPriceInVendor as $intSkuId => $item) {
+                $arrSkuPriceInWarehouse[$intSkuId] = $item;
+            }
         }
-        return $arrRes;
+        return $arrSkuPriceInWarehouse;
     }
 
     /**
@@ -967,7 +990,7 @@ class Service_Data_Stockin_StockinOrder
     {
         $arrSourceOrderSkuMap = [];
         foreach ($arrSourceOrderSkuList as $arrSourceOrderSku) {
-            $arrSourceOrderSkuMap[$arrSourceOrderSku['sku_id']] = $arrSourceOrderSku['order_amount'];
+            $arrSourceOrderSkuMap[$arrSourceOrderSku['sku_id']] = $arrSourceOrderSku['pickup_amount'];
         }
         $arrDbSkuList = [];
         foreach ($arrSkuPriceList as $intSkuId => $arrSkuPriceInfo) {
@@ -1080,20 +1103,23 @@ class Service_Data_Stockin_StockinOrder
     private function calculateStockInOrderRealAmount($arrSkuInfoList)
     {
         $intRealAmount = 0;
-        foreach ($arrSkuInfoList['real_stockin_info'] as $arrRealSkuInfo) {
-            $intAmount = $arrRealSkuInfo['amount'];
-            $intAmountGood = $arrRealSkuInfo['sku_good_amount'];
-            $intAmountDefective = $arrRealSkuInfo['sku_defective_amount'];
-            if (0 != ($intAmount - $intAmountGood - $intAmountDefective)) {
-                Bd_Log::trace(sprintf("sku amount is invalid %s", json_encode($arrSkuInfoList['real_stockin_info'])));
+        foreach ($arrSkuInfoList as $arrSkuInfo) {
+            foreach ($arrSkuInfo['real_stockin_info'] as $arrRealSkuInfo) {
+                $intAmount = $arrRealSkuInfo['amount'];
+                $intAmountGood = $arrRealSkuInfo['sku_good_amount'];
+                $intAmountDefective = $arrRealSkuInfo['sku_defective_amount'];
+                if (0 != ($intAmount - $intAmountGood - $intAmountDefective)) {
+                    Bd_Log::trace(sprintf("sku amount is invalid %s", json_encode($arrSkuInfoList['real_stockin_info'])));
+                    Order_Error::throwException(Order_Error_Code::SYS_ERROR);
+                }
+                $intRealAmount += $intAmount;
+            }
+            if (0 == $intRealAmount) {
+                Bd_Log::trace(sprintf("sku amount is invalid %s", json_encode($arrSkuInfoList)));
                 Order_Error::throwException(Order_Error_Code::SYS_ERROR);
             }
-            $intRealAmount += $intAmount;
         }
-        if (0 == $intRealAmount) {
-            Bd_Log::trace(sprintf("sku amount is invalid %s", json_encode($arrSkuInfoList)));
-            Order_Error::throwException(Order_Error_Code::SYS_ERROR);
-        }
+
         return $intRealAmount;
     }
 
@@ -1168,7 +1194,7 @@ class Service_Data_Stockin_StockinOrder
     {
         $arrSourceOrderSkuMap = [];
         foreach ($arrSourceOrderSkuList as $arrSourceOrderSku) {
-            $arrSourceOrderSkuMap[$arrSourceOrderSku['sku_id']] = $arrSourceOrderSku['order_amount'];
+            $arrSourceOrderSkuMap[$arrSourceOrderSku['sku_id']] = $arrSourceOrderSku['pickup_amount'];
         }
         $arrOrderRejectedReason = [];
         $arrOrderReturnReason = [];
@@ -1204,8 +1230,8 @@ class Service_Data_Stockin_StockinOrder
         $strOrderReturnReasonText = implode(',', $arrOrderReturnReasonText);
 
         return [
-            'stockin_order_reason' => $intOrderReturnReason,
-            'stockin_order_reason_text' => $strOrderReturnReasonText,
+            $intOrderReturnReason,
+            $strOrderReturnReasonText,
         ];
     }
 
@@ -1222,7 +1248,7 @@ class Service_Data_Stockin_StockinOrder
         $arrStockInSkuList = [];
         $arrDbStockInSkuList = $this->getStockinOrderSkuList($intStockInOrderId, 1, 0);
 
-        foreach ($arrDbStockInSkuList as $arrDbStockInSkuInfo) {
+        foreach ($arrDbStockInSkuList['list'] as $arrDbStockInSkuInfo) {
             $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = [
                 'unit_price' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price']),
                 'unit_price_tax' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price_tax']),
@@ -1240,14 +1266,14 @@ class Service_Data_Stockin_StockinOrder
                 'unit_price_tax' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['unit_price_tax'],
             ];
             foreach ($arrRealSkuInfo as $arrSkuInfoItem) {
-                if (0 != $arrSkuInfo['sku_good_amount']) {
+                if (0 != $arrSkuInfoItem['sku_good_amount']) {
                     $arrStockInSkuListItem['batch_info'][] = [
                         'expire_time' => $arrSkuInfoItem['expire_date'],
                         'amount' => $arrSkuInfoItem['sku_good_amount'],
                         'is_defective' => Nscm_Define_Stock::QUALITY_GOOD,
                     ];
                 }
-                if (0 != $arrSkuInfo['sku_defective_amount']) {
+                if (0 != $arrSkuInfoItem['sku_defective_amount']) {
                     $arrStockInSkuListItem['batch_info'][] = [
                         'expire_time' => $arrSkuInfoItem['expire_date'],
                         'amount' => $arrSkuInfoItem['sku_defective_amount'],

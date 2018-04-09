@@ -964,7 +964,7 @@ class Service_Data_StockoutOrder
         if (empty($stockoutOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
         }
-        if ($stockoutOrderInfo['stockout_order_status'] == Order_Define_StockoutOrder::STOCKOUT_ORDER_DESTORYED) {
+        if ($stockoutOrderInfo['stockout_order_status'] == Order_Define_StockoutOrder::STOCKOUT_ORDER_DESTROYED) {
             return $res;
         }
         if($stockoutOrderInfo['stockout_order_pre_cancel'] != Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL) {

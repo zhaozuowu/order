@@ -29,8 +29,9 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
         'stockin_order_plan_time_end' => 'int|min[0]',
         'stockin_time_start' => 'int|min[0]',
         'stockin_time_end' => 'int|min[0]',
-        'stockin_destory_time_start' => 'int|min[0]',
-        'stockin_destory_time_end' => 'int|min[0]',
+        'stockin_destroy_time_start' => 'int|min[0]',
+        'stockin_destroy_time_end' => 'int|min[0]',
+        'print_status' => 'int|min[0]',
         'page_num' => 'int|default[1]|min[1]|optional',
         'page_size' => 'int|required|min[1]|max[200]',
     ];
@@ -98,10 +99,10 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
             $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? 0
                 : intval($arrListItem['stockin_order_status']);
             $arrRoundResult['stockin_order_source_type_text'] =
-                !isset(Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_DEFINE[$arrListItem['stockin_order_source']])
-                        ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
-                        : Order_Define_StockinOrder::STOCKIN_ORDER_SOURCE_MAP[intval($arrListItem['stockin_order_source'])];
-            $arrRoundResult['stockin_destory_time_text'] = Order_Util::getFormatDateTime($arrListItem['stockin_destory_time']);
+                isset(Nscm_Define_NWmsStockInOrder::STOCKIN_ORDER_SOURCE_DEFINE[$arrListItem['stockin_order_source']])
+                    ? Nscm_Define_NWmsStockInOrder::STOCKIN_ORDER_SOURCE_MAP[intval($arrListItem['stockin_order_source'])]
+                    : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
+            $arrRoundResult['stockin_destroy_time_text'] = Order_Util::getFormatDateTime($arrListItem['stockin_destroy_time']);
             $arrRoundResult['data_source_text'] =
                 !isset(Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_DEFINE[intval($arrListItem['data_source'])])
                     ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
@@ -128,6 +129,10 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
                 Order_Util::getFormatDateTime($arrListItem['create_time']);
             $arrRoundResult['stockin_order_creator_name'] = empty($arrListItem['stockin_order_creator_name']) ? ''
                 : strval($arrListItem['stockin_order_creator_name']);
+            $arrRoundResult['print_status_text'] =
+                isset(Order_Define_StockinOrder::STOCKIN_PRINT_STATUS[intval($arrListItem['stockin_order_is_print'])])
+                ? Order_Define_StockinOrder::STOCKIN_PRINT_STATUS[intval($arrListItem['stockin_order_is_print'])]
+                : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
 
             $arrFormatResult['list'][] = $arrRoundResult;
         }

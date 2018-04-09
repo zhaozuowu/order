@@ -16,7 +16,7 @@ class Order_Define_StockoutOrder
     const STAY_RECEIVED_STOCKOUT_ORDER_STATUS = 25;//待揽收
     const STOCKOUTED_STOCKOUT_ORDER_STATUS = 30;//已出库
     const STOCKOUT_ORDER_AUDIT_FAILED = 40;//审核不通过
-    const STOCKOUT_ORDER_DESTORYED = 50;//已作废
+    const STOCKOUT_ORDER_DESTROYED = 50;//已作废
     const AUDIT_NOT_THROUGH_STOCKOUT_ORDER_STATUS = 40;//审核不通过
     const INVALID_STOCKOUT_ORDER_STATUS = 50;//已作废
 
@@ -111,7 +111,7 @@ class Order_Define_StockoutOrder
      */
     const ALLOW_STOCKIN = [
         self::STOCKOUTED_STOCKOUT_ORDER_STATUS => true,
-        self::STOCKOUT_ORDER_DESTORYED => true,
+        self::STOCKOUT_ORDER_DESTROYED => true,
     ];
 
     /**

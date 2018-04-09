@@ -51,6 +51,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * create stock in order
      * @param int $intStockinOrderId
      * @param int $intStockinOrderType
+     * @param int $intStockInOrderDataSourceType
      * @param int $intSourceOrderId
      * @param int $intStockinBatchId
      * @param int $intSourceSupplierId
@@ -69,11 +70,14 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param string $strStockinOrderRemark
      * @param int $intStockinOrderTotalPrice
      * @param  int $intStockinOrderTotalPriceTax
+     * @param  int $intCustomerId
+     * @param  int $strCustomerName
      * @return int
      */
     public static function createStockinOrder(
         $intStockinOrderId,
         $intStockinOrderType,
+        $intStockInOrderDataSourceType,
         $intSourceOrderId,
         $intStockinBatchId,
         $intSourceSupplierId,
@@ -91,12 +95,15 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $strStockinOrderCreatorName,
         $strStockinOrderRemark,
         $intStockinOrderTotalPrice,
-        $intStockinOrderTotalPriceTax
+        $intStockinOrderTotalPriceTax,
+        $intCustomerId,
+        $strCustomerName
     )
     {
         $arrRow = [
             'stockin_order_id' => intval($intStockinOrderId),
             'stockin_order_type' => intval($intStockinOrderType),
+            'data_source' => intval($intStockInOrderDataSourceType),
             'source_order_id' => intval($intSourceOrderId),
             'stockin_batch_id' => intval($intStockinBatchId),
             'source_supplier_id' => intval($intSourceSupplierId),
@@ -115,6 +122,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_remark' => $strStockinOrderRemark,
             'stockin_order_total_price' => $intStockinOrderTotalPrice,
             'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
+            'customer_id' => $intCustomerId,
+            'customer_name' => $strCustomerName,
         ];
         return self::insert($arrRow);
     }
@@ -122,6 +131,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     /**
      * @param int $intStockInOrderId 入库单id
      * @param int $intStockInOrderType 入库单类型
+     * @param int $intStockInOrderDataSourceType 销退入库单类型
+     * @param int $intStockInOrderSource 销退入库单业态
      * @param int $intSourceOrderId 出库单id
      * @param int $intOrderReturnReason 销退入库原因
      * @param string $strOrderReturnReasonText 销退入库原因
@@ -145,6 +156,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     public static function createStayStockInOrder(
         $intStockInOrderId,
         $intStockInOrderType,
+        $intStockInOrderDataSourceType,
+        $intStockInOrderSource,
         $intSourceOrderId,
         $intOrderReturnReason,
         $strOrderReturnReasonText,
@@ -168,6 +181,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrRow = [
             'stockin_order_id' => intval($intStockInOrderId),
             'stockin_order_type' => intval($intStockInOrderType),
+            'data_source' => intval($intStockInOrderDataSourceType),
+            'stockin_order_source' => intval($intStockInOrderSource),
             'source_order_id' => intval($intSourceOrderId),
             'stockin_order_reason' => intval($intOrderReturnReason),
             'stockin_order_reason_text' => strval($strOrderReturnReasonText),
@@ -205,7 +220,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
-     * @param $arrStockinDestoryTime
+     * @param $arrStockinDestroyTime
+     * @param $intPrintStatus
      * @param $intPageNum
      * @param $intPageSize
      * @return mixed
@@ -225,7 +241,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrCreateTime,
         $arrOrderPlanTime,
         $arrStockinTime,
-        $arrStockinDestoryTime,
+        $arrStockinDestroyTime,
+        $intPrintStatus,
         $intPageNum,
         $intPageSize)
     {
@@ -317,14 +334,18 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             $intTimesCount++;
         }
 
-        if (!empty($arrStockinDestoryTime['start'])
-            && !empty($arrStockinDestoryTime['end'])) {
-            $arrCondition['stockin_destory_time'] = [
+        if (!empty($arrStockinDestroyTime['start'])
+            && !empty($arrStockinDestroyTime['end'])) {
+            $arrCondition['stockin_destroy_time'] = [
                 'between',
-                $arrStockinDestoryTime['start'],
-                $arrStockinDestoryTime['end'],
+                $arrStockinDestroyTime['start'],
+                $arrStockinDestroyTime['end'],
             ];
             $intTimesCount++;
+        }
+
+        if (!empty($intPrintStatus)) {
+            $arrCondition['stockin_order_is_print'] = $intPrintStatus;
         }
 
         // 至少要有一个必传的时间段
