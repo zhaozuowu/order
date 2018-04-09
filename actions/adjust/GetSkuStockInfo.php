@@ -79,6 +79,8 @@ class Action_GetSkuStockInfo extends Order_Base_Action
 
                     $arrFormatDetail['sku_stock_detail'][] = $arrStockDetail;
                 }
+            } else {
+                $arrFormatDetail['sku_stock_detail'] = []; ;
             }
 
             $arrFormatResult[] = $arrFormatDetail;
