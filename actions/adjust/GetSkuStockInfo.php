@@ -70,9 +70,11 @@ class Action_GetSkuStockInfo extends Order_Base_Action
                     $arrStockDetail['is_defective_text'] = empty($arrStockDetailRet['is_defective_text']) ? '' : $arrStockDetailRet['is_defective_text'];
 
                     if (Nscm_Define_Sku::SKU_EFFECT_FROM == $value['sku_effect_type']) {
-                        $arrStockDetail['production_or_expire_time'] = $arrStockDetailRet['production_time'];
+                        $arrStockDetail['production_or_expire_time'] = strtotime(date('Y-m-d',
+                            $arrStockDetailRet['production_time']));
                     } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $value['sku_effect_type']) {
-                        $arrStockDetail['production_or_expire_time'] = $arrStockDetailRet['expiration_time'];
+                        $arrStockDetail['production_or_expire_time'] = strtotime(date('Y-m-d',
+                            $arrStockDetailRet['expiration_time']));
                     }
 
                     $arrFormatDetail['sku_stock_detail'][] = $arrStockDetail;

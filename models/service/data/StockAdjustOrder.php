@@ -308,6 +308,7 @@ class Service_Data_StockAdjustOrder
                 'sku_id'                    => $arrDetail['sku_id'],
                 'sku_name'                  => $arrSkuInfo['sku_name'],
                 'adjust_amount'             => $arrDetail['adjust_amount'],
+                'is_defective'              => $arrDetail['is_defective'],
                 'upc_id'                    => $arrSkuInfo['min_upc']['upc_id'],
                 'upc_unit'                  => $arrSkuInfo['min_upc']['upc_unit'],
                 'upc_unit_num'              => $arrSkuInfo['min_upc']['upc_unit_num'],
@@ -456,20 +457,14 @@ class Service_Data_StockAdjustOrder
             $arrDetail = $this->getEffectTime(
                 $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
-            if(empty($arrStockSkuInfo['sku_id'])) {
-                $arrStockSkuInfo['sku_id'] = $arrDetail['sku_id'];
-                $arrStockSkuInfo['adjust_info'] = [];
-            }
-
             $arrAdjustInfo = [
                 'adjust_amount' => $arrDetail['adjust_amount'],
                 'is_defective' => $arrDetail['is_defective'],
                 'expiration_time' => $arrDetail['expire_time'],
             ];
 
-            $arrStockSkuInfo['adjust_info'][] = $arrAdjustInfo;
-
-            $arrStockOut['stockout_details'][] = $arrStockSkuInfo;
+            $arrStockOut['stockout_details'][$intSkuId]['sku_id'] = $intSkuId;
+            $arrStockOut['stockout_details'][$intSkuId]['adjust_info'][] = $arrAdjustInfo;
         }
 
         return $arrStockOut;
