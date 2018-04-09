@@ -118,6 +118,7 @@ class Service_Page_Adjust_ExportOrderDetail
             if(!empty($orderList[$intOrderId])) {
                 $arrOrder = $orderList[$intOrderId];
                 $detail['creator_name'] = $arrOrder['creator_name'];
+                $detail['remark'] = $arrOrder['remark'];
             }
 
             $arrRet['list'][] = $detail;
