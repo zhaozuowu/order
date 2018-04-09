@@ -32,7 +32,6 @@ class Service_Data_StockAdjustOrderDetail
         $intLimit = $arrInput['page_size'];
 
         $ret = Model_Orm_StockAdjustOrderDetail::findRows($arrColumns, $arrConditions, $arrOrderBy, $intOffset, $intLimit);
-        Bd_Log::debug(__METHOD__ . 'sql return: ' . json_encode($ret));
         return $ret;
     }
 

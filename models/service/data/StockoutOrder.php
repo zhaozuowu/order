@@ -382,15 +382,26 @@ class Service_Data_StockoutOrder
      * @return mixed
      * @throws Order_BusinessError
      */
-    public function checkRepeatSubmit($strCustomerId, $strLogisticsOrderId) {
+    public function checkRepeatSubmit($strLogisticsOrderId) {
+        $arrStockoutOrderInfo = $this->objDaoRedisStockoutOrder->getCacheStockoutInfoByLogisticsOrderId($strLogisticsOrderId);
+        if (!empty($arrStockoutOrderInfo)) {
+            return $arrStockoutOrderInfo;
+        }
         $arrStockoutOrderInfo = $this->getStockoutInfoByLogisticsOrderId($strLogisticsOrderId);
         if (!empty($arrStockoutOrderInfo)) {
             return $arrStockoutOrderInfo;
         }
-        if ($this->objDaoRedisStockoutOrder->getValByCustomerId($strCustomerId)) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_REPEAT_SUBMIT);
-        }
-        $this->objDaoRedisStockoutOrder->setCustomerId($strCustomerId);
+    }
+
+    /**
+     * 缓存出库单需要返回的数据
+     * @param array $arrInput
+     * @return void
+     */
+    public function cacheStockoutInfo($arrInput) {
+        $arrRetStockoutInfo = Order_Define_Format::formatStockoutInfo($arrInput);
+        $intLogisticsOrderId = $arrInput['logistics_order_id'];
+        $this->objDaoRedisStockoutOrder->setCacheStockoutInfo($intLogisticsOrderId, $arrRetStockoutInfo);
     }
 
     /**
@@ -800,6 +811,54 @@ class Service_Data_StockoutOrder
         $retArr['list'] = $arrSkuList;
         return $retArr;
 
+    }
+
+    /**
+     * 系统确认作废出库单
+     * @param $strStockoutOrderId
+     * @param $remark
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function confirmCancelStockoutOrder($strStockoutOrderId,$remark)
+    {
+        $res = [];
+        $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($strStockoutOrderId);//获取出库订单信息
+        if (empty($stockoutOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
+        }
+        if ($stockoutOrderInfo['stockout_order_status'] == Order_Define_StockoutOrder::STOCKOUT_ORDER_DESTORYED) {
+            return $res;
+        }
+        if($stockoutOrderInfo['stockout_order_pre_cancel'] != Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_PRE_CANCEL_ERROR);
+        }
+        $updateData = [
+            'stockout_order_status' => Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS,
+            'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
+        ];
+        Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($strStockoutOrderId,$updateData,$stockoutOrderInfo,$remark) {
+
+            $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
+            if (empty($result)) {
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
+            }
+            $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_INSERT_SUCCESS;
+            $userId = Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
+            $userName = Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
+            $mark = '作废出库单:'.$remark;
+            //释放库存(已出库不释放库存)
+            if ($stockoutOrderInfo['stockout_order_status'] >= Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS) {
+                return [];
+            }
+            $this->addLog($userId, $userName, $mark, $operationType, $strStockoutOrderId);
+            $this->notifyCancelfreezeskustock($strStockoutOrderId,$stockoutOrderInfo['warehouse_id']);
+        });
+        Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
+            Order_Statistics_Type::ACTION_UPDATE,
+            $strStockoutOrderId);//更新报表
+
+        return [];
     }
 
     /**
@@ -1406,5 +1465,64 @@ class Service_Data_StockoutOrder
         $arrInput['customer_region_name'] = empty($customerList['customer_region_name']) ? '' : strval($customerList['customer_region_name']);
         $arrInput['customer_location_source'] = empty($customerList['customer_location_source']) ?  : intval($customerList['customer_location_source']);
         return $arrInput;
+    }
+
+    /**
+     * 预取消出库单
+     * @param  integer $intStockOutOrderId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function preCancelOrder($intStockOutOrderId)
+    {
+        $objStockOutOrderInfo = Model_Orm_StockoutOrder::getOrderInfoObjectById($intStockOutOrderId);
+        if (empty($objStockOutOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
+        }
+        $intStockOutOrderStatus = $objStockOutOrderInfo->stockout_order_status;
+        $intStockOutOrderIsPrint = $objStockOutOrderInfo->stockout_order_is_print;
+        $intStockOutOrderPreCancel = $objStockOutOrderInfo->stockout_order_pre_cancel;
+        $intStockOutOrderCancelType = $objStockOutOrderInfo->stockout_order_cancel_type;
+        if (Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRINT == $intStockOutOrderIsPrint
+            && Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS != $intStockOutOrderStatus) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT);
+        }
+        if ($intStockOutOrderCancelType == Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_DEFAULT
+            && $intStockOutOrderPreCancel == Order_Define_StockoutOrder::STOCKOUT_ORDER_DEFAULT_PRE_CANCEL
+            && Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS != $intStockOutOrderStatus) {
+            $objStockOutOrderInfo->updatePreCancelType(
+                Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_SYS,
+                Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL
+            );
+        }
+        return [];
+    }
+
+    /**
+     * rollback cancel order
+     * @param $intStockOutOrderId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function rollbackCancelOrder($intStockOutOrderId)
+    {
+        $intStockOutOrderId = intval($intStockOutOrderId);
+        $ormStockOutOrderInfo = Model_Orm_StockoutOrder::getOrderInfoObjectById($intStockOutOrderId);
+        if (empty($ormStockOutOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
+        }
+        if (Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS != $ormStockOutOrderInfo->stockout_order_status
+                && Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL == $ormStockOutOrderInfo->stockout_order_pre_cancel
+                && Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_SYS == $ormStockOutOrderInfo->stockout_order_cancel_type) {
+            Bd_Log::trace('rollback cancel stockout order, order id: ' . $intStockOutOrderId);
+            $ormStockOutOrderInfo->updatePreCancelType(
+                Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_DEFAULT,
+                Order_Define_StockoutOrder::STOCKOUT_ORDER_DEFAULT_PRE_CANCEL);
+        } else {
+            // @alarm
+            Bd_Log::warning('rollback cancel stockout order something wrong, order info: '
+                . json_encode($ormStockOutOrderInfo->toArray()));
+        }
+        return [];
     }
 }
