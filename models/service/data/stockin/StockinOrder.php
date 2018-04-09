@@ -1230,8 +1230,8 @@ class Service_Data_Stockin_StockinOrder
         $strOrderReturnReasonText = implode(',', $arrOrderReturnReasonText);
 
         return [
-            'stockin_order_reason' => $intOrderReturnReason,
-            'stockin_order_reason_text' => $strOrderReturnReasonText,
+            $intOrderReturnReason,
+            $strOrderReturnReasonText,
         ];
     }
 

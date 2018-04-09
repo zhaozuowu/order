@@ -66,6 +66,7 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
                 'upc_unit' => intval($arrRow['upc_unit']),
                 'upc_unit_num' => intval($arrRow['upc_unit_num']),
                 'sku_name' => strval($arrRow['sku_name']),
+                'stockin_reason' => intval($arrRow['stockin_reason']),
                 'sku_net' => strval(floatval($arrRow['sku_net'])),
                 'sku_net_unit' => intval($arrRow['sku_net_unit']),
                 'sku_net_gram' => strval(floatval($arrRow['sku_net_gram'])),
@@ -77,6 +78,7 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
                 'stockin_order_sku_total_price' => intval($arrRow['stockin_order_sku_total_price']),
                 'stockin_order_sku_total_price_tax' => intval($arrRow['stockin_order_sku_total_price_tax']),
                 'reserve_order_sku_plan_amount' => intval($arrRow['reserve_order_sku_plan_amount']),
+                'stockout_order_sku_amount' => intval($arrRow['stockout_order_sku_amount']),
                 'stockin_order_sku_real_amount' => intval($arrRow['stockin_order_sku_real_amount']),
                 'stockin_order_sku_extra_info' => strval($arrRow['stockin_order_sku_extra_info']),
             ];
