@@ -1130,7 +1130,7 @@ class Service_Data_Stockin_StockinOrder
             $arrDbSkuInfo = [
                 'stockin_order_id' => $intStockInOrderId,
                 'sku_id' => $arrSkuInfo['sku_id'],
-                'stockin_order_sku_real_amount' => $arrSkuInfo['amount'],
+                'stockin_order_sku_real_amount' => array_sum(array_keys($arrSkuInfo['real_stockin_info'], 'amount')),
                 'stockin_order_sku_extra_info' => json_encode($arrSkuInfo['real_stockin_info']),
             ];
             $arrDbSkuInfoList[] = $arrDbSkuInfo;
