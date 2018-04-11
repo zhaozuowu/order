@@ -309,7 +309,7 @@ class Service_Data_Stockin_StockinOrder
             $intReserveOrderPlanTime = $arrSourceOrderInfo['reserve_order_plan_time'];
         } else {
             $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
-            // 手动计算的订单传入实际入库商品总数
+            // 手动计算的订单传入实际入库商品总数作为计划入库数
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockin_order_total_sku_amount_calculated'];
             $intStockoutOrderSkuAmount = $arrSourceOrderInfo['stockout_order_pickup_amount'];
             $intSourceSupplierId = $arrSourceOrderInfo['customer_id'];
