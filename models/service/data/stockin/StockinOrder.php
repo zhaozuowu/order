@@ -911,9 +911,6 @@ class Service_Data_Stockin_StockinOrder
                 $strCustomerName);
             Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockInOrderId);
         });
-        $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
-        $intType = Order_Statistics_Type::ACTION_CREATE;
-        Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
         return $intStockInOrderId;
     }
 
@@ -1089,7 +1086,7 @@ class Service_Data_Stockin_StockinOrder
                 Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
             });
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
-            $intType = Order_Statistics_Type::ACTION_UPDATE;
+            $intType = Order_Statistics_Type::ACTION_CREATE;
             Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
         }
     }
