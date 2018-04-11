@@ -84,6 +84,7 @@ class Service_Data_Stockin_StockinOrder
             'sku_effect_day' => $sourceOrderSkuInfo['sku_effect_day'],
             'stockin_order_sku_total_price' => $intTotalAmount * $intSkuPrice,
             'stockin_order_sku_total_price_tax' => $intTotalAmount * $intSkuPriceTax,
+            'stockout_order_sku_amount' => $sourceOrderSkuInfo['pickup_amount'],
             'reserve_order_sku_plan_amount' => $intPlanAmount,
             'stockin_order_sku_real_amount' => $intTotalAmount,
             'stockin_order_sku_extra_info' => json_encode($arrDbStockinOrderSkuExtraInfo),
@@ -180,7 +181,6 @@ class Service_Data_Stockin_StockinOrder
             $arrHashReserveOrderSkus[$arrSku['sku_id']] = $arrSku;
         }
         $arrDbSkuInfoList = [];
-        $intStockinOrderTotalSkuAmount = 0;
         foreach ($arrSkuInfoList as $arrSkuInfo) {
             if (!isset($arrHashReserveOrderSkus[$arrSkuInfo['sku_id']])) {
                 // sku id not in purchase order or sku id repeat
@@ -193,15 +193,11 @@ class Service_Data_Stockin_StockinOrder
                 Order_BusinessError::throwException(Order_Error_Code::SKU_AMOUNT_CANNOT_EMPTY);
             }
             $arrDbSkuInfoList[$arrSkuInfo['sku_id']] = $arrSkuRow;
-            // 累计计算订单总的传入商品总数
-            $intStockinOrderTotalSkuAmount += $arrSkuRow['stockin_order_sku_real_amount'];
             unset($arrHashReserveOrderSkus[$arrSkuInfo['sku_id']]);
         }
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intType && !empty($arrHashReserveOrderSkus)) {
             Order_BusinessError::throwException(Order_Error_Code::ALL_SKU_MUST_STOCKIN);
         }
-        // 添加计算的订单实际商品总数
-        $arrDbSkuInfoList['stockin_order_total_sku_amount_calculated'] = $intStockinOrderTotalSkuAmount;
         return $arrDbSkuInfoList;
     }
 
@@ -302,8 +298,6 @@ class Service_Data_Stockin_StockinOrder
         $intStockInOrderDataSourceType = Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_MANUAL_CREATE;
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
             $intSourceOrderId = intval($arrSourceOrderInfo['reserve_order_id']);
-            // 如果是采购入库，没有出库数，默认置出库数为0
-            $intStockoutOrderSkuAmount = 0;
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['reserve_order_plan_amount'];
             $intSourceSupplierId = $arrSourceOrderInfo['vendor_id'];
             $intReserveOrderPlanTime = $arrSourceOrderInfo['reserve_order_plan_time'];
@@ -311,7 +305,6 @@ class Service_Data_Stockin_StockinOrder
             $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
             // 手动计算的订单传入实际入库商品总数作为计划入库数
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockin_order_total_sku_amount_calculated'];
-            $intStockoutOrderSkuAmount = $arrSourceOrderInfo['stockout_order_pickup_amount'];
             $intSourceSupplierId = $arrSourceOrderInfo['customer_id'];
             $intCustomerId = $arrSourceOrderInfo['customer_id'];
             $strCustomerName = $arrSourceOrderInfo['customer_name'];
@@ -338,7 +331,7 @@ class Service_Data_Stockin_StockinOrder
             $intWarehouseId, $strWarehouseName, $intCityId, $strCityName, $intStockinTime, $intReserveOrderPlanTime,
             $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockinOrderCreatorId, $strStockinOrderCreatorName,
             $strStockinOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax,
-            $intStockoutOrderSkuAmount, $intCustomerId,$strCustomerName) {
+            $intCustomerId,$strCustomerName) {
             $intVendorId = $intStockinOrderType == Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE ? $intSourceSupplierId : 0;
             $arrStock = $this->notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $intVendorId, $arrDbSkuInfoList);
             $intStockinBatchId = $arrStock['stockin_batch_id'];
@@ -364,7 +357,6 @@ class Service_Data_Stockin_StockinOrder
                 $strStockinOrderRemark,
                 $intStockinOrderTotalPrice,
                 $intStockinOrderTotalPriceTax,
-                $intStockoutOrderSkuAmount,
                 $intCustomerId,
                 $strCustomerName);
             Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockinOrderId);
