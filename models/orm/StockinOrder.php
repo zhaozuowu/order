@@ -70,6 +70,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param string $strStockinOrderRemark
      * @param int $intStockinOrderTotalPrice
      * @param  int $intStockinOrderTotalPriceTax
+     * @param  int $intStockoutOrderSkuAmount
      * @param  int $intCustomerId
      * @param  int $strCustomerName
      * @return int
@@ -96,6 +97,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $strStockinOrderRemark,
         $intStockinOrderTotalPrice,
         $intStockinOrderTotalPriceTax,
+        $intStockoutOrderSkuAmount,
         $intCustomerId,
         $strCustomerName
     )
@@ -122,6 +124,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_remark' => $strStockinOrderRemark,
             'stockin_order_total_price' => $intStockinOrderTotalPrice,
             'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
+            'stockout_order_sku_amount' => $intStockoutOrderSkuAmount,
             'customer_id' => $intCustomerId,
             'customer_name' => $strCustomerName,
         ];
