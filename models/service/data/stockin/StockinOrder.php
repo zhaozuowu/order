@@ -20,6 +20,7 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intOrderType) {
             $intPlanAmount =  $sourceOrderSkuInfo['reserve_order_sku_plan_amount'];
         } else {
+            // 销退入库，计划入库数等于出库单拣货数
             $intPlanAmount = $sourceOrderSkuInfo['pickup_amount'];
         }
         $intSkuPrice = $sourceOrderSkuInfo['sku_price'];
@@ -84,7 +85,7 @@ class Service_Data_Stockin_StockinOrder
             'sku_effect_day' => $sourceOrderSkuInfo['sku_effect_day'],
             'stockin_order_sku_total_price' => $intTotalAmount * $intSkuPrice,
             'stockin_order_sku_total_price_tax' => $intTotalAmount * $intSkuPriceTax,
-            'stockout_order_sku_amount' => $intPlanAmount,  // 预约入库单 出库数 等于 计划入库数
+            'stockout_order_sku_amount' => $intPlanAmount,  // 预约入库单 出库数 等于 计划入库数，销退入库单 出库数 等于 拣货数
             'reserve_order_sku_plan_amount' => $intPlanAmount,
             'stockin_order_sku_real_amount' => $intTotalAmount,
             'stockin_order_sku_extra_info' => json_encode($arrDbStockinOrderSkuExtraInfo),
@@ -297,14 +298,18 @@ class Service_Data_Stockin_StockinOrder
         // 目前手动创建的入库单（预约单入库/手动销退入库类型 - 设置系统类型为手动销退入库）
         $intStockInOrderDataSourceType = Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_MANUAL_CREATE;
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
+            // 预约入库单无业态类型，设为0
+            $intStockinOrderSource = 0;
             $intSourceOrderId = intval($arrSourceOrderInfo['reserve_order_id']);
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['reserve_order_plan_amount'];
             $intSourceSupplierId = $arrSourceOrderInfo['vendor_id'];
             $intReserveOrderPlanTime = $arrSourceOrderInfo['reserve_order_plan_time'];
         } else {
+            // 销退入库业态类型等于出库单业态类型
+            $intStockinOrderSource = intval($arrSourceOrderInfo['stockout_order_source']);
             $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
-            // 手动计算的订单传入实际入库商品总数作为计划入库数
-            $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockin_order_total_sku_amount_calculated'];
+            // 销退入库单的计划入库数等于出库单拣货数
+            $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockout_order_pickup_amount'];
             $intSourceSupplierId = $arrSourceOrderInfo['customer_id'];
             $intCustomerId = $arrSourceOrderInfo['customer_id'];
             $strCustomerName = $arrSourceOrderInfo['customer_name'];
@@ -327,7 +332,7 @@ class Service_Data_Stockin_StockinOrder
         $strStockinOrderCreatorName = strval($strCreatorName);
         $strStockinOrderRemark = strval($strStockinOrderRemark);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockinOrderId, $intStockinOrderType,
-            $intStockInOrderDataSourceType, $intSourceOrderId, $intSourceSupplierId, $strSourceInfo, $intStockinOrderStatus,
+            $intStockInOrderDataSourceType, $intStockinOrderSource, $intSourceOrderId, $intSourceSupplierId, $strSourceInfo, $intStockinOrderStatus,
             $intWarehouseId, $strWarehouseName, $intCityId, $strCityName, $intStockinTime, $intReserveOrderPlanTime,
             $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockinOrderCreatorId, $strStockinOrderCreatorName,
             $strStockinOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax,
@@ -339,6 +344,7 @@ class Service_Data_Stockin_StockinOrder
                 $intStockinOrderId,
                 $intStockinOrderType,
                 $intStockInOrderDataSourceType,
+                $intStockinOrderSource,
                 $intSourceOrderId,
                 $intStockinBatchId,
                 $intSourceSupplierId,
