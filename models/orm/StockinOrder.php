@@ -52,6 +52,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param int $intStockinOrderId
      * @param int $intStockinOrderType
      * @param int $intStockInOrderDataSourceType
+     * @param int $intStockinOrderSource
      * @param int $intSourceOrderId
      * @param int $intStockinBatchId
      * @param string $strSourceSupplierId
@@ -78,6 +79,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intStockinOrderId,
         $intStockinOrderType,
         $intStockInOrderDataSourceType,
+        $intStockinOrderSource,
         $intSourceOrderId,
         $intStockinBatchId,
         $strSourceSupplierId,
@@ -104,6 +106,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_id' => intval($intStockinOrderId),
             'stockin_order_type' => intval($intStockinOrderType),
             'data_source' => intval($intStockInOrderDataSourceType),
+            'stockin_order_source' => intval($intStockinOrderSource),
             'source_order_id' => intval($intSourceOrderId),
             'stockin_batch_id' => intval($intStockinBatchId),
             'source_supplier_id' => strval($strSourceSupplierId),
