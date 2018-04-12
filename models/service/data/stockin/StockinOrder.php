@@ -84,6 +84,7 @@ class Service_Data_Stockin_StockinOrder
             'sku_effect_day' => $sourceOrderSkuInfo['sku_effect_day'],
             'stockin_order_sku_total_price' => $intTotalAmount * $intSkuPrice,
             'stockin_order_sku_total_price_tax' => $intTotalAmount * $intSkuPriceTax,
+            'stockout_order_sku_amount' => $sourceOrderSkuInfo['pickup_amount'],
             'reserve_order_sku_plan_amount' => $intPlanAmount,
             'stockin_order_sku_real_amount' => $intTotalAmount,
             'stockin_order_sku_extra_info' => json_encode($arrDbStockinOrderSkuExtraInfo),
@@ -866,7 +867,7 @@ class Service_Data_Stockin_StockinOrder
         $intStockinOrderTotalPriceTax = $this->calculateTotalPriceTax($arrDbSkuInfoList);
         $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
         $arrSourceInfo = $this->getSourceInfo($arrSourceOrderInfo, Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT);
-        $strCustomerId = $arrSourceOrderInfo['customer_id'];
+        $strSourceSupplierId = $strCustomerId = $arrSourceOrderInfo['customer_id'];
         $strCustomerName = $arrSourceOrderInfo['customer_name'];
         $strSourceInfo = json_encode($arrSourceInfo);
         $intStockinOrderStatus = Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_WAITING;
@@ -886,7 +887,7 @@ class Service_Data_Stockin_StockinOrder
             $intSourceOrderId, $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intOrderReturnReason, $intStockInOrderDataSourceType,
             $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId, $strCustomerName, $strCustomerId, $intStockInOrderSource,
             $intStockinOrderPlanAmount, $intStockInOrderCreatorId, $strStockInOrderCreatorName, $strOrderReturnReasonText,
-            $strStockInOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
+            $strSourceSupplierId, $strStockInOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
             Model_Orm_StockinOrder::createStayStockInOrder(
                 $intStockInOrderId,
                 $intStockInOrderType,
@@ -909,7 +910,8 @@ class Service_Data_Stockin_StockinOrder
                 $intStockinOrderTotalPriceTax,
                 $intShipmentOrderId,
                 $strCustomerId,
-                $strCustomerName);
+                $strCustomerName,
+                $strSourceSupplierId);
             Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockInOrderId);
         });
         return $intStockInOrderId;
@@ -1005,6 +1007,8 @@ class Service_Data_Stockin_StockinOrder
                 'sku_price' => $arrSkuPriceInfo['sku_price'],
                 'sku_price_tax' => $arrSkuPriceInfo['sku_price_tax'],
                 'sku_tax_rate' => $arrSkuInfo['sku_tax_rate'],
+                'sku_effect_type' => $arrSkuInfo['sku_effect_type'],
+                'sku_effect_day' => $arrSkuInfo['sku_effect_day'],
                 'reserve_order_sku_plan_amount' => $arrRequestSkuInfoList[$intSkuId],
                 'stockout_order_sku_amount' => 0,
             ];
@@ -1017,7 +1021,7 @@ class Service_Data_Stockin_StockinOrder
                 } else { //全部拒收
                     $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REJECT_ALL;
                 }
-            } else { //汰换 = 下架
+            } else { //下架
                 $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_CHANGE;
             }
             $arrDbSkuList[] = $arrDbSku;
@@ -1078,12 +1082,12 @@ class Service_Data_Stockin_StockinOrder
                 $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList, $strRemark,
                 $intWarehouseId, $arrStockInSkuList) {
                 $objRalStock = new Dao_Ral_Stock();
-                $objRalStock->stockIn($intStockInOrderId,
+                $arrStock = $objRalStock->stockIn($intStockInOrderId,
                     Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN,
                     $intWarehouseId,
                     $arrStockInSkuList);
                 Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime,
-                    $intStockInOrderRealAmount, $strRemark);
+                    $intStockInOrderRealAmount, $strRemark, $arrStock['stockin_batch_id']);
                 Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
             });
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
@@ -1125,11 +1129,12 @@ class Service_Data_Stockin_StockinOrder
     {
         $arrDbSkuInfoList = [];
         foreach ($arrSkuInfoList as $arrSkuInfo) {
+            $arrSkuRealInfoList = $arrSkuInfo['real_stockin_info'];
             $arrDbSkuInfo = [
                 'stockin_order_id' => $intStockInOrderId,
                 'sku_id' => $arrSkuInfo['sku_id'],
-                'stockin_order_sku_real_amount' => array_sum(array_column($arrSkuInfo['real_stockin_info'], 'amount')),
-                'stockin_order_sku_extra_info' => json_encode($arrSkuInfo['real_stockin_info']),
+                'stockin_order_sku_real_amount' => array_sum(array_column($arrSkuRealInfoList, 'amount')),
+                'stockin_order_sku_extra_info' => json_encode($arrSkuRealInfoList),
             ];
             $arrDbSkuInfoList[] = $arrDbSkuInfo;
         }
@@ -1263,17 +1268,29 @@ class Service_Data_Stockin_StockinOrder
                 'unit_price' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['unit_price'],
                 'unit_price_tax' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['unit_price_tax'],
             ];
+            $intSkuEffectType = $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_effect_type'];
+            $intSkuEffectDaty = $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_effect_day'];
             foreach ($arrRealSkuInfo as $arrSkuInfoItem) {
+                if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $intSkuEffectType) {
+                    $intProductionTime = intval($arrSkuInfoItem['expire_date']);
+                    $intExpireTime = $intProductionTime + intval($intSkuEffectDaty['sku_effect_day']) * 86400 - 1;
+
+                } else {
+                    $intExpireTime = intval($arrSkuInfoItem['expire_date']) + 86399;
+                    $intProductionTime = 0;
+                }
                 if (0 != $arrSkuInfoItem['sku_good_amount']) {
                     $arrStockInSkuListItem['batch_info'][] = [
-                        'expire_time' => $arrSkuInfoItem['expire_date'],
+                        'expire_time' => $intExpireTime,
+                        'production_time' => $intProductionTime,
                         'amount' => $arrSkuInfoItem['sku_good_amount'],
                         'is_defective' => Nscm_Define_Stock::QUALITY_GOOD,
                     ];
                 }
                 if (0 != $arrSkuInfoItem['sku_defective_amount']) {
                     $arrStockInSkuListItem['batch_info'][] = [
-                        'expire_time' => $arrSkuInfoItem['expire_date'],
+                        'expire_time' => $intExpireTime,
+                        'production_time' => $intProductionTime,
                         'amount' => $arrSkuInfoItem['sku_defective_amount'],
                         'is_defective' => Nscm_Define_Stock::QUALITY_DEFECTIVE,
                     ];

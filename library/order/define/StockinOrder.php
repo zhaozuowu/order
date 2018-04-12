@@ -85,7 +85,7 @@ class Order_Define_StockinOrder
      */
     const STOCKIN_STOCKOUT_REASON_REJECT_ALL        = 1;    // 整单拒收
     const STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT    = 2;    // 部分拒收
-    const STOCKIN_STOCKOUT_REASON_CHANGE            = 4;    // 汰换
+    const STOCKIN_STOCKOUT_REASON_CHANGE            = 4;    // 下架
     const STOCKIN_STOCKOUT_REASON_REMOVE_SITE       = 8;    // 撤点
     const STOCKIN_STOCKOUT_REASON_RETURNED          = 16;   // 退货
 
@@ -106,7 +106,7 @@ class Order_Define_StockinOrder
     const STOCKIN_STOCKOUT_REASON_MAP = [
         self::STOCKIN_STOCKOUT_REASON_REJECT_ALL        => '整单拒收',
         self::STOCKIN_STOCKOUT_REASON_PARTIAL_REJECT    => '部分拒收',
-        self::STOCKIN_STOCKOUT_REASON_CHANGE            => '汰换',
+        self::STOCKIN_STOCKOUT_REASON_CHANGE            => '下架',
         self::STOCKIN_STOCKOUT_REASON_REMOVE_SITE       => '撤点',
         self::STOCKIN_STOCKOUT_REASON_RETURNED          => '退货',
     ];
