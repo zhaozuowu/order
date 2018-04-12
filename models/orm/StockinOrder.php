@@ -5,7 +5,7 @@
  * @property int $stockin_order_id
  * @property int $stockin_order_type
  * @property int $source_order_id
- * @property int $source_supplier_id
+ * @property string $source_supplier_id
  * @property string $source_info
  * @property int $stockin_order_status
  * @property int $warehouse_id
