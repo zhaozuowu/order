@@ -1082,12 +1082,12 @@ class Service_Data_Stockin_StockinOrder
                 $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList, $strRemark,
                 $intWarehouseId, $arrStockInSkuList) {
                 $objRalStock = new Dao_Ral_Stock();
-                $objRalStock->stockIn($intStockInOrderId,
+                $arrStock = $objRalStock->stockIn($intStockInOrderId,
                     Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN,
                     $intWarehouseId,
                     $arrStockInSkuList);
                 Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime,
-                    $intStockInOrderRealAmount, $strRemark);
+                    $intStockInOrderRealAmount, $strRemark, $arrStock['stockin_batch_id']);
                 Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
             });
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;

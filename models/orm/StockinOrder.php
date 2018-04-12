@@ -433,9 +433,10 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param int    $intStockInOrderId
      * @param int    $intStockInTime
      * @param int    $intStockInOrderRealAmount
+     * @param int    $intStockinBatchId
      * @param string $strRemark
      */
-    public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $strRemark)
+    public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $strRemark, $intStockinBatchId)
     {
         $arrCondition = [
             'stockin_order_id' => $intStockInOrderId,
@@ -444,6 +445,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_time' => $intStockInTime,
             'stockin_order_remark' => $strRemark,
             'stockin_order_real_amount' => $intStockInOrderRealAmount,
+            'stockin_batch_id' => $intStockinBatchId,
             'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
         ];
         self::findOne($arrCondition)->update($arrUpdateInfo);
