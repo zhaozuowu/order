@@ -55,7 +55,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param int $intStockinOrderSource
      * @param int $intSourceOrderId
      * @param int $intStockinBatchId
-     * @param int $intSourceSupplierId
+     * @param string $strSourceSupplierId
      * @param string $strSourceInfo
      * @param int $intStockinOrderStatus
      * @param int $intCityId
@@ -82,7 +82,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intStockinOrderSource,
         $intSourceOrderId,
         $intStockinBatchId,
-        $intSourceSupplierId,
+        $strSourceSupplierId,
         $strSourceInfo,
         $intStockinOrderStatus,
         $intCityId,
@@ -109,7 +109,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_source' => intval($intStockinOrderSource),
             'source_order_id' => intval($intSourceOrderId),
             'stockin_batch_id' => intval($intStockinBatchId),
-            'source_supplier_id' => intval($intSourceSupplierId),
+            'source_supplier_id' => strval($strSourceSupplierId),
             'source_info' => strval($strSourceInfo),
             'stockin_order_status' => intval($intStockinOrderStatus),
             'city_id' => intval($intCityId),
@@ -219,7 +219,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param $intStockinOrderSourceType
      * @param $intStockinOrderStatus
      * @param $arrWarehouseId
-     * @param $intSourceSupplierId
+     * @param $strSourceSupplierId
      * @param $strCustomerName
      * @param $strCustomerId
      * @param $arrSourceOrderIdInfo
@@ -240,7 +240,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intStockinOrderSourceType,
         $intStockinOrderStatus,
         $arrWarehouseId,
-        $intSourceSupplierId,
+        $strSourceSupplierId,
         $strCustomerName,
         $strCustomerId,
         $arrSourceOrderIdInfo,
@@ -291,8 +291,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
                 $arrWarehouseId];
         }
 
-        if (!empty($intSourceSupplierId)) {
-            $arrCondition['source_supplier_id'] = $intSourceSupplierId;
+        if (!empty($strSourceSupplierId)) {
+            $arrCondition['source_supplier_id'] = $strSourceSupplierId;
         }
 
         if (!empty($strCustomerName)) {
