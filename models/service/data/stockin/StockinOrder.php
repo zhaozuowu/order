@@ -1130,9 +1130,6 @@ class Service_Data_Stockin_StockinOrder
         $arrDbSkuInfoList = [];
         foreach ($arrSkuInfoList as $arrSkuInfo) {
             $arrSkuRealInfoList = $arrSkuInfo['real_stockin_info'];
-            foreach ($arrSkuRealInfoList as $arrSkuRealInfo) {
-
-            }
             $arrDbSkuInfo = [
                 'stockin_order_id' => $intStockInOrderId,
                 'sku_id' => $arrSkuInfo['sku_id'],
