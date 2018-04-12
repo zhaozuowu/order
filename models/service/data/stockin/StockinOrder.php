@@ -299,13 +299,12 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
             $intSourceOrderId = intval($arrSourceOrderInfo['reserve_order_id']);
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['reserve_order_plan_amount'];
-            $intSourceSupplierId = $arrSourceOrderInfo['vendor_id'];
+            $strSourceSupplierId = strval($arrSourceOrderInfo['vendor_id']);
             $intReserveOrderPlanTime = $arrSourceOrderInfo['reserve_order_plan_time'];
         } else {
             $intSourceOrderId = intval($arrSourceOrderInfo['stockout_order_id']);
-            // 手动计算的订单传入实际入库商品总数作为计划入库数
-            $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockin_order_total_sku_amount_calculated'];
-            $intSourceSupplierId = $arrSourceOrderInfo['customer_id'];
+            $intStockinOrderPlanAmount = $arrSourceOrderInfo['stockout_order_pickup_amount'];
+            $strSourceSupplierId = strval($arrSourceOrderInfo['customer_id']);
             $intCustomerId = $arrSourceOrderInfo['customer_id'];
             $strCustomerName = $arrSourceOrderInfo['customer_name'];
             $intReserveOrderPlanTime = 0;
@@ -327,12 +326,13 @@ class Service_Data_Stockin_StockinOrder
         $strStockinOrderCreatorName = strval($strCreatorName);
         $strStockinOrderRemark = strval($strStockinOrderRemark);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockinOrderId, $intStockinOrderType,
-            $intStockInOrderDataSourceType, $intSourceOrderId, $intSourceSupplierId, $strSourceInfo, $intStockinOrderStatus,
+            $intStockInOrderDataSourceType, $intSourceOrderId, $strSourceSupplierId, $strSourceInfo, $intStockinOrderStatus,
             $intWarehouseId, $strWarehouseName, $intCityId, $strCityName, $intStockinTime, $intReserveOrderPlanTime,
             $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockinOrderCreatorId, $strStockinOrderCreatorName,
             $strStockinOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax,
             $intCustomerId,$strCustomerName) {
-            $intVendorId = $intStockinOrderType == Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE ? $intSourceSupplierId : 0;
+            $intVendorId = $intStockinOrderType == Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE ?
+                intval($strSourceSupplierId) : 0;
             $arrStock = $this->notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $intVendorId, $arrDbSkuInfoList);
             $intStockinBatchId = $arrStock['stockin_batch_id'];
             Model_Orm_StockinOrder::createStockinOrder(
@@ -341,7 +341,7 @@ class Service_Data_Stockin_StockinOrder
                 $intStockInOrderDataSourceType,
                 $intSourceOrderId,
                 $intStockinBatchId,
-                $intSourceSupplierId,
+                $strSourceSupplierId,
                 $strSourceInfo,
                 $intStockinOrderStatus,
                 $intCityId,
@@ -464,7 +464,7 @@ class Service_Data_Stockin_StockinOrder
      * @param array $arrDbSkuInfoList
      * @return int
      * @throws Nscm_Exception_Business
-     * @throws Order_BusinessError
+     * @throws Nscm_Exception_System
      */
     public function notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $intVendorId, $arrDbSkuInfoList)
     {
@@ -502,7 +502,7 @@ class Service_Data_Stockin_StockinOrder
      * @param $intStockinOrderSourceType
      * @param $intStockinOrderStatus
      * @param $strWarehouseId
-     * @param $intSourceSupplierId
+     * @param $strSourceSupplierId
      * @param $strSourceOrderId
      * @param $strCustomerName
      * @param $strCustomerId
@@ -524,7 +524,7 @@ class Service_Data_Stockin_StockinOrder
         $intStockinOrderSourceType,
         $intStockinOrderStatus,
         $strWarehouseId,
-        $intSourceSupplierId,
+        $strSourceSupplierId,
         $strCustomerName,
         $strCustomerId,
         $strSourceOrderId,
@@ -612,7 +612,7 @@ class Service_Data_Stockin_StockinOrder
             $intStockinOrderSourceType,
             $intStockinOrderStatus,
             $arrWarehouseId,
-            $intSourceSupplierId,
+            $strSourceSupplierId,
             $strCustomerName,
             $strCustomerId,
             $arrSourceOrderIdInfo,
