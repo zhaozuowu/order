@@ -84,7 +84,7 @@ class Service_Data_Stockin_StockinOrder
             'sku_effect_day' => $sourceOrderSkuInfo['sku_effect_day'],
             'stockin_order_sku_total_price' => $intTotalAmount * $intSkuPrice,
             'stockin_order_sku_total_price_tax' => $intTotalAmount * $intSkuPriceTax,
-            'stockout_order_sku_amount' => $sourceOrderSkuInfo['pickup_amount'],
+            'stockout_order_sku_amount' => $intPlanAmount,  // 预约入库单 出库数 等于 计划入库数
             'reserve_order_sku_plan_amount' => $intPlanAmount,
             'stockin_order_sku_real_amount' => $intTotalAmount,
             'stockin_order_sku_extra_info' => json_encode($arrDbStockinOrderSkuExtraInfo),
