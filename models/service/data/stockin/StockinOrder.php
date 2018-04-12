@@ -994,6 +994,9 @@ class Service_Data_Stockin_StockinOrder
         }
         $arrDbSkuList = [];
         foreach ($arrSkuPriceList as $intSkuId => $arrSkuPriceInfo) {
+            if (0 >= $arrRequestSkuInfoList[$intSkuId]) {
+                continue;
+            }
             $arrSkuInfo = $arrSkuInfoList[$intSkuId];
             $arrDbSku = [
                 'sku_id' => $intSkuId,
