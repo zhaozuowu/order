@@ -42,6 +42,9 @@ class WriteStockinStockoutClientId
         $arrAllStockinOrderIds = Model_Orm_StockinOrder::findColumn('stockin_order_id', $arrSearchCondition, $arrOrder);
         do {
             $arrStockinOrderIds = array_slice($arrAllStockinOrderIds, $intOffset, $intLimit);
+            if (empty($arrStockinOrderIds)) {
+                break;
+            }
             $arrCondition = ['stockin_order_id' => ['in', $arrStockinOrderIds]];
             /**
              * @var Model_Orm_StockinOrder[]
