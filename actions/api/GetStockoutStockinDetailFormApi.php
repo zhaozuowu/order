@@ -16,7 +16,7 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
         'stockin_order_id' => 'regex|patern[/^(SIO\d{13})?$/]',
         'source_order_id' => 'regex|patern[/^(SOO\d{13})?$/]',
         'sku_id' => 'int',
-        'client_id' => 'int',
+        'client_id' => 'str',
         'client_name' => 'str',
         'stockin_time_start' => 'int|required',
         'stockin_time_end' => 'int|required',
@@ -106,8 +106,8 @@ class Action_GetStockoutStockinDetailFormApi extends Order_Base_ApiAction
                 : strval($arrListItem['stockin_order_status_text']);
             $arrRoundResult['client_name'] = empty($arrListItem['client_name']) ? ''
                 : strval($arrListItem['client_name']);
-            $arrRoundResult['client_id'] = empty($arrListItem['client_id']) ? 0
-                : intval($arrListItem['client_id']);
+            $arrRoundResult['client_id'] = empty($arrListItem['client_id']) ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : strval($arrListItem['client_id']);
             $arrRoundResult['sku_id'] = empty($arrListItem['sku_id']) ? 0
                 : intval($arrListItem['sku_id']);
             $arrRoundResult['sku_name'] = empty($arrListItem['sku_name']) ? ''
