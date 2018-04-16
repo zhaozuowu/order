@@ -31,6 +31,7 @@ class WriteStockinOrderBusinessForm
     {
         $arrSearchCondition = [
             'create_time' => ['<', time()],
+            'stockin_order_type' => Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT,
         ];
         $intLimit = self::LIMIT;
         $arrOrder = [
