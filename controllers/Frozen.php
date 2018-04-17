@@ -7,7 +7,8 @@
 
 class Controller_Frozen extends Ap_Controller_Abstract {
     public $actions = array(
-        'createfrozenorder' =>      'actions/frozen/createfrozenorder.php', #创建冻结单#
+        'createfrozenorder' =>      'actions/frozen/CreateFrozenOrder.php', #创建冻结单#
+        'unfrozen' =>               'actions/frozen/Unfrozen.php', #创建冻结单#
         'getorder' =>               'actions/frozen/GetOrder.php', #查询冻结单列表#
         'getorderbyid' =>           'actions/frozen/GetOrderById.php', #根据ID查询冻结单#
         'getfrozensku' =>           'actions/frozen/GetFrozenSku.php', #查询冻结单明细#

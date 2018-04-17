@@ -88,7 +88,19 @@ class Service_Data_Frozen_StockFrozenOrderDetail
             Bd_Log::warning('frozen order id: ' . $arrInput['stock_frozen_order_id'] . ' detail is empty.');
             return [];
         }
-        $arrSql = $this->buildGetOrderListGroupBySkuSql($arrInput['stock_frozen_order_id'], $arrSkuIds);
+
+        return $this->getOrderDetailBySku($arrInput['stock_frozen_order_id'], $arrSkuIds);
+
+    }
+
+    /**
+     * 查询冻结单明细
+     * @param $intFrozenOrderId
+     * @param $arrSkuIds
+     * @return array
+     */
+    public function getOrderDetailBySku($intFrozenOrderId, $arrSkuIds) {
+        $arrSql = $this->buildGetOrderListGroupBySkuSql($intFrozenOrderId, $arrSkuIds);
 
         $arrRet = Model_Orm_StockFrozenOrderDetail::findRows($arrSql['columns'], $arrSql['where'],
             $arrSql['order_by']);

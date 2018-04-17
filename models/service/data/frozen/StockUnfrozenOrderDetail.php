@@ -12,12 +12,17 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      */
     protected $objDaoSku;
 
+
+    protected $objDataOrderDetail;
+
     /**
      * init
      */
     public function __construct() {
         $this->objDaoSku = new Dao_Ral_Sku();
+        $this->objDataOrderDetail = new Service_Data_Frozen_StockFrozenOrderDetail();
     }
+
 
     /**
      * 获取SKU详情
@@ -40,6 +45,75 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
         }
 
         return $arrSkuInfos;
+    }
+
+    /**
+     * 解冻
+     * @param $arrInput
+     * @throws Order_BusinessError
+     */
+    public function unfrozen($arrInput) {
+        $arrSkuIds = array_unique(array_column($arrInput['detail'], 'sku_id'));
+        $arrFrozenDetail = $this->objDataOrderDetail->getOrderDetailBySku($arrInput['stock_frozen_order_id'], $arrSkuIds);
+        if(empty($arrFrozenDetail)) {
+            Bd_Log::warning('unfrozen failed. frozen order detail not exits. ', print_r($arrInput, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST);
+        }
+
+        $this->checkUnfrozenParam($arrInput, $arrFrozenDetail);
+        $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
+        $arrInsertArg = $this->getInsertUnfrozenArg($arrInput, $arrSkuInfos);
+
+        $intInsertRet = Model_Orm_StockFrozenOrderUnfrozenDetail::batchInsert($arrInsertArg);
+
+        return $intInsertRet;
+    }
+
+
+    protected function checkUnfrozenParam($arrInput, $arrFrozenDetail) {
+        //todo
+    }
+
+    protected function getInsertUnfrozenArg($arrInput, $arrSkuInfos) {
+        $arrOrderDetailArg = [];
+        foreach ($arrInput['detail'] as $arrDetail) {
+            if(intval($arrDetail['unfrozen_amount']) <= 0) {
+                Bd_Log::warning('unfrozen amount invalid in detail param', Order_Error_Code::PARAMS_ERROR, $arrInput);
+                Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
+            }
+
+            $arrSkuInfo = $arrSkuInfos[$arrDetail['sku_id']];
+            if(empty($arrSkuInfo)) {
+                Bd_Log::warning("sku info is empty. sku id: " . $arrDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR);
+            }
+
+            // 根据商品效期类型，计算生产日期和有效期
+            $arrDetail = $this->getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+
+            $intCreator = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
+            $strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
+
+            $arrDetail = [
+                'stock_frozen_order_id'     => $arrInput['stock_frozen_order_id'],
+                'warehouse_id'              => $arrInput['warehouse_id'],
+                'sku_id'                    => $arrDetail['sku_id'],
+                'upc_id'                    => $arrSkuInfo['min_upc']['upc_id'],
+                'sku_name'                  => $arrSkuInfo['sku_name'],
+                'storage_location_id'       => $arrDetail['storage_location_id'],
+                'unfrozen_amount'           => $arrDetail['unfrozen_amount'],
+                'current_frozen_amount'     => $arrDetail['current_frozen_amount'],
+                'is_defective'              => $arrInput['is_defective'],
+                'production_time'           => $arrDetail['production_time'],
+                'expire_time'               => $arrDetail['expire_time'],
+                'unfrozen_user'             => $intCreator,
+                'unfrozen_user_name'        => $strCreatorName,
+            ];
+
+            $arrOrderDetailArg[] = $arrDetail;
+        }
+
+        return $arrOrderDetailArg;
     }
 
     /**
@@ -118,7 +192,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
     }
 
     /**
-     * 拼装冻结单查询条件
+     * 拼装冻结单解冻明细查询条件
      * @param $arrInput
      * @return array
      */
