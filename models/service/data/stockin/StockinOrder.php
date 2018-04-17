@@ -1262,10 +1262,10 @@ class Service_Data_Stockin_StockinOrder
         $arrDbStockInSkuList = $this->getStockinOrderSkuList($intStockInOrderId, 1, 0);
         $arrDbStockInSkuMap = [];
         foreach ($arrDbStockInSkuList['list'] as $arrDbStockInSkuInfo) {
-            $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = [
+            $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = array_merge($arrDbStockInSkuInfo, [
                 'unit_price' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price']),
                 'unit_price_tax' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price_tax']),
-            ];
+            ]);
         }
 
         foreach ($arrSkuInfoListRequest as $arrSkuInfo) {
