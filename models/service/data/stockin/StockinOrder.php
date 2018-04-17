@@ -1260,7 +1260,7 @@ class Service_Data_Stockin_StockinOrder
     {
         $arrStockInSkuList = [];
         $arrDbStockInSkuList = $this->getStockinOrderSkuList($intStockInOrderId, 1, 0);
-
+        $arrDbStockInSkuMap = [];
         foreach ($arrDbStockInSkuList['list'] as $arrDbStockInSkuInfo) {
             $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = [
                 'unit_price' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price']),
@@ -1279,14 +1279,14 @@ class Service_Data_Stockin_StockinOrder
                 'unit_price_tax' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['unit_price_tax'],
             ];
             $intSkuEffectType = $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_effect_type'];
-            $intSkuEffectDaty = $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_effect_day'];
+            $intSkuEffectDate = intval($arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_effect_day']);
             foreach ($arrRealSkuInfo as $arrSkuInfoItem) {
                 if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $intSkuEffectType) {
-                    $intProductionTime = intval($arrSkuInfoItem['expire_date']);
-                    $intExpireTime = $intProductionTime + intval($intSkuEffectDaty['sku_effect_day']) * 86400 - 1;
+                    $intProductionTime = strtotime(date('Ymd', $arrSkuInfoItem['expire_date']));
+                    $intExpireTime = $intProductionTime + $intSkuEffectDate * 86400 - 1;
 
                 } else {
-                    $intExpireTime = intval($arrSkuInfoItem['expire_date']) + 86399;
+                    $intExpireTime = strtotime(date('Ymd', $arrSkuInfoItem['expire_date'])) + 86399;
                     $intProductionTime = 0;
                 }
                 if (0 != $arrSkuInfoItem['sku_good_amount']) {
