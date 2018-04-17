@@ -146,7 +146,9 @@ class Dao_Ral_Stock
         $req[self::API_RALER_STOCK_DETAIL]['sku_ids'] = $strSkuIds;
 
 
+        Bd_Log::debug('ral get stock sku info request params: ' . json_encode($req));
         $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug('ral get stock sku info response params: ' . json_encode($ret));
         $ret = empty($ret[self::API_RALER_STOCK_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_DETAIL];
         if (empty($ret) || !empty($ret['error_no'])) {
             Bd_Log::warning(__METHOD__ . ' get sku stock failed. call ral param is empty.' . print_r($ret, true));

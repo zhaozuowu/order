@@ -68,7 +68,9 @@ class Dao_Ral_Vendor
         $req[self::API_RALER_SKU_PRICE]  = [
             'sku_ids' => implode(',', $arrSkuIds),
         ];
+        Bd_Log::debug('ral get vendor sku price request params: ' . json_encode($req));
         $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug('ral get vendor sku price response params: ' . json_encode($ret));
         $ret = !empty($ret[self::API_RALER_VENDOR_SUG])?$ret[self::API_RALER_VENDOR_SUG]:[];
         return $ret;
     }

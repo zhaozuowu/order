@@ -681,7 +681,10 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
         }
         $status = Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS;
-        if (($stockoutOrderInfo['stockout_order_status'] != $status) || array_key_exists($stockoutOrderInfo['signup_status'],Order_Define_StockoutOrder::STOCKOUT_SIGINUP_STATUS_LIST)) {
+        if (array_key_exists($stockoutOrderInfo['signup_status'],Order_Define_StockoutOrder::STOCKOUT_SIGINUP_STATUS_LIST)) {
+            return [];
+        }
+        if ($stockoutOrderInfo['stockout_order_status'] != $status) {
             Bd_Log::warning("stockoutOrderInfo can't modify stockout_order_status by stockoutOrderId:".$strStockoutOrderId);
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
         }
