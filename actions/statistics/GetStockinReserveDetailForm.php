@@ -176,6 +176,7 @@ class Action_GetStockinReserveDetailForm extends Order_Base_Action
                 Nscm_Service_Price::convertDefaultToYuan($arrListItem['stockin_order_sku_total_price']);
             $arrRoundResult['stockin_order_sku_total_price_tax_yuan'] =
                 Nscm_Service_Price::convertDefaultToYuan($arrListItem['stockin_order_sku_total_price_tax']);
+            $arrRoundResult['stockin_order_remark'] = strval($arrListItem['stockin_order_remark']);
 
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult['list'][] = $arrRoundResult;

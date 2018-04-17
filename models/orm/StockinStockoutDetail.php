@@ -77,7 +77,7 @@ class Model_Orm_StockinStockoutDetail extends Order_Base_Orm
      * @param integer $intStockinOrderId
      * @param integer $intSourceOrderId
      * @param integer $intSkuId
-     * @param integer $intClientId
+     * @param integer $strClientId
      * @param string $strClientName
      * @param array $arrStockinTime
      * @param integer $intPageNum
@@ -89,7 +89,7 @@ class Model_Orm_StockinStockoutDetail extends Order_Base_Orm
         $intStockinOrderId,
         $intSourceOrderId,
         $intSkuId,
-        $intClientId,
+        $strClientId,
         $strClientName,
         $arrStockinTime,
         $intPageNum,
@@ -110,8 +110,8 @@ class Model_Orm_StockinStockoutDetail extends Order_Base_Orm
             $arrCondition['sku_id'] = $intSkuId;
         }
 
-        if (!empty($intClientId)) {
-            $arrCondition['client_id'] = $intClientId;
+        if (!empty($strClientId)) {
+            $arrCondition['client_id'] = $strClientId;
         }
 
         if (!empty($strClientName)) {

@@ -103,6 +103,24 @@ class Order_Define_Sku
     ];
 
     /**
+     * 商品质量类型 - 良品
+     */
+    const SKU_QUALITY_TYPE_GOOD = 1;
+
+    /**
+     * 商品质量类型 - 非良品
+     */
+    const SKU_QUALITY_TYPE_DEFECTIVE = 2;
+
+    /**
+     * 商品质量状态映射表
+     */
+    const SKU_QUALITY_TYPE_MAP = [
+        self::SKU_QUALITY_TYPE_GOOD => '良品',
+        self::SKU_QUALITY_TYPE_DEFECTIVE => '非良品',
+    ];
+
+    /**
      * sku price type benefit
      * @var integer
      */
