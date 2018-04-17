@@ -43,6 +43,16 @@ class Order_Util_Util
         return Nscm_Lib_IdGenerator::sequenceDateNumber();
     }
 
+
+    /**
+     * generate stock frozen order id
+     * @return int
+     */
+    public static function generateStockFrozenOrderId()
+    {
+        return Nscm_Lib_IdGenerator::sequenceDateNumber();
+    }
+
     /**
      * geenerate business form order id
      * @return void

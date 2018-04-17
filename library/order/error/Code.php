@@ -404,4 +404,24 @@ class Order_Error_Code extends Wm_Error_Code
      * 出库单已打印，无法取消
      */
     const NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT = 310013;
+
+
+    //------------------------------------------------冻结单------------------------------------------------
+
+    /**
+     * 冻结单-冻结SKU个数超过100个
+     * @var integer
+     */
+    const NWMS_ORDER_FROZEN_SKU_AMOUNT_TOO_MUCH = 370001;
+
+    /**
+     * 冻结单-调用库存模块冻结库存失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL = 370002;
+
+
+
+    //------------------------------------------------冻结单------------------------------------------------
+
 }

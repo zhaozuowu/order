@@ -212,6 +212,28 @@ class Order_Util
         return $strResult;
     }
 
+
+
+    /**
+     * 去除冻结单开头的F前缀
+     *
+     * @param $strStockFrozenOrderId
+     * @return string
+     */
+    public static function trimStockFrozenOrderIdPrefix($strStockFrozenOrderId)
+    {
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strStockFrozenOrderId)) {
+            return $strResult;
+        }
+
+        $strResult = ltrim($strStockFrozenOrderId, Nscm_Define_OrderPrefix::F);
+
+        return $strResult;
+    }
+
     /**
      * 判断value的值是否在数组中
      * 遇到空参数返回错误

@@ -40,6 +40,13 @@ class Dao_Ral_Stock
      */
     const  API_RALER_ADJUST_SKU_STOCK = 'adjustskustock';
 
+
+    /**
+     * 冻结单
+     * @var string
+     */
+    const  API_RALER_FROZEN_STOCK = 'frozenorderskustock';
+
     /**
      * 作废出库单
      */
@@ -223,6 +230,26 @@ class Dao_Ral_Stock
         return $ret;
 
     }
+
+    //-----------------------------------------冻结单-------------------------------------------------------
+    public function frozenStock($arrFrozenArg)
+    {
+        $ret = [];
+
+        $req[self::API_RALER_FROZEN_STOCK] = $arrFrozenArg;
+
+        Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
+        $ret = $this->objApiRal->getData($req);
+        $ret = empty($ret[self::API_RALER_FROZEN_STOCK]) ? [] : $ret[self::API_RALER_FROZEN_STOCK];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Bd_Log::warning('ral call stock model frozen sku failed. ret: ' . print_r($ret, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL);
+        }
+        return $ret;
+    }
+    //-----------------------------------------冻结单-------------------------------------------------------
+
+
 
     /**
      * @param $intStockoutOrderId
