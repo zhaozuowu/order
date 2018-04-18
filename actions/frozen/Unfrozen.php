@@ -7,9 +7,6 @@
 
 class Action_Unfrozen extends Order_Base_Action
 {
-    protected $boolCheckLogin   = false;
-    protected $boolCheckAuth    = false;
-    protected $boolCheckIp      = false;
 
     /**
      * input params
@@ -17,7 +14,7 @@ class Action_Unfrozen extends Order_Base_Action
      */
     protected $arrInputParams = [
         'warehouse_id'      => 'int|required',
-        'stock_frozen_order_id'     => 'regex|patern[/^(F\d{6})?$/]',
+        'stock_frozen_order_id'     => 'regex|patern[/^(F\d{13})?$/]',
         'detail'            => [
             'validate'              => 'json|required|decode',
             'type'                  => 'array',

@@ -107,8 +107,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             // 根据商品效期类型，计算生产日期和有效期
             $arrDetail = Order_Util_Stock::getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
-            /*  $intCreator = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
-            $strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];*/
+            //$intCreator = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
+            //$strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
 
             $arrDetail = [
                 'stock_frozen_order_id'     => $arrInput['stock_frozen_order_id'],
@@ -116,14 +116,15 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
                 'sku_id'                    => $arrDetail['sku_id'],
                 'upc_id'                    => $arrSkuInfo['min_upc']['upc_id'],
                 'sku_name'                  => $arrSkuInfo['sku_name'],
-                'storage_location_id'       => $arrDetail['storage_location_id'],
+                //'storage_location_id'       => $arrDetail['storage_location_id'],
                 'unfrozen_amount'           => $arrDetail['unfrozen_amount'],
-                'current_frozen_amount'     => $arrDetail['current_frozen_amount'],
-                'is_defective'              => $arrInput['is_defective'],
+                'current_frozen_amount'     => $arrDetail['current_frozen_amount'] - $arrDetail['unfrozen_amount'],
+                //'is_defective'              => $arrInput['is_defective'],
                 'production_time'           => $arrDetail['production_time'],
                 'expire_time'               => $arrDetail['expire_time'],
-              /*  'unfrozen_user'             => $intCreator,
-                'unfrozen_user_name'        => $strCreatorName,*/
+                'version'                   => 1,
+                //'unfrozen_user'             => $intCreator,
+                //'unfrozen_user_name'        => $strCreatorName,
             ];
 
             $arrOrderDetailArg[] = $arrDetail;

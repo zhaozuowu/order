@@ -23,12 +23,14 @@ class Service_Page_Frozen_Unfrozen
     /**
      * execute
      * @param $arrInput
-     * @return int
+     * @return mixed
+     * @throws Exception
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function execute($arrInput)
     {
+        $arrInput['stock_frozen_order_id'] = substr($arrInput['stock_frozen_order_id'], 1); //暂时hard code
         $arrOutput = $this->objUnfrozen->unfrozen($arrInput);
         return $arrOutput;
     }
