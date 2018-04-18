@@ -180,6 +180,11 @@ class Order_Error_Code extends Wm_Error_Code
     const TOTAL_COUNT_CANNOT_EMPTY = 330016;
 
     /**
+     * not ignore warning date
+     */
+    const NOT_IGNORE_ILLEGAL_DATE = 330017;
+
+    /**
      * 查询时间范围错误
      */
     const QUERY_TIME_SPAN_ERROR = 340000;
