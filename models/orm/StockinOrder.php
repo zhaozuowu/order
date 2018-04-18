@@ -5,7 +5,7 @@
  * @property int $stockin_order_id
  * @property int $stockin_order_type
  * @property int $source_order_id
- * @property int $source_supplier_id
+ * @property string $source_supplier_id
  * @property string $source_info
  * @property int $stockin_order_status
  * @property int $warehouse_id
@@ -51,9 +51,11 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * create stock in order
      * @param int $intStockinOrderId
      * @param int $intStockinOrderType
+     * @param int $intStockInOrderDataSourceType
+     * @param int $intStockinOrderSource
      * @param int $intSourceOrderId
      * @param int $intStockinBatchId
-     * @param int $intSourceSupplierId
+     * @param string $strSourceSupplierId
      * @param string $strSourceInfo
      * @param int $intStockinOrderStatus
      * @param int $intCityId
@@ -69,14 +71,18 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param string $strStockinOrderRemark
      * @param int $intStockinOrderTotalPrice
      * @param  int $intStockinOrderTotalPriceTax
+     * @param  int $intCustomerId
+     * @param  int $strCustomerName
      * @return int
      */
     public static function createStockinOrder(
         $intStockinOrderId,
         $intStockinOrderType,
+        $intStockInOrderDataSourceType,
+        $intStockinOrderSource,
         $intSourceOrderId,
         $intStockinBatchId,
-        $intSourceSupplierId,
+        $strSourceSupplierId,
         $strSourceInfo,
         $intStockinOrderStatus,
         $intCityId,
@@ -91,15 +97,19 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $strStockinOrderCreatorName,
         $strStockinOrderRemark,
         $intStockinOrderTotalPrice,
-        $intStockinOrderTotalPriceTax
+        $intStockinOrderTotalPriceTax,
+        $intCustomerId,
+        $strCustomerName
     )
     {
         $arrRow = [
             'stockin_order_id' => intval($intStockinOrderId),
             'stockin_order_type' => intval($intStockinOrderType),
+            'data_source' => intval($intStockInOrderDataSourceType),
+            'stockin_order_source' => intval($intStockinOrderSource),
             'source_order_id' => intval($intSourceOrderId),
             'stockin_batch_id' => intval($intStockinBatchId),
-            'source_supplier_id' => intval($intSourceSupplierId),
+            'source_supplier_id' => strval($strSourceSupplierId),
             'source_info' => strval($strSourceInfo),
             'stockin_order_status' => intval($intStockinOrderStatus),
             'city_id' => intval($intCityId),
@@ -115,40 +125,143 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_remark' => $strStockinOrderRemark,
             'stockin_order_total_price' => $intStockinOrderTotalPrice,
             'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
+            'customer_id' => $intCustomerId,
+            'customer_name' => $strCustomerName,
+        ];
+        return self::insert($arrRow);
+    }
+
+    /**
+     * @param int $intStockInOrderId 入库单id
+     * @param int $intStockInOrderType 入库单类型
+     * @param int $intStockInOrderDataSourceType 销退入库单类型
+     * @param int $intStockInOrderSource 销退入库单业态
+     * @param int $intSourceOrderId 出库单id
+     * @param int $intOrderReturnReason 销退入库原因
+     * @param string $strOrderReturnReasonText 销退入库原因
+     * @param string $strSourceInfo 来源订单json字符串
+     * @param int $intStockinOrderStatus 入库单状态
+     * @param int $intCityId 城市id
+     * @param string $strCityName 城市名称
+     * @param int $intWarehouseId 入库仓库id
+     * @param string $strWarehouseName 入库仓库名称
+     * @param int $intStockinOrderPlanAmount 计划入库数量
+     * @param int $intStockInOrderCreatorId 操作人员id
+     * @param string $strStockInOrderCreatorName 操作人员名称
+     * @param string $strStockInOrderRemark 备注
+     * @param int $intStockinOrderTotalPrice 入库单未税总价格
+     * @param int $intStockinOrderTotalPriceTax 入库单含税总价
+     * @param int $intShipmentOrderId 运单号
+     * @param string $strCustomerId 客户id
+     * @param string $strCustomerName 客户名称
+     * @param string $strSourceSupplierId 客户id
+     * @return int
+     */
+    public static function createStayStockInOrder(
+        $intStockInOrderId,
+        $intStockInOrderType,
+        $intStockInOrderDataSourceType,
+        $intStockInOrderSource,
+        $intSourceOrderId,
+        $intOrderReturnReason,
+        $strOrderReturnReasonText,
+        $strSourceInfo,
+        $intStockinOrderStatus,
+        $intCityId,
+        $strCityName,
+        $intWarehouseId,
+        $strWarehouseName,
+        $intStockinOrderPlanAmount,
+        $intStockInOrderCreatorId,
+        $strStockInOrderCreatorName,
+        $strStockInOrderRemark,
+        $intStockinOrderTotalPrice,
+        $intStockinOrderTotalPriceTax,
+        $intShipmentOrderId,
+        $strCustomerId,
+        $strCustomerName,
+        $strSourceSupplierId
+    )
+    {
+        $arrRow = [
+            'stockin_order_id' => intval($intStockInOrderId),
+            'stockin_order_type' => intval($intStockInOrderType),
+            'data_source' => intval($intStockInOrderDataSourceType),
+            'stockin_order_source' => intval($intStockInOrderSource),
+            'source_order_id' => intval($intSourceOrderId),
+            'stockin_order_reason' => intval($intOrderReturnReason),
+            'stockin_order_reason_text' => strval($strOrderReturnReasonText),
+            'shipment_order_id' => intval($intShipmentOrderId),
+            'source_info' => strval($strSourceInfo),
+            'stockin_order_status' => intval($intStockinOrderStatus),
+            'city_id' => intval($intCityId),
+            'city_name' => strval($strCityName),
+            'warehouse_id' => intval($intWarehouseId),
+            'warehouse_name' => strval($strWarehouseName),
+            'stockin_order_plan_amount' => $intStockinOrderPlanAmount,
+            'stockin_order_creator_id' => $intStockInOrderCreatorId,
+            'stockin_order_creator_name' => $strStockInOrderCreatorName,
+            'stockin_order_remark' => $strStockInOrderRemark,
+            'stockin_order_total_price' => $intStockinOrderTotalPrice,
+            'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
+            'customer_id' => $strCustomerId,
+            'customer_name' => $strCustomerName,
+            'source_supplier_id' => $strSourceSupplierId,
         ];
         return self::insert($arrRow);
     }
 
     /**
      * 获取入库单列表（分页）
-     *
      * @param $arrStockinOrderType
+     * @param $intDataSource
      * @param $intStockinOrderId
+     * @param $intStockinOrderSourceType
+     * @param $intStockinOrderStatus
      * @param $arrWarehouseId
-     * @param $intSourceSupplierId
+     * @param $strSourceSupplierId
+     * @param $strCustomerName
+     * @param $strCustomerId
      * @param $arrSourceOrderIdInfo
      * @param $arrCreateTime
      * @param $arrOrderPlanTime
      * @param $arrStockinTime
+     * @param $arrStockinDestroyTime
+     * @param $intPrintStatus
      * @param $intPageNum
      * @param $intPageSize
      * @return mixed
+     * @throws Order_BusinessError
      */
     public static function getStockinOrderList(
         $arrStockinOrderType,
+        $intDataSource,
         $intStockinOrderId,
+        $intStockinOrderSourceType,
+        $intStockinOrderStatus,
         $arrWarehouseId,
-        $intSourceSupplierId,
+        $strSourceSupplierId,
+        $strCustomerName,
+        $strCustomerId,
         $arrSourceOrderIdInfo,
         $arrCreateTime,
         $arrOrderPlanTime,
         $arrStockinTime,
+        $arrStockinDestroyTime,
+        $intPrintStatus,
         $intPageNum,
         $intPageSize)
     {
         // 拼装查询条件
         if (!empty($intStockinOrderId)) {
             $arrCondition['stockin_order_id'] = $intStockinOrderId;
+        }
+
+        if (!empty($intDataSource)) {
+            if(!isset(Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_DEFINE[$intDataSource])){
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKIN_DATA_SOURCE_TYPE_ERROR);
+            }
+            $arrCondition['data_source'] = $intDataSource;
         }
 
         if (!empty($arrSourceOrderIdInfo)) {
@@ -164,16 +277,39 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
                 $arrStockinOrderType];
         }
 
+        if (!empty($intStockinOrderSourceType)) {
+            $arrCondition['stockin_order_source'] = $intStockinOrderSourceType;
+        }
+
+        if (!empty($intStockinOrderStatus)) {
+            $arrCondition['stockin_order_status'] = $intStockinOrderStatus;
+        }
+
         if (!empty($arrWarehouseId)) {
             $arrCondition['warehouse_id'] = [
                 'in',
                 $arrWarehouseId];
         }
 
-        if (!empty($intSourceSupplierId)) {
-            $arrCondition['source_supplier_id'] = $intSourceSupplierId;
+        if (!empty($strSourceSupplierId)) {
+            $arrCondition['source_supplier_id'] = $strSourceSupplierId;
         }
 
+        if (!empty($strCustomerName)) {
+            $arrCondition['customer_name'] = [
+                'like',
+                '%' . $strCustomerName . '%'
+            ];
+        }
+
+        if (!empty($strCustomerId)) {
+            $arrCondition['customer_id'] = [
+                'like',
+                '%' . $strCustomerId . '%'
+            ];
+        }
+
+        $intTimesCount = 0;
         if (!empty($arrCreateTime['start'])
             && !empty($arrCreateTime['end'])) {
             $arrCondition['create_time'] = [
@@ -181,6 +317,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
                 $arrCreateTime['start'],
                 $arrCreateTime['end']
             ];
+            $intTimesCount++;
         }
 
         if (!empty($arrOrderPlanTime['start'])
@@ -190,6 +327,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
                 $arrOrderPlanTime['start'],
                 $arrOrderPlanTime['end']
             ];
+            $intTimesCount++;
         }
 
         if (!empty($arrStockinTime['start'])
@@ -199,6 +337,26 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
                 $arrStockinTime['start'],
                 $arrStockinTime['end'],
             ];
+            $intTimesCount++;
+        }
+
+        if (!empty($arrStockinDestroyTime['start'])
+            && !empty($arrStockinDestroyTime['end'])) {
+            $arrCondition['stockin_destroy_time'] = [
+                'between',
+                $arrStockinDestroyTime['start'],
+                $arrStockinDestroyTime['end'],
+            ];
+            $intTimesCount++;
+        }
+
+        if (!empty($intPrintStatus)) {
+            $arrCondition['stockin_order_is_print'] = $intPrintStatus;
+        }
+
+        // 至少要有一个必传的时间段
+        if(1 > $intTimesCount){
+            Order_BusinessError::throwException(Order_Error_Code::TIME_PARAMS_LESS_THAN_ONE);
         }
 
         // 只查询未软删除的
@@ -271,6 +429,46 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         }
 
         return true;
+    }
+
+    /**
+     * 系统销退入库单确认入库
+     * @param int    $intStockInOrderId
+     * @param int    $intStockInTime
+     * @param int    $intStockInOrderRealAmount
+     * @param int    $intStockinBatchId
+     * @param string $strRemark
+     */
+    public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $strRemark, $intStockinBatchId)
+    {
+        $arrCondition = [
+            'stockin_order_id' => $intStockInOrderId,
+        ];
+        $arrUpdateInfo = [
+            'stockin_time' => $intStockInTime,
+            'stockin_order_remark' => $strRemark,
+            'stockin_order_real_amount' => $intStockInOrderRealAmount,
+            'stockin_batch_id' => $intStockinBatchId,
+            'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
+        ];
+        self::findOne($arrCondition)->update($arrUpdateInfo);
+    }
+
+    /**
+     * 通过source order id 获取入库单详情
+     * @param $intSourceOrderId
+     * @return array
+     */
+    public static function getStockInOrderInfoBySourceOrderId($intSourceOrderId)
+    {
+        $objStockInOrder = self::findOne([
+            'source_order_id' => $intSourceOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ]);
+        if (!empty($objStockInOrder)) {
+            return $objStockInOrder->toArray();
+        }
+        return [];
     }
 
 }
