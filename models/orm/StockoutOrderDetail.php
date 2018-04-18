@@ -91,7 +91,7 @@ class Model_Orm_StockoutOrderDetail extends Order_Base_Orm
         if (empty($arrColumns)) {
             $arrColumns = self::getAllColumns();
         }
-        $list =  self::findRows($arrColumns, $arrConditions, ['create_time' => 'desc'], $intOffset, $intLimit);
+        $list =  self::findRows($arrColumns, $arrConditions, ['id' => 'desc'], $intOffset, $intLimit);
         return $list;
     }
 }
