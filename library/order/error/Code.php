@@ -180,6 +180,12 @@ class Order_Error_Code extends Wm_Error_Code
     const TOTAL_COUNT_CANNOT_EMPTY = 330016;
 
     /**
+     * reserve stockin send wmq fail
+     * @var int
+     */
+    const RESERVE_STOCKIN_SEND_WMQ_FAIL = 330019;
+
+    /**
      * 查询时间范围错误
      */
     const QUERY_TIME_SPAN_ERROR = 340000;

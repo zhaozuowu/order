@@ -136,6 +136,16 @@ class Service_Data_Reserve_ReserveOrder
     }
 
     /**
+     * drop order info
+     * @param $intPurchaseOrderId
+     */
+    public function dropOrderInfo($intPurchaseOrderId)
+    {
+        $objRedis = new Dao_Redis_ReserveOrder();
+        $objRedis->dropOrderInfo($intPurchaseOrderId);
+    }
+
+    /**
      * check illegal sku
      * @param array $arrSkus
      * @return int[]
@@ -259,6 +269,7 @@ class Service_Data_Reserve_ReserveOrder
      * send reserve info to wmq
      * @param $intPurchaseOrderId
      * @return void
+     * @throws Order_BusinessError
      */
     public function sendReserveInfoToWmq($intPurchaseOrderId)
     {

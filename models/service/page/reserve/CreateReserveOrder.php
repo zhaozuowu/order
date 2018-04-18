@@ -29,14 +29,21 @@ class Service_Page_Reserve_CreateReserveOrder implements Order_Base_Page
         $arrReserve = $arrInput;
         try {
             $arrRes = $this->objDataReserve->saveCreateReserveOrder($arrReserve);
-            $strKey = $arrRes['key'];
+            $strKey = $arrRes['key']; 
             $intReserveOrderId = $arrRes['purchase_order_id'];
             $this->objDataReserve->sendReserveInfoToWmq($strKey);
         } catch (Order_BusinessError $e) {
-            if (Order_Error_Code::PURCHASE_ORDER_HAS_BEEN_RECEIVED == $e->getCode()) {
-                $intReserveOrderId = $e->getArrArgs()['reserve_order_id'];
-            } else {
-                throw $e;
+            switch ($e->getCode()) {
+                case Order_Error_Code::PURCHASE_ORDER_HAS_BEEN_RECEIVED:
+                    $intReserveOrderId = $e->getArrArgs()['reserve_order_id'];
+                    break;
+                case Order_Error_Code::RESERVE_STOCKIN_SEND_WMQ_FAIL:
+                    $this->objDataReserve->dropOrderInfo($arrInput['purchase_order_id']);
+                    throw $e;
+                    break;
+                default:
+                    throw $e;
+                    break;
             }
         }
         $arrRet = [
