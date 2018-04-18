@@ -16,7 +16,7 @@ class Order_Define_StockoutOrder
     const STAY_RECEIVED_STOCKOUT_ORDER_STATUS = 25;//待揽收
     const STOCKOUTED_STOCKOUT_ORDER_STATUS = 30;//已出库
     const STOCKOUT_ORDER_AUDIT_FAILED = 40;//审核不通过
-    const STOCKOUT_ORDER_DESTORYED = 50;//已作废
+    const STOCKOUT_ORDER_DESTROYED = 50;//已作废
     const AUDIT_NOT_THROUGH_STOCKOUT_ORDER_STATUS = 40;//审核不通过
     const INVALID_STOCKOUT_ORDER_STATUS = 50;//已作废
 
@@ -111,7 +111,7 @@ class Order_Define_StockoutOrder
      */
     const ALLOW_STOCKIN = [
         self::STOCKOUTED_STOCKOUT_ORDER_STATUS => true,
-        self::STOCKOUT_ORDER_DESTORYED => true,
+        self::STOCKOUT_ORDER_DESTROYED => true,
     ];
 
     /**
@@ -255,6 +255,7 @@ class Order_Define_StockoutOrder
     ];
 
     /**
+<<<<<<< HEAD
      * 预取消标识
      */
     const STOCKOUT_ORDER_DEFAULT_PRE_CANCEL = 0;
@@ -284,4 +285,22 @@ class Order_Define_StockoutOrder
     const STOCKOUT_ORDER_CANCEL_TYPE_DEFAULT = 0;
     const STOCKOUT_ORDER_CANCEL_TYPE_SYS = 1;
     const STOCKOUT_ORDER_NOT_PRE_MANUAL = 2;
+
+    /**
+     * stockout_order_stock_status history
+     * @var int
+     */
+    const STOCK_STATUS_HISTORY = 0;
+
+    /**
+     * stockout_order_stock_status unsure
+     * @var int
+     */
+    const STOCK_STATUS_UNSURE = 1;
+
+    /**
+     * stockout_order_stock_status sure
+     * @var int
+     */
+    const STOCK_STATUS_SURE = 2;
 }

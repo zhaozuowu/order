@@ -57,6 +57,7 @@ class Action_GetOrderPrintList extends Order_Base_Action
             $arrFormatRetItem['customer_address'] = empty($arrRetItem['customer_address']) ? '' : $arrRetItem['customer_address'];
             $arrFormatRetItem['operator'] = empty($arrRetItem['operator']) ? '' : $arrRetItem['operator'];
             $arrFormatRetItem['pickup_date'] = empty($arrRetItem['update_time']) ? '' : date("Y-m-d", $arrRetItem['update_time']);
+            $arrFormatRetItem['stockout_order_remark'] = empty($arrRetItem['stockout_order_remark']) ? '' : $arrRetItem['stockout_order_remark'];
             $arrFormatRetItem['skus'] = empty($arrRetItem['skus']) ? [] : $this->formatSku($arrRetItem['skus'], $arrRetItem['stockout_order_status']);
             $arrFormatRet['list'][] = $arrFormatRetItem;
         }
