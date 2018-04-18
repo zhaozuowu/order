@@ -33,38 +33,50 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
     public function execute($arrInput)
     {
         $strStockinOrderType = $arrInput['stockin_order_type'];
+        $intDataSource = intval($arrInput['data_source']);
         $strStockinOrderId = $arrInput['stockin_order_id'];
+        $intStockinOrderSourceType = intval($arrInput['stockin_order_source_type']);
+        $intStockinOrderStatus = intval($arrInput['stockin_order_status']);
         $strWarehouseId = $arrInput['warehouse_ids'];
         $intSourceSupplierId = $arrInput['source_supplier_id'];
+        $strCustomerName = strval($arrInput['customer_name']);
+        $strCustomerId = strval($arrInput['customer_id']);
         $strSourceOrderId = $arrInput['source_order_id'];
-
         $arrCreateTime = [
             'start' => $arrInput['create_time_start'],
             'end' => $arrInput['create_time_end'],
         ];
-
         $arrOrderPlanTime = [
             'start' => $arrInput['stockin_order_plan_time_start'],
             'end' => $arrInput['stockin_order_plan_time_end'],
         ];
-
         $arrStockinTime = [
             'start' => $arrInput['stockin_time_start'],
             'end' => $arrInput['stockin_time_end'],
         ];
-
+        $arrStockinDestroyTime = [
+            'start' => $arrInput['stockin_destroy_time_start'],
+            'end' => $arrInput['stockin_destroy_time_end'],
+        ];
+        $intPrintStatus = intval($arrInput['print_status']);
         $intPageNum = $arrInput['page_num'];
         $intPageSize = $arrInput['page_size'];
-
         return $this->objServiceData->getStockinOrderList(
             $strStockinOrderType,
+            $intDataSource,
             $strStockinOrderId,
+            $intStockinOrderSourceType,
+            $intStockinOrderStatus,
             $strWarehouseId,
             $intSourceSupplierId,
+            $strCustomerName,
+            $strCustomerId,
             $strSourceOrderId,
             $arrCreateTime,
             $arrOrderPlanTime,
             $arrStockinTime,
+            $arrStockinDestroyTime,
+            $intPrintStatus,
             $intPageNum,
             $intPageSize);
     }

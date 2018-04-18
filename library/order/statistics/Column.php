@@ -63,6 +63,7 @@ class Order_Statistics_Column
                 'replace' => 'source_info',
                 'key' => 'vendor_id',
             ],
+            'stockin_order_remark',
         ],
         'slave' => [
             'sku_id',
@@ -196,6 +197,7 @@ class Order_Statistics_Column
                 'replace' => 'source_info',
                 'key' => 'customer_contact',
             ],
+            'stockin_order_remark',
         ],
         'slave' => [
             'sku_id',
@@ -274,6 +276,8 @@ class Order_Statistics_Column
                 ],
                 'stockin_order_real_amount' => 'amount',
                 'expire_date',
+                'sku_good_amount',
+                'sku_defective_amount',
             ],
         ],
     ];
@@ -324,6 +328,7 @@ class Order_Statistics_Column
             'customer_id',
             'customer_contactor',
             'customer_contact',
+            'stockout_order_remark',
 
         ],
         'slave' => [

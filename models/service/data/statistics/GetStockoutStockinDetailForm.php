@@ -14,7 +14,7 @@ class Service_Data_Statistics_GetStockoutStockinDetailForm
      * @param $strStockinOrderId
      * @param $strSourceOrderId
      * @param $intSkuId
-     * @param $intClientId
+     * @param $strClientId
      * @param $strClientName
      * @param $arrStockinTime
      * @param $intPageNum
@@ -27,7 +27,7 @@ class Service_Data_Statistics_GetStockoutStockinDetailForm
         $strStockinOrderId,
         $strSourceOrderId,
         $intSkuId,
-        $intClientId,
+        $strClientId,
         $strClientName,
         $arrStockinTime,
         $intPageNum,
@@ -57,7 +57,7 @@ class Service_Data_Statistics_GetStockoutStockinDetailForm
             $intStockinOrderId,
             $intSourceOrderId,
             $intSkuId,
-            $intClientId,
+            $strClientId,
             $strClientName,
             $arrStockinTime,
             $intPageNum,

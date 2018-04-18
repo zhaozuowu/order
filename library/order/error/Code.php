@@ -390,6 +390,29 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_ORDER_STOCKOUT_SHELF_ERROR = 340024;
 
     /**
+     * 商品实际入库数与良品数和非良品数的和不匹配
+     * @var integer
+     */
+    const NWMS_STOCKIN_SKU_AMOUNT_DEFECTS_NOT_MATCH = 340025;
+
+    /**
+     * 商品列表为空
+     * @var integer
+     */
+    const NWMS_SKU_LIST_EMPTY = 340026;
+
+    /**
+     * 入库单数据来源错误
+     */
+    const NWMS_STOCKIN_DATA_SOURCE_TYPE_ERROR = 340027;
+
+    /**
+     * 至少要有一个时间传入参数
+     */
+    const TIME_PARAMS_LESS_THAN_ONE = 340028;
+
+
+    /**
      * 查询返回结果为空
      * @var integer
      */
@@ -404,6 +427,7 @@ class Order_Error_Code extends Wm_Error_Code
      * 出库单已打印，无法取消
      */
     const NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT = 310013;
+
 
 
     //------------------------------------------------冻结单------------------------------------------------
@@ -425,6 +449,36 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL = 370003;
 
+    /**
+     * 冻结单-冻结单明细获取失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST = 370004;
+
     //------------------------------------------------冻结单------------------------------------------------
 
+    /**
+     *已作废出库单不允许入库
+     */
+    const INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN = 370001;
+
+    /**
+     * 未出库出库单不允许入库
+     */
+    const NOT_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN = 370002;
+
+    /**
+     * 入库单不存在
+     */
+    const STOCKIN_ORDER_NOT_EXISTED = 370003;
+
+    /**
+     * 入库单已作废,无法入库
+     */
+    const STOCKIN_ORDER_STATUS_INVALID = 370004;
+
+    /**
+     * 此订单已入库完成，无需再次入库
+     */
+    const STOCKIN_ORDER_STATUS_FINISHED = 370005;
 }

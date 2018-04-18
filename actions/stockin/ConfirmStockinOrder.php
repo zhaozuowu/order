@@ -1,21 +1,18 @@
 <?php
 /**
- * @name Action_CreateStockinStockoutOrder
- * @desc 创建销退入库单
+ * @name Action_ConfirmStockinOrder
+ * @desc 确认销退入库单
  * @author lvbochao@iwaimai.baidu.com
  */
 
-class Action_CreateStockinStockoutOrder extends Order_Base_Action
+class Action_ConfirmStockinOrder extends Order_Base_Action
 {
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
-        'source_order_id' => 'regex|patern[/^SOO\d{13}$/]',
-        'warehouse_id' => 'int|required',
-        // 2 - SOO - 销退入库类型
-        // 'stockin_order_type' => 'int|max[2]|min[2]',
+        'stockin_order_id' => 'regex|patern[/^((SIO)\d{13})?$/]',
         'stockin_order_remark' => 'strutf8',
         'sku_info_list' => [
             'validate' => 'json|required|decode',
@@ -26,10 +23,10 @@ class Action_CreateStockinStockoutOrder extends Order_Base_Action
                     'validate' => 'arr|required|decode',
                     'type' => 'array',
                     'params' => [
-                        'amount' => 'int|required|min[0]',
+                        'amount' => 'int|required',
+                        'sku_good_amount' => 'int|required',
+                        'sku_defective_amount' => 'int|required',
                         'expire_date' => 'int|required',
-                        'sku_good_amount' => 'int|required|min[0]',
-                        'sku_defective_amount' => 'int|required|min[0]',
                     ]
                 ],
             ],
@@ -47,7 +44,7 @@ class Action_CreateStockinStockoutOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Stockin_CreateStockinOrder();
+        $this->objPage = new Service_Page_Stockin_ConfirmStockinOrder();
     }
 
     /**

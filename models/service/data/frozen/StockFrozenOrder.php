@@ -262,7 +262,6 @@ class Service_Data_Frozen_StockFrozenOrder
             $arrDetail = [
                 'stock_frozen_order_id'     => $arrInput['stock_frozen_order_id'],
                 'warehouse_id'              => $arrInput['warehouse_id'],
-                'adjust_type'               => $arrInput['adjust_type'],
                 'sku_id'                    => $arrDetail['sku_id'],
                 'upc_id'                    => $arrSkuInfo['min_upc']['upc_id'],
                 'sku_name'                  => $arrSkuInfo['sku_name'],
