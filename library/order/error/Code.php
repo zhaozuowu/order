@@ -455,6 +455,29 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST = 370004;
 
+    /**
+     * 冻结单-冻结单信息获取失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_NOT_EXIST = 370005;
+
+    /**
+     * 冻结单-解冻参数重复
+     * @var integer
+     */
+    const NWMS_UNFROZEN_PARAM_REPEATED = 370006;
+
+    /**
+     * 冻结单-当前冻结量不匹配
+     * @var integer
+     */
+    const NWMS_UNFROZEN_CURRENT_FROZEN_AMOUNT_NOT_NATCH = 370007;
+
+    /**
+     * 冻结单-解冻数量超过已冻结数量
+     * @var integer
+     */
+    const NWMS_UNFROZEN_AMOUNT_OVER_FROZEN_AMOUNT = 370008;
     //------------------------------------------------冻结单------------------------------------------------
 
     /**

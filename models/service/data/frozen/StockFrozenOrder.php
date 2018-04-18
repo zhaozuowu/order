@@ -257,7 +257,7 @@ class Service_Data_Frozen_StockFrozenOrder
             }
 
             // 根据商品效期类型，计算生产日期和有效期
-            $arrDetail = $this->getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+            $arrDetail = Order_Util_Stock::getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
             $arrDetail = [
                 'stock_frozen_order_id'     => $arrInput['stock_frozen_order_id'],
@@ -296,46 +296,11 @@ class Service_Data_Frozen_StockFrozenOrder
     }
 
     /**
-     * 根据商品效期类型，计算生产日期和有效期
-     * 计算结果返回到$arrDetail['production_time'] 和 $arrDetail['expire_time']
-     * @param $arrDetail
-     * @param $intSkuEffectType
-     * @param $intSkuEffectDay
-     * @return mixed
+     * @param $arrInput
+     * @param $arrSkuInfos
+     * @return array
+     * @throws Order_BusinessError
      */
-    public function getEffectTime($arrDetail, $intSkuEffectType, $intSkuEffectDay)
-    {
-        if(empty($intSkuEffectType)) {
-            Bd_Log::warning('sku effect type is empty ' . $intSkuEffectType);
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
-        }
-
-        $intSkuEffectType = intval($intSkuEffectType);
-
-        // 如果是生产日期型的，有效期天数必传
-        if(Nscm_Define_Sku::SKU_EFFECT_FROM === $intSkuEffectType) {
-            if(!is_numeric($intSkuEffectDay) || $intSkuEffectDay < 0) {
-                Bd_Log::warning('sku effect day invalid ' . $intSkuEffectDay);
-                Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
-            }
-        }
-
-        if(Nscm_Define_Sku::SKU_EFFECT_FROM === $intSkuEffectType) {
-            // 生产日期型
-            $arrDetail['production_time'] = $arrDetail['production_or_expire_time'];
-            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'] + $intSkuEffectDay * 3600 * 24;
-        } else if(Nscm_Define_Sku::SKU_EFFECT_TO === $intSkuEffectType) {
-            // 到效期型
-            $arrDetail['production_time'] = '';
-            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'];
-        } else {
-            Bd_Log::warning('sku effect type invalid ' . $intSkuEffectType);
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
-        }
-
-        return $arrDetail;
-    }
-
     protected function getStockFrozenArg($arrInput, $arrSkuInfos)
     {
         $arrStockFrozenArg = [
@@ -354,7 +319,7 @@ class Service_Data_Frozen_StockFrozenOrder
             }
 
             // 根据商品效期类型，计算生产日期和有效期
-            $arrDetail = $this->getEffectTime(
+            $arrDetail = Order_Util_Stock::getEffectTime(
                 $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
             $arrFrozenInfo = [

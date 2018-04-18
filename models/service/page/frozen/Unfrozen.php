@@ -22,8 +22,10 @@ class Service_Page_Frozen_Unfrozen
 
     /**
      * execute
-     * @param  array $arrInput 参数
-     * @return array
+     * @param $arrInput
+     * @return int
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
      */
     public function execute($arrInput)
     {
