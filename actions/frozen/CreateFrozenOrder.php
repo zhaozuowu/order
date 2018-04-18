@@ -56,7 +56,7 @@ class Action_Createfrozenorder extends Order_Base_Action
     public function format($data)
     {
         $arrFormatResult = [];
-        $arrFormatResult['stock_adjust_order_id']    = empty($data['stock_adjust_order_id']) ? '' : Nscm_Define_OrderPrefix::SAO . intval($data['stock_adjust_order_id']);
+        $arrFormatResult['stock_frozen_order_id']    = empty($data['stock_frozen_order_id']) ? '' : Nscm_Define_OrderPrefix::F . intval($data['stock_frozen_order_id']);
 
         return $arrFormatResult;
     }

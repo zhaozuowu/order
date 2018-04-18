@@ -83,7 +83,12 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::STOCKIN_ORDER_STATUS_INVALID => '入库单已作废,无法入库',
         Order_Error_Code::STOCKIN_ORDER_STATUS_FINISHED => '此订单已入库完成，无需再次入库',
         //冻结单错误码
+        Order_Error_Code::NWMS_ORDER_FROZEN_SKU_AMOUNT_TOO_MUCH => '一次最多冻结100个SKU',
+        Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL => '调用库存模块冻结库存失败',
         Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL => '获取仓库商品冻结数据失败',
+        Order_Error_Code::NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST => '冻结单明细获取失败',
+        Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR => '冻结单冻结数量不正确',
+
     ];
 
 }

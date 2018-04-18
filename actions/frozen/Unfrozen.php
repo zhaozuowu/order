@@ -7,13 +7,17 @@
 
 class Action_Unfrozen extends Order_Base_Action
 {
+    protected $boolCheckLogin   = false;
+    protected $boolCheckAuth    = false;
+    protected $boolCheckIp      = false;
+
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
         'warehouse_id'      => 'int|required',
-        'stock_frozen_order_id'     => 'regex|patern[/^(F\d{13})?$/]',
+        'stock_frozen_order_id'     => 'regex|patern[/^(F\d{6})?$/]',
         'detail'            => [
             'validate'              => 'json|required|decode',
             'type'                  => 'array',

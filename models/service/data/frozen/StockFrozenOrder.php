@@ -197,18 +197,18 @@ class Service_Data_Frozen_StockFrozenOrder
     {
         $intOriginTotalFrozenAmount = 0;
         foreach ($arrInput['detail'] as $arrDetail) {
-            $intOriginTotalFrozenAmount += $arrDetail['adjust_amount'];
+            $intOriginTotalFrozenAmount += $arrDetail['frozen_amount'];
         }
         if($intOriginTotalFrozenAmount <= 0) {
-            Bd_Log::warning('frozen amount invalid ', Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR, $arrInput);
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR);
+            Bd_Log::warning('frozen amount invalid ', Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR, $arrInput);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR);
         }
 
         $arrSkuIds = array_values(array_unique(array_column($arrInput['detail'], 'sku_id')));
         $intSkuAmount = count($arrSkuIds);
         if($intSkuAmount <= 0) {
-            Bd_Log::warning('frozen sku amount invalid ', Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR, $arrInput);
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR);
+            Bd_Log::warning('frozen sku amount invalid ', Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR, $arrInput);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR);
         }
 
         $intCreator = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
@@ -265,10 +265,11 @@ class Service_Data_Frozen_StockFrozenOrder
                 'sku_id'                    => $arrDetail['sku_id'],
                 'upc_id'                    => $arrSkuInfo['min_upc']['upc_id'],
                 'sku_name'                  => $arrSkuInfo['sku_name'],
-                'storage_location_id'       => $arrDetail['storage_location_id'],
+                'storage_location_id'       => '', //库位还没上线，预留字段
+                //'storage_location_id'       => $arrDetail['storage_location_id'],
                 'origin_frozen_amount'      => $arrDetail['frozen_amount'],
                 'current_frozen_amount'     => $arrDetail['frozen_amount'],
-                'is_defective'              => $arrInput['is_defective'],
+                'is_defective'              => $arrDetail['is_defective'],
                 'production_time'           => $arrDetail['production_time'],
                 'expire_time'               => $arrDetail['expire_time'],
             ];
