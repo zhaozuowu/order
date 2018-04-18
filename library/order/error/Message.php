@@ -73,6 +73,8 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH => '调整SKU个数超过100个',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT => '出库单已打印，无法取消',
 
+        Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL => '获取仓库商品冻结数据失败',
+
     ];
 
 }

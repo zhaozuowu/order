@@ -26,10 +26,12 @@ class Service_Data_Stock
 
     /**
      * 冻结库存
-     * @param integer $intSkuId
-     * @param integer $intWarehouseId
-     * @param integer $arrStockDetail
+     * @param $intSkuId
+     * @param $intWarehouseId
+     * @param $arrStockDetail
      * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
      */
     public function freezeSkuStock($intSkuId, $intWarehouseId, $arrStockDetail) {
         return $this->objDaoStock->freezeSkuStock($intSkuId, $intWarehouseId, $arrStockDetail);
@@ -37,10 +39,12 @@ class Service_Data_Stock
 
     /**
      * 解冻库存
-     * @param integer $intSkuId
-     * @param integer $intWarehouseId
-     * @param integer $arrStockDetail
+     * @param $intSkuId
+     * @param $intWarehouseId
+     * @param $arrStockDetail
      * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
      */
     public function unfreezeSkuStock($intSkuId, $intWarehouseId, $arrStockDetail) {
         return $this->objDaoStock->unfreezeSkuStock($intSkuId, $intWarehouseId, $arrStockDetail);
@@ -51,6 +55,7 @@ class Service_Data_Stock
      * @param $intWarehouseId
      * @param $arrSkuIds
      * @return array
+     * @throws Nscm_Exception_Error
      */
     public function getStockInfo($intWarehouseId, $arrSkuIds)
     {
@@ -73,4 +78,36 @@ class Service_Data_Stock
 
         return $arrRet;
     }
+
+    /**
+     * 获取仓库商品可冻结批次数据
+     * @param $intWarehouseId
+     * @param $arrSkuIds
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function getStockFrozenInfo($intWarehouseId, $arrSkuIds)
+    {
+        $arrRet = [];
+
+        $arrStockFrozenInfo = $this->objDaoStock->getStockFrozenInfo($intWarehouseId, $arrSkuIds);
+        if (empty($arrStockFrozenInfo)) {
+            return $arrRet;
+        }
+
+        $arrSkuInfo = $this->objDaoSku->getSkuInfos($arrSkuIds);
+
+        foreach ($arrStockFrozenInfo as $arrItem) {
+            $intSkuId = $arrItem['sku_id'];
+            if(!empty($arrSkuInfo[$intSkuId])) {
+                $arrRet[] = array_merge($arrSkuInfo[$intSkuId], $arrItem);
+            } else {
+                $arrRet[] = $arrItem;
+            }
+        }
+
+        return $arrRet;
+    }
+
 }

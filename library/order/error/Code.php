@@ -420,7 +420,10 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL = 370002;
 
-
+    /**
+     * 冻结单-获取仓库商品冻结数据失败
+     */
+    const NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL = 370003;
 
     //------------------------------------------------冻结单------------------------------------------------
 

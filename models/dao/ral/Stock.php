@@ -66,6 +66,12 @@ class Dao_Ral_Stock
     const  API_RALER_ADJUST_STOCKOUT = 'adjuststockout';
 
     /**
+     * 获取仓库商品冻结数据
+     * @var string
+     */
+    const  API_RALER_STOCK_FROZEN_INFO = 'getskubatchfreezableinfo';
+
+    /**
      * freeze sku stock
      * @param integer $intStockoutOrderId
      * @param integer $intWarehouseId
@@ -278,5 +284,36 @@ class Dao_Ral_Stock
         }
         return $ret;
     }
+
+    /**
+     * 获取仓库商品可冻结数据
+     * @param $intWarehouseId
+     * @param $arrSkuIds
+     * @return array|mixed
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function getStockFrozenInfo($intWarehouseId, $arrSkuIds)
+    {
+        if(empty($intWarehouseId) || empty($arrSkuIds)) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is empty');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
+        }
+
+        $strSkuIds = implode(',', $arrSkuIds);
+        $req[self::API_RALER_STOCK_FROZEN_INFO]['warehouse_id'] = $intWarehouseId;
+        $req[self::API_RALER_STOCK_FROZEN_INFO]['sku_ids'] = $strSkuIds;
+
+
+        $ret = $this->objApiRal->getData($req);
+        $ret = empty($ret[self::API_RALER_STOCK_FROZEN_INFO]) ? [] : $ret[self::API_RALER_STOCK_FROZEN_INFO];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock failed, result is empty.' . print_r($ret, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
+        }
+
+        return $ret['result'];
+    }
+
 
 }
