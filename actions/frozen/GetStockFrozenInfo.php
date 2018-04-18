@@ -65,7 +65,7 @@ class Action_GetStockFrozenInfo extends Order_Base_Action
             if(!empty($value['detail'])) {
                 foreach ($value['detail'] as $arrStockDetailRet) {
                     $arrStockDetail = [];
-                    $arrStockDetail['freezable_amount'] = !isset($arrStockDetailRet['adjustable_amount']) ? '' : strval($arrStockDetailRet['freezable_amount']);
+                    $arrStockDetail['freezable_amount'] = !isset($arrStockDetailRet['freezable_amount']) ? '' : strval($arrStockDetailRet['freezable_amount']);
                     $arrStockDetail['is_defective_text'] = empty($arrStockDetailRet['is_defective_text']) ? '' : $arrStockDetailRet['is_defective_text'];
 
                     if (Nscm_Define_Sku::SKU_EFFECT_FROM == $value['sku_effect_type']) {

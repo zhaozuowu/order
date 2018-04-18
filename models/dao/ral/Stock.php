@@ -319,8 +319,9 @@ class Dao_Ral_Stock
             Bd_Log::warning(__METHOD__ . ' get sku stock failed, result is empty.' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
         }
+        Bd_log::debug(sprintf('get stock frozen info, param:%s, ret:%s', json_encode($req), json_encode($ret)));
 
-        return $ret['result'];
+        return $ret;
     }
 
     /**
