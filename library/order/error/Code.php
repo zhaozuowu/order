@@ -455,6 +455,13 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST = 370004;
 
+
+    /**
+     * 冻结单冻结数量不正确
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR = 370005;
+
     //------------------------------------------------冻结单------------------------------------------------
 
     /**
