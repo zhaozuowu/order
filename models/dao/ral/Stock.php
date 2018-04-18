@@ -66,17 +66,16 @@ class Dao_Ral_Stock
     const  API_RALER_ADJUST_STOCKOUT = 'adjuststockout';
 
     /**
-<<<<<<< HEAD
      * 获取仓库商品冻结数据
      * @var string
      */
     const  API_RALER_STOCK_FROZEN_INFO = 'getskubatchfreezableinfo';
-=======
+
+    /**
      * 库存调整-出库
      * @var string
      */
     const  API_RALER_STOCK_IN = 'stockin';
->>>>>>> 82e6a54afa470afe71f70fc158445f2d8c033a97
 
     /**
      * freeze sku stock
