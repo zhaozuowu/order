@@ -142,5 +142,4 @@ class Service_Data_Stock
 
         return $arrRet;
     }
-
 }
