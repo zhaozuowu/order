@@ -16,6 +16,7 @@ class Action_GetOrderDetailForm extends Order_Base_Action
         'stock_adjust_order_id'     => 'regex|patern[/^(SAO\d{13})?$/]',
         'sku_id'                    => 'int|default[0]',
         'adjust_type'               => 'int|default[0]',
+        'is_defective'              => 'int|default[1]',
         'start_time'                => 'int|required',
         'end_time'                  => 'int|required',
         'page_num'                  => 'int|default[1]',
@@ -90,6 +91,9 @@ class Action_GetOrderDetailForm extends Order_Base_Action
             $arrFormatDetail['adjust_amount']    = empty($detail['adjust_amount']) ? '' : strval($detail['adjust_amount']);
             $arrFormatDetail['unit_price']    = empty($detail['unit_price']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price']);
             $arrFormatDetail['unit_price_tax']    = empty($detail['unit_price_tax']) ? '' : Nscm_Service_Price::convertDefaultToYuan($detail['unit_price_tax']);
+            $arrFormatDetail['is_defective']    = $detail['is_defective'];
+            $arrFormatDetail['is_defective_text']    = $detail['is_defective'] == Nscm_Define_Stock::QUALITY_GOOD ? Nscm_Define_Stock::QUALITY_TEXT_MAP[Nscm_Define_Stock::QUALITY_GOOD] : Nscm_Define_Stock::QUALITY_TEXT_MAP[Nscm_Define_Stock::QUALITY_DEFECTIVE];
+            $arrFormatDetail['remark']    = $detail['remark'];
 
 
             if(empty($detail['adjust_amount']) || empty($detail['unit_price']) || empty($detail['unit_price_tax'])) {

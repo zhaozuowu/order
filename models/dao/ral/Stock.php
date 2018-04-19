@@ -52,6 +52,12 @@ class Dao_Ral_Stock
      */
     const  API_RALER_STOCK_DETAIL = 'stockdetail';
 
+
+    /**
+     * 按照效期的方式，获取库存
+     */
+    const API_RALER_STOCK_PERIOD_DETAIL = 'getskustockbatchinfo';
+
     /**
      * 库存调整-出库
      * @var string
@@ -159,6 +165,39 @@ class Dao_Ral_Stock
     }
 
     /**
+     * 获取sku库存信息，仓库、效期、良品维度
+     * @param $intWarehouseId
+     * @param $arrSkuIds
+     * @return array|mixed
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function getStockPeriodStock($intWarehouseId, $arrSkuIds) {
+        $ret = [];
+        if(empty($intWarehouseId) || empty($arrSkuIds)) {
+            Bd_Log::warning(__METHOD__ . ' get sku period stock failed. call ral param is empty.');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
+            return $ret;
+        }
+
+        $strSkuIds = implode(',', $arrSkuIds);
+
+        $req[self::API_RALER_STOCK_PERIOD_DETAIL]['warehouse_id'] = $intWarehouseId;
+        $req[self::API_RALER_STOCK_PERIOD_DETAIL]['sku_ids'] = $strSkuIds;
+
+        Bd_Log::trace('ral call '. self::API_RALER_STOCK_PERIOD_DETAIL . ' input params ' . json_encode($req));
+        $ret = $this->objApiRal->getData($req);
+        $ret = empty($ret[self::API_RALER_STOCK_PERIOD_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_PERIOD_DETAIL];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Bd_Log::warning(__METHOD__ . ' get sku period stock failed. ret is .' . print_r($ret, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
+        }
+
+        Bd_Log::trace('ral call '. self::API_RALER_STOCK_PERIOD_DETAIL . ' output params ' . json_encode($ret));
+        return $ret['result'];
+    }
+
+    /**
      * 库存调整-出库
      * @param int $intStockoutOrderId
      * @param int $intWarehouseId
@@ -175,13 +214,6 @@ class Dao_Ral_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 
-        foreach ($arrDetails as $detail) {
-            if(empty($detail['sku_id']) || empty($detail['stockout_amount'])) {
-                Bd_Log::warning(__METHOD__ . ' stock adjust decrease order call ral param invalid');
-                Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
-            }
-        }
-
         $req[self::API_RALER_ADJUST_STOCKOUT]['stockout_order_id'] = $intStockoutOrderId;
         $req[self::API_RALER_ADJUST_STOCKOUT]['warehouse_id'] = $intWarehouseId;
         $req[self::API_RALER_ADJUST_STOCKOUT]['inventory_type'] = $intAdjustType;
@@ -194,7 +226,6 @@ class Dao_Ral_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 
-        Bd_Log::trace(__METHOD__ . ' ral call stock decrease success ' . json_encode($ret));
         return $ret;
     }
 
