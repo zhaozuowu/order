@@ -12,7 +12,6 @@ class Action_GetFrozenSku extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_ids'             => 'arr|required|arr_min[1]|type[int]',
         'stock_frozen_order_id'     => 'regex|patern[/^(F\d{13})?$/]',
     ];
 
