@@ -113,38 +113,4 @@ class Service_Data_Stock
         return $arrRet;
     }
 
-    /**
-     * 解冻
-     * @param $arrInput
-     * @param $arrSkuInfos
-     * @throws Nscm_Exception_Error
-     * @throws Order_BusinessError
-     */
-    public function frozenSkuStock($arrInput, $arrSkuInfos)
-    {
-        $arrPram = [
-            'warehouse_id' => $arrInput['warehouse_id'],
-            'ext_order_id' => $arrInput['stock_frozen_order_id'],
-            'frozen_type'  => $arrInput['frozen_type'],
-        ];
-        foreach ($arrInput['detail'] as $arrItem) {
-            $arrSkuInfo = $arrSkuInfos[$arrItem['sku_id']];
-            $intExpireTime = Order_Util_Stock::getExpireTime(
-                $arrItem['production_or_expire_time'],
-                $arrSkuInfo['sku_effect_type'],
-                $arrSkuInfo['sku_effect_day']
-            );
-            $arrDetail = [
-                'sku_id' => $arrItem['sku_id'],
-                'frozen_amount' => $arrItem['current_frozen_amount'],
-                'unfreeze_amount' => $arrItem['unfrozen_amount'],
-                'is_defective' => $arrItem['is_defective'],
-                'expiration_time' => $intExpireTime
-            ];
-            $arrPram['details'][] = $arrDetail;
-        }
-
-        $this->objDaoStock->unfrozenStock($arrPram);
-    }
-
 }
