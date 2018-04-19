@@ -7,6 +7,7 @@
 
 class Action_GetStockFrozenInfo extends Order_Base_Action
 {
+    
     /**
      * input params
      * @var array
@@ -61,7 +62,7 @@ class Action_GetStockFrozenInfo extends Order_Base_Action
                 $arrFormatDetail['sku_net'] = $value['sku_net'] . $this->formatSkuNetUnit($value['sku_net_unit']);
             }
             $arrFormatDetail['upc_unit'] = empty($value['min_upc']['upc_unit']) ? '' : $this->formatSkuUpcUnit($value['min_upc']['upc_unit']);
-
+            $arrFormatDetail['upc_unit_num'] = empty($value['min_upc']['upc_unit_num']) ? '' : '1*' . $value['min_upc']['upc_unit_num'];
             if(!empty($value['detail'])) {
                 foreach ($value['detail'] as $arrStockDetailRet) {
                     $arrStockDetail = [];

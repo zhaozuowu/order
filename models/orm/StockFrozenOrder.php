@@ -45,4 +45,19 @@ class Model_Orm_StockFrozenOrder extends Order_Base_Orm
     public static $tableName = 'stock_frozen_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * 通过冻结单号获取冻结单信息
+     * @param $intStockFrozenOrderId
+     * @return Model_Orm_StockFrozenOrder
+     */
+    public static function getStockFrozenOrderById($intStockFrozenOrderId)
+    {
+        $arrConditions = [
+            'stock_frozen_order_id' => $intStockFrozenOrderId,
+            'is_delete'    => Nscm_Define_Const::ENABLE
+        ];
+
+        return self::findOne($arrConditions);
+    }
 }
