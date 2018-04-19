@@ -250,16 +250,15 @@ class Dao_Ral_Stock
     {
         $ret = [];
 
-        $req[self::API_RALER_FROZEN_STOCK] = $arrFrozenArg;
+        $arrReq[self::API_RALER_FROZEN_STOCK] = $arrFrozenArg;
 
         Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
-        $ret = $this->objApiRal->getData($req);
-        $ret = empty($ret[self::API_RALER_FROZEN_STOCK]) ? [] : $ret[self::API_RALER_FROZEN_STOCK];
-        if (empty($ret) || !empty($ret['error_no'])) {
-            Bd_Log::warning('ral call stock model frozen sku failed. ret: ' . print_r($ret, true));
+        $arrRet = Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->getData($arrReq)[self::API_RALER_FROZEN_STOCK];
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
+            Bd_Log::warning('ral call stock model frozen sku failed. ret: ' . print_r($arrRet, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL);
         }
-        return $ret;
+        return $arrRet;
     }
     //-----------------------------------------冻结单-------------------------------------------------------
 

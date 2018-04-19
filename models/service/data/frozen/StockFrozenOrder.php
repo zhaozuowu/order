@@ -197,18 +197,18 @@ class Service_Data_Frozen_StockFrozenOrder
     {
         $intOriginTotalFrozenAmount = 0;
         foreach ($arrInput['detail'] as $arrDetail) {
-            $intOriginTotalFrozenAmount += $arrDetail['adjust_amount'];
+            $intOriginTotalFrozenAmount += $arrDetail['frozen_amount'];
         }
         if($intOriginTotalFrozenAmount <= 0) {
-            Bd_Log::warning('frozen amount invalid ', Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR, $arrInput);
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR);
+            Bd_Log::warning('frozen amount invalid ', Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR, $arrInput);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR);
         }
 
         $arrSkuIds = array_values(array_unique(array_column($arrInput['detail'], 'sku_id')));
         $intSkuAmount = count($arrSkuIds);
         if($intSkuAmount <= 0) {
-            Bd_Log::warning('frozen sku amount invalid ', Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR, $arrInput);
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_AMOUNT_ERROR);
+            Bd_Log::warning('frozen sku amount invalid ', Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR, $arrInput);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR);
         }
 
         $intCreator = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
@@ -257,7 +257,7 @@ class Service_Data_Frozen_StockFrozenOrder
             }
 
             // 根据商品效期类型，计算生产日期和有效期
-            $arrDetail = $this->getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+            $arrDetail = Order_Util_Stock::getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
             $arrDetail = [
                 'stock_frozen_order_id'     => $arrInput['stock_frozen_order_id'],
@@ -265,10 +265,11 @@ class Service_Data_Frozen_StockFrozenOrder
                 'sku_id'                    => $arrDetail['sku_id'],
                 'upc_id'                    => $arrSkuInfo['min_upc']['upc_id'],
                 'sku_name'                  => $arrSkuInfo['sku_name'],
-                'storage_location_id'       => $arrDetail['storage_location_id'],
+                'storage_location_id'       => '', //库位还没上线，预留字段
+                //'storage_location_id'       => $arrDetail['storage_location_id'],
                 'origin_frozen_amount'      => $arrDetail['frozen_amount'],
                 'current_frozen_amount'     => $arrDetail['frozen_amount'],
-                'is_defective'              => $arrInput['is_defective'],
+                'is_defective'              => $arrDetail['is_defective'],
                 'production_time'           => $arrDetail['production_time'],
                 'expire_time'               => $arrDetail['expire_time'],
             ];
@@ -296,46 +297,11 @@ class Service_Data_Frozen_StockFrozenOrder
     }
 
     /**
-     * 根据商品效期类型，计算生产日期和有效期
-     * 计算结果返回到$arrDetail['production_time'] 和 $arrDetail['expire_time']
-     * @param $arrDetail
-     * @param $intSkuEffectType
-     * @param $intSkuEffectDay
-     * @return mixed
+     * @param $arrInput
+     * @param $arrSkuInfos
+     * @return array
+     * @throws Order_BusinessError
      */
-    public function getEffectTime($arrDetail, $intSkuEffectType, $intSkuEffectDay)
-    {
-        if(empty($intSkuEffectType)) {
-            Bd_Log::warning('sku effect type is empty ' . $intSkuEffectType);
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
-        }
-
-        $intSkuEffectType = intval($intSkuEffectType);
-
-        // 如果是生产日期型的，有效期天数必传
-        if(Nscm_Define_Sku::SKU_EFFECT_FROM === $intSkuEffectType) {
-            if(!is_numeric($intSkuEffectDay) || $intSkuEffectDay < 0) {
-                Bd_Log::warning('sku effect day invalid ' . $intSkuEffectDay);
-                Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
-            }
-        }
-
-        if(Nscm_Define_Sku::SKU_EFFECT_FROM === $intSkuEffectType) {
-            // 生产日期型
-            $arrDetail['production_time'] = $arrDetail['production_or_expire_time'];
-            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'] + $intSkuEffectDay * 3600 * 24;
-        } else if(Nscm_Define_Sku::SKU_EFFECT_TO === $intSkuEffectType) {
-            // 到效期型
-            $arrDetail['production_time'] = '';
-            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'];
-        } else {
-            Bd_Log::warning('sku effect type invalid ' . $intSkuEffectType);
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
-        }
-
-        return $arrDetail;
-    }
-
     protected function getStockFrozenArg($arrInput, $arrSkuInfos)
     {
         $arrStockFrozenArg = [
@@ -354,11 +320,11 @@ class Service_Data_Frozen_StockFrozenOrder
             }
 
             // 根据商品效期类型，计算生产日期和有效期
-            $arrDetail = $this->getEffectTime(
+            $arrDetail = Order_Util_Stock::getEffectTime(
                 $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
             $arrFrozenInfo = [
-                'freeze_amount' => $arrDetail['freeze_amount'],
+                'freeze_amount' => $arrDetail['frozen_amount'],
                 'is_defective' => $arrDetail['is_defective'],
                 'expiration_time' => $arrDetail['expire_time'],
             ];
@@ -366,6 +332,8 @@ class Service_Data_Frozen_StockFrozenOrder
             $arrStockFrozenArg['details'][$intSkuId]['sku_id'] = $intSkuId;
             $arrStockFrozenArg['details'][$intSkuId]['freeze_info'][] = $arrFrozenInfo;
         }
+
+        $arrStockFrozenArg['details'] = array_values($arrStockFrozenArg['details']);
 
         return $arrStockFrozenArg;
     }
