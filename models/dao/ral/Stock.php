@@ -335,7 +335,7 @@ class Dao_Ral_Stock
      */
     public function getStockFrozenInfo($intWarehouseId, $intSkuId, $intIsDefective)
     {
-        if(empty($intWarehouseId) || empty($arrSkuIds)) {
+        if(empty($intWarehouseId) || empty($intSkuId)) {
             Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is empty');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
         }
