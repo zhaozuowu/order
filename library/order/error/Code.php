@@ -497,6 +497,13 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_UNFROZEN_CHECK_VERSION_FAIL = 370011;
 
+    /**
+     * 冻结单-调用库存模块解冻库存失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL = 370012;
+
+
     //------------------------------------------------冻结单------------------------------------------------
 
     /**

@@ -82,22 +82,25 @@ class Service_Data_Stock
     /**
      * 获取仓库商品可冻结批次数据
      * @param $intWarehouseId
-     * @param $arrSkuIds
+     * @param $intSkuId
+     * @param $intIsDefective
      * @return array
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function getStockFrozenInfo($intWarehouseId, $arrSkuIds)
+    public function getStockFrozenInfo($intWarehouseId, $intSkuId, $intIsDefective)
     {
         $arrRet = [];
-
-        $arrStockFrozenInfo = $this->objDaoStock->getStockFrozenInfo($intWarehouseId, $arrSkuIds);
+        $arrStockFrozenInfo = $this->objDaoStock->getStockFrozenInfo(
+            $intWarehouseId,
+            $intSkuId,
+            $intIsDefective
+        );
         if (empty($arrStockFrozenInfo)) {
             return $arrRet;
         }
 
-        $arrSkuInfo = $this->objDaoSku->getSkuInfos($arrSkuIds);
-
+        $arrSkuInfo = $this->objDaoSku->getSkuInfos($intSkuId);
         foreach ($arrStockFrozenInfo as $arrItem) {
             $intSkuId = $arrItem['sku_id'];
             if(!empty($arrSkuInfo[$intSkuId])) {
@@ -108,6 +111,40 @@ class Service_Data_Stock
         }
 
         return $arrRet;
+    }
+
+    /**
+     * 解冻
+     * @param $arrInput
+     * @param $arrSkuInfos
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function frozenSkuStock($arrInput, $arrSkuInfos)
+    {
+        $arrPram = [
+            'warehouse_id' => $arrInput['warehouse_id'],
+            'ext_order_id' => $arrInput['stock_frozen_order_id'],
+            'frozen_type'  => $arrInput['frozen_type'],
+        ];
+        foreach ($arrInput['detail'] as $arrItem) {
+            $arrSkuInfo = $arrSkuInfos[$arrItem['sku_id']];
+            $intExpireTime = Order_Util_Stock::getExpireTime(
+                $arrItem['production_or_expire_time'],
+                $arrSkuInfo['sku_effect_type'],
+                $arrSkuInfo['sku_effect_day']
+            );
+            $arrDetail = [
+                'sku_id' => $arrItem['sku_id'],
+                'frozen_amount' => $arrItem['current_frozen_amount'],
+                'unfreeze_amount' => $arrItem['unfrozen_amount'],
+                'is_defective' => $arrItem['is_defective'],
+                'expiration_time' => $intExpireTime
+            ];
+            $arrPram['details'][] = $arrDetail;
+        }
+
+        $this->objDaoStock->unfrozenStock($arrPram);
     }
 
 }

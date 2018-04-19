@@ -21,6 +21,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
     public function __construct() {
         $this->objDaoSku = new Dao_Ral_Sku();
         $this->objDataOrderDetail = new Service_Data_Frozen_StockFrozenOrderDetail();
+        $this->objDataStock = new Service_Data_Stock();
     }
 
     /**
@@ -77,6 +78,9 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             $this->getUnfrozenInfoMap($arrInput, $arrSkuInfos),
             $this->getFrozenDetailMap($arrFrozenDetail)
         );
+
+        //调用库存解冻
+        $this->objDataStock->frozenSkuStock($arrInput, $arrSkuInfos);
 
         //写库
         $arrRes = $this->writeTransaction($arrUpdateData[0], $arrUpdateData[1], $arrInsertUnfrozenDetail);

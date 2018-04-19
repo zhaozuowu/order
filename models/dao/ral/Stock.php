@@ -48,6 +48,12 @@ class Dao_Ral_Stock
     const  API_RALER_FROZEN_STOCK = 'frozenorderskustock';
 
     /**
+     * 冻结单——解冻
+     * @var string
+     */
+    const  API_RALER_UNFROZEN_STOCK = 'unfrozenorderskustock';
+
+    /**
      * 作废出库单
      */
     const  API_RALER_CANCEL_FREEZESKU_STOCK = 'cancelfreezeskustock';
@@ -246,10 +252,15 @@ class Dao_Ral_Stock
     }
 
     //-----------------------------------------冻结单-------------------------------------------------------
+
+    /**
+     * @param $arrFrozenArg
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
     public function frozenStock($arrFrozenArg)
     {
-        $ret = [];
-
         $req[self::API_RALER_FROZEN_STOCK] = $arrFrozenArg;
 
         Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
@@ -259,6 +270,29 @@ class Dao_Ral_Stock
             Bd_Log::warning('ral call stock model frozen sku failed. ret: ' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL);
         }
+
+        return $ret;
+    }
+
+    /**
+     * 调用库存解冻
+     * @param $arrUnfrozenArg
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function unfrozenStock($arrUnfrozenArg)
+    {
+        $req[self::API_RALER_UNFROZEN_STOCK] = $arrUnfrozenArg;
+
+        Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
+        $ret = $this->objApiRal->getData($req);
+        $ret = empty($ret[self::API_RALER_FROZEN_STOCK]) ? [] : $ret[self::API_RALER_FROZEN_STOCK];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Bd_Log::warning('ral call stock model unfrozen sku failed. ret: ' . print_r($ret, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL);
+        }
+
         return $ret;
     }
     //-----------------------------------------冻结单-------------------------------------------------------
@@ -296,22 +330,24 @@ class Dao_Ral_Stock
     /**
      * 获取仓库商品可冻结数据
      * @param $intWarehouseId
-     * @param $arrSkuIds
+     * @param $intSkuId
+     * @param $intIsDefective
      * @return array|mixed
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function getStockFrozenInfo($intWarehouseId, $arrSkuIds)
+    public function getStockFrozenInfo($intWarehouseId, $intSkuId, $intIsDefective)
     {
         if(empty($intWarehouseId) || empty($arrSkuIds)) {
             Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is empty');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
         }
 
-        $strSkuIds = implode(',', $arrSkuIds);
         $req[self::API_RALER_STOCK_FROZEN_INFO]['warehouse_id'] = $intWarehouseId;
-        $req[self::API_RALER_STOCK_FROZEN_INFO]['sku_ids'] = $strSkuIds;
-
+        $req[self::API_RALER_STOCK_FROZEN_INFO]['sku_ids'] = $intSkuId;
+        if (!empty($intIsDefective)) {
+            $req[self::API_RALER_STOCK_FROZEN_INFO]['is_defective'] = $intIsDefective;
+        }
 
         $ret = $this->objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_STOCK_FROZEN_INFO]) ? [] : $ret[self::API_RALER_STOCK_FROZEN_INFO];

@@ -93,7 +93,8 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_UNFROZEN_CURRENT_FROZEN_AMOUNT_NOT_NATCH => '当前冻结量不匹配',
         Order_Error_Code::NWMS_UNFROZEN_AMOUNT_OVER_FROZEN_AMOUNT => '解冻数量超过已冻结数量',
         Order_Error_Code::NWMS_UNFROZEN_PARAM_REPEATED => '解冻参数重复',
-        Order_Error_Code::NWMS_UNFROZEN_CHECK_VERSION_FAIL => '解冻校验版本失败'
+        Order_Error_Code::NWMS_UNFROZEN_CHECK_VERSION_FAIL => '解冻校验版本失败',
+        Order_Error_code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL => '调用库存模块解冻库存失败',
     ];
 
 }
