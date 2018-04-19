@@ -106,6 +106,9 @@ class Action_GetOrderDetail extends Order_Base_Action
                 $arrInfo['production_or_expire_time'] = $arrOrder['expire_time'];
             }
 
+            $arrInfo['is_defective'] = $arrOrder['is_defective'];
+            $arrInfo['is_defective_text'] = Nscm_Define_Stock::QUALITY_TEXT_MAP[$arrOrder['is_defective']];
+
             if(empty($mapSku2Info[$arrOrder['sku_id']])) {
                 $mapSku2Info[$arrOrder['sku_id']] = [];
                 $arrFormatResult['stock_adjust_order_detail']['detail'][] = $arrFormatOrder;

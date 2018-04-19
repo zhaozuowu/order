@@ -30,8 +30,7 @@ class Service_Data_StockAdjustOrder
      * @param $arrInput
      * @return array
      */
-    public function createAdjustOrder($arrInput)
-    {
+    public function createAdjustOrder($arrInput) {
         $arrRet = [];
         // 获取SKU详情
         $arrSkuIds = array_unique(array_column($arrInput['detail'], 'sku_id'));
@@ -299,22 +298,17 @@ class Service_Data_StockAdjustOrder
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_GET_CURRENT_SKU_STOCK_FAILED);
             }
 
-            if(in_array($arrInput['adjust_type'], Nscm_Define_Stock::STOCK_IN_TYPE)) {
-                // 根据商品效期类型，计算生产日期和有效期
-                $arrDetail = $this->getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
-            } else {
-                // 调减不需要生产日期参数
-                $arrDetail['production_time'] = '';
-                $arrDetail['expire_time'] = '';
-            }
+            // 根据商品效期类型，计算生产日期和有效期
+            $arrDetail = $this->getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
-            $arrDetail = [
+            $arrDetailItem = [
                 'stock_adjust_order_id'     => $arrInput['stock_adjust_order_id'],
                 'warehouse_id'              => $arrInput['warehouse_id'],
                 'adjust_type'               => $arrInput['adjust_type'],
                 'sku_id'                    => $arrDetail['sku_id'],
                 'sku_name'                  => $arrSkuInfo['sku_name'],
                 'adjust_amount'             => $arrDetail['adjust_amount'],
+                'is_defective'              => $arrDetail['is_defective'],
                 'upc_id'                    => $arrSkuInfo['min_upc']['upc_id'],
                 'upc_unit'                  => $arrSkuInfo['min_upc']['upc_unit'],
                 'upc_unit_num'              => $arrSkuInfo['min_upc']['upc_unit_num'],
@@ -326,7 +320,7 @@ class Service_Data_StockAdjustOrder
                 'expire_time'               => $arrDetail['expire_time'],
             ];
 
-            $arrOrderDetailArg[] = $arrDetail;
+            $arrOrderDetailArg[] = $arrDetailItem;
         }
 
         return $arrOrderDetailArg;
@@ -359,7 +353,7 @@ class Service_Data_StockAdjustOrder
             $batchStockRet = $this->createBatchStockIn($arrStockIn);
         } else if(in_array($intAdjustType, Nscm_Define_Stock::STOCK_OUT_TYPE)) {
             //调减
-            $arrStockOut = $this->getCreateBatchStockOutArg($arrInput);
+            $arrStockOut = $this->getCreateBatchStockOutArg($arrInput, $arrSkuInfos);
             $batchStockRet = $this->createBatchStockOut($arrStockOut);
         } else {
             Bd_Log::warning(__METHOD__ . ' adjust type invalid  '. print_r($arrInput, true));
@@ -404,6 +398,7 @@ class Service_Data_StockAdjustOrder
                 'expire_time'           =>  $arrDetail['expire_time'],
                 'production_time'       =>  $arrDetail['production_time'],
                 'amount'                =>  $arrDetail['adjust_amount'],
+                'is_defective'          =>  $arrDetail['is_defective'],
             ];
 
             $mapSku2Batch[$arrDetail['sku_id']][] = $batchInfo;
@@ -440,22 +435,36 @@ class Service_Data_StockAdjustOrder
      * @param $arrInput
      * @return array
      */
-    protected function getCreateBatchStockOutArg($arrInput)
+    protected function getCreateBatchStockOutArg($arrInput, $arrSkuInfos)
     {
         $arrStockOut = [
-            'stockin_order_id'      => $arrInput['stock_adjust_order_id'],
+            'stockout_order_id'      => $arrInput['stock_adjust_order_id'],
             'inventory_type'        => $arrInput['adjust_type'],
             'warehouse_id'          => $arrInput['warehouse_id'],
             'stockout_details'      => [],
         ];
 
         foreach ($arrInput['detail'] as $arrDetail) {
-            $arrStockSkuInfo = [
-                'sku_id' => $arrDetail['sku_id'],
-                'stockout_amount' => $arrDetail['adjust_amount'],
+            $intSkuId = $arrDetail['sku_id'];
+            $arrSkuInfo = $arrSkuInfos[$intSkuId];
+
+            if(empty($arrSkuInfo)) {
+                Bd_Log::warning("sku info is empty. sku id: " . $arrDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR);
+            }
+
+            // 根据商品效期类型，计算生产日期和有效期
+            $arrDetail = $this->getEffectTime(
+                $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+
+            $arrAdjustInfo = [
+                'adjust_amount' => $arrDetail['adjust_amount'],
+                'is_defective' => $arrDetail['is_defective'],
+                'expiration_time' => $arrDetail['expire_time'],
             ];
 
-            $arrStockOut['stockout_details'][] = $arrStockSkuInfo;
+            $arrStockOut['stockout_details'][$intSkuId]['sku_id'] = $intSkuId;
+            $arrStockOut['stockout_details'][$intSkuId]['adjust_info'][] = $arrAdjustInfo;
         }
 
         return $arrStockOut;
@@ -469,10 +478,10 @@ class Service_Data_StockAdjustOrder
     protected function createBatchStockOut($arrStockOut)
     {
         $arrRet = [];
-        Bd_Log::trace('ral call stock decrease param: ' . json_encode($arrStockOut));
+        Bd_Log::trace('ral call stock decrease param: ' . print_r($arrStockOut, true));
 
         $arrRet =  $this->objDaoStock->adjustStockout(
-            $arrStockOut['stockin_order_id'],
+            $arrStockOut['stockout_order_id'],
             $arrStockOut['warehouse_id'],
             $arrStockOut['inventory_type'],
             $arrStockOut['stockout_details']);
@@ -508,11 +517,13 @@ class Service_Data_StockAdjustOrder
         if(Nscm_Define_Sku::SKU_EFFECT_FROM === $intSkuEffectType) {
             // 生产日期型
             $arrDetail['production_time'] = $arrDetail['production_or_expire_time'];
-            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'] + $intSkuEffectDay * 3600 * 24;
+            // 根据PM要求，1月1号生产的商品，保质期1天，失效时间为1月1号 23点59分59秒
+            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'] + $intSkuEffectDay * 3600 * 24 -1;
         } else if(Nscm_Define_Sku::SKU_EFFECT_TO === $intSkuEffectType) {
             // 到效期型
             $arrDetail['production_time'] = '';
-            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'];
+            // 根据PM要求，到效期类型的商品，失效期为当天23点59分59秒
+            $arrDetail['expire_time'] = $arrDetail['production_or_expire_time'] + 3600 * 24 -1;
         } else {
             Bd_Log::warning('sku effect type invalid ' . $intSkuEffectType);
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_EFFECT_TYPE_ERROR);
