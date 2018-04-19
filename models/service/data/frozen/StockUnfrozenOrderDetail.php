@@ -451,11 +451,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      */
     public function frozenSkuStock($arrInput, $arrSkuInfos)
     {
-        $arrPram = [
-            'warehouse_id' => $arrInput['warehouse_id'],
-            'ext_order_id' => $arrInput['stock_frozen_order_id'],
-            'frozen_type'  => $arrInput['frozen_type'],
-        ];
+
+        $arrDetailMap = [];
         foreach ($arrInput['detail'] as $arrItem) {
             $arrSkuInfo = $arrSkuInfos[$arrItem['sku_id']];
             $intExpireTime = Order_Util_Stock::getExpireTime(
@@ -463,15 +460,26 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
                 $arrSkuInfo['sku_effect_type'],
                 $arrSkuInfo['sku_effect_day']
             );
-            $arrDetail = [
-                'sku_id' => $arrItem['sku_id'],
+            $arrDetailMap[$arrItem['sku_id']][] = [
                 'frozen_amount' => $arrItem['current_frozen_amount'],
                 'unfreeze_amount' => $arrItem['unfrozen_amount'],
                 'is_defective' => $arrItem['is_defective'],
                 'expiration_time' => $intExpireTime
             ];
-            $arrPram['details'][] = $arrDetail;
         }
+        $arrDetails = [];
+        foreach ($arrDetailMap as $intSkuId => $arrUnfrozenInfo) {
+            $arrDetails[] = [
+                'sku_id' => $intSkuId,
+                'unfreeze_info' => $arrUnfrozenInfo
+            ];
+        }
+        $arrPram = [
+            'warehouse_id' => $arrInput['warehouse_id'],
+            'ext_order_id' => $arrInput['stock_frozen_order_id'],
+            'frozen_type'  => $arrInput['frozen_type'],
+            'details'      => $arrDetails
+        ];
 
         $this->objDaoStock->unfrozenStock($arrPram);
     }
