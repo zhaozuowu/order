@@ -88,7 +88,12 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL => '获取仓库商品冻结数据失败',
         Order_Error_Code::NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST => '冻结单明细获取失败',
         Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR => '冻结单冻结数量不正确',
-
+        Order_Error_Code::NWMS_FROZEN_ORDER_NOT_EXIST => '冻结单不存在',
+        Order_Error_Code::NWMS_FROZEN_ORDER_DETAIL_NOT_FOUND => '未找到匹配的冻结单明细',
+        Order_Error_Code::NWMS_UNFROZEN_CURRENT_FROZEN_AMOUNT_NOT_NATCH => '当前冻结量不匹配',
+        Order_Error_Code::NWMS_UNFROZEN_AMOUNT_OVER_FROZEN_AMOUNT => '解冻数量超过已冻结数量',
+        Order_Error_Code::NWMS_UNFROZEN_PARAM_REPEATED => '解冻参数重复',
+        Order_Error_Code::NWMS_UNFROZEN_CHECK_VERSION_FAIL => '解冻校验版本失败'
     ];
 
 }

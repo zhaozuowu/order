@@ -485,6 +485,18 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR = 370009;
 
+    /**
+     * 冻结单-未找到匹配的冻结单明细
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_DETAIL_NOT_FOUND = 370010;
+
+    /**
+     * 冻结单-解冻校验版本失败
+     * @var integer
+     */
+    const NWMS_UNFROZEN_CHECK_VERSION_FAIL = 370011;
+
     //------------------------------------------------冻结单------------------------------------------------
 
     /**
