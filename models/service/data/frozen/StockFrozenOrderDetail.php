@@ -89,7 +89,11 @@ class Service_Data_Frozen_StockFrozenOrderDetail
             return [];
         }
 
-        return $this->getOrderDetailBySku($arrInput['stock_frozen_order_id'], $arrSkuIds);
+        $arrRet = $this->getOrderDetailBySku($arrInput['stock_frozen_order_id'], $arrSkuIds);
+
+        $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
+
+        return Order_Util::mergeSkuInfo($arrRet, $arrSkuInfos);
 
     }
 
@@ -104,7 +108,7 @@ class Service_Data_Frozen_StockFrozenOrderDetail
 
         $arrRet = Model_Orm_StockFrozenOrderDetail::findRows($arrSql['columns'], $arrSql['where'],
             $arrSql['order_by']);
-        Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
+        //Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
         return $arrRet;
     }
 
