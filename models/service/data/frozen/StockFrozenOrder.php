@@ -324,7 +324,7 @@ class Service_Data_Frozen_StockFrozenOrder
                 $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
             $arrFrozenInfo = [
-                'freeze_amount' => $arrDetail['freeze_amount'],
+                'freeze_amount' => $arrDetail['frozen_amount'],
                 'is_defective' => $arrDetail['is_defective'],
                 'expiration_time' => $arrDetail['expire_time'],
             ];
@@ -332,6 +332,8 @@ class Service_Data_Frozen_StockFrozenOrder
             $arrStockFrozenArg['details'][$intSkuId]['sku_id'] = $intSkuId;
             $arrStockFrozenArg['details'][$intSkuId]['freeze_info'][] = $arrFrozenInfo;
         }
+
+        $arrStockFrozenArg['details'] = array_values($arrStockFrozenArg['details']);
 
         return $arrStockFrozenArg;
     }
