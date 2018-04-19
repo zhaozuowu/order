@@ -7,7 +7,6 @@
 
 class Action_Unfrozen extends Order_Base_Action
 {
-
     /**
      * input params
      * @var array
@@ -55,9 +54,6 @@ class Action_Unfrozen extends Order_Base_Action
      */
     public function format($data)
     {
-        $arrFormatResult = [];
-        $arrFormatResult['stock_adjust_order_id']    = empty($data['stock_adjust_order_id']) ? '' : Nscm_Define_OrderPrefix::SAO . intval($data['stock_adjust_order_id']);
-
-        return $arrFormatResult;
+       return $data;
     }
 }
