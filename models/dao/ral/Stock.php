@@ -305,8 +305,7 @@ class Dao_Ral_Stock
     /**
      * 调用库存解冻
      * @param $arrUnfrozenArg
-     * @return array
-     * @throws Nscm_Exception_Error
+     * @return mixed
      * @throws Order_BusinessError
      */
     public function unfrozenStock($arrUnfrozenArg)
@@ -314,8 +313,7 @@ class Dao_Ral_Stock
         $req[self::API_RALER_UNFROZEN_STOCK] = $arrUnfrozenArg;
 
         Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
-        $ret = $this->objApiRal->getData($req);
-        $ret = empty($ret[self::API_RALER_FROZEN_STOCK]) ? [] : $ret[self::API_RALER_FROZEN_STOCK];
+        $ret = Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->getData($req)[self::API_RALER_UNFROZEN_STOCK];
         if (empty($ret) || !empty($ret['error_no'])) {
             Bd_Log::warning('ral call stock model unfrozen sku failed. ret: ' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL);
