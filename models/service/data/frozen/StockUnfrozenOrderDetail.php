@@ -292,7 +292,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             }
             if ($arrUnfrozenInfoItem['unfrozen_amount'] > $arrFrozenDetail['current_frozen_amount']) {
                 Bd_Log::warning(sprintf(
-                    'unfrozen amount over frozen amount, unique key:%s, unfrozen amount:%s, frozen amount:$s',
+                    'unfrozen amount over frozen amount, unique key:%s, unfrozen amount:%s, frozen amount:%s',
                     $intUniqKey,
                     $arrUnfrozenInfoItem['unfrozen_amount'],
                     $arrFrozenDetail['current_frozen_amount']
