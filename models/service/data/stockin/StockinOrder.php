@@ -72,7 +72,7 @@ class Service_Data_Stockin_StockinOrder
             // app illegal dates
             if (Nscm_Define_Sku::SKU_EFFECT_FROM == $sourceOrderSkuInfo['sku_effect_type']) {
                 $boolIsMadeInChina = $intFromCountry == Nscm_Define_Sku::SKU_COUNTRY_INSIDE;
-                $intProductionTime = arrRealStockinInfo['expire_date'];
+                $intProductionTime = $arrRealStockinInfo['expire_date'];
                 $intSkuEffectDay = $sourceOrderSkuInfo['sku_effect_day'];
                 if (!Nscm_Service_Stock::checkStockInShelfLife($intProductionTime, $intSkuEffectDay, $boolIsMadeInChina)) {
                     $arrWarningDates[] = $intProductionTime;
@@ -227,7 +227,7 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intType && !empty($arrHashReserveOrderSkus)) {
             Order_BusinessError::throwException(Order_Error_Code::ALL_SKU_MUST_STOCKIN);
         }
-        if (!$boolIgnoreCheckDate || !empty($arrWarningInfo)) {
+        if (!$boolIgnoreCheckDate && !empty($arrWarningInfo)) {
             Bd_Log::trace(sprintf('throw illegal sku production date, check[%s], info[%s]',
                 json_encode($boolIgnoreCheckDate), json_encode($arrWarningInfo)));
             Order_BusinessError::throwException(Order_Error_Code::NOT_IGNORE_ILLEGAL_DATE, '', $arrWarningInfo);
@@ -318,7 +318,8 @@ class Service_Data_Stockin_StockinOrder
         $boolIgnoreCheckDate = boolval($boolIgnoreCheckDate);
         $intStockinOrderId = Order_Util_Util::generateStockinOrderCode();
         $arrSourceOrderSkus = $this->assemblePrice($intWarehouseId, $arrSourceOrderSkus, $intType);
-        $arrDbSkuInfoList = $this->getDbStockinSkus($intStockinOrderId, $arrSourceOrderSkus, $arrSkuInfoList, $intType);
+        $arrDbSkuInfoList = $this->getDbStockinSkus($intStockinOrderId, $arrSourceOrderSkus, $arrSkuInfoList, $intType,
+            $boolIgnoreCheckDate);
         $intStockinOrderRealAmount = $this->calculateTotalSkuAmount($arrDbSkuInfoList);
         if (empty($intStockinOrderRealAmount)) {
             Order_BusinessError::throwException(Order_Error_Code::TOTAL_COUNT_CANNOT_EMPTY);
