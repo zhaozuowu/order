@@ -48,7 +48,7 @@ class AppendFromCountry
         $limit = 100;
         $arrCondiion = [
             'create_time' => ['<', $intTime],
-            'sku_from_country' => ['!=', 0],
+            'sku_from_country' => 0,
         ];
         // get all sku id
         $allSkuId = $orm::find($arrCondiion)->select(['sku_id'])->distinct()->column();
