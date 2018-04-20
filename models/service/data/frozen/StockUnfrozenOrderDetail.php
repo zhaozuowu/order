@@ -286,7 +286,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_UNFROZEN_CURRENT_FROZEN_AMOUNT_NOT_NATCH);
             }
             if ($arrUnfrozenInfoItem['unfrozen_amount'] > $arrFrozenDetail['current_frozen_amount']) {
-                Bd_Log::warning(__METHOD__ . 'unfrozen amount over frozen amount');
+                Bd_Log::warning(__METHOD__ . 'unfrozen amount over frozen amount'.$arrUnfrozenInfoItem['unfrozen_amount'].'/'.$arrFrozenDetail['current_frozen_amount']);
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_UNFROZEN_AMOUNT_OVER_FROZEN_AMOUNT);
             }
 
@@ -446,7 +446,6 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * 调用库存解冻
      * @param $arrInput
      * @param $arrSkuInfos
-     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function frozenSkuStock($arrInput, $arrSkuInfos)
