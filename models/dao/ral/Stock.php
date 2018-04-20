@@ -214,7 +214,7 @@ class Dao_Ral_Stock
         Bd_Log::trace('ral call '. self::API_RALER_STOCK_PERIOD_DETAIL . ' output params ' . json_encode($ret));
         return $ret['result'];
     }
-    
+
     /**
      * 库存调整-出库
      * @param int $intStockoutOrderId
@@ -232,13 +232,6 @@ class Dao_Ral_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 
-        foreach ($arrDetails as $detail) {
-            if(empty($detail['sku_id']) || empty($detail['stockout_amount'])) {
-                Bd_Log::warning(__METHOD__ . ' stock adjust decrease order call ral param invalid');
-                Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
-            }
-        }
-
         $req[self::API_RALER_ADJUST_STOCKOUT]['stockout_order_id'] = $intStockoutOrderId;
         $req[self::API_RALER_ADJUST_STOCKOUT]['warehouse_id'] = $intWarehouseId;
         $req[self::API_RALER_ADJUST_STOCKOUT]['inventory_type'] = $intAdjustType;
@@ -251,7 +244,6 @@ class Dao_Ral_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 
-        Bd_Log::trace(__METHOD__ . ' ral call stock decrease success ' . json_encode($ret));
         return $ret;
     }
 
