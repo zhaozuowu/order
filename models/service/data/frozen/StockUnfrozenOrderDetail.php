@@ -189,8 +189,11 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
 
         $arrRet = Model_Orm_StockFrozenOrderUnfrozenDetail::findRows($arrSql['columns'], $arrSql['where'],
             $arrSql['order_by']);
-        Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
-        return $arrRet;
+        //Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
+
+        $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
+
+        return Order_Util::mergeSkuInfo($arrRet, $arrSkuInfos);
     }
 
     /**
