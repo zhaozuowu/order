@@ -87,4 +87,14 @@ class Order_Util_Stock
 
         return $intExpireTime;
     }
+
+    /**
+     * 调用库存前format到效期类型参数，生产日期型无需format
+     * @param $intProductionOrExpireTime
+     * @return float|int
+     */
+    public static function formatExpireTime($intProductionOrExpireTime)
+    {
+        return $intProductionOrExpireTime + 3600 * 24 - 1;
+    }
 }

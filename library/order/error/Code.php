@@ -441,72 +441,77 @@ class Order_Error_Code extends Wm_Error_Code
      * 冻结单-冻结SKU个数超过100个
      * @var integer
      */
-    const NWMS_ORDER_FROZEN_SKU_AMOUNT_TOO_MUCH = 351001;
+    const NWMS_ORDER_FROZEN_SKU_AMOUNT_TOO_MUCH = 370001;
 
     /**
      * 冻结单-调用库存模块冻结库存失败
      * @var integer
      */
-    const NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL = 351002;
+    const NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL = 370002;
 
     /**
      * 冻结单-获取仓库商品冻结数据失败
      */
-    const NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL = 351003;
+    const NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL = 370003;
 
     /**
      * 冻结单-冻结单明细获取失败
      * @var integer
      */
-    const NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST = 351004;
+    const NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST = 370004;
 
     /**
      * 冻结单-冻结单信息获取失败
      * @var integer
      */
-    const NWMS_FROZEN_ORDER_NOT_EXIST = 351005;
+    const NWMS_FROZEN_ORDER_NOT_EXIST = 370005;
 
     /**
      * 冻结单-解冻参数重复
      * @var integer
      */
-    const NWMS_UNFROZEN_PARAM_REPEATED = 351006;
+    const NWMS_UNFROZEN_PARAM_REPEATED = 370006;
 
     /**
      * 冻结单-当前冻结量不匹配
      * @var integer
      */
-    const NWMS_UNFROZEN_CURRENT_FROZEN_AMOUNT_NOT_NATCH = 351007;
+    const NWMS_UNFROZEN_CURRENT_FROZEN_AMOUNT_NOT_NATCH = 370007;
 
     /**
      * 冻结单-解冻数量超过已冻结数量
      * @var integer
      */
-    const NWMS_UNFROZEN_AMOUNT_OVER_FROZEN_AMOUNT = 351008;
+    const NWMS_UNFROZEN_AMOUNT_OVER_FROZEN_AMOUNT = 370008;
 
     /**
      * 冻结单冻结数量不正确
      * @var integer
      */
-    const NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR = 351009;
+    const NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR = 370009;
 
     /**
      * 冻结单-未找到匹配的冻结单明细
      * @var integer
      */
-    const NWMS_FROZEN_ORDER_DETAIL_NOT_FOUND = 351010;
+    const NWMS_FROZEN_ORDER_DETAIL_NOT_FOUND = 370010;
 
     /**
      * 冻结单-解冻校验版本失败
      * @var integer
      */
-    const NWMS_UNFROZEN_CHECK_VERSION_FAIL = 351011;
+    const NWMS_UNFROZEN_CHECK_VERSION_FAIL = 370011;
 
     /**
      * 冻结单-调用库存模块解冻库存失败
      * @var integer
      */
-    const NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL = 351012;
+    const NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL = 370012;
+
+    /**
+     * 冻结单-获取仓库商品冻结数据参数有误
+     */
+    const NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR = 3700013;
 
 
     //------------------------------------------------冻结单------------------------------------------------
