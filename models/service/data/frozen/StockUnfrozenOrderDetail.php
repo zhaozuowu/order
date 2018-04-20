@@ -189,11 +189,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
 
         $arrRet = Model_Orm_StockFrozenOrderUnfrozenDetail::findRows($arrSql['columns'], $arrSql['where'],
             $arrSql['order_by']);
-        //Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
-
-        $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
-
-        return Order_Util::mergeSkuInfo($arrRet, $arrSkuInfos);
+        Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
+        return $arrRet;
     }
 
     /**
@@ -281,15 +278,25 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
 
             //数据校验
             if (empty($arrFrozenDetail)) {
-                Bd_Log::warning(__METHOD__ . 'frozen detail not find');
+                Bd_Log::warning(__METHOD__ . 'frozen detail not find, unique key:' . $intUniqKey);
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_DETAIL_NOT_FOUND);
             }
             if ($arrUnfrozenInfoItem['current_frozen_amount'] != $arrFrozenDetail['current_frozen_amount']) {
-                Bd_Log::warning(__METHOD__ . 'current frozen amount not match');
+                Bd_Log::warning(sprintf(
+                    'current frozen amount not match, unique key:%s, user input:%s, frozen detail:%s',
+                    $intUniqKey,
+                    $arrUnfrozenInfoItem['current_frozen_amount'],
+                    $arrFrozenDetail['current_frozen_amount']
+                ));
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_UNFROZEN_CURRENT_FROZEN_AMOUNT_NOT_NATCH);
             }
             if ($arrUnfrozenInfoItem['unfrozen_amount'] > $arrFrozenDetail['current_frozen_amount']) {
-                Bd_Log::warning(__METHOD__ . 'unfrozen amount over frozen amount'.$arrUnfrozenInfoItem['unfrozen_amount'].'/'.$arrFrozenDetail['current_frozen_amount']);
+                Bd_Log::warning(sprintf(
+                    'unfrozen amount over frozen amount, unique key:%s, unfrozen amount:%s, frozen amount:$s',
+                    $intUniqKey,
+                    $arrUnfrozenInfoItem['unfrozen_amount'],
+                    $arrFrozenDetail['current_frozen_amount']
+                ));
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_UNFROZEN_AMOUNT_OVER_FROZEN_AMOUNT);
             }
 
