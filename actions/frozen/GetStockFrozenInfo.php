@@ -7,9 +7,6 @@
 
 class Action_GetStockFrozenInfo extends Order_Base_Action
 {
-    protected $boolCheckLogin   = false;
-    protected $boolCheckAuth    = false;
-    protected $boolCheckIp      = false;
     /**
      * input params
      * @var array
