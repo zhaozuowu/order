@@ -12,7 +12,6 @@ class Action_GetFrozenSku extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_ids'             => 'arr|required|arr_min[1]|type[int]',
         'stock_frozen_order_id'     => 'regex|patern[/^(F\d{13})?$/]',
     ];
 
@@ -83,14 +82,37 @@ class Action_GetFrozenSku extends Order_Base_Action
             $arrFormatOrder['stock_frozen_order_id'] =
                 empty($arrOrder['stock_frozen_order_id']) ? '' : Nscm_Define_OrderPrefix::F . strval($arrOrder['stock_frozen_order_id']);
             $arrFormatOrder['sku_id'] = empty($arrOrder['sku_id']) ? '' : strval($arrOrder['sku_id']);
-            $arrFormatOrder['upc_id'] = empty($arrOrder['upc_id']) ? '' : strval($arrOrder['upc_id']);
-            $arrFormatOrder['sku_name'] = empty($arrOrder['sku_name']) ? '' : strval($arrOrder['sku_name']);
             $arrFormatOrderSku['storage_location_id'] = empty($arrOrder['storage_location_id']) ? '' : strval($arrOrder['storage_location_id']);
             $arrFormatOrderSku['origin_frozen_amount'] = empty($arrOrder['origin_frozen_amount']) ? '' : strval($arrOrder['origin_frozen_amount']);
             $arrFormatOrderSku['current_frozen_amount'] = empty($arrOrder['current_frozen_amount']) ? '' : strval($arrOrder['current_frozen_amount']);
-            $arrFormatOrderSku['production_or_expire_time'] = empty($arrOrder['production_or_expire_time']) ? '' : strval($arrOrder['production_or_expire_time']);
-            $arrFormatOrderSku['is_defective_text']   = $arrOrder['is_defective'];
-                //empty($arrOrder['is_defective']) ? '' : Nscm_Define_Stock::QUALITY_TEXT_MAP[$arrOrder['is_defective']];
+            //$arrFormatOrderSku['production_or_expire_time'] = empty($arrOrder['production_or_expire_time']) ? '' : strval($arrOrder['production_or_expire_time']);
+            $arrFormatOrderSku['is_defective_text']   =
+                empty($arrOrder['is_defective']) ? '' : Nscm_Define_Stock::QUALITY_TEXT_MAP[$arrOrder['is_defective']];
+
+            if (Nscm_Define_Sku::SKU_EFFECT_FROM == $arrOrder['sku_effect_type']) {
+                if(!empty($arrOrder['production_time'])) {
+                    $arrFormatOrderSku['production_or_expire_time'] = strtotime(date('Y-m-d',
+                        $arrOrder['production_time']));
+                } else {
+                    $arrFormatOrderSku['production_or_expire_time'] = '';
+                }
+
+            } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $arrOrder['sku_effect_type']) {
+                if(!empty($arrOrder['expiration_time'])) {
+                    $arrFormatOrderSku['production_or_expire_time'] = strtotime(date('Y-m-d',
+                        $arrOrder['expiration_time']));
+                } else {
+                    $arrFormatOrderSku['production_or_expire_time'] = '';
+                }
+
+            }
+            $arrFormatOrder['sku_name'] = empty($arrOrder['sku_name']) ? '' : strval($arrOrder['sku_name']);
+            $arrFormatOrder['upc_id'] = empty($arrOrder['upc_id']) ? '' : strval($arrOrder['upc_id']);
+            $arrFormatOrder['upc_unit'] = empty($arrOrder['upc_unit']) ? '' : strval($arrOrder['upc_unit']);
+            $arrFormatOrder['sku_net'] = empty($arrOrder['sku_net']) ? '' : strval($arrOrder['sku_net']);
+            $arrFormatOrder['sku_net_unit'] = empty($arrOrder['sku_net_unit']) ? '' : strval($arrOrder['sku_net_unit']);
+            $arrFormatOrder['sku_net_unit_text'] =
+                Nscm_Define_Sku::SKU_NET_UNIT_TEXT[intval($arrFormatOrder['sku_net_unit'])] ?? '';
 
             if(empty($arrFormatResult['list'][$intSkuId])) {
                 $arrFormatResult['list'][$intSkuId] = $arrFormatOrder;

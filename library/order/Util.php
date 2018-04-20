@@ -292,4 +292,20 @@ class Order_Util
 
         return null;
     }
+
+    // 填充sku属性
+    public static function mergeSkuInfo($arrRet, $arrSkuInfos) {
+        $arrFullRet = [];
+
+        foreach ($arrRet as $item) {
+            $intSkuId = $item['sku_id'];
+            if(!empty($arrSkuInfos[$intSkuId])) {
+                $arrFullRet[] = array_merge($arrSkuInfos[$intSkuId], $item);
+            } else {
+                $arrFullRet[] = $item;
+            }
+        }
+
+        return $arrFullRet;
+    }
 }

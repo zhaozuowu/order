@@ -80,6 +80,36 @@ class Service_Data_Stock
     }
 
     /**
+     * 获取sku库存，仓库、效期、良品 维度
+     * @param $intWarehouseId
+     * @param $arrSkuIds
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function getStockPeriodStock($intWarehouseId, $arrSkuIds) {
+        $arrRet = [];
+
+        $arrStockInfo = $this->objDaoStock->getStockPeriodStock($intWarehouseId, $arrSkuIds);
+        if(empty($arrStockInfo)) {
+            return $arrRet;
+        }
+
+        $arrSkuInfo = $this->objDaoSku->getSkuInfos($arrSkuIds);
+
+        foreach ($arrStockInfo as $value) {
+            $intSkuId = $value['sku_id'];
+            if(!empty($arrSkuInfo[$intSkuId])) {
+                $arrRet[] = array_merge($arrSkuInfo[$intSkuId], $value);
+            } else {
+                $arrRet[] = $value;
+            }
+        }
+
+        return $arrRet;
+    }
+
+    /**
      * 获取仓库商品可冻结批次数据
      * @param $intWarehouseId
      * @param $intSkuId
@@ -112,5 +142,4 @@ class Service_Data_Stock
 
         return $arrRet;
     }
-
 }
