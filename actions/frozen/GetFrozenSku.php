@@ -89,23 +89,7 @@ class Action_GetFrozenSku extends Order_Base_Action
             $arrFormatOrderSku['is_defective_text']   =
                 empty($arrOrder['is_defective']) ? '' : Nscm_Define_Stock::QUALITY_TEXT_MAP[$arrOrder['is_defective']];
 
-            if (Nscm_Define_Sku::SKU_EFFECT_FROM == $arrOrder['sku_effect_type']) {
-                if(!empty($arrOrder['production_time'])) {
-                    $arrFormatOrderSku['production_or_expire_time'] = strtotime(date('Y-m-d',
-                        $arrOrder['production_time']));
-                } else {
-                    $arrFormatOrderSku['production_or_expire_time'] = '';
-                }
-
-            } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $arrOrder['sku_effect_type']) {
-                if(!empty($arrOrder['expiration_time'])) {
-                    $arrFormatOrderSku['production_or_expire_time'] = strtotime(date('Y-m-d',
-                        $arrOrder['expiration_time']));
-                } else {
-                    $arrFormatOrderSku['production_or_expire_time'] = '';
-                }
-
-            }
+            $arrFormatOrderSku['production_or_expire_time'] = empty($arrOrder['sku_valid_time']) ? '' : $arrOrder['sku_valid_time'];
             $arrFormatOrder['sku_name'] = empty($arrOrder['sku_name']) ? '' : strval($arrOrder['sku_name']);
             $arrFormatOrder['upc_id'] = empty($arrOrder['upc_id']) ? '' : strval($arrOrder['upc_id']);
             $arrFormatOrder['upc_unit'] = empty($arrOrder['upc_unit']) ? '' : strval($arrOrder['upc_unit']);
