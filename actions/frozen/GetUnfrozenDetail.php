@@ -94,11 +94,14 @@ class Action_GetUnfrozenDetail extends Order_Base_Action
 
             $arrFormatOrder['sku_name'] = empty($arrOrder['sku_name']) ? '' : strval($arrOrder['sku_name']);
             $arrFormatOrder['upc_id'] = empty($arrOrder['upc_id']) ? '' : strval($arrOrder['upc_id']);
-            $arrFormatOrder['upc_unit'] = empty($arrOrder['upc_unit']) ? '' : strval($arrOrder['upc_unit']);
             $arrFormatOrder['sku_net'] = empty($arrOrder['sku_net']) ? '' : strval($arrOrder['sku_net']);
             $arrFormatOrder['sku_net_unit'] = empty($arrOrder['sku_net_unit']) ? '' : strval($arrOrder['sku_net_unit']);
             $arrFormatOrder['sku_net_unit_text'] =
                 Nscm_Define_Sku::SKU_NET_UNIT_TEXT[intval($arrFormatOrder['sku_net_unit'])] ?? '';
+
+            $arrFormatOrder['upc_unit'] = empty($arrOrder['min_upc']['upc_unit']) ? '' : $arrOrder['min_upc']['upc_unit'];
+            $arrFormatOrder['upc_unit_num'] = empty($arrOrder['min_upc']['upc_unit_num']) ? '' : $arrOrder['min_upc']['upc_unit_num'];
+            $arrFormatOrder['upc_unit_text'] = empty($arrOrder['min_upc']['upc_unit']) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$arrOrder['min_upc']['upc_unit']];
 
             if(empty($arrFormatResult['list'][$intSkuId])) {
                 $arrFormatResult['list'][$intSkuId] = $arrFormatOrder;
