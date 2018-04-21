@@ -429,14 +429,14 @@ class Dao_Ral_Stock
 
         //RAL
         Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
-        $ret = Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->getData($req)[self::API_RALER_STOCK_FROZEN_INFO]['result'];
+        $ret = Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->getData($req)[self::API_RALER_STOCK_FROZEN_INFO];
         if (empty($ret) || !empty($ret['error_no'])) {
             Bd_Log::warning(__METHOD__ . ' get sku stock failed, result is empty.' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
         }
         Bd_log::trace(sprintf('get stock frozen info, param:%s, ret:%s', json_encode($req), json_encode($ret)));
 
-        return $ret;
+        return $ret['result'];
     }
 
     /**
