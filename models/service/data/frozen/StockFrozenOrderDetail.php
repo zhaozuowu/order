@@ -117,7 +117,8 @@ class Service_Data_Frozen_StockFrozenOrderDetail
         $arrSql = [];
 
         $arrWhere = [
-            'is_delete'     => Order_Define_Const::NOT_DELETE,
+            'is_delete'             => Order_Define_Const::NOT_DELETE,
+            'current_frozen_amount' => ['>', 0],
         ];
 
         if(!empty($intOrderId)) {
@@ -128,7 +129,7 @@ class Service_Data_Frozen_StockFrozenOrderDetail
         }
 
         $arrSql['columns'] = Model_Orm_StockFrozenOrderDetail::getAllColumns();
-        $arrSql['order_by'] = ['warehouse_id' => 'asc', 'id' => 'desc'];
+        $arrSql['order_by'] = ['sku_id'=>'asc', 'sku_valid_time' => 'asc', 'id' => 'desc'];
         $arrSql['where'] = $arrWhere;
         return $arrSql;
     }
@@ -154,6 +155,7 @@ class Service_Data_Frozen_StockFrozenOrderDetail
 
         $arrWhere = [
             'is_delete'     => Order_Define_Const::NOT_DELETE,
+            'current_frozen_amount' => ['>', 0],
         ];
         if(!empty($arrInput['warehouse_ids'])) {
             $arrWhere['warehouse_id'] = ['in', $arrInput['warehouse_ids']];
@@ -163,7 +165,7 @@ class Service_Data_Frozen_StockFrozenOrderDetail
         }
 
         $arrSql['columns'] = Model_Orm_StockFrozenOrderDetail::getAllColumns();
-        $arrSql['order_by'] = ['warehouse_id' => 'asc', 'id' => 'desc'];
+        $arrSql['order_by'] = ['sku_id'=>'asc', 'sku_valid_time' => 'asc', 'id' => 'desc'];
         $arrSql['limit'] = $intLimit;
         $arrSql['offset'] = $intOffset;
         $arrSql['where'] = $arrWhere;

@@ -85,11 +85,12 @@ class Action_GetUnfrozenDetail extends Order_Base_Action
             $arrFormatOrderSku['storage_location_id'] = empty($arrOrder['storage_location_id']) ? '' : strval($arrOrder['storage_location_id']);
             $arrFormatOrderSku['unfrozen_amount'] = empty($arrOrder['unfrozen_amount']) ? '' : strval($arrOrder['unfrozen_amount']);
             $arrFormatOrderSku['production_or_expire_time'] = empty($arrOrder['sku_valid_time']) ? '' : $arrOrder['sku_valid_time'];
+            $arrFormatOrderSku['is_defective'] = empty($arrOrder['is_defective']) ? '' : $arrOrder['is_defective'];
             $arrFormatOrderSku['is_defective_text']   =
                 empty($arrOrder['is_defective']) ? '' : Nscm_Define_Stock::QUALITY_TEXT_MAP[$arrOrder['is_defective']];
 
-            $arrFormatOrder['unfrozen_user_name'] = empty($arrOrder['unfrozen_user_name']) ? '' : strval($arrOrder['unfrozen_user_name']);
-            $arrFormatOrder['create_time'] = empty($arrOrder['create_time']) ? '' : strval($arrOrder['create_time']);
+            $arrFormatOrderSku['unfrozen_user_name'] = empty($arrOrder['unfrozen_user_name']) ? '' : strval($arrOrder['unfrozen_user_name']);
+            $arrFormatOrderSku['create_time'] = empty($arrOrder['create_time']) ? '' : strval($arrOrder['create_time']);
 
 
             $arrFormatOrder['sku_name'] = empty($arrOrder['sku_name']) ? '' : strval($arrOrder['sku_name']);

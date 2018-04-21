@@ -217,7 +217,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
         }
 
         $arrSql['columns'] = Model_Orm_StockFrozenOrderUnfrozenDetail::getAllColumns();
-        $arrSql['order_by'] = ['warehouse_id' => 'asc', 'id' => 'desc'];
+        $arrSql['order_by'] = ['sku_id'=>'asc', 'sku_valid_time' => 'asc', 'id' => 'desc'];
         $arrSql['where'] = $arrWhere;
         return $arrSql;
     }
@@ -252,7 +252,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
         }
 
         $arrSql['columns'] = Model_Orm_StockFrozenOrderUnfrozenDetail::getAllColumns();
-        $arrSql['order_by'] = ['warehouse_id' => 'asc', 'id' => 'desc'];
+        $arrSql['order_by'] = ['sku_id'=>'asc', 'sku_valid_time' => 'asc', 'id' => 'desc'];
         $arrSql['limit'] = $intLimit;
         $arrSql['offset'] = $intOffset;
         $arrSql['where'] = $arrWhere;

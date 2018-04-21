@@ -85,7 +85,7 @@ class Action_GetFrozenSku extends Order_Base_Action
             $arrFormatOrderSku['storage_location_id'] = empty($arrOrder['storage_location_id']) ? '' : strval($arrOrder['storage_location_id']);
             $arrFormatOrderSku['origin_frozen_amount'] = empty($arrOrder['origin_frozen_amount']) ? '' : strval($arrOrder['origin_frozen_amount']);
             $arrFormatOrderSku['current_frozen_amount'] = empty($arrOrder['current_frozen_amount']) ? '' : strval($arrOrder['current_frozen_amount']);
-            //$arrFormatOrderSku['production_or_expire_time'] = empty($arrOrder['production_or_expire_time']) ? '' : strval($arrOrder['production_or_expire_time']);
+            $arrFormatOrderSku['is_defective'] = empty($arrOrder['is_defective']) ? '' : $arrOrder['is_defective'];
             $arrFormatOrderSku['is_defective_text']   =
                 empty($arrOrder['is_defective']) ? '' : Nscm_Define_Stock::QUALITY_TEXT_MAP[$arrOrder['is_defective']];
 

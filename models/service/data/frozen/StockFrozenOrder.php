@@ -268,7 +268,7 @@ class Service_Data_Frozen_StockFrozenOrder
         }
 
         $arrSql['columns'] = Model_Orm_StockFrozenOrder::getAllColumns();
-        $arrSql['order_by'] = ['warehouse_id' => 'asc', 'id' => 'desc'];
+        $arrSql['order_by'] = ['create_time' => 'desc', 'id' => 'desc'];
         $arrSql['limit'] = $intLimit;
         $arrSql['offset'] = $intOffset;
         $arrSql['where'] = $arrWhere;
