@@ -57,4 +57,6 @@ class Order_Define_StockFrozenOrder
         self::FROZEN_ORDER_CREATE_BY_USER       => '人工创建',
         self::FROZEN_ORDER_CREATE_BY_SYSTEM     => '系统创建',
     ];
+
+    const FROZEN_ORDER_BY_SYSTEM_REMARK = '系统自动创建冻结单';
 }

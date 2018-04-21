@@ -97,4 +97,21 @@ class Order_Util_Stock
     {
         return $intProductionOrExpireTime + 3600 * 24 - 1;
     }
+
+    /**
+     * 计算返回前端的产效期
+     * @param $intSkuEffectType
+     * @param $intProductionTime
+     * @param $intExpirationTime
+     * @return false|int
+     */
+    public static function calculateProductionOrExpirationTime($intSkuEffectType, $intProductionTime, $intExpirationTime) {
+        $intProductionTimeOrExpirationTime = 0;
+        if (Nscm_Define_Sku::SKU_EFFECT_FROM == $intSkuEffectType) {
+            $intProductionTimeOrExpirationTime = strtotime(date('Y-m-d', $intProductionTime));
+        } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
+            $intProductionTimeOrExpirationTime = strtotime(date('Y-m-d', $intExpirationTime));
+        }
+        return $intProductionTimeOrExpirationTime;
+    }
 }
