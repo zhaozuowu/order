@@ -111,30 +111,28 @@ class Service_Data_Stock
 
     /**
      * 获取仓库商品可冻结批次数据
-     * @param $intWarehouseId
-     * @param $intSkuId
-     * @param $intIsDefective
-     * @param $intSKuEffectType
-     * @param $intTime
+     * @param $arrInput
      * @return array
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function getStockFrozenInfo($intWarehouseId, $intSkuId, $intIsDefective, $intSKuEffectType, $intTime)
+    public function getStockFrozenInfo($arrInput)
     {
         $arrRet = [];
         $arrStockFrozenInfo = $this->objDaoStock->getStockFrozenInfo(
-            $intWarehouseId,
-            $intSkuId,
-            $intIsDefective,
-            $intSKuEffectType,
-            $intTime
+            $arrInput['warehouse_id'],
+            $arrInput['sku_id'],
+            $arrInput['is_defective'],
+            $arrInput['sku_effect_type'],
+            $arrInput['production_or_expiration_time'],
+            $arrInput['page_num'],
+            $arrInput['page_size']
         );
         if (empty($arrStockFrozenInfo)) {
             return $arrRet;
         }
 
-        $arrSkuInfo = $this->objDaoSku->getSkuInfos([$intSkuId]);
+        $arrSkuInfo = $this->objDaoSku->getSkuInfos([$arrInput['sku_id']]);
         foreach ($arrStockFrozenInfo as $arrItem) {
             $intSkuId = $arrItem['sku_id'];
             if(!empty($arrSkuInfo[$intSkuId])) {

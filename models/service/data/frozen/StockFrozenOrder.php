@@ -87,6 +87,8 @@ class Service_Data_Frozen_StockFrozenOrder
                 null,
                 null,
                 null,
+                null,
+                null,
                 Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_SYSTEM
             );
             if (empty($arrFrozenInfo)) {

@@ -30,13 +30,7 @@ class Service_Page_frozen_GetStockFrozenInfo
      */
     public function execute($arrInput)
     {
-        $arrOutput = $this->objStock->getStockFrozenInfo(
-            $arrInput['warehouse_id'],
-            $arrInput['sku_id'],
-            $arrInput['is_defective'],
-            $arrInput['sku_effect_type'],
-            $arrInput['production_or_expiration_time']
-        );
+        $arrOutput = $this->objStock->getStockFrozenInfo($arrInput);
 
         return $arrOutput;
     }
