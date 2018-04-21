@@ -343,7 +343,7 @@ class Service_Data_Frozen_StockFrozenOrder
             }
 
             // 根据商品效期类型，计算生产日期和有效期
-            $arrDetail = Order_Util_Stock::getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+            //$arrDetail = Order_Util_Stock::getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
             $arrDetail = [
                 'stock_frozen_order_id'     => $arrInput['stock_frozen_order_id'],
@@ -356,8 +356,7 @@ class Service_Data_Frozen_StockFrozenOrder
                 'origin_frozen_amount'      => $arrDetail['frozen_amount'],
                 'current_frozen_amount'     => $arrDetail['frozen_amount'],
                 'is_defective'              => $arrDetail['is_defective'],
-                'production_time'           => $arrDetail['production_time'],
-                'expire_time'               => $arrDetail['expire_time'],
+                'sku_valid_time'            => $arrDetail['production_or_expire_time'],
             ];
 
             $arrOrderDetailArg[] = $arrDetail;
