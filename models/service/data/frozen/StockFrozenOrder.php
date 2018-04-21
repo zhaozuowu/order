@@ -130,6 +130,7 @@ class Service_Data_Frozen_StockFrozenOrder
                 'warehouse_name' => $arrWarehouseInfoMap[$intWarehouseId]['warehouse_name'],
                 'remark' => Order_Define_StockFrozenOrder::FROZEN_ORDER_BY_SYSTEM_REMARK,
                 'stock_frozen_order_id' => $intOrderId,
+                'create_type' => Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_SYSTEM,
                 'detail' => $arrFrozenDetails
             ];
             echo '[create_frozen_order_by_system]create frozen order param: ' . json_encode($arrInput) . "\n";
