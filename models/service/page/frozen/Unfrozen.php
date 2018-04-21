@@ -30,8 +30,22 @@ class Service_Page_Frozen_Unfrozen
      */
     public function execute($arrInput)
     {
-        $arrInput['stock_frozen_order_id'] = substr($arrInput['stock_frozen_order_id'], 1); //暂时hard code
+        $arrInput['stock_frozen_order_id'] =
+            intval(Order_Util::trimStockFrozenOrderIdPrefix($arrInput['stock_frozen_order_id']));
+        $this->checkParam($arrInput);
         $arrOutput = $this->objUnfrozen->unfrozen($arrInput);
         return $arrOutput;
+    }
+
+    /**
+     * 校验参数
+     * @param $arrInput
+     * @throws Order_BusinessError
+     */
+    protected function checkParam($arrInput)
+    {
+        if(empty($arrInput['detail'])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_UNFROZEN_DETAIL_PARAM_EMPTY);
+        }
     }
 }
