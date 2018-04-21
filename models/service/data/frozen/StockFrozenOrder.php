@@ -268,7 +268,7 @@ class Service_Data_Frozen_StockFrozenOrder
         }
 
         $arrSql['columns'] = Model_Orm_StockFrozenOrder::getAllColumns();
-        $arrSql['order_by'] = ['create_time' => 'desc', 'id' => 'desc'];
+        $arrSql['order_by'] = ['warehouse_id' => 'asc', 'id' => 'desc'];
         $arrSql['limit'] = $intLimit;
         $arrSql['offset'] = $intOffset;
         $arrSql['where'] = $arrWhere;
@@ -318,6 +318,10 @@ class Service_Data_Frozen_StockFrozenOrder
             'close_user_name'               => '',
             'close_time'                    => 0,
         ];
+        if (Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_SYSTEM ==  $arrInput['create_type']) {
+            $arrOrderArg['create_type'] =  Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_SYSTEM;
+            $arrOrderArg['creator_name'] = 'System';
+        }
 
         return $arrOrderArg;
     }
@@ -346,7 +350,6 @@ class Service_Data_Frozen_StockFrozenOrder
 
             // 根据商品效期类型，计算生产日期和有效期
             //$arrDetail = Order_Util_Stock::getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
-
             $arrDetail = [
                 'stock_frozen_order_id'     => $arrInput['stock_frozen_order_id'],
                 'warehouse_id'              => $arrInput['warehouse_id'],
