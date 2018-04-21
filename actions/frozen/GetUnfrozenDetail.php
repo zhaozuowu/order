@@ -84,7 +84,7 @@ class Action_GetUnfrozenDetail extends Order_Base_Action
             $arrFormatOrder['sku_id'] = empty($arrOrder['sku_id']) ? '' : strval($arrOrder['sku_id']);
             $arrFormatOrderSku['storage_location_id'] = empty($arrOrder['storage_location_id']) ? '' : strval($arrOrder['storage_location_id']);
             $arrFormatOrderSku['unfrozen_amount'] = empty($arrOrder['unfrozen_amount']) ? '' : strval($arrOrder['unfrozen_amount']);
-            $arrFormatOrderSku['production_or_expire_time'] = empty($arrOrder['production_or_expire_time']) ? '' : strval($arrOrder['production_or_expire_time']);
+            $arrFormatOrderSku['production_or_expire_time'] = empty($arrOrder['sku_valid_time']) ? '' : $arrOrder['sku_valid_time'];
             $arrFormatOrderSku['is_defective_text']   =
                 empty($arrOrder['is_defective']) ? '' : Nscm_Define_Stock::QUALITY_TEXT_MAP[$arrOrder['is_defective']];
 
