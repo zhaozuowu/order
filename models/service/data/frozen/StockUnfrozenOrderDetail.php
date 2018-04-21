@@ -79,7 +79,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
         $arrInsertUnfrozenDetail = $this->getInsertUnfrozenDetail($arrInput, $arrSkuInfos);
         $arrUpdateData = $this->buildUpdateData(
             $objFrozenOrder,
-            $this->getUnfrozenInfoMap($arrInput, $arrSkuInfos),
+            $this->getUnfrozenInfoMap($arrInput),
             $this->getFrozenDetailMap($arrFrozenDetail)
         );
 
@@ -178,6 +178,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * 按照SKU聚合，查询冻结单明细详情
      * @param $arrInput
      * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
      */
     public function getOrderListGroupBySku($arrInput) {
         $arrSkuIds = $this->getSkuIdsByOrderId($arrInput);
@@ -344,28 +346,22 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
     /**
      * 获取解冻数据Map
      * @param $arrInput
-     * @param $arrSkuInfos
      * @return array
      * @throws Order_BusinessError
      */
-    protected function getUnfrozenInfoMap($arrInput, $arrSkuInfos) {
+    protected function getUnfrozenInfoMap($arrInput) {
         $arrRes = [];
         $arrRes['warehouse_id'] = $arrInput['warehouse_id'];
         $arrRes['stock_frozen_order_id'] = $arrInput['stock_frozen_order_id'];
         $arrResItem = [];
         foreach ($arrInput['detail'] as $arrUnfrozenItem) {
-            $intExpireTime = Order_Util_Stock::getExpireTime(
-                $arrUnfrozenItem['production_or_expire_time'],
-                $arrSkuInfos[$arrUnfrozenItem['sku_id']]['sku_effect_type'],
-                $arrSkuInfos[$arrUnfrozenItem['sku_id']]['sku_effect_day']
-            );
             $strUniqKey = $this->getUnfrozenInfoUniqKey(
                 $arrUnfrozenItem['sku_id'],
-                $intExpireTime,
+                $arrUnfrozenItem['production_or_expire_time'],
                 $arrUnfrozenItem['is_defective']
             );
             if (array_key_exists($strUniqKey, $arrResItem)) {
-                Bd_Log::warning(__METHOD__ . 'sku_id-expire_time-is_defective repeated');
+                Bd_Log::warning(__METHOD__ . 'sku_id-production_or_expire_time-is_defective repeated');
                 Order_BusinessError::throwException(
                     Order_Error_Code::NWMS_UNFROZEN_PARAM_REPEATED,
                     sprintf(
@@ -392,7 +388,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
         foreach ($arrFrozenDetail as $arrFrozenDetailItem) {
             $intUniqKey = $this->getUnfrozenInfoUniqKey(
                 $arrFrozenDetailItem['sku_id'],
-                $arrFrozenDetailItem['expire_time'],
+                $arrFrozenDetailItem['sku_valid_time'],
                 $arrFrozenDetailItem['is_defective']
             );
             $arrRes[$intUniqKey] = $arrFrozenDetailItem;
@@ -403,12 +399,12 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
     /**
      * 获取sku_id-到效期-质量状态的唯一key
      * @param $intSkuId
-     * @param $intExpireTime
+     * @param $intProductionOrExpireTime
      * @param $intIsDefective
      * @return string
      */
-    protected function getUnfrozenInfoUniqKey($intSkuId, $intExpireTime, $intIsDefective) {
-       return $intSkuId . '-' . $intExpireTime . '-' . $intIsDefective;
+    protected function getUnfrozenInfoUniqKey($intSkuId, $intProductionOrExpireTime, $intIsDefective) {
+       return $intSkuId . '-' . $intProductionOrExpireTime . '-' . $intIsDefective;
     }
 
     /**
@@ -463,7 +459,6 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      */
     public function frozenSkuStock($arrInput, $arrSkuInfos)
     {
-
         $arrDetailMap = [];
         foreach ($arrInput['detail'] as $arrItem) {
             $arrSkuInfo = $arrSkuInfos[$arrItem['sku_id']];

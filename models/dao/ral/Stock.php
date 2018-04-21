@@ -316,7 +316,7 @@ class Dao_Ral_Stock
     public function unfrozenStock($arrUnfrozenArg)
     {
         $req[self::API_RALER_UNFROZEN_STOCK] = $arrUnfrozenArg;
-        Bd_Log::debug('ral call stock model unfrozen, req:' . json_encode($req));
+        Bd_Log::trace('ral call stock model unfrozen, req:' . json_encode($req));
 
         Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
         $ret = Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->getData($req)[self::API_RALER_UNFROZEN_STOCK];
@@ -343,7 +343,7 @@ class Dao_Ral_Stock
             Bd_Log::warning('ral call stock model get stock warehouse failed. ret: ' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL);
         }
-        Bd_Log::debug('ral call stock model get stock warehouse, ret: ' . json_encode($ret));
+        Bd_Log::trace('ral call stock model get stock warehouse, ret: ' . json_encode($ret));
 
         return $ret['result'];
     }
@@ -425,7 +425,7 @@ class Dao_Ral_Stock
         //冻结类型
         $req[self::API_RALER_STOCK_FROZEN_INFO]['type'] = $intType;
 
-        Bd_log::debug(sprintf('get stock frozen info, param:%s', json_encode($req)));
+        Bd_log::trace(sprintf('get stock frozen info, param:%s', json_encode($req)));
 
         //RAL
         Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
@@ -434,7 +434,7 @@ class Dao_Ral_Stock
             Bd_Log::warning(__METHOD__ . ' get sku stock failed, result is empty.' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
         }
-        Bd_log::debug(sprintf('get stock frozen info, param:%s, ret:%s', json_encode($req), json_encode($ret)));
+        Bd_log::trace(sprintf('get stock frozen info, param:%s, ret:%s', json_encode($req), json_encode($ret)));
 
         return $ret;
     }
