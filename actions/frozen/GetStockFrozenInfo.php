@@ -13,7 +13,7 @@ class Action_GetStockFrozenInfo extends Order_Base_Action
      */
     protected $arrInputParams = [
         'warehouse_id'              => 'int|required|min[1]',
-        'sku_id'                    => 'int|required|min[1]',
+        'sku_id'                    => 'int|min[1]',
         'is_defective'              => 'int|min[1]|max[2]',
         'sku_effect_type'           => 'int|min[1]|max[2]',
         'production_or_expiration_time' => 'int|min[1]',
