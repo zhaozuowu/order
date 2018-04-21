@@ -132,7 +132,7 @@ class Service_Data_Stock
             return $arrRet;
         }
 
-        $arrSkuInfo = $this->objDaoSku->getSkuInfos([$arrInput['sku_id']]);
+        $arrSkuInfo = $this->objDaoSku->getSkuInfos(array_unique(array_column($arrStockFrozenInfo, 'sku_id')));
         foreach ($arrStockFrozenInfo as $arrItem) {
             $intSkuId = $arrItem['sku_id'];
             if(!empty($arrSkuInfo[$intSkuId])) {
