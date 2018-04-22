@@ -517,7 +517,13 @@ class Order_Error_Code extends Wm_Error_Code
      * 冻结单-解冻详情参数为空
      * @var integer
      */
-    const NWMS_UNFROZEN_DETAIL_PARAM_EMPTY = 35100014;
+    const NWMS_UNFROZEN_DETAIL_PARAM_EMPTY = 3700014;
+
+    /**
+     * 冻结单-自动冻结异常
+     * @var integer
+     */
+    const NWMS_UNFROZEN_BY_SYSTEM_ERROR = 3700015;
 
 
     //------------------------------------------------冻结单------------------------------------------------

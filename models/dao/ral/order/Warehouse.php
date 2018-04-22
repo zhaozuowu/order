@@ -128,6 +128,7 @@ class Dao_Ral_Order_Warehouse
         $ret = $this->objApiRal->getData($req);
         Bd_Log::debug('ral get warehouse info response params: ' . json_encode($ret));
         $arrWarehouseInfo = $ret[self::API_RALER_GET_WAREHOUSE_INFO_BY_ID]['query_result'] ?? [];
+
         $arrWarehouseInfoMap = [];
         foreach ($arrWarehouseInfo as $arrItem) {
             $arrWarehouseInfoMap[$arrItem['warehouse_id']] = $arrItem;
