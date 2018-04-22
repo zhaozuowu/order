@@ -511,19 +511,19 @@ class Order_Error_Code extends Wm_Error_Code
     /**
      * 冻结单-获取仓库商品冻结数据参数有误
      */
-    const NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR = 3700013;
+    const NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR = 351013;
 
     /**
      * 冻结单-解冻详情参数为空
      * @var integer
      */
-    const NWMS_UNFROZEN_DETAIL_PARAM_EMPTY = 3700014;
+    const NWMS_UNFROZEN_DETAIL_PARAM_EMPTY = 351014;
 
     /**
      * 冻结单-自动冻结异常
      * @var integer
      */
-    const NWMS_UNFROZEN_BY_SYSTEM_ERROR = 3700015;
+    const NWMS_UNFROZEN_BY_SYSTEM_ERROR = 351015;
 
 
     //------------------------------------------------冻结单------------------------------------------------
