@@ -14,7 +14,7 @@ try {
     $objWork = new CreateFrozenOrderBySystem();
     $objWork->work();
 } catch (Exception $e) {
-    echo sprintf("\n[create_frozen_order_by_system]error, code[%d], msg[%s]", $e->getCode(), $e->getMessage());
+    echo sprintf("\n[create_frozen_order_by_system]error, code[%d], msg[%s]\n", $e->getCode(), $e->getMessage());
     Bd_Log::warning(sprintf('[create_frozen_order_by_system]error, code[%d], msg[%s]', $e->getCode(), $e->getMessage()));
     exit(-1);
 }

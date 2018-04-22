@@ -161,7 +161,7 @@ class Service_Data_Frozen_StockFrozenOrder
 
             } catch (Exception $e) {
                 echo sprintf(
-                    '[create_frozen_order_by_system]error, warehouse:%s, code:%d, msg:%s',
+                    "[create_frozen_order_by_system]error, warehouse:%s, code:%d, msg:%s\n",
                     $intWarehouseId,
                     $e->getCode(),
                     $e->getMessage()
