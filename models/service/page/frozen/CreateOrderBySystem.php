@@ -27,7 +27,7 @@ class Service_Page_Frozen_CreateOrderBySystem
      */
     public function execute()
     {
-        // 创建冻结单
+        //系统自动创建冻结单
         $this->objStockFrozenOrder->createFrozenOrderBySystem();
     }
 

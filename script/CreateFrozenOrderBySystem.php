@@ -8,18 +8,21 @@
 
 Bd_Init::init();
 
+echo "[create_frozen_order_by_system]work\n\n";
+
 try {
     $objWork = new CreateFrozenOrderBySystem();
     $objWork->work();
 } catch (Exception $e) {
-    Bd_Log::warning(sprintf('exec %s error. code[%d], msg[%s]',
-        __FILE__, $e->getCode(), $e->getMessage()));
+    echo sprintf("\n[create_frozen_order_by_system]error, code[%d], msg[%s]\n", $e->getCode(), $e->getMessage());
+    Bd_Log::warning(sprintf('[create_frozen_order_by_system]error, code[%d], msg[%s]', $e->getCode(), $e->getMessage()));
     exit(-1);
 }
 
+echo "\n[create_frozen_order_by_system]success";
+
 class CreateFrozenOrderBySystem
 {
-
     /**
      * page service
      * @var Service_Page_Frozen_CreateOrderBySystem

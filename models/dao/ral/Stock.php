@@ -353,7 +353,7 @@ class Dao_Ral_Stock
      * @param $intWarehouseId
      * @param $intSkuId
      * @param $intIsDefective
-     * @param $intSKuEffectType
+     * @param $intSkuEffectType
      * @param $intTime
      * @param $intPageNum
      * @param $intPageSize
@@ -361,7 +361,7 @@ class Dao_Ral_Stock
      * @return array|mixed
      * @throws Order_BusinessError
      */
-    public function getStockFrozenInfo($intWarehouseId, $intSkuId, $intIsDefective, $intSKuEffectType, $intTime, $intPageNum, $intPageSize, $intType = Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_USER)
+    public function getStockFrozenInfo($intWarehouseId, $intSkuId, $intIsDefective, $intSkuEffectType, $intTime, $intPageNum, $intPageSize, $intType = Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_USER)
     {
         //仓库ID
         if(empty($intWarehouseId)) {
@@ -376,11 +376,11 @@ class Dao_Ral_Stock
         }
 
         //效期类型与时间
-        if (!empty($intSKuEffectType) && empty($intTime) || empty($intSKuEffectType) && !empty($intTime)) {
+        if (!empty($intSkuEffectType) && empty($intTime) || empty($intSkuEffectType) && !empty($intTime)) {
             Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is error');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR);
-        } else if (!empty($intSKuEffectType) && !empty($intTime)) {
-            if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSKuEffectType) {
+        } else if (!empty($intSkuEffectType) && !empty($intTime)) {
+            if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
                 $intTime = Order_Util_Stock::formatExpireTime($intTime);
                 $req[self::API_RALER_STOCK_FROZEN_INFO]['expiration_time'] = $intTime;
             } else {

@@ -69,78 +69,121 @@ class Service_Data_Frozen_StockFrozenOrder
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function createFrozenOrderBySystem() {
+    public function createFrozenOrderBySystem()
+    {
         //获取库存仓库
         $arrStockWarehouse = $this->objDaoStock->getStockWarehouse();
+        echo sprintf("[create_frozen_order_by_system]warehouse_ids:%s\n", implode($arrStockWarehouse, ','));
+        Bd_Log::trace(sprintf("[create_frozen_order_by_system]warehouse_ids:%s", implode($arrStockWarehouse, ',')));
 
         //获取仓库信息
         $arrWarehouseInfoMap = $this->objDaoWarehouse->getWarehouseInfoMapByWarehouseIds($arrStockWarehouse);
 
-        foreach ($arrStockWarehouse as $intWarehouseId) {
-            echo '[create_frozen_order_by_system]begin operate warehouse:' . $intWarehouseId . "\n";
-            Bd_Log::trace('[create_frozen_order_by_system]begin operate warehouse:' . $intWarehouseId);
+        //记录异常的仓库ID
+        $arrErrorWarehouseIds = [];
 
-            //获取库存可冻结数据
-            $arrFrozenInfo = $this->objDaoStock->getStockFrozenInfo(
-                $intWarehouseId,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_SYSTEM
-            );
-            if (empty($arrFrozenInfo)) {
+        //每个仓创建一个冻结单
+        foreach ($arrStockWarehouse as $intWarehouseId) {
+            try {
+                echo '[create_frozen_order_by_system]begin operate warehouse:' . $intWarehouseId . "\n";
+                Bd_Log::trace('[create_frozen_order_by_system]begin operate warehouse:' . $intWarehouseId);
+
+                //获取库存可冻结数据
+                $arrFrozenInfo = $this->objDaoStock->getStockFrozenInfo(
+                    $intWarehouseId,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_SYSTEM
+                );
+                if (empty($arrFrozenInfo)) {
+                    echo '[create_frozen_order_by_system]empty stock frozen info, warehouse:' . $intWarehouseId . "\n";
+                    Bd_Log::trace('[create_frozen_order_by_system]empty stock frozen info, warehouse:' . $intWarehouseId);
+                    continue;
+                }
+
+                //获取商品数据
+                $arrSkuIds = array_unique(array_column($arrFrozenInfo, 'sku_id'));
+                $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
+
+                //构建冻结商品详情数据
+                $arrFrozenDetails = [];
+                foreach ($arrFrozenInfo as $arrItem) {
+                    $intSkuId = $arrItem['sku_id'];
+                    foreach ($arrItem['detail'] as $arrDetail) {
+                        $arrFrozenDetail = [
+                            'sku_id' => $intSkuId,
+                            'is_defective' => $arrDetail['is_defective'],
+                            'max_frozen_amount' => $arrDetail['freezable_amount'],
+                            'frozen_amount' => $arrDetail['freezable_amount'],
+                            'production_or_expire_time' => Order_Util_Stock::calculateProductionOrExpirationTime(
+                                $arrSkuInfos[$intSkuId]['sku_effect_type'],
+                                $arrDetail['production_time'],
+                                $arrDetail['expiration_time']
+                            )
+                        ];
+                        $arrFrozenDetails[] = $arrFrozenDetail;
+                    }
+                }
+
+                //生成冻结单号
+                $intOrderId = Order_Util_Util::generateStockFrozenOrderId();
+                echo '[create_frozen_order_by_system]generate stock frozen order id: ' . $intOrderId . "\n";
+                Bd_Log::trace('[create_frozen_order_by_system]generate stock frozen order id: ' . $intOrderId);
+
+                //构建冻结单参数
+                $arrInput = [
+                    'warehouse_id' => $intWarehouseId,
+                    'warehouse_name' => $arrWarehouseInfoMap[$intWarehouseId]['warehouse_name'],
+                    'remark' => Order_Define_StockFrozenOrder::FROZEN_ORDER_BY_SYSTEM_REMARK,
+                    'stock_frozen_order_id' => $intOrderId,
+                    'create_type' => Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_SYSTEM,
+                    'detail' => $arrFrozenDetails
+                ];
+                echo '[create_frozen_order_by_system]create frozen order param: ' . json_encode($arrInput) . "\n";
+                Bd_Log::trace('[create_frozen_order_by_system]create frozen order param: ' . json_encode($arrInput));
+
+                //创建冻结单
+                $res = $this->createFrozenOrder($arrInput);
+                echo sprintf(
+                    "[create_frozen_order_by_system]end operate warehouse: %s, res: %s\n",
+                    $intWarehouseId,
+                    json_encode($res)
+                );
+                Bd_Log::trace(sprintf(
+                    "[create_frozen_order_by_system]end operate warehouse: %s, res: %s\n",
+                    $intWarehouseId,
+                    json_encode($res))
+                );
+
+            } catch (Exception $e) {
+                echo sprintf(
+                    "[create_frozen_order_by_system]error, warehouse:%s, code:%d, msg:%s\n",
+                    $intWarehouseId,
+                    $e->getCode(),
+                    $e->getMessage()
+                );
+                Bd_Log::warning(sprintf(
+                    '[create_frozen_order_by_system]error, warehouse:%s, code:%d, msg:%s',
+                    $intWarehouseId,
+                    $e->getCode(),
+                    $e->getMessage())
+                );
+                $arrErrorWarehouseIds[] = $intWarehouseId;
                 continue;
             }
-
-            //获取商品数据
-            $arrSkuIds = array_unique(array_column($arrFrozenInfo, 'sku_id'));
-            $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
-
-            //构建冻结商品详情数据
-            $arrFrozenDetails = [];
-            foreach ($arrFrozenInfo as $arrItem) {
-                $intSkuId = $arrItem['sku_id'];
-                foreach ($arrItem['detail'] as $arrDetail) {
-                    $arrFrozenDetail = [
-                        'sku_id' => $intSkuId,
-                        'is_defective' => $arrDetail['is_defective'],
-                        'max_frozen_amount' => $arrDetail['freezable_amount'],
-                        'frozen_amount' => $arrDetail['freezable_amount'],
-                        'production_or_expire_time' => Order_Util_Stock::calculateProductionOrExpirationTime(
-                            $arrSkuInfos[$intSkuId]['sku_effect_type'],
-                            $arrDetail['production_time'],
-                            $arrDetail['expiration_time']
-                        )
-                    ];
-                    $arrFrozenDetails[] = $arrFrozenDetail;
-                }
-            }
-
-            //生成冻结单号
-            $intOrderId = Order_Util_Util::generateStockFrozenOrderId();
-            echo '[create_frozen_order_by_system]generate stock frozen order id: ' . $intOrderId . "\n";
-            Bd_Log::trace('[create_frozen_order_by_system]generate stock frozen order id: ' . $intOrderId);
-
-            //构建冻结单参数
-            $arrInput = [
-                'warehouse_id' => $intWarehouseId,
-                'warehouse_name' => $arrWarehouseInfoMap[$intWarehouseId]['warehouse_name'],
-                'remark' => Order_Define_StockFrozenOrder::FROZEN_ORDER_BY_SYSTEM_REMARK,
-                'stock_frozen_order_id' => $intOrderId,
-                'create_type' => Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_SYSTEM,
-                'detail' => $arrFrozenDetails
-            ];
-            echo '[create_frozen_order_by_system]create frozen order param: ' . json_encode($arrInput) . "\n";
-            Bd_Log::trace('[create_frozen_order_by_system]create frozen order param: ' . json_encode($arrInput));
-
-            //创建冻结单
-            $res = $this->createFrozenOrder($arrInput);
-            echo sprintf("[create_frozen_order_by_system]end operate warehouse: %s, res: %s\n", $intWarehouseId, json_encode($res));
-            Bd_Log::trace(sprintf("[create_frozen_order_by_system]end operate warehouse: %s, res: %s\n", $intWarehouseId, json_encode($res)));
         }
+
+        //错误处理
+       if (!empty($arrErrorWarehouseIds)) {
+           Order_BusinessError::throwException(
+               Order_Error_Code::NWMS_UNFROZEN_BY_SYSTEM_ERROR,
+               implode($arrErrorWarehouseIds, ',')
+           );
+       }
     }
 
     /**
@@ -154,10 +197,9 @@ class Service_Data_Frozen_StockFrozenOrder
         if(empty($arrSkuIds)) {
             return [];
         }
+
         $arrSkuIds = array_unique($arrSkuIds);
-
         $arrSkuInfos = $this->objDaoSku->getSkuInfos($arrSkuIds);
-
         if(empty($arrSkuInfos)) {
             Bd_Log::warning(__METHOD__ . ' get sku info failed. call ral failed.');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED);
@@ -204,7 +246,7 @@ class Service_Data_Frozen_StockFrozenOrder
         Bd_Log::trace('get frozen order list sql: ' .  json_encode($arrSql));
         $arrRet = Model_Orm_StockFrozenOrder::findRows($arrSql['columns'], $arrSql['where'],
             $arrSql['order_by'], $arrSql['offset'], $arrSql['limit']);
-        //Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
+
         return $arrRet;
     }
 
@@ -247,7 +289,6 @@ class Service_Data_Frozen_StockFrozenOrder
      */
     protected function buildGetOrderListSql($arrInput) {
         $arrSql = [];
-
         $intOffset = 0;
         $intLimit = null;
 
@@ -258,7 +299,6 @@ class Service_Data_Frozen_StockFrozenOrder
             $intOffset = ($arrInput['page_num'] - 1) * $arrInput['page_size'];
             $intLimit = $arrInput['page_size'];
         }
-
 
         $arrWhere = [
             'is_delete'     => Order_Define_Const::NOT_DELETE,
@@ -397,7 +437,6 @@ class Service_Data_Frozen_StockFrozenOrder
                 'upc_id'                    => $arrSkuInfo['min_upc']['upc_id'],
                 'sku_name'                  => $arrSkuInfo['sku_name'],
                 'storage_location_id'       => '', //库位还没上线，预留字段
-                //'storage_location_id'       => $arrDetail['storage_location_id'],
                 'origin_frozen_amount'      => $arrDetail['frozen_amount'],
                 'current_frozen_amount'     => $arrDetail['frozen_amount'],
                 'is_defective'              => $arrDetail['is_defective'],
@@ -412,8 +451,9 @@ class Service_Data_Frozen_StockFrozenOrder
 
     /**
      * 调用stock模块，冻结库存
-     * @param $arrStockOut
-     * @return array
+     * @param $arrInput
+     * @param $arrSkuInfos
+     * @throws Order_BusinessError
      */
     protected function frozenStock($arrInput, $arrSkuInfos)
     {
@@ -422,7 +462,6 @@ class Service_Data_Frozen_StockFrozenOrder
         Bd_Log::trace('ral call stock frozen param: ' . print_r($arrStockFrozenArg, true));
 
         $arrRet =  $this->objDaoStock->frozenStock($arrStockFrozenArg);
-
         Bd_Log::trace('ral call stock frozen return:  ' . print_r($arrRet,true));
     }
 
