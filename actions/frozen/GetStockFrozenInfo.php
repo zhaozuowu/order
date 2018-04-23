@@ -7,6 +7,9 @@
 
 class Action_GetStockFrozenInfo extends Order_Base_Action
 {
+    protected $boolCheckLogin   = false;
+    protected $boolCheckAuth    = false;
+    protected $boolCheckIp      = false;
     /**
      * input params
      * @var array
@@ -88,7 +91,12 @@ class Action_GetStockFrozenInfo extends Order_Base_Action
             }
         }
 
-        return $arrFormatResult;
+        $arrRes = [
+            'total' => count($arrFormatResult),
+            'skus' => $arrFormatResult
+        ];
+
+        return $arrRes;
     }
 
     /**
