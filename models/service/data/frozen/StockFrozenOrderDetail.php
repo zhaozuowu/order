@@ -112,7 +112,6 @@ class Service_Data_Frozen_StockFrozenOrderDetail
         return $arrRet;
     }
 
-
     protected function buildGetOrderListGroupBySkuSql($intOrderId, $arrSkuIds) {
         $arrSql = [];
 

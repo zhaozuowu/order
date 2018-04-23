@@ -42,4 +42,19 @@ class Model_Orm_StockFrozenOrderDetail extends Order_Base_Orm
     public static $tableName = 'stock_frozen_order_detail';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * 根据SKU_ID查询所有冻结单ID
+     * @param $intSkuId
+     * @return array
+     */
+    public static function getOrderIdsBySkuId($intSkuId) {
+        $arrWhere = [
+            'is_delete'             => Order_Define_Const::NOT_DELETE,
+            'sku_id' => $intSkuId,
+        ];
+
+        $arrRet = Model_Orm_StockFrozenOrderDetail::findRows(['stock_frozen_order_id'], $arrWhere);
+        return $arrRet;
+    }
 }

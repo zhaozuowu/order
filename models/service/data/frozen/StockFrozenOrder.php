@@ -235,12 +235,29 @@ class Service_Data_Frozen_StockFrozenOrder
     public function getOrderList($arrInput) {
         Bd_Log::trace(__METHOD__ . '  param ', 0, $arrInput);
 
+        if(!empty($arrInput['sku_id'])) {
+            $arrInput['stock_frozen_order_ids'] = $this->getOrderIdsBySku($arrInput);
+            if(empty($arrInput['stock_frozen_order_ids'])) {
+                return [];
+            }
+        }
+
         $arrSql = $this->buildGetOrderListSql($arrInput);
+        Bd_Log::trace('get frozen order list sql: ' .  json_encode($arrSql));
         $arrRet = Model_Orm_StockFrozenOrder::findRows($arrSql['columns'], $arrSql['where'],
             $arrSql['order_by'], $arrSql['offset'], $arrSql['limit']);
 
-        Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
         return $arrRet;
+    }
+
+    // 根据SKU ID 查询所有冻结单ID
+    protected function getOrderIdsBySku($arrInput) {
+        $arrOrderIds = Model_Orm_StockFrozenOrderDetail::getOrderIdsBySkuId($arrInput['sku_id']);
+        if(empty($arrOrderIds)) {
+            return [];
+        } else {
+            return array_values(array_unique(array_column($arrOrderIds, 'stock_frozen_order_id')));
+        }
     }
 
     /**
@@ -250,6 +267,13 @@ class Service_Data_Frozen_StockFrozenOrder
      */
     public function getOrderListCount($arrInput) {
         Bd_Log::trace(__METHOD__ . '  param ', 0, $arrInput);
+
+        if(!empty($arrInput['sku_id'])) {
+            $arrInput['stock_frozen_order_ids'] = $this->getOrderIdsBySku($arrInput);
+            if(empty($arrInput['stock_frozen_order_ids'])) {
+                return 0;
+            }
+        }
 
         $arrSql = $this->buildGetOrderListSql($arrInput);
         $ret = Model_Orm_StockFrozenOrder::count( $arrSql['where']);
@@ -282,9 +306,24 @@ class Service_Data_Frozen_StockFrozenOrder
         if(!empty($arrInput['warehouse_ids'])) {
             $arrWhere['warehouse_id'] = ['in', $arrInput['warehouse_ids']];
         }
-        if(!empty($arrInput['stock_frozen_order_id'])) {
-            $arrWhere['stock_frozen_order_id'] = $arrInput['stock_frozen_order_id'];
+
+        //页面输入了SKU_ID和冻结单ID的情况，取交集
+        if(!empty($arrInput['stock_frozen_order_id']) && !empty($arrInput['stock_frozen_order_ids'])) {
+            if(in_array($arrInput['stock_frozen_order_id'], $arrInput['stock_frozen_order_ids'])) {
+                unset($arrInput['stock_frozen_order_ids']);
+                $arrWhere['stock_frozen_order_id'] = $arrInput['stock_frozen_order_id'];
+            } else {
+                $arrWhere['stock_frozen_order_id'] = '';
+            }
+        } else {
+            if(!empty($arrInput['stock_frozen_order_id'])) {
+                $arrWhere['stock_frozen_order_id'] = $arrInput['stock_frozen_order_id'];
+            }
+            if(!empty($arrInput['stock_frozen_order_ids'])) {
+                $arrWhere['stock_frozen_order_id'] = ['in', $arrInput['stock_frozen_order_ids']];
+            }
         }
+
         if(!empty($arrInput['create_type'])) {
             $arrWhere['create_type'] = $arrInput['create_type'];
         }
@@ -301,11 +340,11 @@ class Service_Data_Frozen_StockFrozenOrder
         }
 
         if(!empty($arrInput['close_time_start'])) {
-            $arrWhere['close_time'][] = ['>=', $arrInput['create_time_start']];
+            $arrWhere['close_time'][] = ['>=', $arrInput['close_time_start']];
         }
 
         if(!empty($arrInput['close_time_end'])) {
-            $arrWhere['close_time'][] = ['<=', $arrInput['create_time_end']];
+            $arrWhere['close_time'][] = ['<=', $arrInput['close_time_end']];
         }
 
         $arrSql['columns'] = Model_Orm_StockFrozenOrder::getAllColumns();
