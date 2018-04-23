@@ -58,7 +58,8 @@ class Action_GetStockFrozenInfo extends Order_Base_Action
             return $arrFormatResult;
         }
 
-        foreach ($data as $value) {
+        $arrSkus = [];
+        foreach ($data['skus'] as $value) {
             $arrFormatDetail = [];
             $arrFormatDetail['sku_id'] = empty($value['sku_id']) ? '' : strval($value['sku_id']);
             $arrFormatDetail['sku_name'] = empty($value['sku_name']) ? '' : strval($value['sku_name']);
@@ -83,17 +84,17 @@ class Action_GetStockFrozenInfo extends Order_Base_Action
                             $arrStockDetailRet['expiration_time']));
                     }
 
-                    $arrFormatResult[] = array_merge($arrFormatDetail, $arrStockDetail);
+                    $arrSkus[] = array_merge($arrFormatDetail, $arrStockDetail);
                 }
             }
         }
 
-        $arrRes = [
-            'total' => count($arrFormatResult),
-            'skus' => $arrFormatResult
+        $arrFormatResult = [
+            'total' => $data['total'],
+            'skus' => $arrSkus
         ];
 
-        return $arrRes;
+        return $arrFormatResult;
     }
 
     /**

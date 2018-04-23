@@ -128,20 +128,23 @@ class Service_Data_Stock
             $arrInput['page_num'],
             $arrInput['page_size']
         );
-        if (empty($arrStockFrozenInfo)) {
+        if (empty($arrStockFrozenInfo['total']) || empty($arrStockFrozenInfo['detail'])) {
             return $arrRet;
         }
 
         $arrSkuInfo = $this->objDaoSku->getSkuInfos(array_unique(array_column($arrStockFrozenInfo, 'sku_id')));
-        foreach ($arrStockFrozenInfo as $arrItem) {
+        $arrSkus = [];
+        foreach ($arrStockFrozenInfo['detail'] as $arrItem) {
             $intSkuId = $arrItem['sku_id'];
             if(!empty($arrSkuInfo[$intSkuId])) {
-                $arrRet[] = array_merge($arrSkuInfo[$intSkuId], $arrItem);
+                $arrSkus[] = array_merge($arrSkuInfo[$intSkuId], $arrItem);
             } else {
-                $arrRet[] = $arrItem;
+                $arrSkus[] = $arrItem;
             }
         }
 
+        $arrRet['total'] = $arrStockFrozenInfo['total'];
+        $arrRet['skus'] = $arrSkus;
         return $arrRet;
     }
 

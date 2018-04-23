@@ -98,7 +98,7 @@ class Service_Data_Frozen_StockFrozenOrder
                     null,
                     null,
                     Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_SYSTEM
-                );
+                )['detail'];
                 if (empty($arrFrozenInfo)) {
                     echo '[create_frozen_order_by_system]empty stock frozen info, warehouse:' . $intWarehouseId . "\n";
                     Bd_Log::trace('[create_frozen_order_by_system]empty stock frozen info, warehouse:' . $intWarehouseId);
