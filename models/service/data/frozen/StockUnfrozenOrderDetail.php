@@ -74,16 +74,19 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST);
         }
 
-        //构造写库基础数据
-        $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
-        $arrInsertUnfrozenDetail = $this->getInsertUnfrozenDetail($arrInput, $arrSkuInfos);
+        //构造写库基础数据-update
         $arrUpdateData = $this->buildUpdateData(
             $objFrozenOrder,
             $this->getUnfrozenInfoMap($arrInput),
             $this->getFrozenDetailMap($arrFrozenDetail)
         );
 
+        //构造写库基础数据-insert
+        $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
+        $arrInsertUnfrozenDetail = $this->getInsertUnfrozenDetail($arrInput, $arrSkuInfos);
+
         //调用库存解冻
+        $arrInput['frozen_type'] = $objFrozenOrder->create_type;
         $this->frozenSkuStock($arrInput, $arrSkuInfos);
 
         //写库
@@ -269,13 +272,6 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      */
     protected function buildUpdateData($objFrozenOrder, $arrUnfrozenInfoMap, $arrFrozenDetailMap)
     {
-        $arrUpdateFrozenOrderColumns = [];
-
-        //如果冻结单状态为冻结，则置为部分冻结（解冻一定会扣减库存）
-        if (Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_FROZEN == $objFrozenOrder->order_status) {
-            $arrUpdateFrozenOrderColumns['order_status'] = Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_PART_FROZEN;
-        }
-
         $arrUpdateFrozenDetail = [];
         foreach ($arrUnfrozenInfoMap['detail'] as $intUniqKey => $arrUnfrozenInfoItem) {
             $arrFrozenDetail = $arrFrozenDetailMap[$intUniqKey];
@@ -307,19 +303,12 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             //扣减冻结单当前冻结量
             $objFrozenOrder->current_total_frozen_amount -=  $arrUnfrozenInfoItem['unfrozen_amount'];
 
-            //如果冻结单当前总冻结量为0，则冻结单关闭
-            if (0 == $objFrozenOrder->current_total_frozen_amount) {
-                $arrUpdateFrozenOrderColumns['order_status'] = Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_CLOSED;
-                $arrUpdateFrozenOrderColumns['close_time'] = time();
-                $arrUpdateFrozenOrderColumns['close_user_id'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
-                $arrUpdateFrozenOrderColumns['close_user_name'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
-            }
-
             //记录冻结单详情更新字段及条件
             $arrUpdateFrozenDetail[] = [
                 'columns' => [
                     'current_frozen_amount' => $arrFrozenDetail['current_frozen_amount'] - $arrUnfrozenInfoItem['unfrozen_amount'],
-                    'version' => $arrFrozenDetail['version'] + 1
+                    'version' => $arrFrozenDetail['version'] + 1,
+                    'update_time' => time()
                 ],
                 'conditions' => [
                     'id' => $arrFrozenDetail['id'],
@@ -329,8 +318,20 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
          }
 
         //记录冻结单更新字段及条件
+        $arrUpdateFrozenOrderColumns = [];
+        if (Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_FROZEN == $objFrozenOrder->order_status) {
+            $arrUpdateFrozenOrderColumns['order_status'] = Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_PART_FROZEN;
+        }
+        //如果冻结单当前总冻结量为0，则冻结单关闭
+        if (0 == $objFrozenOrder->current_total_frozen_amount) {
+            $arrUpdateFrozenOrderColumns['order_status'] = Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_CLOSED;
+            $arrUpdateFrozenOrderColumns['close_time'] = time();
+            $arrUpdateFrozenOrderColumns['close_user_id'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
+            $arrUpdateFrozenOrderColumns['close_user_name'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
+        }
         $arrUpdateFrozenOrderColumns['current_total_frozen_amount'] = $objFrozenOrder->current_total_frozen_amount;
         $arrUpdateFrozenOrderColumns['version'] = $objFrozenOrder->version + 1;
+        $arrUpdateFrozenOrderColumns['update_time'] = time();
         $arrUpdateFrozenOrder = [
             'columns' => $arrUpdateFrozenOrderColumns,
             'conditions' => [
