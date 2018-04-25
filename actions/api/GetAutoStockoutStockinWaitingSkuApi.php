@@ -21,7 +21,7 @@ class Action_GetAutoStockoutStockinWaitingSkusApi extends Order_Base_ApiAction
      */
     protected $intMethod = Order_Define_Const::METHOD_GET;
 
-    /**s
+    /**
      * page service
      * @var Service_Page_Stockin_GetAutoStockoutStockinWaitingSku
      */
