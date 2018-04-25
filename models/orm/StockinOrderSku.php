@@ -136,4 +136,19 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
         $arrResult['list'] = $arrRowsAndTotal['rows'];
         return $arrResult;
     }
+
+    /**
+     * get batch stockin order sku list
+     * @param $arrStockinOrderIds
+     * @return array
+     */
+    public static function getBatchStockinOrderSkuList($arrStockinOrderIds)
+    {
+        $arrCondition = [
+            'stockin_order_id' => ['in', $arrStockinOrderIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrOrderBy = ['id' => 'asc'];
+        return self::findColumn(self::getAllColumns(), $arrCondition, $arrOrderBy);
+    }
 }

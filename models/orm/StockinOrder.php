@@ -132,6 +132,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param $arrStockinTime
      * @param $intPageNum
      * @param $intPageSize
+     * @param int $intDataSource
+     * @param int $intStockinOrderStatus
      * @return mixed
      */
     public static function getStockinOrderList(
@@ -144,7 +146,11 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrOrderPlanTime,
         $arrStockinTime,
         $intPageNum,
-        $intPageSize)
+        $intPageSize,
+        $intDataSource = 0,
+        $intStockinOrderStatus = 0
+    )
+
     {
         // 拼装查询条件
         if (!empty($intStockinOrderId)) {
@@ -201,6 +207,14 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             ];
         }
 
+        if (!empty($intDataSource)) {
+            $arrCondition['data_source'] = $intDataSource;
+        }
+
+        if (!empty($intStockinOrderStatus)) {
+            $arrCondition['stockin_order_status'] = $intStockinOrderStatus;
+        }
+
         // 只查询未软删除的
         $arrCondition['is_delete'] = Order_Define_Const::NOT_DELETE;
 
@@ -209,7 +223,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
         // 分页条件
         $offset = (intval($intPageNum) - 1) * intval($intPageSize);
-        $limitCount = intval($intPageSize);
+        $limitCount = intval($intPageSize) ?? null;
 
         // 查找满足条件的所有列数据
         $arrCols = self::getAllColumns();

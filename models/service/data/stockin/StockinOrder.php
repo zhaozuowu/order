@@ -8,6 +8,22 @@
 class Service_Data_Stockin_StockinOrder
 {
     /**
+     * get stockin waiting sku
+     * @param $intWarehouseId
+     * @return array[]
+     */
+    public function getStockinWaitingSku($intWarehouseId)
+    {
+        $intWarehouseId = intval($intWarehouseId);
+        Bd_Log::debug('search warehouse: ' . $intWarehouseId);
+        $arrOrderInfos = Model_Orm_StockinOrder::getStockinOrderList([Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT],
+            0, $intWarehouseId, null, null, null,null, null, null, null, null, null);
+        $arrOrderIds = array_column($arrOrderInfos['list'], 'stockin_order_id');
+        Bd_Log::debug('order ids: ' . json_encode($arrOrderIds));
+        $arrSkuInfos = Model_Orm_StockinOrderSku::getBatchStockinOrderSkuList($arrOrderIds);
+        return $arrSkuInfos;
+    }
+    /**
      * calculate stock in order sku info
      * @param int $intStockinOrderId
      * @param array $sourceOrderSkuInfo
