@@ -20,6 +20,12 @@ class Dao_Ral_Vendor
     const API_RALER_VENDOR_SUG = 'getvendorsugbyname';
 
     /**
+     * vendor sug
+     * @var string
+     */
+    const API_RALER_SKU_PRICE = 'getlatestquotationskuprice';
+
+    /**
      * init
      */
     public function __construct()
@@ -43,6 +49,28 @@ class Dao_Ral_Vendor
             'vendor_name' => $strVendorName,
         ];
         $ret = $this->objApiRal->getData($req);
+        $ret = !empty($ret[self::API_RALER_VENDOR_SUG])?$ret[self::API_RALER_VENDOR_SUG]:[];
+        return $ret;
+    }
+
+    /**
+     * get latest quotation skus price
+     * @param  array $arrSkuIds
+     * @return array
+     * @throws Nscm_Exception_Error
+     */
+    public function getSkuPrice($arrSkuIds)
+    {
+        $ret = [];
+        if (empty($arrSkuIds)) {
+            return $ret;
+        }
+        $req[self::API_RALER_SKU_PRICE]  = [
+            'sku_ids' => implode(',', $arrSkuIds),
+        ];
+        Bd_Log::debug('ral get vendor sku price request params: ' . json_encode($req));
+        $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug('ral get vendor sku price response params: ' . json_encode($ret));
         $ret = !empty($ret[self::API_RALER_VENDOR_SUG])?$ret[self::API_RALER_VENDOR_SUG]:[];
         return $ret;
     }

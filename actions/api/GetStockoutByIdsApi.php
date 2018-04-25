@@ -80,6 +80,8 @@ class Action_GetStockoutByIdsApi extends Order_Base_ApiAction
                 'executor' => empty($arrItem['executor']) ? '' : $arrItem['executor'],
                 'executor_contact' => empty($arrItem['executor_contact']) ? '' : $arrItem['executor_contact'],
                 'shipment_order_id' => strval($arrItem['shipment_order_id']),
+                'customer_city_name' => strval($arrItem['customer_city_name']),
+                'customer_city_id' => strval($arrItem['customer_city_id']),
             ];
         }
 

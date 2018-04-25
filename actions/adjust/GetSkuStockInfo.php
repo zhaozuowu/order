@@ -63,9 +63,25 @@ class Action_GetSkuStockInfo extends Order_Base_Action
             }
             $arrFormatDetail['upc_unit'] = empty($value['min_upc']['upc_unit']) ? '' : $this->formatSkuUpcUnit($value['min_upc']['upc_unit']);
 
-            //$arrFormatDetail['cost_unit_price'] = empty($value['cost_unit_price']) ? '' : intval($value['cost_unit_price']);
-            //$arrFormatDetail['cost_unit_price_tax'] = empty($value['cost_unit_price_tax']) ? '' : intval($value['cost_unit_price_tax']);
-            $arrFormatDetail['available_amount'] = !isset($value['available_amount']) ? '' : intval($value['available_amount']);
+            if(!empty($value['sku_stock_detail'])) {
+                foreach ($value['sku_stock_detail'] as $arrStockDetailRet) {
+                    $arrStockDetail = [];
+                    $arrStockDetail['available_amount'] = !isset($arrStockDetailRet['adjustable_amount']) ? '' : strval($arrStockDetailRet['adjustable_amount']);
+                    $arrStockDetail['is_defective_text'] = empty($arrStockDetailRet['is_defective_text']) ? '' : $arrStockDetailRet['is_defective_text'];
+
+                    if (Nscm_Define_Sku::SKU_EFFECT_FROM == $value['sku_effect_type']) {
+                        $arrStockDetail['production_or_expire_time'] = strtotime(date('Y-m-d',
+                            $arrStockDetailRet['production_time']));
+                    } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $value['sku_effect_type']) {
+                        $arrStockDetail['production_or_expire_time'] = strtotime(date('Y-m-d',
+                            $arrStockDetailRet['expiration_time']));
+                    }
+
+                    $arrFormatDetail['sku_stock_detail'][] = $arrStockDetail;
+                }
+            } else {
+                $arrFormatDetail['sku_stock_detail'] = []; ;
+            }
 
             $arrFormatResult[] = $arrFormatDetail;
         }
