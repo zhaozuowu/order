@@ -21,6 +21,10 @@ class Service_Data_Statistics_Statistics
          * @var Order_Base_Orm|string $strOrm
          */
         $strOrm = Order_Statistics_Table::ORM_DIST[$intType];
+        if (empty($strOrm)) {
+            Bd_Log::warning(sprintf('STATISTICS_INSERT_NOT_FOUND, info: order_id[%d], type[%d]', $intOrderId, $intType));
+            Order_Error::throwException(Order_Error_Code::CONNECT_MYSQL_FAILED);
+        }
         if (is_callable([$strOrm, 'batchInsert'])) {
             $strOrm::batchInsert($arrDb);
         } else {
@@ -57,10 +61,17 @@ class Service_Data_Statistics_Statistics
                  * @var Order_Base_Orm $objOrm
                  */
                 foreach ($objOrms as $objOrm) {
+                    $boolChanged = false;
                     foreach ($arrRow as $field => $value) {
-                        if (isset($objOrm->$field) && !isset($arrCondition[$field])) {
+                        if (isset($objOrm->$field) && !isset($arrCondition[$field]) && $objOrm->$field != $value) {
                             $objOrm->$field = $value;
+                            $boolChanged = true;
                         }
+                    }
+                    if (!$boolChanged) {
+                        Bd_Log::warning(sprintf('STATISTICS_UPDATE_NOT_CHANGE, info: order_id[%d], type[%d]',
+                            $intOrderId, $intType));
+                        continue;
                     }
                     $objOrm->update();
                 }
