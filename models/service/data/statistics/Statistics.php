@@ -17,14 +17,14 @@ class Service_Data_Statistics_Statistics
     public function addOrderStatistics($intOrderId, $intType)
     {
         $arrDb = $this->getDbRow($intOrderId, $intType);
+        if (empty($arrDb)) {
+            Bd_Log::warning(sprintf('STATISTICS_INSERT_NOT_FOUND, info: order_id[%d], type[%d]', $intOrderId, $intType));
+            Order_Error::throwException(Order_Error_Code::CONNECT_MYSQL_FAILED);
+        }
         /**
          * @var Order_Base_Orm|string $strOrm
          */
         $strOrm = Order_Statistics_Table::ORM_DIST[$intType];
-        if (empty($strOrm)) {
-            Bd_Log::warning(sprintf('STATISTICS_INSERT_NOT_FOUND, info: order_id[%d], type[%d]', $intOrderId, $intType));
-            Order_Error::throwException(Order_Error_Code::CONNECT_MYSQL_FAILED);
-        }
         if (is_callable([$strOrm, 'batchInsert'])) {
             $strOrm::batchInsert($arrDb);
         } else {
