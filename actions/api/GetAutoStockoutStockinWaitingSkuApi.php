@@ -5,14 +5,14 @@
  * @author sunzhixin@iwaimai.baidu.com
  */
 
-class Action_GetAutoStockoutStockinWaitingSkuApi extends Order_Base_ApiAction
+class Action_GetAutoStockoutStockinWaitingSkusApi extends Order_Base_ApiAction
 {
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_id' => 'arr|required',
+        'warehouse_id' => 'int|required',
     ];
 
     /**
@@ -21,7 +21,7 @@ class Action_GetAutoStockoutStockinWaitingSkuApi extends Order_Base_ApiAction
      */
     protected $intMethod = Order_Define_Const::METHOD_GET;
 
-    /**
+    /**s
      * page service
      * @var Service_Page_Stockin_GetAutoStockoutStockinWaitingSku
      */

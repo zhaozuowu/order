@@ -18,10 +18,14 @@ class Service_Data_Stockin_StockinOrder
         $intWarehouseId = intval($intWarehouseId);
         Bd_Log::debug('search warehouse: ' . $intWarehouseId);
         $arrOrderInfos = Model_Orm_StockinOrder::getStockinOrderList([Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT],
-            0, $intWarehouseId, null, null, null,null, null, null, null, Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_FROM_SYSTEM,
-            Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_WAIT);
+            Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_FROM_SYSTEM, 0, 0,
+            Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_WAIT,  [$intWarehouseId], null, null, null, null,
+            ['start' => -1, 'end' => time()], null, null, null, null, null, null);
         $arrOrderIds = array_column($arrOrderInfos['list'], 'stockin_order_id');
         Bd_Log::debug('order ids: ' . json_encode($arrOrderIds));
+        if (empty($arrOrderIds)) {
+            return[];
+        }
         $arrSkuInfos = Model_Orm_StockinOrderSku::getBatchStockinOrderSkuList($arrOrderIds);
         return $arrSkuInfos;
     }

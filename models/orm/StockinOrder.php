@@ -214,10 +214,10 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     /**
      * 获取入库单列表（分页）
      * @param $arrStockinOrderType
-     * @param $intDataSource
+     * @param int $intDataSource
      * @param $intStockinOrderId
      * @param $intStockinOrderSourceType
-     * @param $intStockinOrderStatus
+     * @param int $intStockinOrderStatus
      * @param $arrWarehouseId
      * @param $strSourceSupplierId
      * @param $strCustomerName
@@ -230,8 +230,6 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param $intPrintStatus
      * @param $intPageNum
      * @param $intPageSize
-     * @param int $intDataSource
-     * @param int $intStockinOrderStatus
      * @return mixed
      * @throws Order_BusinessError
      */
@@ -252,9 +250,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrStockinDestroyTime,
         $intPrintStatus,
         $intPageNum,
-        $intPageSize,
-        $intDataSource = 0,
-        $intStockinOrderStatus = 0
+        $intPageSize
     )
 
     {
@@ -365,14 +361,6 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             Order_BusinessError::throwException(Order_Error_Code::TIME_PARAMS_LESS_THAN_ONE);
         }
 
-        if (!empty($intDataSource)) {
-            $arrCondition['data_source'] = $intDataSource;
-        }
-
-        if (!empty($intStockinOrderStatus)) {
-            $arrCondition['stockin_order_status'] = $intStockinOrderStatus;
-        }
-
         // 只查询未软删除的
         $arrCondition['is_delete'] = Order_Define_Const::NOT_DELETE;
 
@@ -381,7 +369,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
         // 分页条件
         $offset = (intval($intPageNum) - 1) * intval($intPageSize);
-        $limitCount = intval($intPageSize) ?? null;
+        $limitCount = empty($intPageSize) ? null : 0;
+
 
         // 查找满足条件的所有列数据
         $arrCols = self::getAllColumns();

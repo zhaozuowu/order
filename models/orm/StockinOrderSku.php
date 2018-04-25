@@ -151,7 +151,7 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
             'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
         $arrOrderBy = ['id' => 'asc'];
-        return self::findColumn(self::getAllColumns(), $arrCondition, $arrOrderBy);
+        return self::findRows(self::getAllColumns(), $arrCondition, $arrOrderBy);
     }
 
     /**
