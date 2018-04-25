@@ -322,8 +322,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
         if (Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_FROZEN == $objFrozenOrder->order_status) {
             $arrUpdateFrozenOrderColumns['order_status'] = Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_PART_FROZEN;
         }
-        //如果冻结单当前总冻结量为0，则冻结单关闭
-        if (0 == $objFrozenOrder->current_total_frozen_amount) {
+        if ($objFrozenOrder->current_total_frozen_amount <= 0) {
             $arrUpdateFrozenOrderColumns['order_status'] = Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_CLOSED;
             $arrUpdateFrozenOrderColumns['close_time'] = time();
             $arrUpdateFrozenOrderColumns['close_user_id'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
