@@ -137,6 +137,16 @@ class Service_Data_Reserve_ReserveOrder
     }
 
     /**
+     * drop order info
+     * @param $intPurchaseOrderId
+     */
+    public function dropOrderInfo($intPurchaseOrderId)
+    {
+        $objRedis = new Dao_Redis_ReserveOrder();
+        $objRedis->dropOrderInfo($intPurchaseOrderId);
+    }
+
+    /**
      * check illegal sku
      * @param array $arrSkus
      * @return int[]
@@ -160,14 +170,20 @@ class Service_Data_Reserve_ReserveOrder
      */
     public function generateReserveOrderId($intPurchaseOrderId)
     {
-        if ($this->checkPurchaseOrderReceived($intPurchaseOrderId)) {
+        $intReserveOrderId = $this->getReserveOrderIdByPurchaseOrderId($intPurchaseOrderId);
+        if (!empty($intReserveOrderId)) {
             Bd_Log::warning('nscm reserve order has already been received, id: ' . $intPurchaseOrderId);
-            Order_BusinessError::throwException(Order_Error_Code::PURCHASE_ORDER_HAS_BEEN_RECEIVED);
+            $arrExtra = [
+                'reserve_order_id' => $intReserveOrderId,
+            ];
+            Order_BusinessError::throwException(Order_Error_Code::PURCHASE_ORDER_HAS_BEEN_RECEIVED, '', $arrExtra);
+        } else {
+
+            Bd_Log::trace('generate reserve order id by nscm reserve order id: ' . $intPurchaseOrderId);
+            $intReserveOrderId = Order_Util_Util::generateReserveOrderCode();
+            Bd_Log::debug(sprintf('generate reserve order id[%s] by nscm reserve order id[%s]',
+                $intReserveOrderId, $intPurchaseOrderId));
         }
-        Bd_Log::trace('generate reserve order id by nscm reserve order id: ' . $intPurchaseOrderId);
-        $intReserveOrderId = Order_Util_Util::generateReserveOrderCode();
-        Bd_Log::debug(sprintf('generate reserve order id[%s] by nscm reserve order id[%s]',
-            $intReserveOrderId, $intPurchaseOrderId));
         return $intReserveOrderId;
     }
 
@@ -207,6 +223,28 @@ class Service_Data_Reserve_ReserveOrder
     }
 
     /**
+     * get reserve order id by purchase order id
+     * @param $intPurchaseOrderId
+     * @return int
+     */
+    public function getReserveOrderIdByPurchaseOrderId($intPurchaseOrderId)
+    {
+        $strPurchaseOrderId = strval($intPurchaseOrderId);
+        // check redis
+        $objRedis = new Dao_Redis_ReserveOrder();
+        $arrRedisOrderInfo = $objRedis->getOrderInfo($strPurchaseOrderId);
+        if (!empty($arrRedisOrderInfo['reserve_order_id'])) {
+            return intval($arrRedisOrderInfo['reserve_order_id']);
+        }
+        // check database
+        $objDbOrderInfo = Model_Orm_ReserveOrder::getReserveInfoByPurchaseOrderId($intPurchaseOrderId);
+        if (!empty($objDbOrderInfo)) {
+            return $objDbOrderInfo->reserve_order_id;
+        }
+        return 0;
+    }
+
+    /**
      * check nscm reserve order received
      * @param $intReserveOrderId
      * @return bool
@@ -232,6 +270,7 @@ class Service_Data_Reserve_ReserveOrder
      * send reserve info to wmq
      * @param $intPurchaseOrderId
      * @return void
+     * @throws Order_BusinessError
      */
     public function sendReserveInfoToWmq($intPurchaseOrderId)
     {

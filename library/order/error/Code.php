@@ -184,6 +184,11 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NOT_IGNORE_ILLEGAL_DATE = 330017;
 
+    /* reserve stockin send wmq fail
+     * @var int
+     */
+    const RESERVE_STOCKIN_SEND_WMQ_FAIL = 330019;
+
     /**
      * 查询时间范围错误
      */

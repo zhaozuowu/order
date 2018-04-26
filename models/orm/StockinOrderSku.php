@@ -141,6 +141,21 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
     }
 
     /**
+     * get batch stockin order sku list
+     * @param $arrStockinOrderIds
+     * @return array
+     */
+    public static function getBatchStockinOrderSkuList($arrStockinOrderIds)
+    {
+        $arrCondition = [
+            'stockin_order_id' => ['in', $arrStockinOrderIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrOrderBy = ['id' => 'asc'];
+        return self::findRows(self::getAllColumns(), $arrCondition, $arrOrderBy);
+    }
+
+    /**
      * 获取入库单商品列表（不分页）
      * @param $intStockinOrderId
      * @return array
