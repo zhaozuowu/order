@@ -17,5 +17,6 @@ class Controller_Api extends Ap_Controller_Abstract {
         'precancelstockoutorderapi' => 'actions/api/PreCancelStockOutOrderApi.php', #预取消出库单API#@skipped#
         'rollbackcancelstockoutorderapi' => 'actions/api/RollbackCancelStockOutOrderApi.php', #回滚取消出库单API#@skipped#
         'createstockinorderapi' => 'actions/api/CreateStockInOrderApi.php', #创建自动销退入库单#@skipped#
+        'createremovesitestockinorderapi' => 'actions/api/CreateRemoveSiteStockInOrderApi.php', #创建自动销退入库单(货架撤点)#@skipped#
     );
 }
