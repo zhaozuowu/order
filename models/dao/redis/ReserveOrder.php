@@ -16,6 +16,7 @@ class Dao_Redis_ReserveOrder extends Order_Base_Redis
      * set reserve order info
      * @param $arrReserveInfo
      * @return string
+     * @throws Order_BusinessError
      */
     public function setOrderInfo($arrReserveInfo)
     {
@@ -23,8 +24,11 @@ class Dao_Redis_ReserveOrder extends Order_Base_Redis
         $strKey = $arrReserveInfo['purchase_order_id'];
         $strRedisKey = self::KEY_PREFIX . $strKey;
         Bd_Log::debug(sprintf('set redis, key[%s], data:%s', $strRedisKey, $strReserveInfo));
-        $boolRes = $this->objRedisConn->set($strRedisKey, $strReserveInfo);
+        $boolRes = $this->objRedisConn->setnx($strRedisKey, $strReserveInfo);
         Bd_Log::debug('set redis result: ' . json_encode($boolRes));
+        if (empty($boolRes)) {
+            Order_BusinessError::throwException(Order_Error_Code::CONNECT_REDIS_FAILED);
+        }
         return $strKey;
     }
 
