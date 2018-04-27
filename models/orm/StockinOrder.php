@@ -369,7 +369,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
         // 分页条件
         $offset = (intval($intPageNum) - 1) * intval($intPageSize);
-        $limitCount = empty($intPageSize) ? null : 0;
+        $limitCount = empty($intPageSize) ? null : intval($intPageSize);
 
 
         // 查找满足条件的所有列数据
