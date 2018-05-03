@@ -26,10 +26,12 @@ class Service_Data_Stock
 
     /**
      * 冻结库存
-     * @param integer $intSkuId
-     * @param integer $intWarehouseId
-     * @param integer $arrStockDetail
+     * @param $intSkuId
+     * @param $intWarehouseId
+     * @param $arrStockDetail
      * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
      */
     public function freezeSkuStock($intSkuId, $intWarehouseId, $arrStockDetail) {
         return $this->objDaoStock->freezeSkuStock($intSkuId, $intWarehouseId, $arrStockDetail);
@@ -37,10 +39,12 @@ class Service_Data_Stock
 
     /**
      * 解冻库存
-     * @param integer $intSkuId
-     * @param integer $intWarehouseId
-     * @param integer $arrStockDetail
+     * @param $intSkuId
+     * @param $intWarehouseId
+     * @param $arrStockDetail
      * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
      */
     public function unfreezeSkuStock($intSkuId, $intWarehouseId, $arrStockDetail) {
         return $this->objDaoStock->unfreezeSkuStock($intSkuId, $intWarehouseId, $arrStockDetail);
@@ -51,6 +55,7 @@ class Service_Data_Stock
      * @param $intWarehouseId
      * @param $arrSkuIds
      * @return array
+     * @throws Nscm_Exception_Error
      */
     public function getStockInfo($intWarehouseId, $arrSkuIds)
     {
@@ -103,4 +108,44 @@ class Service_Data_Stock
 
         return $arrRet;
     }
+
+    /**
+     * 获取仓库商品可冻结批次数据
+     * @param $arrInput
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function getStockFrozenInfo($arrInput)
+    {
+        $arrRet = [];
+        $arrStockFrozenInfo = $this->objDaoStock->getStockFrozenInfo(
+            $arrInput['warehouse_id'],
+            $arrInput['sku_id'],
+            $arrInput['is_defective'],
+            $arrInput['sku_effect_type'],
+            $arrInput['production_or_expiration_time'],
+            $arrInput['page_num'],
+            $arrInput['page_size']
+        );
+        if (empty($arrStockFrozenInfo['total']) || empty($arrStockFrozenInfo['detail'])) {
+            return $arrRet;
+        }
+
+        $arrSkuInfo = $this->objDaoSku->getSkuInfos(array_unique(array_column($arrStockFrozenInfo['detail'], 'sku_id')));
+        $arrSkus = [];
+        foreach ($arrStockFrozenInfo['detail'] as $arrItem) {
+            $intSkuId = $arrItem['sku_id'];
+            if(!empty($arrSkuInfo[$intSkuId])) {
+                $arrSkus[] = array_merge($arrSkuInfo[$intSkuId], $arrItem);
+            } else {
+                $arrSkus[] = $arrItem;
+            }
+        }
+
+        $arrRet['total'] = $arrStockFrozenInfo['total'];
+        $arrRet['skus'] = $arrSkus;
+        return $arrRet;
+    }
+
 }

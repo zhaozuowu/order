@@ -14,6 +14,7 @@ class Action_ConfirmStockinOrder extends Order_Base_Action
     protected $arrInputParams = [
         'stockin_order_id' => 'regex|patern[/^((SIO)\d{13})?$/]',
         'stockin_order_remark' => 'strutf8',
+        'ignore_check_date' => 'int|default[0]',
         'sku_info_list' => [
             'validate' => 'json|required|decode',
             'type' => 'array',
@@ -40,6 +41,25 @@ class Action_ConfirmStockinOrder extends Order_Base_Action
     protected $intMethod = Order_Define_Const::METHOD_POST;
 
     /**
+     * @return array|null
+     * @throws Order_BusinessError
+     */
+    public function myExecute()
+    {
+        try {
+            return parent::myExecute();
+        } catch (Order_BusinessError $e) {
+            if (Order_Error_Code::NOT_IGNORE_ILLEGAL_DATE == $e->getCode()) {
+                $arrResult = $e->getArrArgs();
+                return $arrResult;
+            } else {
+                throw $e;
+            }
+        }
+
+    }
+
+    /**
      * construct
      */
     public function myConstruct()
@@ -54,6 +74,21 @@ class Action_ConfirmStockinOrder extends Order_Base_Action
      */
     public function format($data)
     {
-        return $data;
+        $boolSuccess = true;
+        $arrWarningInfo = [];
+        if (!empty($data)) {
+            $boolSuccess = false;
+            foreach ($data as $intSkuId => $arrDates) {
+                $arrWarningInfo[] = [
+                    'sku_id' => $intSkuId,
+                    'warning_dates' => $arrDates,
+                ];
+            }
+        }
+        $result = [
+            'success' => $boolSuccess,
+            'warning_info' => $arrWarningInfo,
+        ];
+        return $result;
     }
 }

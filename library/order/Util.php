@@ -212,6 +212,28 @@ class Order_Util
         return $strResult;
     }
 
+
+
+    /**
+     * 去除冻结单开头的F前缀
+     *
+     * @param $strStockFrozenOrderId
+     * @return string
+     */
+    public static function trimStockFrozenOrderIdPrefix($strStockFrozenOrderId)
+    {
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strStockFrozenOrderId)) {
+            return $strResult;
+        }
+
+        $strResult = ltrim($strStockFrozenOrderId, Nscm_Define_OrderPrefix::F);
+
+        return $strResult;
+    }
+
     /**
      * 判断value的值是否在数组中
      * 遇到空参数返回错误
@@ -269,5 +291,21 @@ class Order_Util
         }
 
         return null;
+    }
+
+    // 填充sku属性
+    public static function mergeSkuInfo($arrRet, $arrSkuInfos) {
+        $arrFullRet = [];
+
+        foreach ($arrRet as $item) {
+            $intSkuId = $item['sku_id'];
+            if(!empty($arrSkuInfos[$intSkuId])) {
+                $arrFullRet[] = array_merge($arrSkuInfos[$intSkuId], $item);
+            } else {
+                $arrFullRet[] = $item;
+            }
+        }
+
+        return $arrFullRet;
     }
 }

@@ -40,6 +40,25 @@ class Dao_Ral_Stock
      */
     const  API_RALER_ADJUST_SKU_STOCK = 'adjustskustock';
 
+
+    /**
+     * 冻结单
+     * @var string
+     */
+    const  API_RALER_FROZEN_STOCK = 'frozenorderskustock';
+
+    /**
+     * 冻结单——解冻
+     * @var string
+     */
+    const  API_RALER_UNFROZEN_STOCK = 'unfrozenorderskustock';
+
+    /**
+     * 冻结单——获取仓库
+     * @var string
+     */
+    const  API_RALER_GET_STOCK_WAREHOUSE = 'getstockwarehouse';
+
     /**
      * 作废出库单
      */
@@ -52,7 +71,6 @@ class Dao_Ral_Stock
      */
     const  API_RALER_STOCK_DETAIL = 'stockdetail';
 
-
     /**
      * 按照效期的方式，获取库存
      */
@@ -63,6 +81,12 @@ class Dao_Ral_Stock
      * @var string
      */
     const  API_RALER_ADJUST_STOCKOUT = 'adjuststockout';
+
+    /**
+     * 获取仓库商品冻结数据
+     * @var string
+     */
+    const  API_RALER_STOCK_FROZEN_INFO = 'getskubatchfreezableinfo';
 
     /**
      * 库存调整-出库
@@ -263,9 +287,141 @@ class Dao_Ral_Stock
 
     }
 
+    //-----------------------------------------冻结单-------------------------------------------------------
+    /**
+     * 调用库存冻结
+     * @param $arrFrozenArg
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function frozenStock($arrFrozenArg)
+    {
+        $arrReq[self::API_RALER_FROZEN_STOCK] = $arrFrozenArg;
+        Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
+        $arrRet = Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->getData($arrReq)[self::API_RALER_FROZEN_STOCK];
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
+            Bd_Log::warning('ral call stock model frozen sku failed. ret: ' . print_r($arrRet, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL);
+        }
+
+        return $arrRet;
+    }
+
+    /**
+     * 调用库存解冻
+     * @param $arrUnfrozenArg
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function unfrozenStock($arrUnfrozenArg)
+    {
+        $req[self::API_RALER_UNFROZEN_STOCK] = $arrUnfrozenArg;
+        Bd_Log::trace('ral call stock model unfrozen, req:' . json_encode($req));
+
+        Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
+        $ret = Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->getData($req)[self::API_RALER_UNFROZEN_STOCK];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Bd_Log::warning('ral call stock model unfrozen sku failed. ret:' . print_r($ret, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL);
+        }
+
+        return $ret;
+    }
+
+    /**
+     * 获取仓库
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockWarehouse()
+    {
+        $req[self::API_RALER_GET_STOCK_WAREHOUSE] = [];
+
+        Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
+        $ret = Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->getData($req)[self::API_RALER_GET_STOCK_WAREHOUSE];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Bd_Log::warning('ral call stock model get stock warehouse failed. ret: ' . print_r($ret, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL);
+        }
+        Bd_Log::trace('ral call stock model get stock warehouse, ret: ' . json_encode($ret));
+
+        return $ret['result'];
+    }
+
+    /**
+     * 获取仓库商品可冻结数据
+     * @param $intWarehouseId
+     * @param $intSkuId
+     * @param $intIsDefective
+     * @param $intSkuEffectType
+     * @param $intTime
+     * @param $intPageNum
+     * @param $intPageSize
+     * @param $intType
+     * @return array|mixed
+     * @throws Order_BusinessError
+     */
+    public function getStockFrozenInfo($intWarehouseId, $intSkuId, $intIsDefective, $intSkuEffectType, $intTime, $intPageNum, $intPageSize, $intType = Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_USER)
+    {
+        //仓库ID
+        if(empty($intWarehouseId)) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is empty');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR);
+        }
+        $req[self::API_RALER_STOCK_FROZEN_INFO]['warehouse_id'] = $intWarehouseId;
+
+        //商品ID
+        if (!empty($intSkuId)) {
+            $req[self::API_RALER_STOCK_FROZEN_INFO]['sku_ids'] = $intSkuId;
+        }
+
+        //效期类型与时间
+        if (!empty($intSkuEffectType) && empty($intTime) || empty($intSkuEffectType) && !empty($intTime)) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is error');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR);
+        } else if (!empty($intSkuEffectType) && !empty($intTime)) {
+            if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
+                $intTime = Order_Util_Stock::formatExpireTime($intTime);
+                $req[self::API_RALER_STOCK_FROZEN_INFO]['expiration_time'] = $intTime;
+            } else {
+                $req[self::API_RALER_STOCK_FROZEN_INFO]['production_time'] = $intTime;
+            }
+        }
+
+        //质量状态
+        if (!empty($intIsDefective)) {
+            $req[self::API_RALER_STOCK_FROZEN_INFO]['is_defective'] = $intIsDefective;
+        }
+
+        //冻结类型
+        $req[self::API_RALER_STOCK_FROZEN_INFO]['type'] = $intType;
+
+        //分页
+        if (!empty($intPageNum) && !empty($intPageSize)) {
+            $req[self::API_RALER_STOCK_FROZEN_INFO]['page_num'] = $intPageNum;
+            $req[self::API_RALER_STOCK_FROZEN_INFO]['page_size'] = $intPageSize;
+        }
+
+        Bd_log::trace(sprintf('get stock frozen info, param:%s', json_encode($req)));
+
+        //RAL
+        Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->setFormat(new Order_Util_Format());
+        $ret = Nscm_Lib_Singleton::get('Nscm_Lib_ApiRaler')->getData($req)[self::API_RALER_STOCK_FROZEN_INFO];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock failed, result is empty.' . print_r($ret, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
+        }
+        Bd_log::trace(sprintf('get stock frozen info, param:%s, ret:%s', json_encode($req), json_encode($ret)));
+
+        return $ret['result'];
+    }
+    //-----------------------------------------冻结单-------------------------------------------------------
+
+
+
     /**
      * @param $intStockoutOrderId
-     * @param $warehouse_id
+     * @param $intWarehouseId
      * @return array
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError

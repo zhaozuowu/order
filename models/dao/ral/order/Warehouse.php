@@ -111,6 +111,31 @@ class Dao_Ral_Order_Warehouse
         return $ret[self::API_RALER_GET_WAREHOUSE_INFO_BY_ID]['query_result'][0] ?? [];
     }
 
+    /**
+     * get warehouse info by warehouse ids
+     * @param array $arrWarehouseIds
+     * @return array
+     * @throws Nscm_Exception_Error
+     */
+    public function getWarehouseInfoMapByWarehouseIds($arrWarehouseIds)
+    {
+        $req = [
+            self::API_RALER_GET_WAREHOUSE_INFO_BY_ID => [
+                'warehouse_id' => implode(',', $arrWarehouseIds),
+            ],
+        ];
+        Bd_Log::debug('ral get warehouse info request params: ' . json_encode($req));
+        $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug('ral get warehouse info response params: ' . json_encode($ret));
+        $arrWarehouseInfo = $ret[self::API_RALER_GET_WAREHOUSE_INFO_BY_ID]['query_result'] ?? [];
+        $arrWarehouseInfoMap = [];
+        foreach ($arrWarehouseInfo as $arrItem) {
+            $arrWarehouseInfoMap[$arrItem['warehouse_id']] = $arrItem;
+        }
+        Bd_Log::debug('warehouse info map: ' . json_encode($arrWarehouseInfoMap));
+        return $arrWarehouseInfoMap;
+    }
+
 }
 
 ?>

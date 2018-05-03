@@ -180,7 +180,11 @@ class Order_Error_Code extends Wm_Error_Code
     const TOTAL_COUNT_CANNOT_EMPTY = 330016;
 
     /**
-     * reserve stockin send wmq fail
+     * not ignore warning date
+     */
+    const NOT_IGNORE_ILLEGAL_DATE = 330017;
+
+    /* reserve stockin send wmq fail
      * @var int
      */
     const RESERVE_STOCKIN_SEND_WMQ_FAIL = 330019;
@@ -433,6 +437,101 @@ class Order_Error_Code extends Wm_Error_Code
      * 出库单已打印，无法取消
      */
     const NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT = 310013;
+
+
+
+    //------------------------------------------------冻结单------------------------------------------------
+
+    /**
+     * 冻结单-冻结SKU个数超过100个
+     * @var integer
+     */
+    const NWMS_ORDER_FROZEN_SKU_AMOUNT_TOO_MUCH = 351001;
+
+    /**
+     * 冻结单-调用库存模块冻结库存失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL = 351002;
+
+    /**
+     * 冻结单-获取仓库商品冻结数据失败
+     */
+    const NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL = 351003;
+
+    /**
+     * 冻结单-冻结单明细获取失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST = 351004;
+
+    /**
+     * 冻结单-冻结单信息获取失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_NOT_EXIST = 351005;
+
+    /**
+     * 冻结单-解冻参数重复
+     * @var integer
+     */
+    const NWMS_UNFROZEN_PARAM_REPEATED = 351006;
+
+    /**
+     * 冻结单-当前冻结量不匹配
+     * @var integer
+     */
+    const NWMS_UNFROZEN_CURRENT_FROZEN_AMOUNT_NOT_NATCH = 351007;
+
+    /**
+     * 冻结单-解冻数量超过已冻结数量
+     * @var integer
+     */
+    const NWMS_UNFROZEN_AMOUNT_OVER_FROZEN_AMOUNT = 351008;
+
+    /**
+     * 冻结单冻结数量不正确
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR = 351009;
+
+    /**
+     * 冻结单-未找到匹配的冻结单明细
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_DETAIL_NOT_FOUND = 351010;
+
+    /**
+     * 冻结单-解冻校验版本失败
+     * @var integer
+     */
+    const NWMS_UNFROZEN_CHECK_VERSION_FAIL = 351011;
+
+    /**
+     * 冻结单-调用库存模块解冻库存失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL = 351012;
+
+    /**
+     * 冻结单-获取仓库商品冻结数据参数有误
+     */
+    const NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR = 351013;
+
+    /**
+     * 冻结单-解冻详情参数为空
+     * @var integer
+     */
+    const NWMS_UNFROZEN_DETAIL_PARAM_EMPTY = 351014;
+
+    /**
+     * 冻结单-自动冻结异常
+     * @var integer
+     */
+    const NWMS_UNFROZEN_BY_SYSTEM_ERROR = 351015;
+
+
+    //------------------------------------------------冻结单------------------------------------------------
 
     /**
      *已作废出库单不允许入库
