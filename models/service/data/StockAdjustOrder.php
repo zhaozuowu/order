@@ -301,6 +301,9 @@ class Service_Data_StockAdjustOrder
             // 根据商品效期类型，计算生产日期和有效期
             $arrDetail = $this->getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
+            // 校验库位编码
+            // 预留校验位置
+
             $arrDetailItem = [
                 'stock_adjust_order_id'     => $arrInput['stock_adjust_order_id'],
                 'warehouse_id'              => $arrInput['warehouse_id'],
@@ -318,6 +321,7 @@ class Service_Data_StockAdjustOrder
                 'unit_price_tax'            => $arrStockInfo['cost_unit_price_tax'],
                 'production_time'           => $arrDetail['production_time'],
                 'expire_time'               => $arrDetail['expire_time'],
+                'location_id'               => $arrDetail['location_id'],
             ];
 
             $arrOrderDetailArg[] = $arrDetailItem;
@@ -399,6 +403,7 @@ class Service_Data_StockAdjustOrder
                 'production_time'       =>  $arrDetail['production_time'],
                 'amount'                =>  $arrDetail['adjust_amount'],
                 'is_defective'          =>  $arrDetail['is_defective'],
+                'location_id'           =>  $arrDetail['location_id'],
             ];
 
             $mapSku2Batch[$arrDetail['sku_id']][] = $batchInfo;
@@ -438,7 +443,7 @@ class Service_Data_StockAdjustOrder
     protected function getCreateBatchStockOutArg($arrInput, $arrSkuInfos)
     {
         $arrStockOut = [
-            'stockout_order_id'      => $arrInput['stock_adjust_order_id'],
+            'stockout_order_id'     => $arrInput['stock_adjust_order_id'],
             'inventory_type'        => $arrInput['adjust_type'],
             'warehouse_id'          => $arrInput['warehouse_id'],
             'stockout_details'      => [],
@@ -458,9 +463,10 @@ class Service_Data_StockAdjustOrder
                 $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
             $arrAdjustInfo = [
-                'adjust_amount' => $arrDetail['adjust_amount'],
-                'is_defective' => $arrDetail['is_defective'],
-                'expiration_time' => $arrDetail['expire_time'],
+                'adjust_amount'     => $arrDetail['adjust_amount'],
+                'is_defective'      => $arrDetail['is_defective'],
+                'expiration_time'   => $arrDetail['expire_time'],
+                'location_id'       => $arrDetail['location_id'],
             ];
 
             $arrStockOut['stockout_details'][$intSkuId]['sku_id'] = $intSkuId;

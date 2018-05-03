@@ -13,7 +13,7 @@ class Action_Createdecreaseorder extends Order_Base_Action
      */
     protected $arrInputParams = [
         'warehouse_id'      => 'int|required',
-        'warehouse_name'    => 'strutf8|required|min[1]|len{64]',
+        'warehouse_name'    => 'strutf8|required|min[1]|len[64]',
         'adjust_type'       => 'int|required|min[10]',
         'remark'            => 'strutf8|required|min[1]|len[255]',
         'detail'            => [
@@ -24,6 +24,7 @@ class Action_Createdecreaseorder extends Order_Base_Action
                 'production_or_expire_time' => 'int|required',
                 'adjust_amount'             => 'int|required|min[1]',
                 'is_defective'              => 'int|required|min[1]|max[2]',
+                'location_id'               => 'str|required|min[1]|len[64]',
             ],
         ],
     ];
