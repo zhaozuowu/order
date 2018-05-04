@@ -20,7 +20,7 @@ class Action_GetPlaceOrderStatistics extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->arrInputParams =[];
+        $this->arrInputParams = [];
         $this->objPage = new Service_Page_Place_GetPlaceOrderStatistics();
     }
 

@@ -1,11 +1,11 @@
 <?php
 /**
- * @desc 获取上架单状态统计
- * @date 2018/5/3
+ * @desc 查询上架单列表
+ * @date 2018/5/4
  * @author 张雨星(yuxing.zhang@ele.me)
  */
 
-class Service_Page_Place_GetPlaceOrderStatistics implements Order_Base_Page
+class Service_Page_Place_GetPlaceOrderList implements Order_Base_Page
 {
     /**
      * @var Service_Data_Reserve_ReserveOrder

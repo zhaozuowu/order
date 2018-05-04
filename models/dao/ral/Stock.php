@@ -56,7 +56,7 @@ class Dao_Ral_Stock
     /**
      * 按照效期的方式，获取库存
      */
-    const API_RALER_STOCK_PERIOD_DETAIL = 'getskustockbatchinfo';
+    const API_RALER_STOCK_PERIOD_DETAIL = 'getadjustableskubatchinfo';
 
     /**
      * 库存调整-出库

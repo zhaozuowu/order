@@ -33,6 +33,9 @@ class Service_Page_Adjust_CreateOrder
      */
     public function execute($arrInput)
     {
+        //校验传入参数 仓库是否开启库区库位功能，库位是否存在
+        $this->objStockAdjustOrder->checkCreateInputByLocation($arrInput);
+
         // 生成一个调整单号
         $arrInput['stock_adjust_order_id'] = Order_Util_Util::generateStockAdjustOrderId();
         Bd_Log::trace('generate stock adjust order id: ' . $arrInput['stock_adjust_order_id']);

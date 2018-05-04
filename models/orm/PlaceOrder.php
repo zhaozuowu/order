@@ -8,8 +8,8 @@
 class Model_Orm_PlaceOrder extends Order_Base_Orm
 {
 
-    public static $tableName = 'place_order';
-    public static $dbName = 'nwms_order';
+    public static $tableName   = 'place_order';
+    public static $dbName      = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
 
     /**

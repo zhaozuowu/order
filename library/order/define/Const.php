@@ -51,5 +51,18 @@ class  Order_Define_Const
      * 半个小时转化撑秒
      */
     const HALF_AN_HOUR_FORMAT_SECONDS = 1800;
+
+    /**
+     * 默认库位编码
+     */
+    const DEFAULT_LOCATION_ID = '';
+    /**
+     * 默认巷道编码
+     */
+    const DEFAULT_ROADWAY_ID = '';
+    /**
+     * 默认库区编码
+     */
+    const DEFAULT_AREA_ID = '';
     
 }

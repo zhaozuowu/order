@@ -17,7 +17,7 @@ class Order_Util
      * @param float|int $intMaxInterval
      * @return bool
      */
-    public static function verifyUnixTimeSpan($intStartTime, $intEndTime, $intMaxInterval = 90 * 86400)
+public static function verifyUnixTimeSpan($intStartTime, $intEndTime, $intMaxInterval = 90 * 86400)
     {
         // 均为空认为通过
         if (empty($intStartTime) && empty($intEndTime)) {
