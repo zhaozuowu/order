@@ -146,6 +146,7 @@ class Dao_Ral_Stock
         }
         $objApiRal = new Order_ApiRaler();
         $objApiRal->setFormat(new Order_Util_Format());
+        Bd_Log::debug(sprintf("method[%s] req[%s]", __METHOD__, json_encode($req)));
         $ret = $objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_FREEZE_SKU_STOCK]) ? [] : $ret[self::API_RALER_FREEZE_SKU_STOCK];
         Bd_Log::trace(sprintf("method[%s] ret[%s]", __METHOD__, json_encode($ret)));

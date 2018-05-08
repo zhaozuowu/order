@@ -189,10 +189,17 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NOT_IGNORE_ILLEGAL_DATE = 330018;
 
-    /* reserve stockin send wmq fail
+    /**
+     * reserve stockin send wmq fail
      * @var int
      */
     const RESERVE_STOCKIN_SEND_WMQ_FAIL = 330019;
+
+    /**
+     * stock freeze error
+     * @var int
+     */
+    const STOCK_FREEZE_ERROR = 330020;
 
     /**
      * repeat stockout order
@@ -589,4 +596,9 @@ class Order_Error_Code extends Wm_Error_Code
     const STOCK_ORDER_STATUS_INVALID = 310008;
     const STOCK_STOCKOUT_NO_ENOUGH_STOCKS = 310009;
     const STOCK_REPETITIVE_OPRATION = 310000;
+
+    /**
+     * stock lock
+     */
+    const STOCK_LOCK_CONFLICT = 310001;
 }

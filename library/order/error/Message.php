@@ -36,6 +36,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::SKU_AMOUNT_CANNOT_EMPTY => '商品数量不允许为0',
         Order_Error_Code::TOTAL_COUNT_CANNOT_EMPTY => '商品入库总数不允许为0',
         Order_Error_Code::REPEAT_LOGISTICS_ORDER_ID => '运单号重复',
+        Order_Error_Code::STOCK_FREEZE_ERROR => '【系统异常】创建订单并发异常，请重试',
         Order_Error_Code::STOCKOUT_ORDER_ID_REPEAT => '输入参数中存在重复的出库单号',
         Order_Error_Code::RESERVE_STOCKIN_SEND_WMQ_FAIL => '沧海系统内部错误',
         Order_Error_Code::NWMS_STOCKOUT_ORDER_CREATE_FAIL => '出库单创建失败',
