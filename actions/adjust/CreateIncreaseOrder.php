@@ -28,7 +28,7 @@ class Action_Createincreaseorder extends Order_Base_Action
                         'production_or_expire_time' => 'int|required',
                         'adjust_amount'             => 'int|required|min[1]',
                         'is_defective'              => 'int|required|min[1]|max[2]',
-                        'location_id'               => 'str|optional|min[1]|len[64]',
+                        'location_code'             => 'str|optional|min[1]|len[64]',
                     ]
                 ],
             ],

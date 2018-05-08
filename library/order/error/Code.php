@@ -318,22 +318,10 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH = 350021;
 
     /**
-     * 库存调整-仓库未开启库区库位功能，禁止传递库区编码参数
-     * @var integer
-     */
-    const NWMS_ORDER_ADJUST_BAN_LOCATION_ID = 350022;
-
-    /**
-     * 库存调整-未传递库区编码参数
-     * @var integer
-     */
-    const NWMS_ORDER_ADJUST_CANNOT_GET_LOCATION_ID = 350023;
-
-    /**
      * 库存调整-库区编码不存在
      * @var integer
      */
-    const NWMS_ORDER_ADJUST_LOCATION_ID_NOT_EXIST = 350024;
+    const NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST = 350022;
     
     /**
      * 获取商品信息失败

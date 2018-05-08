@@ -165,7 +165,7 @@ class Dao_Ral_Stock
     }
 
     /**
-     * 获取sku库存信息，仓库、效期、良品维度
+     * 获取sku库存信息，仓库、库位、效期、良品维度
      * @param $intWarehouseId
      * @param $arrSkuIds
      * @return array|mixed

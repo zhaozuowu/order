@@ -327,7 +327,7 @@ class Service_Data_StockAdjustOrder
                     'unit_price_tax'        => $arrStockInfo['cost_unit_price_tax'],
                     'production_time'       => $arrDetail['production_time'],
                     'expire_time'           => $arrDetail['expire_time'],
-                    'location_id'           => $arrDetail['location_id'] ?? '???',
+                    'location_code'         => $arrDetail['location_code'],
                 ];
 
                 $arrOrderDetailArg[] = $arrDetailItem;
@@ -392,28 +392,31 @@ class Service_Data_StockAdjustOrder
 
         $mapSku2Batch = [];
 
-        foreach ($arrInput['detail'] as $arrDetail) {
-            $intSkuId   = $arrDetail['sku_id'];
+        foreach ($arrInput['detail'] as $arrSkuDetail) {
+            $intSkuId   = $arrSkuDetail['sku_id'];
             $arrSkuInfo = $arrSkuInfos[$intSkuId];
 
             if (empty($arrSkuInfo)) {
-                Bd_Log::warning("sku info is empty. sku id: " . $arrDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
+                Bd_Log::warning("sku info is empty. sku id: " . $arrSkuDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR);
             }
 
-            // 根据商品效期类型，计算生产日期和有效期
-            $arrDetail = $this->getEffectTime(
-                $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
-            $batchInfo = [
-                'expire_time'     => $arrDetail['expire_time'],
-                'production_time' => $arrDetail['production_time'],
-                'amount'          => $arrDetail['adjust_amount'],
-                'is_defective'    => $arrDetail['is_defective'],
-                'location_id'     => $arrDetail['location_id'],
-            ];
-
-            $mapSku2Batch[$arrDetail['sku_id']][] = $batchInfo;
+            foreach ($arrSkuDetail['detail'] as $arrDetail) {
+                // 根据商品效期类型，计算生产日期和有效期
+                $arrDetail                            = $this->getEffectTime(
+                    $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+                $batchInfo                            = [
+                    'expire_time'     => $arrDetail['expire_time'],
+                    'production_time' => $arrDetail['production_time'],
+                    'amount'          => $arrDetail['adjust_amount'],
+                    'is_defective'    => $arrDetail['is_defective'],
+                    'location_code'   => $arrDetail['location_code'],
+                    'roadway_code'    => $arrDetail['roadway_code'],
+                    'area_code'       => $arrDetail['area_code'],
+                ];
+                $mapSku2Batch[$arrDetail['sku_id']][] = $batchInfo;
+            }
         }
 
         foreach ($mapSku2Batch as $skuId => $arrBatchInfo) {
@@ -456,28 +459,30 @@ class Service_Data_StockAdjustOrder
             'stockout_details'  => [],
         ];
 
-        foreach ($arrInput['detail'] as $arrDetail) {
-            $intSkuId   = $arrDetail['sku_id'];
+        foreach ($arrInput['detail'] as $arrSkuDetail) {
+            $intSkuId   = $arrSkuDetail['sku_id'];
             $arrSkuInfo = $arrSkuInfos[$intSkuId];
 
             if (empty($arrSkuInfo)) {
-                Bd_Log::warning("sku info is empty. sku id: " . $arrDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
+                Bd_Log::warning("sku info is empty. sku id: " . $arrSkuDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR);
             }
 
-            // 根据商品效期类型，计算生产日期和有效期
-            $arrDetail = $this->getEffectTime(
-                $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+            foreach ($arrSkuDetail['detail'] as $arrDetail) {
+                // 根据商品效期类型，计算生产日期和有效期
+                $arrDetail = $this->getEffectTime(
+                    $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
 
-            $arrAdjustInfo = [
-                'adjust_amount'   => $arrDetail['adjust_amount'],
-                'is_defective'    => $arrDetail['is_defective'],
-                'expiration_time' => $arrDetail['expire_time'],
-                'location_id'     => $arrDetail['location_id'],
-            ];
+                $arrAdjustInfo = [
+                    'adjust_amount'   => $arrDetail['adjust_amount'],
+                    'is_defective'    => $arrDetail['is_defective'],
+                    'expiration_time' => $arrDetail['expire_time'],
+                    'location_code'   => $arrDetail['location_code'],
+                ];
 
-            $arrStockOut['stockout_details'][$intSkuId]['sku_id']        = $intSkuId;
-            $arrStockOut['stockout_details'][$intSkuId]['adjust_info'][] = $arrAdjustInfo;
+                $arrStockOut['stockout_details'][$intSkuId]['sku_id']        = $intSkuId;
+                $arrStockOut['stockout_details'][$intSkuId]['adjust_info'][] = $arrAdjustInfo;
+            }
         }
 
         return $arrStockOut;
@@ -579,7 +584,7 @@ class Service_Data_StockAdjustOrder
      */
     protected function getLocationInfoByIds($intWarehouseId, $arrLocationIds)
     {
-        if (empty($arrLocationIds)){
+        if (empty($arrLocationIds)) {
             return [];
         }
     }
@@ -592,54 +597,31 @@ class Service_Data_StockAdjustOrder
     public function checkCreateInputByLocation($arrInput)
     {
 
-        if(empty($arrInput['detail'])){
+        if (empty($arrInput['detail'])) {
             return $arrInput;
         }
 
-        $boolIsLocationOn = $this->getWarehoushLocationStatus($arrInput['warehouse_id']);
-        $arrLocationIds   = [];
-
+        $arrLocationIds = [];
 
         foreach ($arrInput['detail'] as $arrSkuDetail) {
-            foreach ($arrSkuDetail as $arrDetail) {
-
-                if ($boolIsLocationOn && !isset($arrDetail['location_id'])) {
-                    Bd_Log::warning(__METHOD__ . ' cannot get location_id ');
-                    Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_CANNOT_GET_LOCATION_ID);
-                }
-
-                if (!$boolIsLocationOn && isset($arrDetail['location_id'])) {
-                    Bd_Log::warning(__METHOD__ . 'warehouse_id['.$arrInput['warehouse_id'].'] location_id['.$arrDetail['location_id'].'] param is banned ');
-                    Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_BAN_LOCATION_ID);
-                }
-
-                if (isset($arrDetail['location_id'])){
-                    $arrLocationIds[] = $arrDetail['location_id'];
-                }
-            }
+            $arrTmp         = array_column($arrSkuDetail, 'location_code');
+            $arrLocationIds = array_merge($arrLocationIds, $arrTmp);
         }
 
-        $arrLocations = $this->getLocationInfoByIds($arrInput['warehouse_id'],$arrLocationIds);
+        $arrLocationIds = array_unique($arrLocationIds);
 
+        $arrLocations = $this->getLocationInfoByIds($arrInput['warehouse_id'], $arrLocationIds);
 
         foreach ($arrInput['detail'] as $skuKey => $arrSkuDetail) {
             foreach ($arrSkuDetail as $key => $arrDetail) {
 
-                if (!$boolIsLocationOn){ //约定 未启用库区库位功能时  库区库位的默认值
-                    $arrInput['detail'][$skuKey][$key]['location_id']=Order_Define_Const::DEFAULT_LOCATION_ID;
-                    $arrInput['detail'][$skuKey][$key]['roadway_id']=Order_Define_Const::DEFAULT_ROADWAY_ID;
-                    $arrInput['detail'][$skuKey][$key]['area_id']=Order_Define_Const::DEFAULT_AREA_ID;
-                    continue;
+                if (!isset($arrLocations[$arrDetail['location_code']])) {
+                    Bd_Log::warning(__METHOD__ . ' location_code[' . $arrDetail['location_code'] . '] not exist ');
+                    Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
                 }
 
-                if (!isset($arrLocations[$arrDetail['location_id']])){
-                    Bd_Log::warning(__METHOD__ . ' location_id['.$arrDetail['location_id'].'] not exist ');
-                    Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_ID_NOT_EXIST);
-                }
-
-                $arrInput['detail'][$skuKey][$key]['roadway_id']=$arrLocations[$arrDetail['location_id']]['roadway_id'];
-                $arrInput['detail'][$skuKey][$key]['area_id']=$arrLocations[$arrDetail['location_id']]['area_id'];
-
+                $arrInput['detail'][$skuKey][$key]['roadway_code'] = $arrLocations[$arrDetail['location_code']]['roadway_code'];
+                $arrInput['detail'][$skuKey][$key]['area_code']    = $arrLocations[$arrDetail['location_code']]['area_code'];
             }
         }
 

@@ -55,14 +55,14 @@ class  Order_Define_Const
     /**
      * 默认库位编码
      */
-    const DEFAULT_LOCATION_ID = '';
+    const DEFAULT_LOCATION_CODE = '';
     /**
      * 默认巷道编码
      */
-    const DEFAULT_ROADWAY_ID = '';
+    const DEFAULT_ROADWAY_CODE = '';
     /**
      * 默认库区编码
      */
-    const DEFAULT_AREA_ID = '';
+    const DEFAULT_AREA_CODE = '';
     
 }
