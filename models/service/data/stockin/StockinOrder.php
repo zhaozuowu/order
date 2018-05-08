@@ -503,17 +503,42 @@ class Service_Data_Stockin_StockinOrder
                 if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $arrDbSku['sku_effect_type']) {
                     $intProductionTime = intval($skuRow['expire_date']);
                     $intExpireTime = $intProductionTime + intval($arrDbSku['sku_effect_day']) * 86400 - 1;
-                    $arrBatchInfo[] = [
-                        'expire_time' => $intExpireTime,
-                        'production_time' => $intProductionTime,
-                        'amount'      => $skuRow['amount'],
-                    ];
+                    // 传入良品数
+                    if(0 < $skuRow['sku_good_amount']) {
+                        $arrBatchInfo[] = [
+                            'expire_time' => $intExpireTime,
+                            'production_time' => $intProductionTime,
+                            'is_defective' => Order_Define_Sku::SKU_QUALITY_TYPE_GOOD,
+                            'amount'      => $skuRow['sku_good_amount'],
+                        ];
+                    }
+                    // 传入不良品数
+                    if(0 < $skuRow['sku_defective_amount']) {
+                        $arrBatchInfo[] = [
+                            'expire_time' => $intExpireTime,
+                            'production_time' => $intProductionTime,
+                            'is_defective' => Order_Define_Sku::SKU_QUALITY_TYPE_DEFECTIVE,
+                            'amount'      => $skuRow['sku_defective_amount'],
+                        ];
+                    }
                 } else {
+                    // 传入良品数
                     $intExpireTime = intval($skuRow['expire_date']) + 86399;
-                    $arrBatchInfo[] = [
-                        'expire_time' => $intExpireTime,
-                        'amount'      => $skuRow['amount'],
-                    ];
+                    if(0 < $skuRow['sku_good_amount']) {
+                        $arrBatchInfo[] = [
+                            'expire_time' => $intExpireTime,
+                            'is_defective' => Order_Define_Sku::SKU_QUALITY_TYPE_GOOD,
+                            'amount'      => $skuRow['sku_good_amount']
+                        ];
+                    }
+                    // 传入不良品数
+                    if(0 < $skuRow['sku_defective_amount']) {
+                        $arrBatchInfo[] = [
+                            'expire_time' => $intExpireTime,
+                            'is_defective' => Order_Define_Sku::SKU_QUALITY_TYPE_DEFECTIVE,
+                            'amount'      => $skuRow['sku_defective_amount']
+                        ];
+                    }
                 }
             }
         }
