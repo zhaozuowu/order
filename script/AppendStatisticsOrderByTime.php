@@ -43,14 +43,14 @@ class AppendStatisticsOrderByTime
      */
     public function work()
     {
+        $this->getParams();
         $arrAllConf = [
             [
                 'condition' => [
                     'create_time' => [
-                        'between' => [
-                            $this->intStart,
-                            $this->intEnd,
-                        ],
+                        'between',
+                        $this->intStart,
+                        $this->intEnd,
                     ],
                     'stockin_order_type' => Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE,
                     'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
@@ -64,10 +64,9 @@ class AppendStatisticsOrderByTime
             [
                 'condition' => [
                     'create_time' => [
-                        'between' => [
-                            $this->intStart,
-                            $this->intEnd,
-                        ],
+                        'between',
+                        $this->intStart,
+                        $this->intEnd,
                     ],
                     'stockin_order_type' => Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT,
                     'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
@@ -82,10 +81,9 @@ class AppendStatisticsOrderByTime
             [
                 'condition' => [
                     'update_time' => [
-                        'between' => [
-                            $this->intStart,
-                            $this->intEnd,
-                        ],
+                        'between',
+                        $this->intStart,
+                        $this->intEnd,
                     ],
                     'stockin_order_type' => Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT,
                     'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
@@ -100,10 +98,9 @@ class AppendStatisticsOrderByTime
             [
                 'condition' => [
                     'create_time' => [
-                        'between' => [
-                            $this->intStart,
-                            $this->intEnd,
-                        ],
+                        'between',
+                        $this->intStart,
+                        $this->intEnd,
                     ],
                 ],
                 'source_table' => 'Model_Orm_StockoutOrder',
@@ -115,10 +112,9 @@ class AppendStatisticsOrderByTime
             [
                 'condition' => [
                     'update_time' => [
-                        'between' => [
-                            $this->intStart,
-                            $this->intEnd,
-                        ],
+                        'between',
+                        $this->intStart,
+                        $this->intEnd,
                     ],
                     'create_time' => ['<', $this->intStart],
                 ],
@@ -157,15 +153,19 @@ class AppendStatisticsOrderByTime
                 }
                 $intOffset += $intCount;
                 $arrStatisticsCondition = [
-                    'stockin_order_id' => ['in', $arrOrderId],
+                    $strSourceColumn => ['in', $arrOrderId],
                 ];
                 $arrAllStatisticsOrderId = $strDestination::find($arrStatisticsCondition)
                     ->distinct()->select([$strSourceColumn])->column();
-                $arrIntersect = array_diff($arrOrderId, $arrAllStatisticsOrderId);
+                if (Order_Statistics_Type::ACTION_CREATE == $intAction) {
+                    $arrIntersect = array_diff($arrOrderId, $arrAllStatisticsOrderId);
+                } else {
+                    $arrIntersect = $arrOrderId;
+                }
                 foreach ($arrIntersect as $intOrderId) {
                     $this->append($intAction, $intType, $intOrderId);
                 }
-                $intSleepLimit += $arrIntersect;
+                $intSleepLimit += count($arrIntersect);
                 if ($intSleepLimit > self::LIMIT) {
                     sleep(1);
                     $intSleepLimit -= self::LIMIT;
@@ -244,6 +244,10 @@ EOF;
         $arrOption = getopt('', self::OPTS);
         Bd_Log::trace('user input params: ' . json_encode($arrOption));
         $strStart = $arrOption['start'];
+        if (empty($strStart)) {
+            $this->showTips();
+            exit;
+        }
         $intStart = strtotime($strStart);
         $strEnd = $arrOption['end'];
         if (empty($strEnd)) {
