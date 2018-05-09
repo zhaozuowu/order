@@ -26,5 +26,6 @@ class Controller_Stockout extends Ap_Controller_Abstract
         'getcustomerbyid' => 'actions/stockout/GetCustomerById.php', #查询客户信息#
         'getcustomernamesug' => 'actions/stockout/GetCustomernameSug.php', #查询客户名称sug#
         'createstockoutorder' => 'actions/stockout/CreateStockoutOrder.php', #手动创建出库单#
+        'createpickuporder' => 'actions/stockout/CreatePickupOrder.php', #生成拣货单#
     );
 }

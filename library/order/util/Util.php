@@ -63,6 +63,14 @@ class Order_Util_Util
     }
 
     /**
+     * generate pickup order id
+     * @return void
+     */
+    public static function generatePickupOrderId()
+    {
+        return NScm_Lib_IdGenerator::sequenceDateNumber();
+    }
+    /**
      * transfer array to key value pair
      * @param array $arr
      * @param string $primary_key

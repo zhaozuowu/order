@@ -557,4 +557,13 @@ class Order_Error_Code extends Wm_Error_Code
      * 此订单已入库完成，无需再次入库
      */
     const STOCKIN_ORDER_STATUS_FINISHED = 370005;
+
+    /**
+     * 当前所选出库单都已经生成拣货单，请勿重复操作
+     */
+    const STOCKOUT_ORDER_PICKUP_ORDER_IS_CREATED = 390001;
+    /**
+     * 生成拣货单失败
+     */
+    const INVALID_STOCKOUT_ORDER_WAREHOUSE_NOT_CREATE_PICKUP_ORDER= 390002;
 }
