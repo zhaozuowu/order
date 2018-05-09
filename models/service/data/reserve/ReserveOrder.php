@@ -79,6 +79,7 @@ class Service_Data_Reserve_ReserveOrder
                 'sku_tax_rate' => $arrSkuInfo[$row['sku_id']]['sku_tax_rate'] ?? 0,
                 'sku_effect_type' => $arrSkuInfo[$row['sku_id']]['sku_effect_type'] ?? '',
                 'sku_effect_day' => $arrSkuInfo[$row['sku_id']]['sku_effect_day'] ?? '',
+                'sku_from_country' => $arrSkuInfo[$row['sku_id']]['sku_from_country'] ?? 0,
                 'reserve_order_sku_total_price' => $row['reserve_order_sku_total_price'],
                 'reserve_order_sku_total_price_tax' => $row['reserve_order_sku_total_price_tax'],
                 'reserve_order_sku_plan_amount' => $row['reserve_order_sku_plan_amount'],

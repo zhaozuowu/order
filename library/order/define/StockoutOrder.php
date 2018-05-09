@@ -303,4 +303,18 @@ class Order_Define_StockoutOrder
      * @var int
      */
     const STOCK_STATUS_SURE = 2;
+
+    /**
+     * 是否生成拣货任务
+     */
+    const PICKUP_ORDERE_NOT_CREATED= 0;
+    const PICKUP_ORDERE_IS_CREATED = 1;
+    /**
+     * @desc 拣货单类型映射
+     * @var array
+     */
+    const PICKUP_ORDER_TYPE_MAP = [
+        self::PICKUP_ORDERE_NOT_CREATED => '未生成',
+        self::PICKUP_ORDER_TYPE_ORDER => '已生成',
+    ];
 }
