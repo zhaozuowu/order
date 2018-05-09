@@ -9,25 +9,6 @@ class Dao_Ral_SyncInbound
 {
 
     /**
-     * @param $intInboundId
-     * @param $intStatus
-     * @param $intActualTime
-     * @param $arrItems
-     */
-    public static function syncInbound($intInboundId, $intStatus, $intActualTime, $arrItems)
-    {
-        $arrInput = [
-            'inbound_id' => $intInboundId,
-            'status' => $intStatus,
-            'actual_time' => $intActualTime,
-            'items' => $arrItems,
-        ];
-        Bd_Log::trace('send wmq cmd sync inbound, req: ' . json_encode($arrInput));
-        Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_SYNC_INBOUND, $arrInput,
-            strval($intInboundId), Order_Define_Cmd::NSCM_SYNC_INBOUND);
-    }
-
-    /**
      * @var Order_ApiRaler $objRal
      */
     private static $objRal;
@@ -83,6 +64,6 @@ class Dao_Ral_SyncInbound
         ];
         Bd_Log::trace('send wmq cmd sync inbound self, req: ' . json_encode($arrInput));
         Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_SYNC_INBOUND_NWMS, $arrInput,
-            strval($intInboundId), Order_Define_Cmd::NWMS_ORDER_TOPIC);
+            strval($intInboundId));
     }
 }
