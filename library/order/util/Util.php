@@ -127,4 +127,28 @@ class Order_Util_Util
         $strRetLocation = implode(',', $arrRetLocation);
         return $strRetLocation;
     }
+
+    /**
+     *
+     * @param array $arrStockoutOrderIds
+     * @return array
+     */
+    public static function batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds)
+    {
+        foreach ((array)$arrStockoutOrderIds as $intKey => $strStockoutOrderId) {
+            $arrStockoutOrderIds[$intKey] = self::trimStockoutOrderIdPrefix($strStockoutOrderId);
+        }
+        return $arrStockoutOrderIds;
+    }
+
+    /**
+     * 过滤出库单前缀
+     * @param $strStockoutOrderId
+     * @return string
+     */
+    public static function trimStockoutOrderIdPrefix($strStockoutOrderId)
+    {
+        return ltrim($strStockoutOrderId, Nscm_Define_OrderPrefix::SOO);
+    }
+
 }

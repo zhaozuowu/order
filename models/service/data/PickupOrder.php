@@ -13,7 +13,6 @@ class Service_Data_PickupOrder
     {
         $this->objOrmStockoutOrder = new Model_Orm_StockoutOrder();
         $this->objOrmSku = new Model_Orm_StockoutOrderSku();
-        $this->objStockoutOrder = new Service_Data_StockoutOrder();
     }
 
     /**
@@ -30,7 +29,7 @@ class Service_Data_PickupOrder
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR,'参数异常');
         }
         $totalPickupOrderNum = count($arrStockoutOrderIds);
-        $arrStockoutOrderIds = $this->objStockoutOrder->batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds);
+        $arrStockoutOrderIds = Order_Util_Util::batchTrimStockoutOrderIdPrefix($arrStockoutOrderIds);
         $arrConditions = [
             'stockout_order_id' => ['in', $arrStockoutOrderIds],
         ];
