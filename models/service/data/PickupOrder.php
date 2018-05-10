@@ -66,7 +66,8 @@ class Service_Data_PickupOrder
             Model_Orm_StockoutPickupOrder::batchInsert($arrStockoutPickOrderData, false);
             $arrPickupOrderData  = $this->getCreatePickupOrderData($arrStockoutPickOrderData,$stockoutOrderList,$pickupOrderType,$userId,$userName);
             Model_Orm_PickupOrder::batchInsert($arrPickupOrderData, false);
-//            $arrPickupOrderSkuData = $this->getCreatePickupOrderSkuData($arrStockoutPickOrderData,$stockoutOrderList,$pickupOrderType);
+            $arrPickupOrderSkuData = $this->getCreatePickupOrderSkuData($arrStockoutPickOrderData,$stockoutOrderList);
+            Model_Orm_PickupOrderSku::batchInsert($arrPickupOrderSkuData, false);
             $updateData = [
                 'is_pickup_ordered' => Order_Define_StockoutOrder::PICKUP_ORDERE_IS_CREATED,
             ];
@@ -125,7 +126,15 @@ class Service_Data_PickupOrder
 
     }
 
-    private function getCreatePickupOrderData($arrStockoutPickOrderData, $stockoutOrderList,$pickupOrderType,$userId,$userName)
+    /**
+     * @param $arrStockoutPickOrderData
+     * @param $stockoutOrderList
+     * @param $pickupOrderType
+     * @param $userId
+     * @param $userName
+     * @return array
+     */
+    private function getCreatePickupOrderData($arrStockoutPickOrderData, $stockoutOrderList, $pickupOrderType, $userId, $userName)
     {
         $list = [];
         foreach ($arrStockoutPickOrderData as $orderData)
@@ -181,8 +190,45 @@ class Service_Data_PickupOrder
 
     }
 
-    private function getCreatePickupOrderSkuData($arrStockoutPickOrderData, $stockoutOrderList, $pickupOrderType)
+    private function getCreatePickupOrderSkuData($arrStockoutPickOrderData, $stockoutOrderList)
     {
+        $list = [];
+        foreach ($arrStockoutPickOrderData as $orderData) {
+            $list[$orderData['pickup_order_id']][] = $orderData['stockout_order_id'];
+        }
+
+        $createParam = [];
+
+        foreach ($list as $key => $item) {
+            $arrConditions = [
+                'stockout_order_id' => ['in', $item],
+            ];
+            $arrColumns = $this->objOrmSku->getAllColumns();
+            $skuList = $this->objOrmSku->findRows($arrColumns, $arrConditions);
+            foreach ($skuList as $skuKey => $skuInfo) {
+                $skuId = $skuInfo['sku_id'];
+                if (!isset($createParam[$key."_" .$skuId])) {
+                    $createParam[$key."_" .$skuId]['sku_id'] = $skuId;
+                    $createParam[$key . "_" . $skuId]['upc_id'] = $skuInfo['upc_id'];
+                    $createParam[$key . "_" . $skuId]['sku_name'] = $skuInfo['sku_name'];
+                    $createParam[$key . "_" . $skuId]['sku_net'] = $skuInfo['sku_net'];
+                    $createParam[$key . "_" . $skuId]['sku_net_unit'] = $skuInfo['sku_net_unit'];
+                    $createParam[$key . "_" . $skuId]['upc_unit'] = $skuInfo['upc_unit'];
+                    $createParam[$key . "_" . $skuId]['upc_unit_num'] = $skuInfo['upc_unit_num'];
+                    $createParam[$key . "_" . $skuId]['order_amount'] = $skuInfo['order_amount'];
+                    $createParam[$key . "_" . $skuId]['distribute_amount'] = $skuInfo['distribute_amount'];
+                    $createParam[$key . "_" . $skuId]['pickup_order_id'] = $key;
+                    continue;
+                }
+                $createParam[$key . "_" . $skuId]['upc_unit_num'] += $skuInfo['upc_unit_num'];
+                $createParam[$key . "_" . $skuId]['order_amount'] += $skuInfo['order_amount'];
+                $createParam[$key . "_" . $skuId]['distribute_amount'] += $skuInfo['distribute_amount'];
+            }
+
+
+        }
+        return $createParam;
     }
+
 
 }
