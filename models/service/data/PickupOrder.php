@@ -229,5 +229,65 @@ class Service_Data_PickupOrder
         return $createParam;
     }
 
-
+    /**
+     * get pick up order list
+     * @param $strWarehouseIds
+     * @param $intCreateStartTime
+     * @param $intCreateEndTime
+     * @param $intPageSize
+     * @param int $intPageNum
+     * @param int $intStockoutOrderId
+     * @param int $intPickupOrderId
+     * @param int $intPickupOrderIsPrint
+     * @param int $intUpdateStartTime
+     * @param int $intUpdateEndTime
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getPickupOrderList($strWarehouseIds,
+                                       $intCreateStartTime,
+                                       $intCreateEndTime,
+                                       $intPageSize,
+                                       $intPageNum = 1,
+                                       $intStockoutOrderId = 0,
+                                       $intPickupOrderId = 0,
+                                       $intPickupOrderIsPrint = 0,
+                                       $intUpdateStartTime = 0,
+                                       $intUpdateEndTime = 0)
+    {
+        $ret = [];
+        // check time range
+        if (false === Order_Util::verifyUnixTimeSpan(
+                $intCreateStartTime,
+                $intCreateEndTime)) {
+            Order_BusinessError::throwException(
+                Order_Error_Code::QUERY_TIME_SPAN_ERROR);
+        }
+        if (false === Order_Util::verifyUnixTimeSpan(
+                $intUpdateStartTime,
+                $intUpdateEndTime)) {
+            Order_BusinessError::throwException(
+                Order_Error_Code::QUERY_TIME_SPAN_ERROR);
+        }
+        // check page
+        if (empty($intPageSize)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        // check warehouses
+        if(empty($strWarehouseIds)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $arrWarehouseIds = Order_Util::extractIntArray($strWarehouseIds);
+        $ret = Model_Orm_PickupOrder::getPickupOrderList($arrWarehouseIds,
+            $intCreateStartTime,
+            $intCreateEndTime,
+            $intPageSize,
+            $intPageNum,
+            $intStockoutOrderId,
+            $intPickupOrderId,
+            $intPickupOrderIsPrint,
+            $intUpdateStartTime,
+            $intUpdateEndTime);
+        return $ret;
+    }
 }

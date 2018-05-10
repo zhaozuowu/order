@@ -23,20 +23,24 @@ class Service_Page_Pickup_GetPickupOrderList
 
     /**
      * execute
-     * @param  array $arrInput 参数
+     * @param $arrInput
      * @return array
+     * @throws Order_BusinessError
      */
     public function execute($arrInput)
     {
-        $ret = [];
-//        $ret = $this->objSku->($arrInput['page_size'],
-//            $arrInput['sku_id'],
-//            $arrInput['upc_id'],
-//            $arrInput['sku_name'],
-//            $arrInput['sku_category_1'],
-//            $arrInput['sku_category_2'],
-//            $arrInput['sku_category_3'],
-//            $arrInput['page_num']);
+        $ret = $this->objPickupOrder->getPickupOrderList(
+            $arrInput['warehouse_id'],
+            $arrInput['create_start_time'],
+            $arrInput['create_end_time'],
+            $arrInput['page_size'],
+            $arrInput['page_num'],
+            $arrInput['stockout_order_id'],
+            $arrInput['pickup_order_id'],
+            $arrInput['pickup_order_is_print'],
+            $arrInput['update_start_time'],
+            $arrInput['update_end_time']
+        );
         return $ret;
     }
 }
