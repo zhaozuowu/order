@@ -1488,6 +1488,7 @@ class Service_Data_StockoutOrder
      * @param $strStockoutOrderId
      * @param $warehouseId
      * @return array
+     * @throws Order_BusinessError
      */
     private function notifyCancelfreezeskustock($strStockoutOrderId, $warehouseId)
     {
@@ -1496,6 +1497,7 @@ class Service_Data_StockoutOrder
         $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrStockoutParams, $strStockoutOrderId);
         if (false === $ret) {
            Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
+           Order_BusinessError::throwException(Order_Error_Code::SEND_CMD_FAILED);
        }
        return [];
     }
