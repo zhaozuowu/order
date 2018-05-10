@@ -229,5 +229,19 @@ class Service_Data_PickupOrder
         return $createParam;
     }
 
+    public function getPickupOrderByPickupOrderId($intPickupOrderId)
+    {
+        $arrConds = [
+            'pickup_order_id' => $intPickupOrderId,
+            'is_delete'       => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrPickupOrder = Model_Orm_PickupOrder::findRow(Model_Orm_PickupOrder::getAllColumns(), $arrConds);
+        if (empty($arrPickupOrder)) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
+        }
 
+        $arrPickupOrderSkus = Model_Orm_PickupOrderSku::findRows(Model_Orm_PickupOrderSku::getAllColumns(), $arrConds);
+        $arrPickupOrder['pickup_skus'] = $arrPickupOrderSkus;
+        return $arrPickupOrder;
+    }
 }

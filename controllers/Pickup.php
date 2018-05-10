@@ -12,5 +12,6 @@ class Controller_Pickup extends Ap_Controller_Abstract {
      */
     public $actions = array(
         'getpickuporderlist' => 'actions/pickup/GetPickupOrderList.php', #获取拣货单分页#
+        'getpickuporderdetail' => 'actions/pickup/GetPickupOrderDetail.php', #获取拣货单详情#
     );
 }

@@ -572,4 +572,9 @@ class Order_Error_Code extends Wm_Error_Code
      * 生成拣货单失败
      */
     const INVALID_STOCKOUT_ORDER_WAREHOUSE_NOT_CREATE_PICKUP_ORDER= 390002;
+
+    /**
+     * 拣货单不存在
+     */
+    const PICKUP_ORDER_NOT_EXISTED = 390010;
 }

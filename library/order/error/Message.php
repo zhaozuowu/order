@@ -101,6 +101,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_code::NWMS_UNFROZEN_DETAIL_PARAM_EMPTY => '获取仓库商品冻结数据参数有误',
         Order_Error_code::STOCKOUT_ORDER_PICKUP_ORDER_IS_CREATED=>'当前所选出库单都已经生成拣货单，请勿重复操作',
         Order_Error_code::INVALID_STOCKOUT_ORDER_WAREHOUSE_NOT_CREATE_PICKUP_ORDER=>'当前出库单不在同一个仓库，无法生成拣货单',
+        Order_Error_Code::PICKUP_ORDER_NOT_EXISTED => '拣货单不存在',
     ];
 
 }
