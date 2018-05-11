@@ -1106,7 +1106,7 @@ class Service_Data_Stockin_StockinOrder
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
             $intType = Order_Statistics_Type::ACTION_CREATE;
             Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
-            $this->sendConfirmStockinOrderInfoToOms($intStockInOrderId, $arrSkuInfoList, $strRemark);
+            $this->sendConfirmStockinOrderInfoToOms($intStockInOrderId, $arrStockInOrderInfo['shipment_order_id'], $arrStockInOrderInfo['stockin_order_source'], $arrSkuInfoList);
         }
     }
 
@@ -1321,13 +1321,29 @@ class Service_Data_Stockin_StockinOrder
      * @param $arrSkuInfoList
      * @param $strRemark
      */
-    protected function sendConfirmStockinOrderInfoToOms($intStockInOrderId, $arrSkuInfoList, $strRemark)
+    protected function sendConfirmStockinOrderInfoToOms($intStockInOrderId, $intShipmentOrderId, $intBizType, $arrSkuInfoList)
     {
         $strCmd = Order_Define_Cmd::CMD_NOTIFY_OMS_CONFIRM_STOCKIN_ORDER;
+        $arrSkuIds = array_column($arrSkuInfoList, 'sku_id');
+        $arrConds = [
+            'stockin_order_id' => $intStockInOrderId,
+            'is_delete'        => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrFields = ['stockin_order_id', 'sku_id', 'sku_net', 'upc_unit', 'sku_name'];
+        $arrSku = Model_Orm_StockinOrderSku::findRows($arrFields, $arrConds);
+        $arrSkuDict = Order_Util_Util::arrayToKeyValue($arrSku, 'sku_id');
+        $arrSkuInfoNew = [];
+        foreach ((array)$arrSkuInfoList as $arrSkuInfo){
+            $arrSkuInfo['sku_net'] = $arrSkuDict[$arrSkuInfo['sku_id']]['sku_net'];
+            $arrSkuInfo['upc_unit'] = $arrSkuDict[$arrSkuInfo['sku_id']]['upc_unit'];
+            $arrSkuInfo['sku_name'] = $arrSkuDict[$arrSkuInfo['sku_id']]['sku_name'];
+            $arrSkuInfoNew[] = $arrSkuInfo;
+        }
         $arrParam = [
             'stockin_order_id' => $intStockInOrderId,
-            'sku_info_list'    => json_encode($arrSkuInfoList),
-            'stockin_order_remark' => $strRemark,
+            'shipment_order_id' => $intShipmentOrderId,
+            'biz_type'          => $intBizType,
+            'sku_info_list'    => json_encode($arrSkuInfoNew),
         ];
         $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrParam, strval($intStockInOrderId));
         if (false == $ret) {

@@ -34,8 +34,7 @@ class Dao_Wrpc_Oms
         $arrRet = $this->objWrpcService->confirmStockinOrder($arrData);
         Bd_Log::trace(sprintf("method[%s] confirmStockinOrder[%s]", __METHOD__, json_encode($arrRet)));
         if (0 != $arrRet['errno']) {
-            Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
-                                    __METHOD__, json_encode($arrRet), $strRoutingKey));
+            Bd_Log::warning(sprintf("notify_oms_confirm_stockin_order_fail, error_no[%s], error_msg[%s]", $arrRet['errno'], $arrRet['errmsg']));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKIN_ORDER_CONFIRM_STOCKIN_TO_OMS_FAIL);
         }
         return $arrRet;
