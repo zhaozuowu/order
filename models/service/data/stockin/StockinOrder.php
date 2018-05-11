@@ -1106,6 +1106,7 @@ class Service_Data_Stockin_StockinOrder
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
             $intType = Order_Statistics_Type::ACTION_CREATE;
             Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
+            $this->sendConfirmStockinOrderInfoToOms($intStockInOrderId, $arrSkuInfoList, $strRemark);
         }
     }
 
@@ -1312,5 +1313,37 @@ class Service_Data_Stockin_StockinOrder
             $arrStockInSkuList[] = $arrStockInSkuListItem;
         }
         return $arrStockInSkuList;
+    }
+
+    /**
+     * 销退入库单确认结果发送wmq
+     * @param $intStockInOrderId
+     * @param $arrSkuInfoList
+     * @param $strRemark
+     */
+    protected function sendConfirmStockinOrderInfoToOms($intStockInOrderId, $arrSkuInfoList, $strRemark)
+    {
+        $strCmd = Order_Define_Cmd::CMD_NOTIFY_OMS_CONFIRM_STOCKIN_ORDER;
+        $arrParam = [
+            'stockin_order_id' => $intStockInOrderId,
+            'sku_info_list'    => json_encode($arrSkuInfoList),
+            'stockin_order_remark' => $strRemark,
+        ];
+        $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrParam, strval($intStockInOrderId));
+        if (false == $ret) {
+            Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
+        }
+    }
+
+    /**
+     * 异步通知OMS销退入库单确认结果
+     * @param $arrInput
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function asynchronousNotifyOmsConfirmStockinResult($arrInput)
+    {
+        $objWrpcOms = new Dao_Wrpc_Oms();
+        return $objWrpcOms->confirmStockinOrderToOms($arrInput);
     }
 }

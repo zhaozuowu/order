@@ -69,6 +69,12 @@ class Order_Define_Cmd
     const CMD_SYNC_INBOUND_NWMS = 'nscm_purchase_order_sync';
 
     /**
+     * cmd confirm stockin order notify oms
+     * @var string
+     */
+    const CMD_NOTIFY_OMS_CONFIRM_STOCKIN_ORDER = 'notify_oms_confirm_stockin_order';
+
+    /**
      * wmq使用的默认配置
      * @var array
      */

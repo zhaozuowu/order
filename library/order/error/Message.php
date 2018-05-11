@@ -82,6 +82,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::STOCKIN_ORDER_NOT_EXISTED => '入库单不存在',
         Order_Error_Code::STOCKIN_ORDER_STATUS_INVALID => '入库单已作废,无法入库',
         Order_Error_Code::STOCKIN_ORDER_STATUS_FINISHED => '此订单已入库完成，无需再次入库',
+        Order_Error_Code::NWMS_ORDER_STOCKIN_ORDER_CONFIRM_STOCKIN_TO_OMS_FAIL => '确认销退入库单结果通知OMS失败',
     ];
 
 }
