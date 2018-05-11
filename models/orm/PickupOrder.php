@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @property int $id
  * @property int $pickup_order_id
@@ -39,8 +38,71 @@
 
 class Model_Orm_PickupOrder extends Order_Base_Orm
 {
-
     public static $tableName = 'pickup_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+
+    /**
+     * get pick up order
+     * @param $arrWarehouseIds
+     * @param $intCreateStartTime
+     * @param $intCreateEndTime
+     * @param $intPageSize
+     * @param int $intPageNum
+     * @param int $intStockoutOrderId
+     * @param int $intPickupOrderId
+     * @param int $intPickupOrderIsPrint
+     * @param int $intUpdateStartTime
+     * @param int $intUpdateEndTime
+     * @return array
+     */
+    public static function getPickupOrderList($arrWarehouseIds,
+                                              $intCreateStartTime,
+                                              $intCreateEndTime,
+                                              $intPageSize,
+                                              $intPageNum = 1,
+                                              $intStockoutOrderId = 0,
+                                              $intPickupOrderId = 0,
+                                              $intPickupOrderIsPrint = 0,
+                                              $intUpdateStartTime = 0,
+                                              $intUpdateEndTime = 0)
+    {
+        $arrCondition = [];
+        $arrCols = self::getAllColumns();
+        $arrCondition['create_time'] = [
+            'between',
+            $intCreateStartTime,
+            $intCreateEndTime,
+        ];
+        if (!empty($arrWarehouseIds)) {
+            $arrCondition['warehouse_id'] = ['in', $arrWarehouseIds];
+        }
+        if (!empty($intUpdateStartTime) && !empty($intUpdateEndTime)) {
+            $arrCondition['update_time'] = [
+                'between',
+                $intUpdateStartTime,
+                $intUpdateEndTime,
+            ];
+        }
+        if (!empty($intPickupOrderId)) {
+            $arrCondition['pickup_order_id'] = $intPickupOrderId;
+        }
+        if (!empty($intPickupOrderIsPrint) && in_array($intPickupOrderIsPrint,
+                Order_Define_PickupOrder::PICKUP_ORDER_PRINT_STATUS)) {
+            $arrCondition['pickup_order_is_print'] = $intPickupOrderIsPrint;
+        }
+        $arrCondition['is_delete'] = Order_Define_Const::NOT_DELETE;
+        $arrOrderBy= ['id' => 'desc'];
+        $intOffset = (intval($intPageNum) - 1) * intval($intPageSize);
+        $intLimit = empty($intPageSize) ? null : intval($intPageSize);
+
+        $arrRowsAndTotal = self::findRowsAndTotalCount(
+            $arrCols,
+            $arrCondition,
+            $arrOrderBy,
+            $intOffset,
+            $intLimit);
+        return $arrRowsAndTotal;
+    }
 }

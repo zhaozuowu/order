@@ -232,5 +232,87 @@ class Service_Data_PickupOrder
         return $createParam;
     }
 
+    /**
+     * 根据pickup_order_id获取拣货单信息
+     * @param $intPickupOrderId
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function getPickupOrderByPickupOrderId($intPickupOrderId)
+    {
+        $arrConds = [
+            'pickup_order_id' => $intPickupOrderId,
+            'is_delete'       => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrPickupOrder = Model_Orm_PickupOrder::findRow(Model_Orm_PickupOrder::getAllColumns(), $arrConds);
+        if (empty($arrPickupOrder)) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
+        }
 
+        $arrPickupOrderSkus = Model_Orm_PickupOrderSku::findRows(Model_Orm_PickupOrderSku::getAllColumns(), $arrConds);
+        $arrPickupOrder['pickup_skus'] = $arrPickupOrderSkus;
+        return $arrPickupOrder;
+    }
+
+    /**
+     * get pick up order list
+     * @param $strWarehouseIds
+     * @param $intCreateStartTime
+     * @param $intCreateEndTime
+     * @param $intPageSize
+     * @param int $intPageNum
+     * @param int $intStockoutOrderId
+     * @param int $intPickupOrderId
+     * @param int $intPickupOrderIsPrint
+     * @param int $intUpdateStartTime
+     * @param int $intUpdateEndTime
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getPickupOrderList($strWarehouseIds,
+                                       $intCreateStartTime,
+                                       $intCreateEndTime,
+                                       $intPageSize,
+                                       $intPageNum = 1,
+                                       $intStockoutOrderId = 0,
+                                       $intPickupOrderId = 0,
+                                       $intPickupOrderIsPrint = 0,
+                                       $intUpdateStartTime = 0,
+                                       $intUpdateEndTime = 0)
+    {
+        $ret = [];
+        // check time range
+        if (false === Order_Util::verifyUnixTimeSpan(
+                $intCreateStartTime,
+                $intCreateEndTime)) {
+            Order_BusinessError::throwException(
+                Order_Error_Code::QUERY_TIME_SPAN_ERROR);
+        }
+        if (false === Order_Util::verifyUnixTimeSpan(
+                $intUpdateStartTime,
+                $intUpdateEndTime)) {
+            Order_BusinessError::throwException(
+                Order_Error_Code::QUERY_TIME_SPAN_ERROR);
+        }
+        // check page
+        if (empty($intPageSize)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        // check warehouses
+        if(empty($strWarehouseIds)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $arrWarehouseIds = Order_Util::extractIntArray($strWarehouseIds);
+        $ret = Model_Orm_PickupOrder::getPickupOrderList($arrWarehouseIds,
+            $intCreateStartTime,
+            $intCreateEndTime,
+            $intPageSize,
+            $intPageNum,
+            $intStockoutOrderId,
+            $intPickupOrderId,
+            $intPickupOrderIsPrint,
+            $intUpdateStartTime,
+            $intUpdateEndTime);
+        return $ret;
+    }
 }

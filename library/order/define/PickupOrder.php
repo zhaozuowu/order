@@ -38,4 +38,25 @@ class Order_Define_PickupOrder
         self::PICKUP_ORDER_TYPE_NOT_SPLIT => '汇总拣货',
         self::PICKUP_ORDER_TYPE_ORDER => '订单拣货',
     ];
+
+    /**
+     * 未打印
+     * @var integer
+     */
+    const PICKUP_ORDER_NOT_PRINTED = 1;
+
+    /**
+     * 已打印
+     * @var integer
+     */
+    const PICKUP_ORDER_PRINTED = 2;
+
+    /**
+     * 打印状态
+     * @var array
+     */
+    const PICKUP_ORDER_PRINT_STATUS = [
+        self::PICKUP_ORDER_NOT_PRINTED,
+        self::PICKUP_ORDER_PRINTED,
+    ];
 }
