@@ -7,10 +7,6 @@
 
 class Action_CreatePickupOrder extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected  $boolCheckAuth = false;
-    protected  $boolCheckIp = false;
-
 
     /**
      * input params
@@ -32,7 +28,7 @@ class Action_CreatePickupOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Stockout_CreatePickupOrder();
+        $this->objPage = new Service_Page_Pickup_CreatePickupOrder();
 
         
     }

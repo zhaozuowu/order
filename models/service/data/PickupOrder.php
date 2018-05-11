@@ -315,4 +315,9 @@ class Service_Data_PickupOrder
             $intUpdateEndTime);
         return $ret;
     }
+
+    public function getPickupRowsPrintList($pickupOrderId)
+    {
+
+    }
 }

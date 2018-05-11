@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Service_Page_Stockout_CreatePickupOrder
+ * @name Service_Page_Pickup_CreatePickupOrder
  * @desc 生成拣货单
  * @author zhaozuowu@iwaimai.baidu.com
  */
 
-class Service_Page_Stockout_CreatePickupOrder
+class Service_Page_Pickup_CreatePickupOrder
 {
     /**
      * @var Service_Data_PickupOrder
