@@ -44,11 +44,7 @@ class Action_CreatePickupOrder extends Order_Base_Action
      */
     public function format($data)
     {
-        $res = ['failPickupNum'=>$data['failPickupNum'],'successPickNum'=>$data['successPickNum']];
-        if (!empty($data['failPickupNum'])) {
-            $res['message'] = $data['failPickupNum'].'单批量操作失败，请您刷新后重试，建议按单个出库单进行拣货操作。';
-        }
-        return $res;
+       return $data;
     }
 
 }

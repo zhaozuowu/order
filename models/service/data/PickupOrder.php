@@ -24,7 +24,7 @@ class Service_Data_PickupOrder
      */
     public function createPickupOrder($arrStockoutOrderIds, $pickupOrderType,$userId,$userName)
     {
-        $res = ['failStockoutOrderIds'=>0,'sucessStockoutOrderIds'=>0];
+        $res = ['failStockoutOrderIds'=>[],'sucessNum'=>0];
         if (!array_key_exists($pickupOrderType,Order_Define_PickupOrder::PICKUP_ORDER_TYPE_MAP)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR,'参数异常');
         }
@@ -78,6 +78,9 @@ class Service_Data_PickupOrder
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
             }
         });
+        $res['sucessNum'] = count($arrStockoutOrderIds);
+        $res['totalStockoutOrdedrIdNum'] = $totalPickupOrderNum;
+        return $res;
     }
     /**
      * @param $stockoutOrderList
