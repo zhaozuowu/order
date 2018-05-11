@@ -52,6 +52,29 @@ class Action_GetPickupOrderList extends Order_Base_Action
      */
     public function format($data)
     {
-        return $data;
+        $ret = [
+            'total' => 0,
+            'orders' => [],
+        ];
+        if (!empty($data['total'])) {
+            $ret['total'] = $data['total'];
+        }
+        foreach ((array)$data['rows'] as $item) {
+            $ret['orders'][] = [
+                'pickup_order_id' => $item['pickup_order_id'],
+                'pickup_order_type' => $item['pickup_order_type'],
+                'pickup_order_is_print' => $item['pickup_order_is_print'],
+                'pickup_order_status' => $item['pickup_order_status'],
+                'stockout_order_amount' => $item['stockout_order_amount'],
+                'sku_kind_amount' => $item['sku_kind_amount'],
+                'sku_pickup_amount' => $item['sku_pickup_amount'],
+                'sku_distribute_amount' => $item['sku_distribute_amount'],
+                'creator' => $item['creator'],
+                'create_time' => $item['create_time'],
+                'update_operator' => $item['update_operator'],
+                'update_time' => $item['update_time'],
+            ];
+        }
+        return $ret;
     }
 }

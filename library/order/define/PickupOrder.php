@@ -40,15 +40,23 @@ class Order_Define_PickupOrder
     ];
 
     /**
-     * 拣货单打印状态
+     * 未打印
+     * @var integer
      */
-    const PICKUP_ORDER_IS_NOT_PRINT = 1;
-    const PICKUP_ORDER_IS_PRINT = 2;
+    const PICKUP_ORDER_NOT_PRINTED = 1;
+
     /**
-     * 拣货单打印状态列表
+     * 已打印
+     * @var integer
      */
-    const PICKUP_ORDER_PRINT_LIST = [
-        self::PICKUP_ORDER_IS_NOT_PRINT => '未打印',
-        self::PICKUP_ORDER_IS_PRINT => '已打印',
+    const PICKUP_ORDER_PRINTED = 2;
+
+    /**
+     * 打印状态
+     * @var array
+     */
+    const PICKUP_ORDER_PRINT_STATUS = [
+        self::PICKUP_ORDER_NOT_PRINTED,
+        self::PICKUP_ORDER_PRINTED,
     ];
 }
