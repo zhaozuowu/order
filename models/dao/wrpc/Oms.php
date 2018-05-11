@@ -31,7 +31,8 @@ class Dao_Wrpc_Oms
     public function confirmStockinOrderToOms($arrData) {
         $strRoutingKey = sprintf("stockin_order_id=%s", $arrData['stockin_order_id']);
         $this->objWrpcService->setMeta(["routing-key"=>$strRoutingKey]);
-        $arrRet = $this->objWrpcService->confirmStockinOrder($arrData);
+        $arrParams = ['objData' => $arrData];
+        $arrRet = $this->objWrpcService->confirmStockinOrder($arrParams);
         Bd_Log::trace(sprintf("method[%s] confirmStockinOrder[%s]", __METHOD__, json_encode($arrRet)));
         if (0 != $arrRet['errno']) {
             Bd_Log::warning(sprintf("notify_oms_confirm_stockin_order_fail, error_no[%s], error_msg[%s]", $arrRet['errno'], $arrRet['errmsg']));
