@@ -303,4 +303,13 @@ class Order_Define_StockoutOrder
      * @var int
      */
     const STOCK_STATUS_SURE = 2;
+
+    /**
+     * sku event is back
+     */
+    const SKUS_EVENTS_IS_BACK_MAP = [
+        '1' => false,
+        '2'=>true,
+        '3'=>true,
+    ];
 }

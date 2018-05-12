@@ -45,6 +45,16 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 				'order_amount' => 'int|required|min[1]',
 			],
 		],
+        'skus_event' => [
+            'validate' => 'arr',
+            'type' => 'array',
+            'params' => [
+                'sku_id' => 'int',
+                'order_amount' => 'int',
+                'event_type'   => 'int'
+            ],
+
+        ],
 	];
 
 	/**
