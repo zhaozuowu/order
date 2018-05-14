@@ -40,9 +40,11 @@ class Action_GetPickupOrderPrint extends Order_Base_Action
             }
             $arrRet[$row['sku_id']]['sku_detail'][] = [
                 // @todo columns
+                // @zuowu.zhao@ele.me
             ];
         }
-
+        ksort($arrRet);
+        $arrRet = array_values($arrRet);
         return $arrRet;
     }
 
