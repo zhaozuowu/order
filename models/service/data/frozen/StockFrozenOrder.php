@@ -126,7 +126,8 @@ class Service_Data_Frozen_StockFrozenOrder
                                 $arrSkuInfos[$intSkuId]['sku_effect_type'],
                                 $arrDetail['production_time'],
                                 $arrDetail['expiration_time']
-                            )
+                            ),
+                            'location_code' => $arrDetail['location_code']
                         ];
                         $arrFrozenDetails[] = $arrFrozenDetail;
                     }
@@ -144,7 +145,7 @@ class Service_Data_Frozen_StockFrozenOrder
                     'remark' => Order_Define_StockFrozenOrder::FROZEN_ORDER_BY_SYSTEM_REMARK,
                     'stock_frozen_order_id' => $intOrderId,
                     'create_type' => Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_SYSTEM,
-                    'detail' => $arrFrozenDetails
+                    'detail' => $arrFrozenDetails,
                 ];
                 echo '[create_frozen_order_by_system]create frozen order param: ' . json_encode($arrInput) . "\n";
                 Bd_Log::trace('[create_frozen_order_by_system]create frozen order param: ' . json_encode($arrInput));
