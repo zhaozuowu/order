@@ -5,7 +5,7 @@
  * @author hang.song02@ele.me
  */
 
-class Action_Pickup_FinishPickupOrder extends Order_Base_Action
+class Action_FinishPickupOrder extends Order_Base_Action
 {
     protected $arrInputParams = [
         'pickup_order_id' => 'int|required',
