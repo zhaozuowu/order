@@ -539,6 +539,31 @@ class Service_Data_PickupOrder
     }
 
     /**
+     * 获取sku库区库位
+     * @param $intPickupOrderId
+     * @param $intSkuId
+     * @return array
+     * @throws Order_BusinessError
+     * @throws Nscm_Exception_Error
+     */
+    public function getSkuLocation($intPickupOrderId, $intSkuId)
+    {
+        if (empty($intPickupOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        if (empty($intSkuId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $arrPickupOrderInfo = Model_Orm_PickupOrder::getPickupOrderInfo($intPickupOrderId, true);
+        if (empty($arrPickupOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
+        }
+        $intWarehouseId = $arrPickupOrderInfo['warehouse_id'];
+        $objRal = new Dao_Ral_Stock();
+        return $objRal->getSkuLocation($intWarehouseId, $intSkuId);
+    }
+
+    /**
      * 通知tms完成拣货（wmq）
      * @param $strStockoutOrderId
      * @param $pickupSkus
