@@ -28,6 +28,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         'start_time' => 'int|required',
         'end_time' => 'int|required',
         'data_source' => 'int',
+        'is_pickup_ordered' => 'int|default[-1]',
     ];
 
     /**

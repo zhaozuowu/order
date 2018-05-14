@@ -30,6 +30,12 @@ class Order_Error_Code extends Wm_Error_Code
     const PARAMS_ERROR = 200001;
 
     /**
+     * 接口被废弃
+     * @var integer
+     */
+    const INTERFACE_HAS_BEEN_DISCARDED = 200002;
+
+    /**
      * =============
      * 业务异常300000
      * =============
@@ -577,4 +583,16 @@ class Order_Error_Code extends Wm_Error_Code
      * 拣货单不存在
      */
     const PICKUP_ORDER_NOT_EXISTED = 390010;
+    /**
+     * 拣货单不存在
+     */
+    const PICKUP_ORDER_CANCEL_FAILED = 390020;
+    /**
+     * 拣货商品数量小于等于零
+     */
+    const PICKUP_AMOUNT_ERROR = 390030;
+    /**
+     * 拣货单商品不存在
+     */
+    const PICKUP_ORDER_SKUS_NOT_EXISTED = 390031;
 }

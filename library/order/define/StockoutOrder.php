@@ -317,4 +317,21 @@ class Order_Define_StockoutOrder
         self::PICKUP_ORDERE_NOT_CREATED => '未生成',
         self::PICKUP_ORDER_TYPE_ORDER => '已生成',
     ];
+
+    /// the following three constants are for matching user input
+    /// and they are limit on self::PICKUP_ORDERE_xx_CREATED
+    /**
+     * not created
+     */
+    const PICKUP_ORDER_NOT_CREATED_STRING = '0';
+
+    /**
+     * is created
+     */
+    const PICKUP_ORDER_IS_CREATED_STRING = '1';
+
+    /**
+     * all
+     */
+    const PICKUP_ORDER_ALL_STRING = '-1';
 }

@@ -64,5 +64,14 @@ class  Order_Define_Const
      * 默认库区编码
      */
     const DEFAULT_AREA_CODE = '';
+
+    /**
+     * 更新成功
+     */
+    const UPDATE_SUCCESS = 1;
+    /**
+     * 更新失败
+     */
+    const UPDATE_FAILURE = 2;
     
 }

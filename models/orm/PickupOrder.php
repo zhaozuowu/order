@@ -106,4 +106,61 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
             $intLimit);
         return $arrRowsAndTotal;
     }
+
+    /**
+     * @param array $arrWarehouseIds
+     * @param array $arrStatus
+     * @param array $arrType
+     * @return int
+     */
+    public static function getCountByWarehouseIdStatusType(array $arrWarehouseIds, array $arrStatus, array $arrType = [])
+    {
+        if (empty($arrWarehouseIds) || empty($arrStatus)) {
+            return 0;
+        }
+        $arrCond = [
+            'warehouse_id' => ['in', $arrWarehouseIds],
+            'pickup_order_status' => ['in', $arrStatus],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        if (!empty($arrType)) {
+            $arrCond['pickup_order_type'] = ['in', $arrType];
+        }
+        return self::count($arrCond);
+    }
+
+    /**
+     * @param array $arrOrderIds
+     * @return array
+     */
+    public static function getOrderInfoByOrderIds(array $arrOrderIds)
+    {
+        if (empty($arrOrderIds)) {
+            return [];
+        }
+        $arrCond = [
+            'pickup_order_id' => ['in', $arrOrderIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        return self::findRows(self::getAllColumns(), $arrCond);
+    }
+
+    /**
+     * 获取拣货订单对象
+     * @param int   $intPickupOrderId
+     * @param bool  $boolFormatArr
+     * @return Model_Orm_PickupOrder|array
+     */
+    public static function getPickupOrderInfo($intPickupOrderId, $boolFormatArr = false)
+    {
+        $arrCondition = [
+            'pickup_order_id' => $intPickupOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $objPickupOrderInfo = self::findOne($arrCondition);
+        if ($boolFormatArr) {
+            return $objPickupOrderInfo->toArray();
+        }
+        return $objPickupOrderInfo;
+    }
 }

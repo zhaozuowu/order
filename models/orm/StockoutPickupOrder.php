@@ -53,4 +53,23 @@ class Model_Orm_StockoutPickupOrder extends Order_Base_Orm
         }
         return $ret;
     }
+
+    /**
+     * 根据捡获单id获取出库单号
+     * @param $pickupOrderId
+     * @return array
+     */
+    public static function getStockoutOrderIdsByPickupOrderId($pickupOrderId)
+    {
+        $arrCondtions = [
+            'pickup_order_id' => $pickupOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrColumns = ['stockout_order_id'];
+        $arrRet = self::findRows($arrColumns, $arrCondtions);
+        if (empty($arrRet)) {
+            return [];
+        }
+        return array_column($arrRet,'stockout_order_id');
+    }
 }

@@ -798,6 +798,13 @@ class Service_Data_StockoutOrder
                 $arrListConditions['data_source']= ['in', [Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER,Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_OMS]];
             }
         }
+        // it strongly depends on validator type
+        // int validator returns a int number, but its TYPE IS STRING!
+        // @author bochao.lv@ele.me
+        if (Order_Define_StockoutOrder::PICKUP_ORDER_IS_CREATED_STRING === $arrInput['is_pickup_ordered'] ||
+            Order_Define_StockoutOrder::PICKUP_ORDER_NOT_CREATED_STRING === $arrInput['is_pickup_ordered']) {
+            $arrListConditions['is_pickup_ordered'] = intval($arrInput['is_pickup_ordered']);
+        }
         return $arrListConditions;
     }
 
