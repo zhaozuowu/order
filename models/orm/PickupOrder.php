@@ -105,4 +105,23 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
             $intLimit);
         return $arrRowsAndTotal;
     }
+
+    /**
+     * 获取拣货订单对象
+     * @param int   $intPickupOrderId
+     * @param bool  $boolFormatArr
+     * @return Model_Orm_PickupOrder|array
+     */
+    public static function getPickupOrderInfo($intPickupOrderId, $boolFormatArr = false)
+    {
+        $arrCondition = [
+            'pickup_order_id' => $intPickupOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $objPickupOrderInfo = self::findOne($arrCondition);
+        if ($boolFormatArr) {
+            return $objPickupOrderInfo->toArray();
+        }
+        return $objPickupOrderInfo;
+    }
 }

@@ -102,6 +102,9 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_code::STOCKOUT_ORDER_PICKUP_ORDER_IS_CREATED=>'当前所选出库单都已经生成拣货单，请勿重复操作',
         Order_Error_code::INVALID_STOCKOUT_ORDER_WAREHOUSE_NOT_CREATE_PICKUP_ORDER=>'当前出库单不在同一个仓库，无法生成拣货单',
         Order_Error_Code::PICKUP_ORDER_NOT_EXISTED => '拣货单不存在',
+        Order_Error_Code::PICKUP_ORDER_CANCEL_FAILED => '拣货单取消失败',
+        Order_Error_Code::PICKUP_AMOUNT_ERROR => '拣货商品数量小于等于零',
+        Order_Error_Code::PICKUP_ORDER_SKUS_NOT_EXISTED => '拣货单商品不存在',
     ];
 
 }

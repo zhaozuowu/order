@@ -312,4 +312,283 @@ class Service_Data_PickupOrder
             $intUpdateEndTime);
         return $ret;
     }
+
+    /**
+     * 取消拣货单
+     * @param $intPickupOrderId
+     * @param $userId
+     * @param $userName
+     * @return int
+     * @throws Order_BusinessError
+     */
+    public function cancelPickupOrderById($intPickupOrderId,  $userId, $userName)
+    {
+        if (empty($intPickupOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $objPickupOrder = Model_Orm_PickupOrder::getPickupOrderInfo($intPickupOrderId);
+
+        if (empty($objPickupOrder)) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
+        }
+        //update obj
+        $objPickupOrder->pickup_order_status = Order_Define_PickupOrder::PICKUP_ORDER_STATUS_CANCEL;
+        $objPickupOrder->update_operator = $userName;
+        $updateFlag =  $objPickupOrder->update();
+        if (!$updateFlag) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_CANCEL_FAILED);
+        }
+        return Order_Define_Const::UPDATE_SUCCESS;
+    }
+
+    /**
+     * 拣货完成
+     * @param int   $intPickupOrderId 拣货单id
+     * @param array $arrPickupSkus  拣货单中sku
+     * @param int   $userId 操作人id
+     * @param string $userName 操作人name
+     * @return int
+     * @throws Order_BusinessError
+     * @throws Exception
+     */
+    public function finishPickupOrder($intPickupOrderId, $arrPickupSkus, $userId, $userName)
+    {
+        if (empty($intPickupOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        if (empty($userId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        if (empty($userName)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        if (empty($arrPickupSkus)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $objPickupOrderInfo = Model_Orm_PickupOrder::getPickupOrderInfo($intPickupOrderId, true);
+        if (empty($objPickupOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
+        }
+        if (Order_Define_PickupOrder::PICKUP_ORDER_STATUS_INIT != $objPickupOrderInfo->pickup_order_status) {
+            Bd_Log::warning("pickupOrder can't modify pickup_order_status by pickupOrderId:". $intPickupOrderId);
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
+        }
+        $boolCheckStatus = $this->checkoutPickupAmount($arrPickupSkus);
+        if ($boolCheckStatus) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_AMOUNT_ERROR);
+        }
+        $arrPickupSkuPickupAmount = array_column($arrPickupSkus, 'pickup_amount');
+        $intPickupOrderSkuAmount = array_sum($arrPickupSkuPickupAmount);
+        $intPickupOrderSkuKindCount = 0;
+        foreach ($arrPickupSkuPickupAmount as $intPickupAmount) {
+            if (!empty($intPickupAmount)) {
+                $intPickupOrderSkuKindCount ++;
+            }
+        }
+        //拼装更新sku数据
+        list($arrSkuUpdateFields, $arrSkuUpdateCondition) = $this->assemblePickupOrderSkuList($arrPickupSkus, $intPickupOrderId);
+        $arrStockoutOrderPickupList = $this->assembleStockoutOrderSkuList($intPickupOrderId, $arrPickupSkus);
+        //开启事务写入数据
+        Model_Orm_PickupOrder::getConnection()->transaction(function () use ($arrSkuUpdateFields, $arrSkuUpdateCondition,
+                $intPickupOrderId, $userName, $userId, $intPickupOrderSkuAmount, $intPickupOrderSkuKindCount,
+                $objPickupOrderInfo, $arrPickupSkus, $arrStockoutOrderPickupList){
+            //更新订单数据
+            $objPickupOrderInfo->sku_pickup_amount = $intPickupOrderSkuAmount;
+            $objPickupOrderInfo->sku_kind_amount = $intPickupOrderSkuKindCount;
+            $objPickupOrderInfo->update_operator = $userName;
+            $objPickupOrderInfo->update();
+            //更新拣货单sku
+            Model_Orm_PickupOrderSku::updateAll($arrSkuUpdateFields, $arrSkuUpdateCondition);
+            //更新出库单
+            foreach ($arrStockoutOrderPickupList as $arrStockoutOrderPickupInfo) {
+                $intStockoutOrderId = $arrStockoutOrderPickupInfo['stockout_order_id'];
+                $arrPickupStockOrderSkus = $arrStockoutOrderPickupInfo['pickup_skus'];
+                $stockoutOrderPickupAmount = array_sum(array_column($arrPickupStockOrderSkus, 'pickup_amount'));
+                $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($intStockoutOrderId);//获取出库订单信息
+                $nextStockoutStatus = $this->getNextStockoutOrderStatus($stockoutOrderInfo['stockout_order_status']);
+                $updateData = [
+                    'stockout_order_status' => $nextStockoutStatus,
+                    'stockout_order_pickup_amount' => $stockoutOrderPickupAmount,
+                    'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
+                ];
+                $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($intStockoutOrderId, $updateData);
+                if (empty($result)) {
+                    Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+                }
+                foreach ($arrPickupStockOrderSkus as $item) {
+                    $condition = [
+                        'stockout_order_id' => $intStockoutOrderId,
+                        'sku_id' => $item['sku_id'],
+                    ];
+                    $skuUpdateData = ['pickup_amount' => $item['pickup_amount']];
+                    $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdateData);
+                }
+                $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
+                $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
+                $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
+                $this->addLog($userId, $userName, '完成揽收:'.$intStockoutOrderId,$operationType, $intStockoutOrderId);
+                $this->notifyTmsFnishPick($intStockoutOrderId, $arrPickupStockOrderSkus);
+            }
+        });
+        foreach ($arrStockoutOrderPickupList as $arrStockoutOrderPickupInfo) {
+            $intStockoutOrderId = $arrStockoutOrderPickupInfo['stockout_order_id'];
+            Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
+                Order_Statistics_Type::ACTION_UPDATE,
+                $intStockoutOrderId);//更新报表
+        }
+        return Order_Define_Const::UPDATE_SUCCESS;
+    }
+
+    /**
+     * 拣货数量检查
+     * @param array $arrPickupSkus
+     * @return bool
+     */
+    private function checkoutPickupAmount($arrPickupSkus): bool
+    {
+        $boolCheckStatus = true;
+        foreach ($arrPickupSkus as $arrSkuInfo) {
+            if (!empty($arrSkuInfo['pickup_amount'])) {
+                $boolCheckStatus = false;
+                break;
+            }
+        }
+        return $boolCheckStatus;
+    }
+
+    /**
+     * 拼装拣货商品DB数据
+     * @param array $arrPickupSkus
+     * @param int   $intPickupOrderId
+     * @return array
+     */
+    private function assemblePickupOrderSkuList($arrPickupSkus, $intPickupOrderId)
+    {
+
+        $arrUpdateCondition = [];
+        $arrUpdateFields = [];
+        foreach ($arrPickupSkus as $arrSkuInfo) {
+            $arrUpdateFields[] = [
+                'pickup_amount' => 'pickup_amount',
+            ];
+            $arrUpdateCondition[] = [
+                'pickup_order_id' => $intPickupOrderId,
+                'sku_id' => $arrSkuInfo['sku_id'],
+            ];
+        }
+        return [
+            'arrSkuUpdateFields' => $arrUpdateFields,
+            'arrSkuUpdateCondition' => $arrUpdateCondition,
+        ];
+    }
+
+    /**
+     * 拼装出库单拣货所需参数
+     * @param $intPickupOrderId
+     * @param $arrPickupSkus
+     * @return array
+     * @throws Order_BusinessError
+     */
+    private function assembleStockoutOrderSkuList($intPickupOrderId, $arrPickupSkus)
+    {
+        $arrPickupSkusMap = [];
+        foreach ($arrPickupSkus as $arrPickupSku) {
+            if (isset($arrPickupSkusMap[$arrPickupSku['sku_id']])) {
+                $arrPickupSkusMap[$arrPickupSku['sku_id']] += $arrPickupSku['pickup_amount'];
+                continue;
+            }
+            $arrPickupSkusMap[$arrPickupSku['sku_id']] = $arrPickupSku['pickup_amount'];
+        }
+        $arrPickupSkusDB = Model_Orm_PickupOrderSku::getSkuListByPickupOrderId($intPickupOrderId);
+        if (empty($arrPickupSkusDB)) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_SKUS_NOT_EXISTED);
+        }
+        $arrStockouOrderIds = array_unique(array_column($arrPickupSkusDB, 'stockout_order_id'));
+        $objOrmSku = new Model_Orm_StockoutOrderSku();
+
+        $arrStockouOrderSkuPickupMap = [];
+        $arrStockouOrderSkuPickupList = [];
+        $arrStockouOrderSkuList = $objOrmSku->getStockoutOrderSkusByOrderIds($arrStockouOrderIds);
+        foreach ($arrStockouOrderSkuList as $arrStockoutOrderSku) {
+            $intStockoutOrderId = $arrStockoutOrderSku['stockout_order_id'];
+            $intSkuId = $arrStockoutOrderSku['sku_id'];
+            $intSkuDistributeAmount = $arrStockoutOrderSku['distribute_amount'];
+            if (empty($arrPickupSkusMap[$intSkuId])) {
+                continue;
+            }
+            if (0 > $arrPickupSkusMap[$intSkuId] - $intSkuDistributeAmount) {
+                $arrStockouOrderSkuPickupMap[$intStockoutOrderId][$intSkuId] = $arrPickupSkusMap[$intSkuId];
+                $arrPickupSkusMap[$intSkuId] = 0;
+            } else {
+                $arrStockouOrderSkuPickupMap[$intStockoutOrderId][$intSkuId] = $intSkuDistributeAmount;
+            }
+        }
+
+        foreach ($arrStockouOrderSkuPickupMap as $intStockoutOrderId => $arrStockouOrderSkuPickupInfo) {
+            $arrStockouOrderSkuPickupItem['stockout_order_id'] = $intStockoutOrderId;
+            foreach ($arrStockouOrderSkuPickupInfo as $intSkuId => $intSkuPickupAmount) {
+                $arrStockouOrderSkuPickupItem['pickup_skus'][] = [
+                    'sku_id' => $intSkuId,
+                    'pickup_amount' => $intSkuPickupAmount,
+                ];
+            }
+            $arrStockouOrderSkuPickupList[] = $arrStockouOrderSkuPickupItem;
+        }
+        return $arrStockouOrderSkuPickupList;
+    }
+
+    /**
+     * 通知tms完成拣货（wmq）
+     * @param $strStockoutOrderId
+     * @param $pickupSkus
+     * @return array
+     * @throws Order_BusinessError
+     */
+    private function notifyTmsFnishPick($strStockoutOrderId, $pickupSkus)
+    {
+        $intShipmentOrderId = Model_Orm_StockoutOrder::
+        getShipmentOrderIdByStockoutOrderId($strStockoutOrderId);
+        $arrStockoutParams = [
+            'stockout_order_id' => strval($strStockoutOrderId),
+            'shipment_order_id' => strval($intShipmentOrderId),
+            'pickup_skus' => $pickupSkus
+        ];
+        $strCmd = Order_Define_Cmd::CMD_FINISH_PRICKUP_ORDER;
+        $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrStockoutParams, $strStockoutOrderId);
+        if (false == $ret) {
+            Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL);
+        }
+        return [];
+    }
+
+    /**
+     * 获取下一步操作的出库单操作状态
+     * @param $stockoutOrderStatus
+     * @return bool
+     */
+    private function getNextStockoutOrderStatus($stockoutOrderStatus)
+    {
+        $stockoutOrderList = Order_Define_StockoutOrder::STOCK_OUT_ORDER_STATUS_LIST;
+        if (!array_key_exists($stockoutOrderStatus, $stockoutOrderList)) {
+            return false;
+        }
+        $keys = array_keys($stockoutOrderList);
+        $result = $keys[array_search($stockoutOrderStatus, $keys) + 1] ?? false;
+        return $result;
+    }
+
+    /**
+     * write log
+     * @param $operatorId
+     * @param $userName
+     * @param $operationType
+     * @param $quotaIdxInt1
+     * @param $content
+     */
+    private function addLog($operatorId, $userName, $content, $operationType, $quotaIdxInt1)
+    {
+        $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE;
+        (new Dao_Ral_Log())->addLog($logType,$quotaIdxInt1,$operationType,$userName,$operatorId,$content);
+    }
 }
