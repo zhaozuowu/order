@@ -316,14 +316,28 @@ class Service_Data_PickupOrder
         if(empty($strWarehouseIds)){
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
+        // query pickup order ids by stockout order id
+        if (!empty($intStockoutOrderId)) {
+            $arrPickupOrderIds = Model_Orm_StockoutPickupOrder::getPickupOrderIdsByStockoutOrderId($intStockoutOrderId);
+            if (empty($arrPickupOrderIds)) {
+                return $ret;
+            }
+        } else {
+            $arrPickupOrderIds = [];
+        }
+        // and logical
+        if (!empty($intPickupOrderId)) {
+            $arrPickupOrderIds = [
+                $intPickupOrderId,
+            ];
+        }
         $arrWarehouseIds = Order_Util::extractIntArray($strWarehouseIds);
         $ret = Model_Orm_PickupOrder::getPickupOrderList($arrWarehouseIds,
             $intCreateStartTime,
             $intCreateEndTime,
             $intPageSize,
             $intPageNum,
-            $intStockoutOrderId,
-            $intPickupOrderId,
+            $arrPickupOrderIds,
             $intPickupOrderIsPrint,
             $intUpdateStartTime,
             $intUpdateEndTime);

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @property int $id
  * @property int $stockout_order_id
@@ -27,10 +26,33 @@
 
 class Model_Orm_StockoutPickupOrder extends Order_Base_Orm
 {
-
     public static $tableName = 'stockout_pickup_order';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * get pickup order ids
+     * @param $intStockoutOrderId
+     * @return array
+     */
+    public static function getPickupOrderIdsByStockoutOrderId($intStockoutOrderId)
+    {
+        $ret = [];
+        $arrFields = [
+            'pickup_order_id'
+        ];
+        $arrConds = [];
+        $arrConds['stockout_order_id'] = intval($intStockoutOrderId);
+        $arrConds['is_delete'] = Order_Define_Const::NOT_DELETE;
+        $arrOrderBy = [
+            'id' => 'desc',
+        ];
+        $retDB = self::findRows($arrFields, $arrConds, $arrOrderBy);
+        foreach ((array)$retDB as $arrRelationOfPickupAndStockout) {
+            $ret[] = $arrRelationOfPickupAndStockout['pickup_order_id'];
+        }
+        return $ret;
+    }
 
     /**
      * 根据捡获单id获取出库单号

@@ -50,8 +50,7 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
      * @param $intCreateEndTime
      * @param $intPageSize
      * @param int $intPageNum
-     * @param int $intStockoutOrderId
-     * @param int $intPickupOrderId
+     * @param array $arrPickupOrderIds
      * @param int $intPickupOrderIsPrint
      * @param int $intUpdateStartTime
      * @param int $intUpdateEndTime
@@ -62,8 +61,7 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
                                               $intCreateEndTime,
                                               $intPageSize,
                                               $intPageNum = 1,
-                                              $intStockoutOrderId = 0,
-                                              $intPickupOrderId = 0,
+                                              $arrPickupOrderIds = [],
                                               $intPickupOrderIsPrint = 0,
                                               $intUpdateStartTime = 0,
                                               $intUpdateEndTime = 0)
@@ -75,9 +73,6 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
             $intCreateStartTime,
             $intCreateEndTime,
         ];
-        if (!empty($arrWarehouseIds)) {
-            $arrCondition['warehouse_id'] = ['in', $arrWarehouseIds];
-        }
         if (!empty($intUpdateStartTime) && !empty($intUpdateEndTime)) {
             $arrCondition['update_time'] = [
                 'between',
@@ -85,8 +80,14 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
                 $intUpdateEndTime,
             ];
         }
-        if (!empty($intPickupOrderId)) {
-            $arrCondition['pickup_order_id'] = $intPickupOrderId;
+        if (!empty($arrWarehouseIds)) {
+            $arrCondition['warehouse_id'] = ['in', $arrWarehouseIds];
+        }
+        if (!empty($arrPickupOrderIds)) {
+            $arrCondition['pickup_order_id'] = [
+                'in',
+                $arrPickupOrderIds,
+            ];
         }
         if (!empty($intPickupOrderIsPrint) && in_array($intPickupOrderIsPrint,
                 Order_Define_PickupOrder::PICKUP_ORDER_PRINT_STATUS)) {
