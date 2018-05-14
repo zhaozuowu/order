@@ -24,7 +24,7 @@ class Service_Data_PickupOrder
      */
     public function createPickupOrder($arrStockoutOrderIds, $pickupOrderType,$userId,$userName)
     {
-        $res = ['failStockoutOrderIds'=>0,'sucessStockoutOrderIds'=>0];
+        $res = ['failStockoutOrderIds'=>[],'sucessNum'=>0];
         if (!array_key_exists($pickupOrderType,Order_Define_PickupOrder::PICKUP_ORDER_TYPE_MAP)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR,'参数异常');
         }
@@ -78,6 +78,9 @@ class Service_Data_PickupOrder
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
             }
         });
+        $res['sucessNum'] = count($arrStockoutOrderIds);
+        $res['totalStockoutOrdedrIdNum'] = $totalPickupOrderNum;
+        return $res;
     }
     /**
      * @param $stockoutOrderList
@@ -311,6 +314,40 @@ class Service_Data_PickupOrder
             $intUpdateStartTime,
             $intUpdateEndTime);
         return $ret;
+    }
+
+    /**
+     * 打印
+     * @param $pickupOrderId
+     * @return array
+     */
+    public function getPickupRowsPrintList($pickupOrderId)
+    {
+        $list = [];
+        $arrStockoutOrderIds = Model_Orm_StockoutPickupOrder::getStockoutOrderIdsByPickupOrderId($pickupOrderId);
+        if (empty($arrStockoutOrderIds)) {
+            return $list;
+        }
+
+        $arrConditions = [
+            'stockout_order_id' => ['in', $arrStockoutOrderIds],
+        ];
+        $arrColumns = $this->objOrmStockoutOrder->getAllColumns();
+        $stockoutOrderList= $this->objOrmStockoutOrder->findRows($arrColumns, $arrConditions);
+        if (empty($stockoutOrderList)) {
+            return [];
+        }
+        $arrColumns = $this->objOrmSku->getAllColumns();
+        $stockoutOrderSkuList= $this->objOrmSku->findRows($arrColumns, $arrConditions);
+        $skuList = [];
+        foreach($stockoutOrderSkuList as $skuKey=>$skuItem) {
+            $skuList[$skuItem['stockout_order_id']][] = $skuItem;
+        }
+        foreach ($stockoutOrderList as $key =>$item) {
+            $item['stockout_order_skuinfo'] = isset($skuList[$item['stockout_order_id']]) ? $skuList[$item['stockout_order_id']]:[];
+            $list[$item['pickup_tms_snapshoot_num']][] = $item;
+        }
+        return $list;
     }
 
     /**
