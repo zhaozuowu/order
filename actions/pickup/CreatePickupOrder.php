@@ -7,10 +7,6 @@
 
 class Action_CreatePickupOrder extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected  $boolCheckAuth = false;
-    protected  $boolCheckIp = false;
-
 
     /**
      * input params
@@ -32,7 +28,7 @@ class Action_CreatePickupOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Stockout_CreatePickupOrder();
+        $this->objPage = new Service_Page_Pickup_CreatePickupOrder();
 
         
     }
@@ -44,11 +40,7 @@ class Action_CreatePickupOrder extends Order_Base_Action
      */
     public function format($data)
     {
-        $res = ['failPickupNum'=>$data['failPickupNum'],'successPickNum'=>$data['successPickNum']];
-        if (!empty($data['failPickupNum'])) {
-            $res['message'] = $data['failPickupNum'].'单批量操作失败，请您刷新后重试，建议按单个出库单进行拣货操作。';
-        }
-        return $res;
+       return $data;
     }
 
 }

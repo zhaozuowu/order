@@ -119,6 +119,8 @@ class Service_Data_Stock
     public function getStockFrozenInfo($arrInput)
     {
         $arrRet = [];
+
+        //get stock info
         $arrStockFrozenInfo = $this->objDaoStock->getStockFrozenInfo(
             $arrInput['warehouse_id'],
             $arrInput['sku_id'],
@@ -132,7 +134,10 @@ class Service_Data_Stock
             return $arrRet;
         }
 
+        //get sku info
         $arrSkuInfo = $this->objDaoSku->getSkuInfos(array_unique(array_column($arrStockFrozenInfo['detail'], 'sku_id')));
+
+        //merge detail
         $arrSkus = [];
         foreach ($arrStockFrozenInfo['detail'] as $arrItem) {
             $intSkuId = $arrItem['sku_id'];
@@ -143,6 +148,7 @@ class Service_Data_Stock
             }
         }
 
+        //return
         $arrRet['total'] = $arrStockFrozenInfo['total'];
         $arrRet['skus'] = $arrSkus;
         return $arrRet;

@@ -24,4 +24,21 @@ class Order_Define_Wrpc
      * @var string
      */
     const TMS_SERVICE_NAME = 'WmsReferService';
+    /**
+     * nwms app id
+     * @var string
+     */
+    const NWMS_APP_ID = 'bdwaimai_earthnet.nwms';
+
+    /**
+     * nwms_stock_namespace
+     * @var string
+     */
+    const NWMS_STOCK_NAMESPACE = 'stock';
+
+    /**
+     * nwms stock service name
+     * @var string
+     */
+    const NWMS_STOCK_SERVICE_NAME = 'StockService';
 }

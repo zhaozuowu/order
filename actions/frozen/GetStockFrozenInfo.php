@@ -7,6 +7,7 @@
 
 class Action_GetStockFrozenInfo extends Order_Base_Action
 {
+
     /**
      * input params
      * @var array
@@ -69,12 +70,14 @@ class Action_GetStockFrozenInfo extends Order_Base_Action
             }
             $arrFormatDetail['upc_unit'] = empty($value['min_upc']['upc_unit']) ? '' : $this->formatSkuUpcUnit($value['min_upc']['upc_unit']);
             $arrFormatDetail['upc_unit_num'] = empty($value['min_upc']['upc_unit_num']) ? '' : '1*' . $value['min_upc']['upc_unit_num'];
+
             if(!empty($value['detail'])) {
                 foreach ($value['detail'] as $arrStockDetailRet) {
                     $arrStockDetail = [];
                     $arrStockDetail['freezable_amount'] = !isset($arrStockDetailRet['freezable_amount']) ? '' : strval($arrStockDetailRet['freezable_amount']);
                     $arrStockDetail['is_defective_text'] = empty($arrStockDetailRet['is_defective_text']) ? '' : $arrStockDetailRet['is_defective_text'];
                     $arrStockDetail['is_defective'] = empty($arrStockDetailRet['is_defective']) ? '' : $arrStockDetailRet['is_defective'];
+                    $arrStockDetail['location_code'] = empty($arrStockDetailRet['location_code']) ? '' : $arrStockDetailRet['location_code'];
 
                     if (Nscm_Define_Sku::SKU_EFFECT_FROM == $value['sku_effect_type']) {
                         $arrStockDetail['production_or_expiration_time'] = strtotime(date('Y-m-d',

@@ -59,4 +59,17 @@ class Model_Orm_PickupOrderSku extends Order_Base_Orm
         ];
         return self::findRows(self::getAllColumns(), $arrCond);
     }
+
+    /**
+     * @param $intPickupOrderId
+     * @return array
+     */
+    public static function getSkuListByPickupOrderId($intPickupOrderId)
+    {
+        $arrConds = [
+            'pickup_order_id' => $intPickupOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        return self::findRows(self::getAllColumns(), $arrConds);
+    }
 }
