@@ -57,8 +57,8 @@ class Model_Orm_StockoutOrderSku extends Order_Base_Orm
 
     /**
      * 更新出库单sku信息
-     * @param $condition 查询条件
-     * @param $updateData 要更新数据
+     * @param array $condition 查询条件
+     * @param array $updateData 要更新数据
      * @return bool|int|mysqli|null
      */
     public function updateStockoutOrderStatusByCondition($condition, $updateData)

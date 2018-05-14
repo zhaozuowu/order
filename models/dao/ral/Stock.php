@@ -95,6 +95,13 @@ class Dao_Ral_Stock
     const  API_RALER_STOCK_IN = 'stockin';
 
     /**
+     * 拣货--获取商品库区库位
+     * @var string
+     */
+    //TODO 修改API&添加配置
+    const  API_RALER_GET_SKU_LOCATION = 'getskulocation';
+
+    /**
      * freeze sku stock
      * @param integer $intStockoutOrderId
      * @param integer $intWarehouseId
@@ -475,5 +482,4 @@ class Dao_Ral_Stock
         Bd_Log::debug("stockin res:".json_encode($ret).",request data:".json_encode($req));
         return $ret;
     }
-
 }
