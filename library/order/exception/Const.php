@@ -40,6 +40,12 @@ class Order_Exception_Const
     const TYPE_STOCK = 4;
 
     /**
+     * type system
+     * @var int
+     */
+    const TYPE_SYSTEM = 5;
+
+    /**
      * concrete sku no quotation
      * @var int
      */
@@ -82,6 +88,12 @@ class Order_Exception_Const
     const CONCRETE_STOCK_NOT_ENOUGH = 401;
 
     /**
+     * concrete stock lock conflict
+     * @var int
+     */
+    const CONCRETE_STOCK_LOCK_CONFLICT = 501;
+
+    /**
      * type map
      * @var array
      */
@@ -93,6 +105,7 @@ class Order_Exception_Const
         self::CONCRETE_SKU_NO_VENDOR => self::TYPE_VENDOR,
         self::CONCRETE_WAREHOUSE => self::TYPE_WAREHOUSE,
         self::CONCRETE_STOCK_NOT_ENOUGH => self::TYPE_STOCK,
+        self::CONCRETE_STOCK_LOCK_CONFLICT => self::TYPE_SYSTEM,
     ];
 
     /**
@@ -107,5 +120,6 @@ class Order_Exception_Const
         self::CONCRETE_SKU_NO_VENDOR => '【供货商信息异常】商品无供货商',
         self::CONCRETE_WAREHOUSE => '【仓库信息异常】网点没有所对应的仓库',
         self::CONCRETE_STOCK_NOT_ENOUGH => '【库存信息异常】没有可用库存',
+        self::CONCRETE_STOCK_LOCK_CONFLICT => '【系统异常】创建订单并发异常，请重试',
     ];
 }
