@@ -482,34 +482,4 @@ class Dao_Ral_Stock
         Bd_Log::debug("stockin res:".json_encode($ret).",request data:".json_encode($req));
         return $ret;
     }
-
-    /**
-     * @param $intWarehouseId
-     * @param $intSkuId
-     * @return array
-     * @throws Nscm_Exception_Error
-     * @throws Order_BusinessError
-     */
-    public function getSkuLocation($intWarehouseId, $intSkuId)
-    {
-        $ret = [];
-        if (empty($intStockInOrderId) || empty($intStockInOrderType) || empty($intWarehouseId) || empty($arrStockInSkuList)) {
-            return $ret;
-        }
-        $strApi = self::API_RALER_GET_SKU_LOCATION;
-        $req[$strApi] = [
-            'warehouse_id' => $intWarehouseId,
-            'sku_id' => $intSkuId,
-        ];
-        Bd_Log::debug("get_sku_location request:".json_encode($req));
-        $ret = $this->objApiRal->getData($req);
-        Bd_Log::debug("get_sku_location ret:".json_encode($ret));
-        $ret = empty($ret[$strApi]) ? [] : $ret[$strApi];
-        if (empty($ret) || !empty($ret['error_no'])) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
-        }
-        return $ret;
-
-    }
-
 }
