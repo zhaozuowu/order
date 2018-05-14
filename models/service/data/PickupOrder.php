@@ -316,8 +316,37 @@ class Service_Data_PickupOrder
         return $ret;
     }
 
+    /**
+     * 打印
+     * @param $pickupOrderId
+     * @return array
+     */
     public function getPickupRowsPrintList($pickupOrderId)
     {
+        $list = [];
+        $arrStockoutOrderIds = Model_Orm_StockoutPickupOrder::getStockoutOrderIdsByPickupOrderId($pickupOrderId);
+        if (empty($arrStockoutOrderIds)) {
+            return $list;
+        }
 
+        $arrConditions = [
+            'stockout_order_id' => ['in', $arrStockoutOrderIds],
+        ];
+        $arrColumns = $this->objOrmStockoutOrder->getAllColumns();
+        $stockoutOrderList= $this->objOrmStockoutOrder->findRows($arrColumns, $arrConditions);
+        if (empty($stockoutOrderList)) {
+            return [];
+        }
+        $arrColumns = $this->objOrmSku->getAllColumns();
+        $stockoutOrderSkuList= $this->objOrmSku->findRows($arrColumns, $arrConditions);
+        $skuList = [];
+        foreach($stockoutOrderSkuList as $skuKey=>$skuItem) {
+            $skuList[$skuItem['stockout_order_id']][] = $skuItem;
+        }
+        foreach ($stockoutOrderList as $key =>$item) {
+            $item['stockout_order_skuinfo'] = isset($skuList[$item['stockout_order_id']]) ? $skuList[$item['stockout_order_id']]:[];
+            $list[$item['pickup_tms_snapshoot_num']][] = $item;
+        }
+        return $list;
     }
 }
