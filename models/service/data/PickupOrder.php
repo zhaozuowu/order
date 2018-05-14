@@ -371,7 +371,7 @@ class Service_Data_PickupOrder
         }
         if (Order_Define_PickupOrder::PICKUP_ORDER_STATUS_INIT != $objPickupOrderInfo->pickup_order_status) {
             Bd_Log::warning("pickupOrder can't modify pickup_order_status by pickupOrderId:". $intPickupOrderId);
-            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_STATUS_INVALID);
         }
         $boolCheckStatus = $this->checkoutPickupAmount($arrPickupSkus);
         if ($boolCheckStatus) {

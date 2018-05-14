@@ -578,6 +578,10 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const PICKUP_ORDER_NOT_EXISTED = 390010;
     /**
+     * 拣货单在此状态下不允许拣货
+     */
+    const PICKUP_ORDER_STATUS_INVALID = 390011;
+    /**
      * 拣货单不存在
      */
     const PICKUP_ORDER_CANCEL_FAILED = 390020;
