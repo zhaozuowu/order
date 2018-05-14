@@ -24,6 +24,7 @@ class Action_Unfrozen extends Order_Base_Action
                 'current_frozen_amount'     => 'int|required|min[1]',
                 'unfrozen_amount'           => 'int|required|min[1]',
                 'production_or_expire_time' => 'int|required',
+                'location_code'             => 'str|required',
             ],
         ]
     ];

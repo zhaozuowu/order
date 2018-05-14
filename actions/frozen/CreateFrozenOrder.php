@@ -24,6 +24,7 @@ class Action_Createfrozenorder extends Order_Base_Action
                 'max_frozen_amount'         => 'int|required|min[1]',
                 'frozen_amount'             => 'int|required|min[1]',
                 'production_or_expire_time' => 'int|required',
+                'location_code'             => 'str|required',
             ],
         ]
     ];
@@ -55,8 +56,8 @@ class Action_Createfrozenorder extends Order_Base_Action
      */
     public function format($data)
     {
-        $arrFormatResult = [];
-        $arrFormatResult['stock_frozen_order_id']    = empty($data['stock_frozen_order_id']) ? '' : Nscm_Define_OrderPrefix::F . intval($data['stock_frozen_order_id']);
+        $arrFormatResult['stock_frozen_order_id'] = empty($data['stock_frozen_order_id'])
+            ? '' : Nscm_Define_OrderPrefix::F . intval($data['stock_frozen_order_id']);
 
         return $arrFormatResult;
     }
