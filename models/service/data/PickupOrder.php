@@ -609,10 +609,12 @@ class Service_Data_PickupOrder
      * 获取sku库区库位
      * @param $intPickupOrderId
      * @param $intSkuId
+     * @param $strLocationCode
+     * @param $intExpireTime
      * @return array
      * @throws Order_BusinessError
      */
-    public function getSkuLocation($intPickupOrderId, $intSkuId)
+    public function getSkuLocation($intPickupOrderId, $intSkuId, $strLocationCode, $intExpireTime)
     {
         if (empty($intPickupOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
@@ -626,7 +628,7 @@ class Service_Data_PickupOrder
         }
         $intWarehouseId = $arrPickupOrderInfo['warehouse_id'];
         $objWrpc = new Dao_Wrpc_Stock();
-        return $objWrpc->getSkuLocation($intWarehouseId, $intSkuId);
+        return $objWrpc->getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $intExpireTime);
     }
 
     /**
