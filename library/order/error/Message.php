@@ -10,6 +10,7 @@ class Order_Error_Message extends Wm_Error_Message
     protected $_disp_app_err_msg = [
         Order_Error_Code::SUCCESS                                            => '',
         Order_Error_Code::RAL_ERROR                                          => 'X',
+        Order_Error_Code::INTERFACE_HAS_BEEN_DISCARDED                       => '此接口已废弃',
         Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS                           => '出库单不存在',
         Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS                  => '出库单sku不存在',
         Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE             => '出库单状态不允许修改',

@@ -44,6 +44,26 @@ class Model_Orm_PickupOrderSku extends Order_Base_Orm
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
 
+    /**
+     * @param array $arrOrderIds
+     * @return array
+     */
+    public static function getOrderSkuInfoByOrderIds(array $arrOrderIds)
+    {
+        if (empty($arrOrderIds)) {
+            return [];
+        }
+        $arrCond = [
+            'pickup_order_id' => ['in', $arrOrderIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        return self::findRows(self::getAllColumns(), $arrCond);
+    }
+
+    /**
+     * @param $intPickupOrderId
+     * @return array
+     */
     public static function getSkuListByPickupOrderId($intPickupOrderId)
     {
         $arrConds = [

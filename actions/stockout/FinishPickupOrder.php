@@ -35,6 +35,7 @@ class Action_FinishPickupOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
+        Order_Error::throwException(Order_Error_Code::INTERFACE_HAS_BEEN_DISCARDED);
         $this->objPage = new Service_Page_Stockout_FinishPickupOrder();
 
         
