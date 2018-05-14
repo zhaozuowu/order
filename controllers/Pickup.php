@@ -13,5 +13,7 @@ class Controller_Pickup extends Ap_Controller_Abstract {
     public $actions = array(
         'getpickuporderlist' => 'actions/pickup/GetPickupOrderList.php', #获取拣货单分页#
         'getpickuporderdetail' => 'actions/pickup/GetPickupOrderDetail.php', #获取拣货单详情#
+        'getpickupordercountbywaiting' => 'actions/pickup/GetPickupOrderCountByWaiting.php', #获取待拣货状态拣货单数量#
+        'getpickuporderprint' => 'actions/pickup/GetPickupOrderPrint.php', #获取拣货单打印#
     );
 }

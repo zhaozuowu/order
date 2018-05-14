@@ -7,12 +7,6 @@
 
 class Action_GetPickupOrderList extends Order_Base_Action
 {
-    /**
-     * 判断是否有权限
-     *
-     * @var boolean
-     */
-    protected $boolCheckAuth = false;
 
     /**
      * input params

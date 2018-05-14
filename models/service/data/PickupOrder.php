@@ -252,6 +252,20 @@ class Service_Data_PickupOrder
     }
 
     /**
+     * @param $arrPickupOrderIds
+     * @return array
+     */
+    public function getPickupOrderSkuInfoByPickupOrderIds($arrPickupOrderIds)
+    {
+        $arrPickupOrderIds = array_map(function ($intPickupOrderId) {
+            return intval($intPickupOrderId);
+        }, $arrPickupOrderIds);
+        $arrPickupOrderIds = array_unique($arrPickupOrderIds);
+        $arrPickupOrderSkuInfo = Model_Orm_PickupOrderSku::getOrderSkuInfoByOrderIds($arrPickupOrderIds);
+        return $arrPickupOrderSkuInfo;
+    }
+
+    /**
      * get pick up order list
      * @param $strWarehouseIds
      * @param $intCreateStartTime
@@ -311,5 +325,20 @@ class Service_Data_PickupOrder
             $intUpdateStartTime,
             $intUpdateEndTime);
         return $ret;
+    }
+
+    /**
+     * @param $arrWarehouseIds
+     * @return int
+     */
+    public function getCountByWaiting($arrWarehouseIds) {
+        $arrInputWarehouseIds = array_map(function ($intWarehouseId) {
+            return intval($intWarehouseId);
+        }, $arrWarehouseIds);
+        $arrInputWarehouseIds = array_unique($arrInputWarehouseIds);
+        Bd_Log::debug('input warehouse id: ' . json_encode($arrInputWarehouseIds));
+        $intCount = Model_Orm_PickupOrder::getCountByWarehouseIdStatusType($arrInputWarehouseIds,
+            [Order_Define_PickupOrder::PICKUP_ORDER_STATUS_INIT]);
+        return $intCount;
     }
 }

@@ -30,6 +30,12 @@ class Order_Error_Code extends Wm_Error_Code
     const PARAMS_ERROR = 200001;
 
     /**
+     * 接口被废弃
+     * @var integer
+     */
+    const INTERFACE_HAS_BEEN_DISCARDED = 200002;
+
+    /**
      * =============
      * 业务异常300000
      * =============
