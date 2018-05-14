@@ -1229,6 +1229,9 @@ class Service_Data_Stockin_StockinOrder
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
             $intType = Order_Statistics_Type::ACTION_CREATE;
             Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
+            if (!empty($arrStockInOrderInfo['shipment_order_id'])) {
+                $this->sendConfirmStockinOrderInfoToOms($intStockInOrderId, $arrStockInOrderInfo['shipment_order_id'], $arrStockInOrderInfo['stockin_order_source'], $arrSkuInfoList);
+            }
         }
     }
 
@@ -1435,5 +1438,54 @@ class Service_Data_Stockin_StockinOrder
             $arrStockInSkuList[] = $arrStockInSkuListItem;
         }
         return $arrStockInSkuList;
+    }
+
+    /**
+     * 销退入库单确认结果发送wmq
+     * @param $intStockInOrderId
+     * @param $arrSkuInfoList
+     * @param $strRemark
+     */
+    public function sendConfirmStockinOrderInfoToOms($intStockInOrderId, $intShipmentOrderId, $intBizType, $arrSkuInfoList)
+    {
+        //$arrSkuIds = array_column($arrSkuInfoList, 'sku_id');
+        //$arrConds = [
+        //    'stockin_order_id' => $intStockInOrderId,
+        //    'is_delete'        => Order_Define_Const::NOT_DELETE,
+        //];
+        //$arrFields = ['stockin_order_id', 'sku_id', 'sku_net', 'upc_unit', 'sku_name'];
+        //$arrSku = Model_Orm_StockinOrderSku::findRows($arrFields, $arrConds);
+        //$arrSkuDict = Order_Util_Util::arrayToKeyValue($arrSku, 'sku_id');
+        $strCmd = Order_Define_Cmd::CMD_NOTIFY_OMS_CONFIRM_STOCKIN_ORDER;
+        $arrSkuInfoNew = [];
+        foreach ((array)$arrSkuInfoList as $arrSkuInfo){
+            $arrSkuInfoNew[] = [
+                'sku_id' => $arrSkuInfo['sku_id'],
+                'sku_amount' => array_sum(array_column($arrSkuInfo['real_stockin_info'], 'amount')),
+            ];
+        }
+        $arrParam = [
+            'stockin_order_id' => $intStockInOrderId,
+            'shipment_order_id' => $intShipmentOrderId,
+            'biz_type'          => $intBizType,
+            'sku_info_list'    => json_encode($arrSkuInfoNew),
+        ];
+        $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrParam, strval($intStockInOrderId));
+        if (false == $ret) {
+            Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
+        }
+        return true;
+    }
+
+    /**
+     * 异步通知OMS销退入库单确认结果
+     * @param $arrInput
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function asynchronousNotifyOmsConfirmStockinResult($arrInput)
+    {
+        $objWrpcOms = new Dao_Wrpc_Oms();
+        return $objWrpcOms->confirmStockinOrderToOms($arrInput);
     }
 }

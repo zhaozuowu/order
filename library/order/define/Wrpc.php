@@ -24,4 +24,22 @@ class Order_Define_Wrpc
      * @var string
      */
     const TMS_SERVICE_NAME = 'WmsReferService';
+
+    /**
+     * oms app id
+     * @var string
+     */
+    const OMS_APP_ID = 'bdwaimai_earthnet.oms';
+
+    /**
+     * oms namespace
+     * @var string
+     */
+    const OMS_NAMESPACE = 'orderui';
+
+    /**
+     * oms service name
+     * @var string
+     */
+    const OMS_SERVICE_NAME = 'EventService';
 }
