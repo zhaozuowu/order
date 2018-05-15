@@ -23,7 +23,7 @@ class Action_GetReserveOrderList extends Order_Base_Action
         'stockin_time_start' => 'int|min[0]',
         'stockin_time_end' => 'int|min[0]',
         'page_num' => 'int|default[1]|min[1]|optional',
-        'page_size' => 'int|required|min[1]|max[200]',
+        'page_size' => 'int|required|min[0]|max[200]',
     ];
 
     /**
@@ -67,6 +67,8 @@ class Action_GetReserveOrderList extends Order_Base_Action
                 : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
             $arrRoundResult['reserve_order_status'] = empty($arrListItem['reserve_order_status']) ? 0
                 : intval($arrListItem['reserve_order_status']);
+            $arrRoundResult['sku_kind_amount'] = empty($arrListItem['sku_kind_amount']) ? 0
+                : intval($arrListItem['sku_kind_amount']);
             $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? ''
                 : strval($arrListItem['warehouse_name']);
             $arrRoundResult['reserve_order_plan_time'] = empty($arrListItem['reserve_order_plan_time']) ? 0

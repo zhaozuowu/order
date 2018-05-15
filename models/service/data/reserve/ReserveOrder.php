@@ -318,6 +318,19 @@ class Service_Data_Reserve_ReserveOrder
                 Order_Error_Code::QUERY_TIME_SPAN_ERROR);
         }
 
+        if(empty($strWarehouseId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
+
+        // 如果为单仓时预约时间为选填参数，否则必填
+        if (1 < count($arrWarehouseId)) {
+            if (empty($arrOrderPlanTime) || empty($arrOrderPlanTime['start']) || empty($arrOrderPlanTime['end'])) {
+                Order_BusinessError::throwException(
+                    Order_Error_Code::MULTI_WAREHOUSE_QUERY_PLAN_TIME_REQUIRED);
+            }
+        }
+
         if (false === Order_Util::verifyUnixTimeSpan(
                 $arrOrderPlanTime['start'],
                 $arrOrderPlanTime['end'])) {
@@ -339,11 +352,6 @@ class Service_Data_Reserve_ReserveOrder
         if (false === Model_Orm_ReserveOrder::isReserveOrderStatusCorrect($arrReserveOrderStatus)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
-
-        if(empty($strWarehouseId)){
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
-        }
-        $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
 
         return Model_Orm_ReserveOrder::getReserveOrderList(
             $arrReserveOrderStatus,

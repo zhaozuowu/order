@@ -438,6 +438,11 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const TIME_PARAMS_LESS_THAN_ONE = 340028;
 
+    /**
+     * 多仓库查询需要预约入库时间范围
+     */
+    const MULTI_WAREHOUSE_QUERY_PLAN_TIME_REQUIRED = 340028;
+
 
     /**
      * 查询返回结果为空
