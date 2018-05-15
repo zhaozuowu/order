@@ -8,45 +8,19 @@
 
 class Action_GetPickupOrderPrint extends Order_Base_Action
 {
-
+    /**
+     * params
+     * @var array
+     */
     protected $arrInputParams = [
-        'pickup_order_ids' => 'regex|patern[/\d+(\,\d+)*^/]',
+        'pickup_order_id' => 'int|required',
     ];
 
-    protected $intMethod = Order_Define_Const::METHOD_GET;
-
     /**
-     * 格式化输出
-     *
-     * @param  array $data
-     * @return array
+     * method
+     * @var int
      */
-    public function format($data)
-    {
-        $arrRet = [];
-        if (empty($data)) {
-            return $arrRet;
-        }
-        foreach ($data as $row) {
-            if (!isset($arrRet[$row['sku_id']])) {
-                $arrRet[$row['sku_id']] = [
-                    'upc_id' => $row['upc_id'],
-                    'sku_name' => $row['sku_name'],
-                    'sku_net' => $row['sku_net'],
-                    'sku_net_unit_text' => Order_Define_Sku::SKU_NET_MAP[$row['sku_net_unit']],
-                    'upc_unit_text' => Order_Define_Sku::UPC_UNIT_MAP[$row['upc_unit']],
-                    'sku_detail' => [],
-                ];
-            }
-            $arrRet[$row['sku_id']]['sku_detail'][] = [
-                // @todo columns
-                // @zuowu.zhao@ele.me
-            ];
-        }
-        ksort($arrRet);
-        $arrRet = array_values($arrRet);
-        return $arrRet;
-    }
+    protected $intMethod = Order_Define_Const::METHOD_GET;
 
     /**
      * constructor
@@ -55,5 +29,58 @@ class Action_GetPickupOrderPrint extends Order_Base_Action
     function myConstruct()
     {
         $this->objPage = new Service_Page_Pickup_GetPickupOrderPrint();
+    }
+
+    /**
+     * format result
+     * @param array $data
+     * @return array
+     */
+    public function format($data)
+    {
+        $arrRet = [];
+        if (empty($data)) {
+            return $arrRet;
+        }
+
+        $arrSkus = [];
+        if (!empty($data['pickup_skus'])) {
+            foreach ($data['pickup_skus'] as $arrSku) {
+                $arrSkus[] = [
+                    'upc_id' => $arrSku['upc_id'],
+                    'sku_id' => $arrSku['sku_id'],
+                    'sku_name' => $arrSku['sku_name'],
+                    'sku_net' => $arrSku['sku_net'],
+                    'sku_net_unit' => $arrSku['sku_net_unit'],
+                    'sku_net_unit_text' => Nscm_Define_Sku::SKU_NET_UNIT_TEXT[$arrSku['sku_net_unit']],
+                    'upc_unit' => $arrSku['upc_unit'],
+                    'upc_unit_text' => Nscm_Define_Sku::UPC_UNIT_MAP[$arrSku['upc_unit_text']],
+                    'upc_unit_num' => $arrSku['upc_unit_num'],
+                    'order_amount' => $arrSku['order_amount'],
+                    'distribute_amount' => $arrSku['distribute_amount'],
+                    'pickup_amount' => $arrSku['pickup_amount'],
+                    'pickup_extra_info' => json_decode($arrSku['pickup_extra_info'], true),
+                ];
+            }
+        }
+
+        $arrRet['pickup_order_id'] = $data['pickup_order_id'];
+        $arrRet['pickup_order_type'] = $data['pickup_order_type'];
+        $arrRet['pickup_order_type_text'] = Order_Define_PickupOrder::PICKUP_ORDER_TYPE_MAP[$data['pickup_order_type']];
+        $arrRet['pickup_order_status'] = $data['pickup_order_status'];
+        $arrRet['pickup_order_status_text'] = Order_Define_PickupOrder::PICKUP_ORDER_STATUS_MAP[$data['pickup_order_status']];
+        $arrRet['pickup_order_is_print'] = $data['pickup_order_is_print'];
+        $arrRet['pickup_order_is_print_text'] = Order_Define_PickupOrder::PICKUP_ORDER_PRINT_MAP[$data['pickup_order_is_print']];
+        $arrRet['stockout_order_amount'] = $data['stockout_order_amount'];
+        $arrRet['sku_kind_amount'] = $data['sku_kind_amount'];
+        $arrRet['sku_pickup_amount'] = $data['sku_pickup_amount'];
+        $arrRet['sku_distribute_amount'] = $data['sku_distribute_amount'];
+        $arrRet['creator'] = $data['creator'];
+        $arrRet['create_time'] = $data['create_time'];
+        $arrRet['update_operator'] = $data['update_operator'];
+        $arrRet['update_time'] = $data['update_time'];
+        $arrRet['pickup_skus'] = $arrSkus;
+
+        return $arrRet;
     }
 }
