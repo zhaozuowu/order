@@ -52,6 +52,14 @@ class Order_Define_PickupOrder
     const PICKUP_ORDER_PRINTED = 2;
 
     /**
+     * 打印状态解析映射
+     */
+    const PICKUP_ORDER_PRINT_MAP = [
+        self::PICKUP_ORDER_NOT_PRINTED => '未打印',
+        self::PICKUP_ORDER_PRINTED => '已打印',
+    ];
+
+    /**
      * 打印状态
      * @var array
      */
