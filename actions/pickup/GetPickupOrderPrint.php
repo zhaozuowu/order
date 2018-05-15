@@ -10,7 +10,7 @@ class Action_GetPickupOrderPrint extends Order_Base_Action
 {
 
     protected $arrInputParams = [
-        'pickup_order_ids' => 'regex|patern[/\d+(\,\d+)*^/]',
+        'pickup_order_ids' => 'regex|patern[/^\d+(\,\d+)*$/]',
     ];
 
     protected $intMethod = Order_Define_Const::METHOD_GET;
