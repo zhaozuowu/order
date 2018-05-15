@@ -595,4 +595,9 @@ class Order_Error_Code extends Wm_Error_Code
      * 拣货单商品不存在
      */
     const PICKUP_ORDER_SKUS_NOT_EXISTED = 390031;
+
+    /**
+     * 获取tms排线号失败
+     */
+    const NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL = 390032;
 }

@@ -106,6 +106,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::PICKUP_ORDER_CANCEL_FAILED => '拣货单取消失败',
         Order_Error_Code::PICKUP_AMOUNT_ERROR => '拣货商品数量小于等于零',
         Order_Error_Code::PICKUP_ORDER_SKUS_NOT_EXISTED => '拣货单商品不存在',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL => '获取tms排线号失败',
     ];
 
 }
