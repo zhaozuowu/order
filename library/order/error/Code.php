@@ -441,7 +441,7 @@ class Order_Error_Code extends Wm_Error_Code
     /**
      * 多仓库查询需要预约入库时间范围
      */
-    const MULTI_WAREHOUSE_QUERY_PLAN_TIME_REQUIRED = 340028;
+    const MULTI_WAREHOUSE_QUERY_PLAN_TIME_REQUIRED = 340029;
 
 
     /**
