@@ -97,6 +97,14 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
             $arrRoundResult['stockin_order_sku_extra_info'] =
                 empty($arrListItem['stockin_order_sku_extra_info']) ? ''
                     : strval($arrListItem['stockin_order_sku_extra_info']);
+            $arrRoundResult['sku_main_image'] = empty($arrListItem['sku_main_image'])
+                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : strval($arrListItem['sku_main_image']);
+            $arrRoundResult['upc_min_unit_text'] = empty($arrListItem['upc_min_unit'])
+                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : (isset(Order_Define_Sku::UPC_UNIT_MAP[intval($arrListItem['upc_min_unit'])])
+                    ? Order_Define_Sku::UPC_UNIT_MAP[intval($arrListItem['upc_min_unit'])]
+                    : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR);
 
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult['list'][] = $arrRoundResult;
