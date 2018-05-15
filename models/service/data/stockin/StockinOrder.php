@@ -1398,4 +1398,53 @@ class Service_Data_Stockin_StockinOrder
         }
         return $arrStockInSkuList;
     }
+
+    /**
+     * @param $strOrderId
+     * @param $strOperateName
+     * @param $strOperateDevice
+     * @return bool
+     * @throws Order_BusinessError
+     */
+    public function addOrderOperateRecord($strOrderId, $strOperateName, $strOperateDevice)
+    {
+        $daoRedis = new Dao_Redis_StockInOrder();
+        $intOperateTime = time();
+        $strOperateName = strval($strOperateName);
+        $strOperateDevice = strval($strOperateDevice);
+        $strOrderId = strval($strOrderId);
+        // check order status
+        if (preg_match('/(SIO|ASN)(\d{13})/', $strOrderId, $arrMatches)) {
+            $strOrderPrefix = $arrMatches[1];
+            $intOrderId = $arrMatches[2];
+            if (Nscm_Define_OrderPrefix::ASN == $strOrderPrefix) {
+                // reserve order
+                $arrReserveOrderInfo = Model_Orm_ReserveOrder::getReserveOrderInfoByReserveOrderId($intOrderId);
+                if (empty($arrReserveOrderInfo)) {
+                    Bd_Log::warning('reserve order not exist: ' . $intOrderId);
+                    Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+                }
+                if (Order_Define_ReserveOrder::STATUS_STOCKING != $arrReserveOrderInfo['reserve_order_status']) {
+                    Bd_Log::warning('reserve order status invalid: '. $arrReserveOrderInfo['reserve_order_status']);
+                    Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_STATUS_NOT_ALLOW_STOCKIN);
+                }
+            } else {
+                $arrStockinOrderInfo = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intOrderId);
+                if (empty($arrStockinOrderInfo)) {
+                    Bd_Log::warning('stockin order not exist: ' . $intOrderId);
+                    Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+                }
+                if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_WAITING
+                    != $arrStockinOrderInfo['stockin_order_status']) {
+                    Bd_Log::warning('stockin order status invalid: '. $arrStockinOrderInfo['stockin_order_status']);
+                    Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_STATUS_INVALID);
+                }
+            }
+        } else {
+            Bd_Log::trace('order rules not allow: ' . $strOrderId);
+            Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
+        }
+        $boolResult = $daoRedis->addOperateRecord($strOrderId, $strOperateName, $strOperateDevice, $intOperateTime);
+        return $boolResult;
+    }
 }
