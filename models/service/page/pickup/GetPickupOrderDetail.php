@@ -23,14 +23,13 @@ class Service_Page_Pickup_GetPickupOrderDetail
 
     /**
      * execute
-     * @param  array $arrInput 参数
+     * @param array $arrInput
      * @return array
+     * @throws Order_BusinessError
      */
     public function execute($arrInput)
     {
-        $ret = [];
-        $intPickupOrderId = $arrInput['pickup_order_id'];
-        $ret = $this->objPickupOrder->getPickupOrderByPickupOrderId($intPickupOrderId);
+        $ret = $this->objPickupOrder->getPickupOrderByPickupOrderId($arrInput['pickup_order_id']);
         return $ret;
     }
 }

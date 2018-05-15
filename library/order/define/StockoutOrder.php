@@ -255,7 +255,6 @@ class Order_Define_StockoutOrder
     ];
 
     /**
-<<<<<<< HEAD
      * 预取消标识
      */
     const STOCKOUT_ORDER_DEFAULT_PRE_CANCEL = 0;
@@ -279,6 +278,7 @@ class Order_Define_StockoutOrder
         self::STOCKOUT_ORDER_CANCEL_TYPE_SYS => '系统取消',
         self::STOCKOUT_ORDER_NOT_PRE_MANUAL => '人工取消',
     ];
+
     /**
      * 预取消来源
      */
@@ -306,32 +306,22 @@ class Order_Define_StockoutOrder
 
     /**
      * 是否生成拣货任务
+     * 否
      */
-    const PICKUP_ORDERE_NOT_CREATED= 0;
-    const PICKUP_ORDERE_IS_CREATED = 1;
+    const PICKUP_ORDERE_NOT_CREATED= 1;
+
+    /**
+     * 是否生成拣货任务
+     * 是
+     */
+    const PICKUP_ORDERE_IS_CREATED = 2;
+
     /**
      * @desc 拣货单类型映射
      * @var array
      */
     const PICKUP_ORDER_TYPE_MAP = [
         self::PICKUP_ORDERE_NOT_CREATED => '未生成',
-        self::PICKUP_ORDER_TYPE_ORDER => '已生成',
+        self::PICKUP_ORDERE_IS_CREATED => '已生成',
     ];
-
-    /// the following three constants are for matching user input
-    /// and they are limit on self::PICKUP_ORDERE_xx_CREATED
-    /**
-     * not created
-     */
-    const PICKUP_ORDER_NOT_CREATED_STRING = '0';
-
-    /**
-     * is created
-     */
-    const PICKUP_ORDER_IS_CREATED_STRING = '1';
-
-    /**
-     * all
-     */
-    const PICKUP_ORDER_ALL_STRING = '-1';
 }

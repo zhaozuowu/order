@@ -5,10 +5,8 @@
  * @author huabang.xue@ele.me
  */
 
-
 class Action_GetPickupOrderDetail extends Order_Base_Action
 {
-
     /**
      * method
      * @var int
@@ -65,7 +63,7 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
         $arrRet['pickup_order_status'] = $data['pickup_order_status'];
         $arrRet['pickup_order_status_text'] = Order_Define_PickupOrder::PICKUP_ORDER_STATUS_MAP[$data['pickup_order_status']];
         $arrRet['pickup_order_is_print'] = $data['pickup_order_is_print'];
-        $arrRet['pickup_order_is_print_text'] = Order_Define_PickupOrder::PICKUP_ORDER_PRINT_STATUS[$data['pickup_order_is_print']];
+        $arrRet['pickup_order_is_print_text'] = Order_Define_PickupOrder::PICKUP_ORDER_PRINT_MAP[$data['pickup_order_is_print']];
         $arrRet['stockout_order_amount'] = $data['stockout_order_amount'];
         $arrRet['sku_kind_amount'] = $data['sku_kind_amount'];
         $arrRet['sku_pickup_amount'] = $data['sku_pickup_amount'];
@@ -78,5 +76,4 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
 
         return $arrRet;
     }
-
 }
