@@ -624,13 +624,12 @@ class Service_Data_PickupOrder
      * @param $intPickupOrderId
      * @param $intSkuId
      * @param $strLocationCode
-     * @param $strAreaCode
      * @param $intExpireTime
      * @return array
      * @throws Order_BusinessError
      * @throws Nscm_Exception_Error
      */
-    public function getSkuLocation($intPickupOrderId, $intSkuId, $strLocationCode, $strAreaCode, $intExpireTime)
+    public function getSkuLocation($intPickupOrderId, $intSkuId, $strLocationCode, $intExpireTime)
     {
         if (empty($intPickupOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
@@ -653,7 +652,7 @@ class Service_Data_PickupOrder
         }
 
         $objWrpc = new Dao_Wrpc_Stock();
-        return $objWrpc->getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $strAreaCode, $strTimeParam, $intExpireTime);
+        return $objWrpc->getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $strTimeParam, $intExpireTime);
     }
 
     /**

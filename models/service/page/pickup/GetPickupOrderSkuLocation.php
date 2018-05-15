@@ -26,6 +26,7 @@ class Service_Page_Pickup_GetPickupOrderSkuLocation
      * @param  array $arrInput 参数
      * @return int
      * @throws Order_BusinessError
+     * @throws Nscm_Exception_Error
      */
     public function execute($arrInput)
     {
@@ -33,8 +34,7 @@ class Service_Page_Pickup_GetPickupOrderSkuLocation
         $intSkuId = $arrInput['sku_id'];
         $strLocationCode = $arrInput['location_code'];
         $intExpireTime = $arrInput['expire_time'];
-        $strAreaCode = $arrInput['area_code'];
-        $ret = $this->objPickupOrder->getSkuLocation($intPickupOrderId, $intSkuId, $strLocationCode, $strAreaCode, $intExpireTime);
+        $ret = $this->objPickupOrder->getSkuLocation($intPickupOrderId, $intSkuId, $strLocationCode, $intExpireTime);
         return $ret;
     }
 }

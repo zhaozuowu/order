@@ -28,20 +28,18 @@ class Dao_Wrpc_Stock
      * @param $intWarehouseId
      * @param $intSkuId
      * @param $strLocationCode
-     * @param $strAreaCode
      * @param $strTimeParam
      * @param $intExpireTime
      * @return mixed
      * @throws Order_BusinessError
      */
-    public function getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $strAreaCode, $strTimeParam, $intExpireTime)
+    public function getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $strTimeParam, $intExpireTime)
     {
         $arrReqParams['requestParams'] = [
             'warehouse_id' => $intWarehouseId,
             'sku_ids' => strval($intSkuId),
             $strTimeParam => strtotime(date("Y-m-d H:i:s",$intExpireTime)),
             'location_code' => $strLocationCode,
-            'area_code' => $strAreaCode,
         ];
         Bd_Log::trace(sprintf("method[%s] get_sku_location_request[%d]",
             __METHOD__, json_encode($arrReqParams)));
