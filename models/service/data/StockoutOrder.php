@@ -114,7 +114,6 @@ class Service_Data_StockoutOrder
     }
 
     /**
-     * @todo wait for interface document
      * assemble oms delivery order
      * @param array $arrSkuInfo
      * @return array
@@ -123,7 +122,26 @@ class Service_Data_StockoutOrder
     {
         $arrRet = [];
         foreach ($arrSkuInfo as $arrRow) {
-            // @todo
+//            $intSkuAmount = 0;
+            $arrSkuExtraList = [];
+            foreach ($arrRow['sku_extra_info'] as $arrRowSkuExtraInfo) {
+                $arrSkuExtraList[] = [
+                    'amount' => $arrRowSkuExtraInfo['good_amount'] + $arrRowSkuExtraInfo['defective_amount'],
+                    'expire_date' => intval($arrRowSkuExtraInfo['expire_time']),
+                ];
+//                $arrInfo[] = [
+//                    'product_time' => intval($arrRowSkuExtraInfo['product_time']),
+//                    'expire_time' => intval($arrRowSkuExtraInfo['expire_time']),
+//                    'good_amount' => intval($arrRowSkuExtraInfo['good_amount']),
+//                    'defective_amount' => intval($arrRowSkuExtraInfo['defective_amount']),
+//                ];
+//                $intSkuAmount += $arrRowSkuExtraInfo['good_amount'] + $arrRowSkuExtraInfo['defective_amount'];
+            }
+            $arrRet[] = [
+                'sku_id' => $arrRow['sku_id'],
+//                'sku_amount' => $intSkuAmount,
+                'distribute_info' => $arrSkuExtraList,
+            ];
         }
         return $arrRet;
     }
@@ -170,8 +188,10 @@ class Service_Data_StockoutOrder
             return;
         }
         // notify oms, next version
-        //$daoOms = new Dao_Ral_Oms();
-        //$daoOms->deliveryOrder($intStockoutOrderId, $this->assembleOmsDeliveryOrder($arrStockoutSkuInfo));
+        $daoOms = new Dao_Wrpc_Oms(Order_Define_Wrpc::OMS_NWMS_SERVICE_NAME);
+        $intLogisticOrderId = $ormStockoutOrder->logistics_order_id;
+        $intShipmentOrderId = $ormStockoutOrder->shipment_order_id;
+        $daoOms->updateStockoutOrderSkuInfo($intLogisticOrderId, $intShipmentOrderId, $this->assembleOmsDeliveryOrder($arrStockoutSkuInfo));
 
         // write to db
         $arrOrmStockoutSku = Model_Orm_StockoutOrderSku::getAllStockoutSkuByStockoutId($intStockoutOrderId);
