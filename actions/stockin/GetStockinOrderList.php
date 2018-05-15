@@ -24,7 +24,7 @@ class Action_GetStockinOrderList extends Order_Base_Action
         'stockin_time_start' => 'int|min[0]|required',
         'stockin_time_end' => 'int|min[0]|required',
         'page_num' => 'int|default[1]|min[1]|optional',
-        'page_size' => 'int|required|min[1]|max[200]',
+        'page_size' => 'int|required|min[0]|max[200]',
     ];
 
     /**
@@ -83,6 +83,8 @@ class Action_GetStockinOrderList extends Order_Base_Action
                 : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
             $arrRoundResult['stockin_order_status'] = empty($arrListItem['stockin_order_status']) ? 0
                 : intval($arrListItem['stockin_order_status']);
+            $arrRoundResult['sku_kind_amount'] = empty($arrListItem['sku_kind_amount']) ? 0
+                : intval($arrListItem['sku_kind_amount']);
             $arrRoundResult['city_id'] = empty($arrListItem['city_id']) ? 0
                 : intval($arrListItem['city_id']);
             $arrRoundResult['city_name'] = empty($arrListItem['city_name']) ? ''
