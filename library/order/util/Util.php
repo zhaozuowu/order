@@ -8,8 +8,9 @@ class Order_Util_Util
 {
 
     /**
-     * generate reserve order code
+     * generate reserve order id
      * @return int
+     * @throws Wm_Error
      */
     public static function generateReserveOrderCode()
     {
@@ -17,8 +18,9 @@ class Order_Util_Util
     }
 
     /**
-     * generate stockin order code
+     * generate stockin order id
      * @return int
+     * @throws Wm_Error
      */
     public static function generateStockinOrderCode()
     {
@@ -27,16 +29,17 @@ class Order_Util_Util
 
     /**
      * generate stockout order id
-     * @return void
+     * @return int
+     * @throws Wm_Error
      */
-    public static function generateStockoutOrderId() 
+    public static function generateStockoutOrderId()
     {
         return Nscm_Lib_IdGenerator::sequenceDateNumber();
     }
 
-    /**
-     * generate stock adjust order id
+    /** generate stock adjst order id
      * @return int
+     * @throws Wm_Error
      */
     public static function generateStockAdjustOrderId()
     {
@@ -47,6 +50,7 @@ class Order_Util_Util
     /**
      * generate stock frozen order id
      * @return int
+     * @throws Wm_Error
      */
     public static function generateStockFrozenOrderId()
     {
@@ -54,21 +58,33 @@ class Order_Util_Util
     }
 
     /**
-     * geenerate business form order id
-     * @return void
+     * generate business form order id
+     * @return int
+     * @throws Wm_Error
      */
-    public static function generateBusinessFormOrderId() 
+    public static function generateBusinessFormOrderId()
     {
         return NScm_Lib_IdGenerator::sequenceDateNumber();
     }
 
     /**
      * generate pickup order id
-     * @return void
+     * @return int
+     * @throws Wm_Error
      */
     public static function generatePickupOrderId()
     {
         return NScm_Lib_IdGenerator::sequenceDateNumber();
+    }
+
+    /**
+     * generate place order id
+     * @return int
+     * @throws Wm_Error
+     */
+    public static function generatePlaceOrderId()
+    {
+        return Nscm_Lib_IdGenerator::sequenceDateNumber();
     }
     /**
      * transfer array to key value pair
