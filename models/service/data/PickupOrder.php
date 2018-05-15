@@ -624,11 +624,13 @@ class Service_Data_PickupOrder
      * @param $intPickupOrderId
      * @param $intSkuId
      * @param $strLocationCode
+     * @param $strAreaCode
      * @param $intExpireTime
      * @return array
      * @throws Order_BusinessError
+     * @throws Nscm_Exception_Error
      */
-    public function getSkuLocation($intPickupOrderId, $intSkuId, $strLocationCode, $intExpireTime)
+    public function getSkuLocation($intPickupOrderId, $intSkuId, $strLocationCode, $strAreaCode, $intExpireTime)
     {
         if (empty($intPickupOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
@@ -640,9 +642,18 @@ class Service_Data_PickupOrder
         if (empty($arrPickupOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
         }
+        //获取sku基础信息判断产效期类型
+        $objRalSku = new Dao_Ral_Sku();
+        $arrSkusInfo = $objRalSku->getSkuInfos([$intSkuId]);
+        $intSkuEffectType = $arrSkusInfo[$intSkuId]['sku_effect_type'];
         $intWarehouseId = $arrPickupOrderInfo['warehouse_id'];
+        $strTimeParam = 'production_time';
+        if (Order_Define_Sku::SKU_EFFECT_TYPE_EXPIRE == $intSkuEffectType) {
+            $strTimeParam = 'expiration_time';
+        }
+
         $objWrpc = new Dao_Wrpc_Stock();
-        return $objWrpc->getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $intExpireTime);
+        return $objWrpc->getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $strAreaCode, $strTimeParam, $intExpireTime);
     }
 
     /**

@@ -33,7 +33,8 @@ class Service_Page_Pickup_GetPickupOrderSkuLocation
         $intSkuId = $arrInput['sku_id'];
         $strLocationCode = $arrInput['location_code'];
         $intExpireTime = $arrInput['expire_time'];
-        $ret = $this->objPickupOrder->getSkuLocation($intPickupOrderId, $intSkuId, $strLocationCode, $intExpireTime);
+        $strAreaCode = $arrInput['area_code'];
+        $ret = $this->objPickupOrder->getSkuLocation($intPickupOrderId, $intSkuId, $strLocationCode, $strAreaCode, $intExpireTime);
         return $ret;
     }
 }

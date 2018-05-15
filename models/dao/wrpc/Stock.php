@@ -27,14 +27,25 @@ class Dao_Wrpc_Stock
      * 获取sku库区库位信息
      * @param $intWarehouseId
      * @param $intSkuId
+     * @param $strLocationCode
+     * @param $strAreaCode
+     * @param $strTimeParam
+     * @param $intExpireTime
      * @return mixed
      * @throws Order_BusinessError
      */
-    public function getSkuLocation($intWarehouseId, $intSkuId)
+    public function getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $strAreaCode, $strTimeParam, $intExpireTime)
     {
-        Bd_Log::trace(sprintf("method[%s] get_sku_location_request_warehouse[%d]_sku[%d]",
-            __METHOD__, $intWarehouseId, $intSkuId));
-        $arrRet = $this->objWrpcService->getSkuLocation($intWarehouseId, $intSkuId);
+        $arrReqParams['requestParams'] = [
+            'warehouse_id' => $intWarehouseId,
+            'sku_ids' => strval($intSkuId),
+            $strTimeParam => strtotime(date("Y-m-d H:i:s",$intExpireTime)),
+            'location_code' => $strLocationCode,
+            'area_code' => $strAreaCode,
+        ];
+        Bd_Log::trace(sprintf("method[%s] get_sku_location_request[%d]",
+            __METHOD__, json_encode($arrReqParams)));
+        $arrRet = $this->objWrpcService->getPickableSkuBatchInfo($arrReqParams);
         Bd_Log::trace(sprintf("method[%s] get_sku_location_ret[%s]",
             __METHOD__, json_encode($arrRet)));
         if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
