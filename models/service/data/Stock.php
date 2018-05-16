@@ -12,11 +12,6 @@ class Service_Data_Stock
     protected $objDaoStock;
 
     /**
-     * @var Dao_Huskar_Stock
-     */
-    protected $objDaoHuskarStock;
-
-    /**
      * @var Dao_Ral_Sku
      */
     protected $objDaoSku;
@@ -27,7 +22,6 @@ class Service_Data_Stock
     public function __construct() {
         $this->objDaoStock = new Dao_Ral_Stock();
         $this->objDaoSku = new Dao_Ral_Sku();
-        $this->objDaoHuskarStock = new Dao_Huskar_Stock();
     }
 
     /**
@@ -96,7 +90,7 @@ class Service_Data_Stock
     public function getStockPeriodStock($intWarehouseId, $arrSkuIds) {
         $arrRet = [];
 
-        $arrStockInfo = $this->objDaoHuskarStock->getStockPeriodStock($intWarehouseId, $arrSkuIds);
+        $arrStockInfo = $this->objDaoStock->getStockPeriodStock($intWarehouseId, $arrSkuIds);
         if(empty($arrStockInfo)) {
             return $arrRet;
         }

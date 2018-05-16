@@ -73,5 +73,10 @@ class  Order_Define_Const
      * 更新失败
      */
     const UPDATE_FAILURE = 2;
+
+
+    const STOCK_INFO_SERVICE = 'StockInfoService';
+
+    const STOCK_CONTROL_SERVICE = 'StockControlService';
     
 }

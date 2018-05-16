@@ -542,6 +542,11 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_UNFROZEN_BY_SYSTEM_ERROR = 351015;
 
+    /**
+     * 冻结单-获取库存仓库失败
+     * @var integer
+     */
+    const NWMS_GET_STOCK_WAREHOUSE_FAIL = 351016;
 
     //------------------------------------------------冻结单------------------------------------------------
 
