@@ -108,6 +108,24 @@ class Model_Orm_ReserveOrderSku extends Order_Base_Orm
         return $arrResult;
     }
 
+
+    /**
+     * 获取指定业态单的sku_id商品信息
+     * @param $strReserveOrderId
+     * @param $strSkuId
+     * @return array
+     */
+    public static function getReserveOrderSkuInfo($strReserveOrderId, $strSkuId)
+    {
+        $arrConds = [
+            'reserve_order_id' => $strReserveOrderId,
+            'sku_id' => $strSkuId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrResult = self::findRow(self::getAllColumns(), $arrConds);
+        return $arrResult;
+    }
+
     /**
      * 查询指定订单的商品列表
      *

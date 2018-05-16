@@ -443,6 +443,26 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const MULTI_WAREHOUSE_QUERY_PLAN_TIME_REQUIRED = 340029;
 
+    /**
+     * 输入商品id或条码id长度异常
+     */
+    const SKU_UPC_OR_SKU_ID_LENGTH_EXCEPTION = 340030;
+
+    /**
+     * 该商品不在该单据中
+     */
+    const RESERVE_ORDER_SKU_NOT_FOUND = 340031;
+
+    /**
+     * 该条码不存在，请联系采购人员
+     */
+    const RESERVE_ORDER_UPC_ID_NOT_EXIST = 340032;
+
+    /**
+     * 查询商品条码失败
+     */
+    const RESERVE_ORDER_UPC_QUERY_FAIL = 340033;
+
 
     /**
      * 查询返回结果为空

@@ -29,6 +29,16 @@ class Order_Define_Sku
     ];
 
     /**
+     * sku_id的字符串形式宽度
+     */
+    const SKU_ID_LENGTH = 7;
+
+    /**
+     * upc_id的字符串形式最小宽度
+     */
+    const SKU_UPC_ID_MIN_LENGTH = 8;
+
+    /**
      * net gram
      * @var int
      */

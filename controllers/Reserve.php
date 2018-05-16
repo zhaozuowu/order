@@ -15,5 +15,6 @@ class Controller_Reserve extends Ap_Controller_Abstract {
         'getreserveorderskulist' => 'actions/reserve/GetReserveOrderSkuList.php', #查询采购单商品（分页）#
         'getreserveorderprintlist' => 'actions/reserve/GetReserveOrderPrintList.php', #预约入库单打印#
         'getreserveorderstockingcount' => 'actions/reserve/GetReserveOrderStockingCount.php', #查询待入库预约单数量#
+        'getreserveorderskubyordersku' => 'actions/reserve/GetReserveOrderSkuByOrderSku.php', #根据预约单号和商品编码/条码查询商品信息#
     );
 }
