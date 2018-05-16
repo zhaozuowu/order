@@ -375,11 +375,11 @@ class Dao_Ral_Stock
             Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is empty');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR);
         }
-        $req[self::API_RALER_STOCK_FROZEN_INFO]['warehouse_id'] = $intWarehouseId;
+        $req[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['warehouse_id'] = $intWarehouseId;
 
         //商品ID
         if (!empty($intSkuId)) {
-            $req[self::API_RALER_STOCK_FROZEN_INFO]['sku_ids'] = $intSkuId;
+            $req[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['sku_ids'] = $intSkuId;
         }
 
         //效期类型与时间
@@ -389,24 +389,24 @@ class Dao_Ral_Stock
         } else if (!empty($intSkuEffectType) && !empty($intTime)) {
             if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
                 $intTime = Order_Util_Stock::formatExpireTime($intTime);
-                $req[self::API_RALER_STOCK_FROZEN_INFO]['expiration_time'] = $intTime;
+                $req[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['expiration_time'] = $intTime;
             } else {
-                $req[self::API_RALER_STOCK_FROZEN_INFO]['production_time'] = $intTime;
+                $req[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['production_time'] = $intTime;
             }
         }
 
         //质量状态
         if (!empty($intIsDefective)) {
-            $req[self::API_RALER_STOCK_FROZEN_INFO]['is_defective'] = $intIsDefective;
+            $req[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['is_defective'] = $intIsDefective;
         }
 
         //冻结类型
-        $req[self::API_RALER_STOCK_FROZEN_INFO]['type'] = $intType;
+        $req[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['type'] = $intType;
 
         //分页
         if (!empty($intPageNum) && !empty($intPageSize)) {
-            $req[self::API_RALER_STOCK_FROZEN_INFO]['page_num'] = $intPageNum;
-            $req[self::API_RALER_STOCK_FROZEN_INFO]['page_size'] = $intPageSize;
+            $req[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['page_num'] = $intPageNum;
+            $req[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['page_size'] = $intPageSize;
         }
 
         Bd_log::trace(sprintf('get stock frozen info, param:%s', json_encode($req)));
