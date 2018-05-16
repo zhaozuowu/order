@@ -1402,17 +1402,19 @@ class Service_Data_Stockin_StockinOrder
     /**
      * @param $strOrderId
      * @param $strOperateName
+     * @param $intUserId
      * @param $strOperateDevice
      * @return bool
      * @throws Order_BusinessError
      */
-    public function addOrderOperateRecord($strOrderId, $strOperateName, $strOperateDevice)
+    public function addOrderOperateRecord($strOrderId, $strOperateName, $intUserId, $strOperateDevice)
     {
         $daoRedis = new Dao_Redis_StockInOrder();
         $intOperateTime = time();
         $strOperateName = strval($strOperateName);
         $strOperateDevice = strval($strOperateDevice);
         $strOrderId = strval($strOrderId);
+        $intUserId = intval($intUserId);
         // check order status
         if (preg_match('/(SIO|ASN)(\d{13})/', $strOrderId, $arrMatches)) {
             $strOrderPrefix = $arrMatches[1];
@@ -1444,7 +1446,8 @@ class Service_Data_Stockin_StockinOrder
             Bd_Log::trace('order rules not allow: ' . $strOrderId);
             Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
         }
-        $boolResult = $daoRedis->addOperateRecord($strOrderId, $strOperateName, $strOperateDevice, $intOperateTime);
+        $boolResult = $daoRedis->addOperateRecord($strOrderId, $strOperateName, $strOperateDevice, $intOperateTime,
+            $intUserId);
         return $boolResult;
     }
 }

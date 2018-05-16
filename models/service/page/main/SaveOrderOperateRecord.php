@@ -32,7 +32,8 @@ class Service_Page_Main_SaveOrderOperateRecord implements Order_Base_Page
         $strOrderId = $arrInput['order_id'];
         $strDevice = $arrInput['device'];
         $strUsername = $arrInput['_session']['user_name'];
-        $ret = $this->data->addOrderOperateRecord($strOrderId, $strUsername, $strDevice);
+        $intUserId = $arrInput['_session']['user_id'];
+        $ret = $this->data->addOrderOperateRecord($strOrderId, $strUsername, $intUserId, $strDevice);
         return $ret;
     }
 }

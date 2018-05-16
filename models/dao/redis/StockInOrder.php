@@ -68,20 +68,23 @@ class Dao_Redis_StockInOrder extends Order_Base_Redis
 
     /**
      * @param $strOrderId
-     * @param $strOperateName
+     * @param $strOperateUserName
      * @param $strOperateDevice
      * @param $intOperateTime
+     * @param $intOperateUserId
      * @return bool
      * @throws Order_BusinessError
      */
-    public function addOperateRecord($strOrderId, $strOperateName, $strOperateDevice, $intOperateTime)
+    public function addOperateRecord($strOrderId, $strOperateUserName, $strOperateDevice, $intOperateTime,
+                                     $intOperateUserId)
     {
         $strRedisKey = Nscm_Define_RedisPrefix::NWMS_STOCKIN_OPERATE_RECORD . $strOrderId;
         $arrAllRecords = $this->getOperateRecord($strOrderId);
         $arrNewRecord = [
             'operate_time' => intval($intOperateTime),
-            'operate_name' => strval($strOperateName),
+            'operate_user_name' => strval($strOperateUserName),
             'operate_device' => strval($strOperateDevice),
+            'operate_user_id' => intval($intOperateUserId)
         ];
         $arrAllRecords[] = $arrNewRecord;
         $strContent = json_encode($arrAllRecords);
