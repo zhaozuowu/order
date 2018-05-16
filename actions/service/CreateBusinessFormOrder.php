@@ -44,7 +44,7 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 			],
 		],
         'skus_event' => [
-            'validate' => 'arr',
+            'validate' => 'json|decode',
             'type' => 'array',
             'params' => [
                 'sku_id' => 'int',
