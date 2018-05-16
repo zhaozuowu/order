@@ -204,4 +204,22 @@ class Dao_Wrpc_Tms
         $arrPoiInfo['coordsType'] = empty($arrInput['customer_location_source']) ? 0 : intval($arrInput['customer_location_source']);
         return $arrPoiInfo;
     }
+
+    /**
+     * 根据运单号获取tms排线号
+     * @param $arrShipmentOrderIds
+     * @throws Order_BusinessError
+     */
+    public function getTmsSnapshootNum($arrShipmentOrderIds)
+    {
+        $arrParams = ['shipmentIds'=>$arrShipmentOrderIds];
+        $arrRet = $this->objWrpcService->queryRouteIds($arrShipmentOrderIds);
+        Bd_Log::trace(sprintf("method[%s] queryRouteIds[%s]", __METHOD__, json_encode($arrRet)));
+        if (0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
+                __METHOD__, json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL);
+        }
+        return $arrRet['data'];
+    }
 }

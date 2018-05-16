@@ -51,17 +51,6 @@ class Service_Data_Place_PlaceOrder
     }
 
     /**
-     * 获取上架单列表
-     * @param $arrField array
-     * @param $arrCond array
-     * @return array
-     */
-    public function getPlaceList($arrField ,$arrCond)
-    {
-
-    }
-
-    /**
      * 获取上架单列表字段
      * @return array
      */

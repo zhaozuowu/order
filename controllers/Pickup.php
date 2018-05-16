@@ -20,5 +20,6 @@ class Controller_Pickup extends Ap_Controller_Abstract {
         'cancelpickuporder' => 'actions/pickup/CancelPickupOrder.php', #取消拣货单#
         'finishpickuporder' => 'actions/pickup/FinishPickupOrder.php', #拣货单完成拣货#
         'getpickuporderskulocation' => 'actions/pickup/GetPickupOrderSkuLocation.php', #获取sku库区库位#
+        'gettmssnapshootnum' => 'actions/pickup/GetTmsSnapshootNum.php', #获取tms排线#
     );
 }

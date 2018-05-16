@@ -29,5 +29,36 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
         return $arrResult;
     }
 
+    /**
+     * 通过上架单号获取上架单信息
+     * @param $intPlaceOrderId
+     * @return array
+     */
+    public static function getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId)
+    {
+        if (empty($intPlaceOrderId)) {
+            return [];
+        }
+        $arrConditions = [
+            'place_order_id' => $intPlaceOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrCols = self::getAllColumns();
+        return self::findRow($arrCols, $arrConditions);
+    }
+
+    /**
+     * 获取上架单分页列表
+     * @param $arrConditions
+     * @param $intLimit
+     * @param $intOffset
+     * @return mixed
+     */
+    public static function getPlaceOrderList($arrConditions, $intLimit, $intOffset)
+    {
+        $arrCols = self::getAllColumns();
+        return self::findRows($arrCols, $arrConditions, ['id' => 'asc'], $intOffset, $intLimit);
+    }
+
 
 }
