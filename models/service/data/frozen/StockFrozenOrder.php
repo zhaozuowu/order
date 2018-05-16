@@ -70,7 +70,6 @@ class Service_Data_Frozen_StockFrozenOrder
     /**
      * 自动创建冻结单
      * @throws Exception
-     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function createFrozenOrderBySystem()
