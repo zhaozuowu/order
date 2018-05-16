@@ -26,6 +26,7 @@ class Service_Page_Place_GetPlaceOrderPrint implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        // TODO: Implement execute() method.
+        $arrPlaceOrderIds = json_decode($arrInput['place_order_ids'], true);
+        return $this->objDsPlaceOrder->getPlaceOrderPrint($arrPlaceOrderIds);
     }
 }

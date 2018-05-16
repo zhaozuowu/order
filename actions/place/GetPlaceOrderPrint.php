@@ -25,6 +25,7 @@ class Action_GetPlaceOrderPrint extends Order_Base_Action
      */
     public function myConstruct()
     {
+        $this->objPage = new Service_Page_Place_GetPlaceOrderPrint();
     }
 
     /**
