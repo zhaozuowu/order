@@ -14,18 +14,6 @@ class Dao_Huskar_Stock
     private $objApiHuskar;
 
     /**
-     * freeze sku stock
-     * @var string
-     */
-    const API_RALER_FREEZE_SKU_STOCK = 'freezeskustock';
-
-    /**
-     * freeze sku stock
-     * @var string
-     */
-    const API_RALER_UNFREEZE_SKU_STOCK = 'unfreezeskustock';
-
-    /**
      * 库存调整
      * @var string
      */
@@ -33,16 +21,22 @@ class Dao_Huskar_Stock
 
 
     /**
-     * 冻结单
+     * 冻结单——冻结
      * @var string
      */
-    const  API_RALER_FROZEN_STOCK = 'frozenorderskustock';
+    const  API_RALER_FROZEN_STOCK = 'frozenstock';
 
     /**
      * 冻结单——解冻
      * @var string
      */
-    const  API_RALER_UNFROZEN_STOCK = 'unfrozenorderskustock';
+    const  API_RALER_UNFROZEN_STOCK = 'unfrozenstock';
+
+    /**
+     * 冻结单——获取仓库可冻结数据
+     * @var string
+     */
+    const  API_RALER_STOCK_FROZEN_INFO = 'getfreezableskubatchinfo';
 
     /**
      * 冻结单——获取仓库
@@ -54,7 +48,6 @@ class Dao_Huskar_Stock
      * 作废出库单
      */
     const  API_RALER_CANCEL_FREEZESKU_STOCK = 'cancelfreezeskustock';
-
 
     /**
      * 获取仓库某商品当前库存详情
@@ -74,13 +67,7 @@ class Dao_Huskar_Stock
     const  API_RALER_ADJUST_STOCKOUT = 'adjuststockout';
 
     /**
-     * 获取仓库商品冻结数据
-     * @var string
-     */
-    const  API_RALER_STOCK_FROZEN_INFO = 'getskubatchfreezableinfo';
-
-    /**
-     * 库存调整-出库
+     * 库存调整-入库
      * @var string
      */
     const  API_RALER_STOCK_IN = 'stockin';
@@ -89,7 +76,6 @@ class Dao_Huskar_Stock
      * 拣货--获取商品库区库位
      * @var string
      */
-    //TODO 修改API&添加配置
     const  API_RALER_GET_SKU_LOCATION = 'getskulocation';
 
     /**
@@ -105,7 +91,6 @@ class Dao_Huskar_Stock
     {
         $this->objApiHuskar = new Nscm_lib_ApiHuskar();
     }
-
 
     /**
      * 批量获取库位信息
@@ -146,7 +131,6 @@ class Dao_Huskar_Stock
      * @param $intWarehouseId
      * @param $arrSkuIds
      * @return array|mixed
-     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function getStockPeriodStock($intWarehouseId, $arrSkuIds)
@@ -179,16 +163,15 @@ class Dao_Huskar_Stock
 
     /**
      * 库存调整-出库
-     * @param int $intStockoutOrderId
-     * @param int $intWarehouseId
-     * @param int $intAdjustType
-     * @param array $arrDetails
+     * @param $intStockoutOrderId
+     * @param $intWarehouseId
+     * @param $intAdjustType
+     * @param $arrDetails
      * @return array
+     * @throws Order_BusinessError
      */
     public function adjustStockout($intStockoutOrderId, $intWarehouseId, $intAdjustType, $arrDetails)
     {
-        $ret = [];
-
         if (empty($intStockoutOrderId) || empty($intWarehouseId) || empty($intAdjustType) || empty($arrDetails)) {
             Bd_Log::warning(__METHOD__ . ' stock adjust decrease order call ral param invalid');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
@@ -209,5 +192,148 @@ class Dao_Huskar_Stock
 
         return $ret;
     }
+
+    /***************************************************冻结单相关******************************************************/
+
+    /**
+     * 调用库存冻结
+     * @param $arrFrozenArg
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function frozenStock($arrFrozenArg)
+    {
+        $arrReq[self::API_RALER_FROZEN_STOCK]['requestParams'] = $arrFrozenArg;
+        Bd_Log::trace('call stock model frozen, req:' . json_encode($arrReq));
+
+        $arrRet = $this->objApiHuskar->getData($arrReq);
+        $arrRet = empty($arrRet[self::API_RALER_FROZEN_STOCK]) ? [] : $arrRet[self::API_RALER_FROZEN_STOCK];
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
+            Bd_Log::warning('call stock model frozen failed. ret: ' . json_encode($arrRet, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL);
+        }
+        Bd_Log::trace('call stock model frozen, ret:' . json_encode($arrRet));
+
+        return $arrRet;
+    }
+
+    /**
+     * 调用库存解冻
+     * @param $arrUnfrozenArg
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function unfrozenStock($arrUnfrozenArg)
+    {
+        $arrReq[self::API_RALER_UNFROZEN_STOCK]['requestParams'] = $arrUnfrozenArg;
+        Bd_Log::trace('call stock model unfrozen, req:' . json_encode($arrReq));
+
+        $arrRet = $this->objApiHuskar->getData($arrReq);
+        $arrRet = empty($arrRet[self::API_RALER_UNFROZEN_STOCK]) ? [] : $arrRet[self::API_RALER_UNFROZEN_STOCK];
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
+            Bd_Log::warning('call stock model unfrozen failed. ret:' . print_r($arrRet, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL);
+        }
+        Bd_Log::trace('call stock model unfrozen, ret:' . json_encode($arrRet));
+
+        return $arrRet;
+    }
+
+    /**
+     * 获取仓库
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockWarehouse()
+    {
+        $arrReq[self::API_RALER_GET_STOCK_WAREHOUSE]['requestParams'] = [];
+
+        $arrRet = $this->objApiHuskar->getData($arrReq);
+        $arrRet = empty($arrRet[self::API_RALER_GET_STOCK_WAREHOUSE]) ? [] : $arrRet[self::API_RALER_GET_STOCK_WAREHOUSE];
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
+            Bd_Log::warning('call stock model get stock warehouse failed. ret: ' . print_r($arrRet, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_GET_STOCK_WAREHOUSE_FAIL);
+        }
+        Bd_Log::trace('call stock model get stock warehouse, ret: ' . json_encode($arrRet));
+
+        return $arrRet;
+    }
+
+    /**
+     * 获取仓库商品可冻结数据
+     * @param $intWarehouseId
+     * @param $intSkuId
+     * @param $intIsDefective
+     * @param $intSkuEffectType
+     * @param $intTime
+     * @param $intPageNum
+     * @param $intPageSize
+     * @param $intType
+     * @return array|mixed
+     * @throws Order_BusinessError
+     */
+    public function getStockFrozenInfo(
+        $intWarehouseId,
+        $intSkuId,
+        $intIsDefective,
+        $intSkuEffectType,
+        $intTime,
+        $intPageNum,
+        $intPageSize,
+        $intType = Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_USER
+    )
+    {
+        //仓库ID
+        if(empty($intWarehouseId)) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is empty');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR);
+        }
+        $arrReq[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['warehouse_id'] = $intWarehouseId;
+
+        //商品ID
+        if (!empty($intSkuId)) {
+            $arrReq[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['sku_ids'] = $intSkuId;
+        }
+
+        //效期类型与时间
+        if (!empty($intSkuEffectType) && empty($intTime) || empty($intSkuEffectType) && !empty($intTime)) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is error');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR);
+        } else if (!empty($intSkuEffectType) && !empty($intTime)) {
+            if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
+                $intTime = Order_Util_Stock::formatExpireTime($intTime);
+                $arrReq[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['expiration_time'] = $intTime;
+            } else {
+                $arrReq[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['production_time'] = $intTime;
+            }
+        }
+
+        //质量状态
+        if (!empty($intIsDefective)) {
+            $arrReq[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['is_defective'] = $intIsDefective;
+        }
+
+        //冻结类型
+        $arrReq[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['type'] = $intType;
+
+        //分页
+        if (!empty($intPageNum) && !empty($intPageSize)) {
+            $arrReq[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['page_num'] = $intPageNum;
+            $arrReq[self::API_RALER_STOCK_FROZEN_INFO]['requestParams']['page_size'] = $intPageSize;
+        }
+        Bd_log::trace(sprintf('get stock freezable info, param:%s', json_encode($arrReq)));
+
+        $arrRet = $this->objApiHuskar->getData($arrReq);
+        $arrRet = empty($arrRet[self::API_RALER_STOCK_FROZEN_INFO]) ? [] : $arrRet[self::API_RALER_STOCK_FROZEN_INFO];
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
+            Bd_Log::warning('call stock model get stock freezable info failed. ret: ' . print_r($arrRet, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
+        }
+        Bd_Log::trace('call stock model get stock freezable info, ret: ' . json_encode($arrRet));
+
+        return $arrRet;
+    }
+
+    /***************************************************冻结单相关******************************************************/
 
 }

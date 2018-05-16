@@ -25,8 +25,8 @@ class Service_Data_Stock
      * init
      */
     public function __construct() {
-        $this->objDaoStock = new Dao_Ral_Stock();
         $this->objDaoSku = new Dao_Ral_Sku();
+        $this->objDaoStock = new Dao_Ral_Stock();
         $this->objDaoHuskarStock = new Dao_Huskar_Stock();
     }
 
@@ -127,7 +127,7 @@ class Service_Data_Stock
         $arrRet = [];
 
         //get stock info
-        $arrStockFrozenInfo = $this->objDaoStock->getStockFrozenInfo(
+        $arrStockFrozenInfo = $this->objDaoHuskarStock->getStockFrozenInfo(
             $arrInput['warehouse_id'],
             $arrInput['sku_id'],
             $arrInput['is_defective'],
