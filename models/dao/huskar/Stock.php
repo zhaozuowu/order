@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @name Dao_Huskar_Stock
  * @desc interact with stock
@@ -7,8 +8,8 @@
 class Dao_Huskar_Stock
 {
     /**
-     * wrcp service
-     * @var Bd_Wrpc_Client
+     * huskar
+     * @var Nscm_lib_ApiHuskar
      */
     private $objApiHuskar;
 
@@ -92,14 +93,18 @@ class Dao_Huskar_Stock
     const  API_RALER_GET_SKU_LOCATION = 'getskulocation';
 
     /**
-     * init
-     * @param string $strServiceName 请求服务的service
+     * 库位--批量获取库位信息
+     * @var string
      */
-    public function __construct($strServiceName = Order_Define_Wrpc::NWMS_STOCK_SERVICE_NAME)
+    const  API_HUSKAR_GET_BATCH_STORAGE_LOCATION = 'getbatchstoragelocation';
+
+    /**
+     * init
+     */
+    public function __construct()
     {
         $this->objApiHuskar = new Nscm_lib_ApiHuskar();
     }
-
 
 
     /**
@@ -109,29 +114,30 @@ class Dao_Huskar_Stock
      * @return mixed
      * @throws Order_BusinessError
      */
-    public function getBatchStorageLocation(string $intWarehouseId,array $locationCodes){
+    public function getBatchStorageLocation($intWarehouseId, $arrLocationCodes)
+    {
         $ret = [];
-        if(empty($intWarehouseId) || empty($arrSkuIds)) {
+        if (empty($intWarehouseId) || empty($arrSkuIds)) {
             Bd_Log::warning(__METHOD__ . ' get sku period stock failed. call ral param is empty.');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
             return $ret;
         }
 
         $strSkuIds = implode(',', $arrSkuIds);
-        $req[self::API_RALER_STOCK_PERIOD_DETAIL]['requestParams'] = [
-            'warehouse_id' => $intWarehouseId,
-            'sku_ids'      => $strSkuIds,
+        
+        $req[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION]['requestParams'] = [
+            'warehouse_id'   => $intWarehouseId,
+            'location_codes' => $strSkuIds,
         ];
 
-        Bd_Log::trace('huskar call '. self::API_RALER_STOCK_PERIOD_DETAIL . ' input params ' . json_encode($req));
+        Bd_Log::trace('huskar call ' . self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION . ' input params ' . json_encode($req));
         $ret = $this->objApiHuskar->getData($req);
-        $ret = empty($ret[self::API_RALER_STOCK_PERIOD_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_PERIOD_DETAIL];
+        $ret = empty($ret[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION]) ? [] : $ret[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION];
         if (empty($ret) || !empty($ret['error_no'])) {
-            Bd_Log::warning(__METHOD__ . ' get sku period stock failed. ret is .' . print_r($ret, true));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
+            Bd_Log::warning(sprintf(__METHOD__ . ' location_code not exist ,$arrLocationIds[%s]', json_encode($arrLocationCodes)));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
         }
-
-        Bd_Log::trace('ral call '. self::API_RALER_STOCK_PERIOD_DETAIL . ' output params ' . json_encode($ret));
+        Bd_Log::trace('huskar call ' . self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION . ' output params ' . json_encode($ret));
         return $ret['result'];
     }
 
@@ -143,21 +149,23 @@ class Dao_Huskar_Stock
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function getStockPeriodStock($intWarehouseId, $arrSkuIds) {
+    public function getStockPeriodStock($intWarehouseId, $arrSkuIds)
+    {
         $ret = [];
-        if(empty($intWarehouseId) || empty($arrSkuIds)) {
+        if (empty($intWarehouseId) || empty($arrSkuIds)) {
             Bd_Log::warning(__METHOD__ . ' get sku period stock failed. call ral param is empty.');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
             return $ret;
         }
 
         $strSkuIds = implode(',', $arrSkuIds);
+
         $req[self::API_RALER_STOCK_PERIOD_DETAIL]['requestParams'] = [
             'warehouse_id' => $intWarehouseId,
             'sku_ids'      => $strSkuIds,
         ];
 
-        Bd_Log::trace('huskar call '. self::API_RALER_STOCK_PERIOD_DETAIL . ' input params ' . json_encode($req));
+        Bd_Log::trace('huskar call ' . self::API_RALER_STOCK_PERIOD_DETAIL . ' input params ' . json_encode($req));
         $ret = $this->objApiHuskar->getData($req);
         $ret = empty($ret[self::API_RALER_STOCK_PERIOD_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_PERIOD_DETAIL];
         if (empty($ret) || !empty($ret['error_no'])) {
@@ -165,7 +173,7 @@ class Dao_Huskar_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
         }
 
-        Bd_Log::trace('ral call '. self::API_RALER_STOCK_PERIOD_DETAIL . ' output params ' . json_encode($ret));
+        Bd_Log::trace('huskar call ' . self::API_RALER_STOCK_PERIOD_DETAIL . ' output params ' . json_encode($ret));
         return $ret['result'];
     }
 
@@ -181,20 +189,21 @@ class Dao_Huskar_Stock
     {
         $ret = [];
 
-        if(empty($intStockoutOrderId) || empty($intWarehouseId) || empty($intAdjustType) || empty($arrDetails)) {
+        if (empty($intStockoutOrderId) || empty($intWarehouseId) || empty($intAdjustType) || empty($arrDetails)) {
             Bd_Log::warning(__METHOD__ . ' stock adjust decrease order call ral param invalid');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
-
-        $req[self::API_RALER_ADJUST_STOCKOUT]['stockout_order_id'] = $intStockoutOrderId;
-        $req[self::API_RALER_ADJUST_STOCKOUT]['warehouse_id'] = $intWarehouseId;
-        $req[self::API_RALER_ADJUST_STOCKOUT]['inventory_type'] = $intAdjustType;
-        $req[self::API_RALER_ADJUST_STOCKOUT]['stockout_details'] = $arrDetails;
+        $req[self::API_RALER_ADJUST_STOCKOUT]['requestParams'] = [
+            'stockout_order_id' => $intStockoutOrderId,
+            'warehouse_id'      => $intWarehouseId,
+            'inventory_type'    => $intAdjustType,
+            'stockout_details'  => $arrDetails,
+        ];
 
         $ret = $this->objApiHuskar->getData($req);
         $ret = empty($ret[self::API_RALER_ADJUST_STOCKOUT]) ? [] : $ret[self::API_RALER_ADJUST_STOCKOUT];
         if (empty($ret) || !empty($ret['error_no'])) {
-            Bd_Log::warning(__METHOD__ . ' ral call stock decrease failed' . print_r($ret, true));
+            Bd_Log::warning(__METHOD__ . ' huskar call stock decrease failed' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 

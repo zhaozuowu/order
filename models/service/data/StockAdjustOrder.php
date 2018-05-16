@@ -13,6 +13,11 @@ class Service_Data_StockAdjustOrder
     protected $objDaoStock;
 
     /**
+     * @var Dao_Huskar_Stock
+     */
+    protected $objDaoHuskarStock;
+
+    /**
      * @var Dao_Ral_Sku
      */
     protected $objDaoSku;
@@ -24,6 +29,7 @@ class Service_Data_StockAdjustOrder
     {
         $this->objDaoSku   = new Dao_Ral_Sku();
         $this->objDaoStock = new Dao_Ral_Stock();
+        $this->objDaoHuskarStock = new Dao_Huskar_Stock();
     }
 
     /**
@@ -498,7 +504,7 @@ class Service_Data_StockAdjustOrder
         $arrRet = [];
         Bd_Log::trace('ral call stock decrease param: ' . print_r($arrStockOut, true));
 
-        $arrRet = $this->objDaoStock->adjustStockout(
+        $arrRet = $this->objDaoHuskarStock->adjustStockout(
             $arrStockOut['stockout_order_id'],
             $arrStockOut['warehouse_id'],
             $arrStockOut['inventory_type'],
@@ -582,23 +588,14 @@ class Service_Data_StockAdjustOrder
      * @param $intWarehouseId
      * @param $arrLocationIds
      */
-    protected function getLocationInfoByIds($intWarehouseId, $arrLocationIds)
+    protected function getLocationInfoByIds($intWarehouseId, $arrLocationCodes)
     {
-        if (empty($arrLocationIds)) {
+        if (empty($arrLocationCodes)) {
             return [];
         }
-        $req = [];
-        $req['getBatchStorageLocation'] = [
-            'warehouse_id' => $intWarehouseId,
-            'location_codes'=> $arrLocationIds,
-        ];
-        $objApiHuskar = new Nscm_lib_ApiHuskar();
-        $data = $objApiHuskar->getData($req);
 
-        if ($data['error_no']!=0){
-            Bd_Log::warning(sprintf(' location_code not exist ,$arrLocationIds[%s]',json_encode($arrLocationIds)));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
-        }
+        $objApiHuskar = new Dao_Huskar_Stock();
+        $data = $objApiHuskar->getBatchStorageLocation($intWarehouseId,$arrLocationCodes);
 
         $arrData = [];
         foreach ($data['result']['list'] as $item){
