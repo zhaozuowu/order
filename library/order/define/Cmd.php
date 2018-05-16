@@ -69,6 +69,12 @@ class Order_Define_Cmd
     const CMD_SYNC_INBOUND_NWMS = 'nscm_purchase_order_sync';
 
     /**
+     * cmd place order create
+     * @var string
+     */
+    const CMD_PLACE_ORDER_CREATE = 'place_order_create';
+
+    /**
      * wmq使用的默认配置
      * @var array
      */

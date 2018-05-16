@@ -12,6 +12,11 @@ class Service_Data_Stock
     protected $objDaoStock;
 
     /**
+     * @var Dao_Wrpc_Stock
+     */
+    protected $objDaoWrpcStockInfo;
+
+    /**
      * @var Dao_Ral_Sku
      */
     protected $objDaoSku;
@@ -21,6 +26,7 @@ class Service_Data_Stock
      */
     public function __construct() {
         $this->objDaoStock = new Dao_Ral_Stock();
+        $this->objDaoWrpcStockInfo = new Dao_Wrpc_Stock(Order_Define_Const::STOCK_INFO_SERVICE);
         $this->objDaoSku = new Dao_Ral_Sku();
     }
 
@@ -121,7 +127,7 @@ class Service_Data_Stock
         $arrRet = [];
 
         //get stock info
-        $arrStockFrozenInfo = $this->objDaoStock->getStockFrozenInfo(
+        $arrStockFrozenInfo = $this->objDaoWrpcStockInfo->getStockFrozenInfo(
             $arrInput['warehouse_id'],
             $arrInput['sku_id'],
             $arrInput['is_defective'],

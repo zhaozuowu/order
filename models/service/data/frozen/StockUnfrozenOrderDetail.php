@@ -17,15 +17,25 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      */
     protected $objDaoStock;
 
+    /**
+     * @var Dao_Wrpc_Stock
+     */
+    protected $objDaoWrpcStockControl;
+
+    /**
+     * @var Service_Data_Frozen_StockFrozenOrderDetail
+     */
     protected $objDataOrderDetail;
 
     /**
      * init
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->objDaoSku = new Dao_Ral_Sku();
-        $this->objDataOrderDetail = new Service_Data_Frozen_StockFrozenOrderDetail();
         $this->objDaoStock = new Dao_Ral_Stock();
+        $this->objDataOrderDetail = new Service_Data_Frozen_StockFrozenOrderDetail();
+        $this->objDaoWrpcStockControl = new Dao_Wrpc_Stock(Order_Define_Const::STOCK_CONTROL_SERVICE);
     }
 
     /**
@@ -35,7 +45,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    protected function getSkuInfos($arrSkuIds) {
+    protected function getSkuInfos($arrSkuIds)
+    {
         if(empty($arrSkuIds)) {
             return [];
         }
@@ -58,7 +69,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function unfrozen($arrInput) {
+    public function unfrozen($arrInput)
+    {
         //查询冻结单
         $objFrozenOrder = Model_Orm_StockFrozenOrder::getStockFrozenOrderById($arrInput['stock_frozen_order_id']);
         if(empty($objFrozenOrder)) {
@@ -102,7 +114,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @return array
      * @throws Order_BusinessError
      */
-    protected function getInsertUnfrozenDetail($arrInput, $arrSkuInfos) {
+    protected function getInsertUnfrozenDetail($arrInput, $arrSkuInfos)
+    {
         $arrOrderDetailArg = [];
         foreach ($arrInput['detail'] as $arrDetail) {
             if(intval($arrDetail['unfrozen_amount']) <= 0) {
@@ -112,12 +125,16 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
 
             $arrSkuInfo = $arrSkuInfos[$arrDetail['sku_id']];
             if(empty($arrSkuInfo)) {
-                Bd_Log::warning("sku info is empty. sku id: " . $arrDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
+                Bd_Log::warning(
+                    "sku info is empty. sku id: " . $arrDetail['sku_id'],
+                    Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput
+                );
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR);
             }
 
             // 根据商品效期类型，计算生产日期和有效期
-            $arrDetail = Order_Util_Stock::getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+            $arrDetail = Order_Util_Stock::getEffectTime(
+                $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
             $intCreator = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
             $strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
             $arrDetail = [
@@ -146,7 +163,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $arrInput
      * @return int
      */
-    public function getOrderListCountGroupBySku($arrInput) {
+    public function getOrderListCountGroupBySku($arrInput)
+    {
         Bd_Log::trace(__METHOD__ . '  param ', 0, $arrInput);
 
         $arrSql = $this->buildGetOrderDetailListSql($arrInput);
@@ -161,7 +179,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $arrInput
      * @return array
      */
-    protected function getSkuIdsByOrderId($arrInput) {
+    protected function getSkuIdsByOrderId($arrInput)
+    {
         Bd_Log::trace(__METHOD__ . '  param ', 0, $arrInput);
 
         $arrSql = $this->buildGetOrderDetailListSql($arrInput);
@@ -170,6 +189,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             $arrSql['where'])->select(array('sku_id'))->groupBy(array('sku_id'))->orderBy(
                 $arrSql['order_by'])->offset($arrSql['offset'])->limit($arrSql['limit'])->rows();
         Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
+
         if(!empty($arrRet)) {
             return array_values(array_column($arrRet, 'sku_id'));
         }
@@ -189,11 +209,10 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             Bd_Log::warning('frozen order id: ' . $arrInput['stock_frozen_order_id'] . ' detail is empty.');
             return [];
         }
-        $arrSql = $this->buildGetOrderListGroupBySkuSql($arrInput['stock_frozen_order_id'], $arrSkuIds);
 
+        $arrSql = $this->buildGetOrderListGroupBySkuSql($arrInput['stock_frozen_order_id'], $arrSkuIds);
         $arrRet = Model_Orm_StockFrozenOrderUnfrozenDetail::findRows($arrSql['columns'], $arrSql['where'],
             $arrSql['order_by']);
-        //Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
 
         $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
 
@@ -205,13 +224,13 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $arrSkuIds
      * @return array
      */
-    protected function buildGetOrderListGroupBySkuSql($intOrderId, $arrSkuIds) {
+    protected function buildGetOrderListGroupBySkuSql($intOrderId, $arrSkuIds)
+    {
         $arrSql = [];
 
         $arrWhere = [
             'is_delete'     => Order_Define_Const::NOT_DELETE,
         ];
-
         if(!empty($intOrderId)) {
             $arrWhere['stock_frozen_order_id'] = $intOrderId;
         }
@@ -230,7 +249,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $arrInput
      * @return array
      */
-    protected function buildGetOrderDetailListSql($arrInput) {
+    protected function buildGetOrderDetailListSql($arrInput)
+    {
         $arrSql = [];
 
         $intOffset = 0;
@@ -306,7 +326,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             //记录冻结单详情更新字段及条件
             $arrUpdateFrozenDetail[] = [
                 'columns' => [
-                    'current_frozen_amount' => $arrFrozenDetail['current_frozen_amount'] - $arrUnfrozenInfoItem['unfrozen_amount'],
+                    'current_frozen_amount' =>
+                        $arrFrozenDetail['current_frozen_amount'] - $arrUnfrozenInfoItem['unfrozen_amount'],
                     'version' => $arrFrozenDetail['version'] + 1,
                     'update_time' => time()
                 ],
@@ -320,13 +341,16 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
         //记录冻结单更新字段及条件
         $arrUpdateFrozenOrderColumns = [];
         if (Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_FROZEN == $objFrozenOrder->order_status) {
-            $arrUpdateFrozenOrderColumns['order_status'] = Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_PART_FROZEN;
+            $arrUpdateFrozenOrderColumns['order_status'] =
+                Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_PART_FROZEN;
         }
         if ($objFrozenOrder->current_total_frozen_amount <= 0) {
             $arrUpdateFrozenOrderColumns['order_status'] = Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_CLOSED;
             $arrUpdateFrozenOrderColumns['close_time'] = time();
-            $arrUpdateFrozenOrderColumns['close_user_id'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
-            $arrUpdateFrozenOrderColumns['close_user_name'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
+            $arrUpdateFrozenOrderColumns['close_user_id'] =
+                Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
+            $arrUpdateFrozenOrderColumns['close_user_name'] =
+                Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
         }
         $arrUpdateFrozenOrderColumns['current_total_frozen_amount'] = $objFrozenOrder->current_total_frozen_amount;
         $arrUpdateFrozenOrderColumns['version'] = $objFrozenOrder->version + 1;
@@ -348,7 +372,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @return array
      * @throws Order_BusinessError
      */
-    protected function getUnfrozenInfoMap($arrInput) {
+    protected function getUnfrozenInfoMap($arrInput)
+    {
         $arrRes = [];
         $arrRes['warehouse_id'] = $arrInput['warehouse_id'];
         $arrRes['stock_frozen_order_id'] = $arrInput['stock_frozen_order_id'];
@@ -384,7 +409,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $arrFrozenDetail
      * @return array
      */
-    protected function getFrozenDetailMap($arrFrozenDetail) {
+    protected function getFrozenDetailMap($arrFrozenDetail)
+    {
         $arrRes = [];
         foreach ($arrFrozenDetail as $arrFrozenDetailItem) {
             $intUniqKey = $this->getUnfrozenInfoUniqKey(
@@ -406,7 +432,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $strLocationCode
      * @return string
      */
-    protected function getUnfrozenInfoUniqKey($intSkuId, $intProductionOrExpireTime, $intIsDefective, $strLocationCode) {
+    protected function getUnfrozenInfoUniqKey($intSkuId, $intProductionOrExpireTime, $intIsDefective, $strLocationCode)
+    {
        return $intSkuId . '-' . $intProductionOrExpireTime . '-' . $intIsDefective . '-' . $strLocationCode;
     }
 
@@ -418,7 +445,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @return array
      * @throws Exception
      */
-    protected function writeTransaction($arrUpdateFrozenOrder, $arrUpdateFrozenDetail, $arrInsertUnfrozenDetail) {
+    protected function writeTransaction($arrUpdateFrozenOrder, $arrUpdateFrozenDetail, $arrInsertUnfrozenDetail)
+    {
         $objDbConn = Wm_Orm_Connection::getConnection('nwms_order_cluster');
         $arrRes = $objDbConn->transaction(function() use (
             $arrUpdateFrozenOrder,
@@ -492,6 +520,6 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             'details'      => $arrDetails
         ];
 
-        $this->objDaoStock->unfrozenStock($arrPram);
+        $this->objDaoWrpcStockControl->unfrozenStock($arrPram);
     }
 }

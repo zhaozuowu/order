@@ -27,6 +27,27 @@ class Order_Define_PlaceOrder
     ];
 
     /**
+     * 上架单质量为非良品
+     * @var integer
+     */
+    const PLACE_ORDER_QUALITY_GOOD = 2;
+
+    /**
+     * 上架单质量为良品
+     * @var integer
+     */
+    const PLACE_ORDER_QUALITY_BAD = 1;
+
+    /**
+     * 上架单质量数组
+     * @var array
+     */
+    const PLACE_ORDER_QUALITY_MAP = [
+        self::PLACE_ORDER_QUALITY_GOOD => '良品',
+        self::PLACE_ORDER_QUALITY_BAD => '非良品',
+    ];
+
+    /**
      * 全部状态
      */
     const ALL_STATUS = [

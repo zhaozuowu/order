@@ -13,6 +13,7 @@ class Service_Data_PickupOrder
     {
         $this->objOrmStockoutOrder = new Model_Orm_StockoutOrder();
         $this->objOrmSku = new Model_Orm_StockoutOrderSku();
+        $this->objWrpcTms = new Dao_Wrpc_Tms();
     }
 
     /**
@@ -708,5 +709,52 @@ class Service_Data_PickupOrder
     {
         $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE;
         (new Dao_Ral_Log())->addLog($logType,$quotaIdxInt1,$operationType,$userName,$operatorId,$content);
+    }
+
+    /**
+     * 获取tms排线号
+     * @param $pickupOrderId
+     * @return array
+     */
+    public function getTmsSnapshootNum($pickupOrderId)
+    {
+
+        $res = ['orderNum'=>0,'tmsSnapshootNum'=>0,'hasSnapshootOrderNum'=>0,'noSnapshootOrderNum'=>0];
+        $arrStockoutOrderIds = Model_Orm_StockoutPickupOrder::getStockoutOrderIdsByPickupOrderId($pickupOrderId);
+        if (empty($arrStockoutOrderIds)) {
+            return $res;
+        }
+        $arrConditions = [
+            'stockout_order_id' => ['in', $arrStockoutOrderIds],
+        ];
+        $arrColumns = $this->objOrmStockoutOrder->getAllColumns();
+        $stockoutOrderList= $this->objOrmStockoutOrder->findRows($arrColumns, $arrConditions);
+        if (empty($stockoutOrderList)) {
+            return $res;
+        }
+        $arrShipmentOrderIds = array_column($stockoutOrderList,'shipment_order_id');
+        $params = ['shipmentIds'=>$arrShipmentOrderIds];
+        $tmsSnapshootList = $this->objWrpcTms->getTmsSnapshootNum($params);
+        $res['orderNum'] = count($arrStockoutOrderIds);
+        if(empty($tmsSnapshootList)) {
+          $res['noSnapshootOrderNum'] = $res['orderNum'];
+          return $res;
+        }
+        $res['tmsSnapshootNum'] = count(array_unique($tmsSnapshootList));
+        $res['hasSnapshootOrderNum'] = 0;
+        $res['noSnapshootOrderNum'] = 0;
+        foreach($stockoutOrderList as $key=>$item) {
+            if(isset($tmsSnapshootList[$item['shipment_order_id']])) {
+                $updateData['pickup_tms_snapshoot_num'] = $tmsSnapshootList[$item['shipment_order_id']];
+                $res['hasSnapshootOrderNum']++;
+                $arrConditions = [
+                    'stockout_order_id' => $item['stockout_order_id']
+                ];
+                $result = $this->objOrmStockoutOrder->updateDataByConditions($arrConditions, $updateData);
+                continue;
+            }
+            $res['noSnapshootOrderNum']++;
+        }
+        return $res;
     }
 }

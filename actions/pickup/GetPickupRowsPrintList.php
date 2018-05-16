@@ -7,10 +7,6 @@
 
 class Action_GetPickupRowsPrintList extends Order_Base_Action
 {
-    protected $boolCheckLogin = false;
-    protected  $boolCheckAuth = false;
-    protected  $boolCheckIp = false;
-
 
     /**
      * input params

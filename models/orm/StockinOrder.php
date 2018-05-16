@@ -474,4 +474,23 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         return [];
     }
 
+    /**
+     * 批量上架入库单
+     * @param $arrStockinOrderIds
+     * @return bool
+     */
+    public static function placeStockinOrder($arrStockinOrderIds)
+    {
+        if (empty($arrStockinOrderIds)) {
+            return false;
+        }
+        $arrCols = ['is_placed' => true];
+        $arrConditions = [
+            'stockin_order_id' => ['in', $arrStockinOrderIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        self::updateAll($arrCols, $arrConditions);
+        return true;
+    }
+
 }

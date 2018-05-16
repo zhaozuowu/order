@@ -587,6 +587,25 @@ class Service_Data_StockAdjustOrder
         if (empty($arrLocationIds)) {
             return [];
         }
+        $req = [];
+        $req['getBatchStorageLocation'] = [
+            'warehouse_id' => $intWarehouseId,
+            'location_codes'=> $arrLocationIds,
+        ];
+        $objApiHuskar = new Nscm_lib_ApiHuskar();
+        $data = $objApiHuskar->getData($req);
+
+        if ($data['error_no']!=0){
+            Bd_Log::warning(sprintf(' location_code not exist ,$arrLocationIds[%s]',json_encode($arrLocationIds)));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
+        }
+
+        $arrData = [];
+        foreach ($data['result']['list'] as $item){
+            $arrData[$item['location_code']] = $item;
+        }
+
+        return $arrData;
     }
 
     /**
