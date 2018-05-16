@@ -45,7 +45,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    protected function getSkuInfos($arrSkuIds) {
+    protected function getSkuInfos($arrSkuIds)
+    {
         if(empty($arrSkuIds)) {
             return [];
         }
@@ -68,7 +69,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function unfrozen($arrInput) {
+    public function unfrozen($arrInput)
+    {
         //查询冻结单
         $objFrozenOrder = Model_Orm_StockFrozenOrder::getStockFrozenOrderById($arrInput['stock_frozen_order_id']);
         if(empty($objFrozenOrder)) {
@@ -112,7 +114,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @return array
      * @throws Order_BusinessError
      */
-    protected function getInsertUnfrozenDetail($arrInput, $arrSkuInfos) {
+    protected function getInsertUnfrozenDetail($arrInput, $arrSkuInfos)
+    {
         $arrOrderDetailArg = [];
         foreach ($arrInput['detail'] as $arrDetail) {
             if(intval($arrDetail['unfrozen_amount']) <= 0) {
@@ -122,12 +125,16 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
 
             $arrSkuInfo = $arrSkuInfos[$arrDetail['sku_id']];
             if(empty($arrSkuInfo)) {
-                Bd_Log::warning("sku info is empty. sku id: " . $arrDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
+                Bd_Log::warning(
+                    "sku info is empty. sku id: " . $arrDetail['sku_id'],
+                    Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput
+                );
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR);
             }
 
             // 根据商品效期类型，计算生产日期和有效期
-            $arrDetail = Order_Util_Stock::getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+            $arrDetail = Order_Util_Stock::getEffectTime(
+                $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
             $intCreator = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
             $strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
             $arrDetail = [
