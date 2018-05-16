@@ -52,7 +52,7 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
      * @param $arrPlaceOrderIds
      * @return array
      */
-    public static function getPlaceOrderInfosByPlaceOrderId($arrPlaceOrderIds)
+    public static function getPlaceOrderInfosByPlaceOrderIds($arrPlaceOrderIds)
     {
         if (empty($arrPlaceOrderIds)) {
             return [];

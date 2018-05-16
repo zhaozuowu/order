@@ -243,9 +243,33 @@ class Service_Data_PlaceOrder
         return $arrConditions;
     }
 
-    public function getPlaceOrderPrint($arrStockoutOrderIds)
+    /**
+     * 获取打印列表
+     * @param $arrPlaceOrderIds
+     * @return array
+     */
+    public function getPlaceOrderPrint($arrPlaceOrderIds)
     {
-
+        if (empty($arrPlaceOrderIds)) {
+            return [];
+        }
+        $arrPlaceOrderInfos = Model_Orm_PlaceOrder::getPlaceOrderInfosByPlaceOrderIds($arrPlaceOrderIds);
+        if (empty($arrPlaceOrderInfos)) {
+            return [];
+        }
+        $arrPlaceOrderSkus = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderIds($arrPlaceOrderIds);
+        if (empty($arrPlaceOrderSkus)) {
+            return [];
+        }
+        $arrMapPlaceOrderSkus = Order_Util_Util::arrayToKeyValues($arrPlaceOrderSkus, 'place_order_id');
+        foreach ((array)$arrPlaceOrderInfos as $intKey => $arrPlaceOrderInfoItem) {
+            $intPlaceOrderId = $arrPlaceOrderInfoItem['place_order_id'];
+            if (!isset($arrMapPlaceOrderSkus[$intPlaceOrderId])) {
+                continue;
+            }
+            $arrPlaceOrderInfos[$intKey]['skus'] = $arrMapPlaceOrderSkus[$intPlaceOrderId];
+        }
+        return $arrPlaceOrderInfos;
     }
 
 }
