@@ -124,7 +124,7 @@ class Dao_Huskar_Stock
         }
 
         $strSkuIds = implode(',', $arrSkuIds);
-        
+
         $req[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION]['requestParams'] = [
             'warehouse_id'   => $intWarehouseId,
             'location_codes' => $strSkuIds,

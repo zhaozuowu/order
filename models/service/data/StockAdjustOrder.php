@@ -594,8 +594,7 @@ class Service_Data_StockAdjustOrder
             return [];
         }
 
-        $objApiHuskar = new Dao_Huskar_Stock();
-        $data = $objApiHuskar->getBatchStorageLocation($intWarehouseId,$arrLocationCodes);
+        $data = $this->objDaoHuskarStock->getBatchStorageLocation($intWarehouseId,$arrLocationCodes);
 
         $arrData = [];
         foreach ($data['result']['list'] as $item){
