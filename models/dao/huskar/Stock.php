@@ -19,7 +19,6 @@ class Dao_Huskar_Stock
      */
     const  API_RALER_ADJUST_SKU_STOCK = 'adjustskustock';
 
-
     /**
      * 冻结单——冻结
      * @var string
@@ -95,8 +94,9 @@ class Dao_Huskar_Stock
     /**
      * 批量获取库位信息
      * @param $intWarehouseId
-     * @param $locationCodes
-     * @return mixed
+     * @param $arrLocationCodes
+     * @return array|mixed
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function getBatchStorageLocation($intWarehouseId, $arrLocationCodes)
@@ -131,6 +131,7 @@ class Dao_Huskar_Stock
      * @param $intWarehouseId
      * @param $arrSkuIds
      * @return array|mixed
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function getStockPeriodStock($intWarehouseId, $arrSkuIds)
@@ -168,6 +169,7 @@ class Dao_Huskar_Stock
      * @param $intAdjustType
      * @param $arrDetails
      * @return array
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function adjustStockout($intStockoutOrderId, $intWarehouseId, $intAdjustType, $arrDetails)
@@ -198,7 +200,8 @@ class Dao_Huskar_Stock
     /**
      * 调用库存冻结
      * @param $arrFrozenArg
-     * @return mixed
+     * @return array
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function frozenStock($arrFrozenArg)
@@ -220,7 +223,8 @@ class Dao_Huskar_Stock
     /**
      * 调用库存解冻
      * @param $arrUnfrozenArg
-     * @return mixed
+     * @return array
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function unfrozenStock($arrUnfrozenArg)
@@ -242,6 +246,7 @@ class Dao_Huskar_Stock
     /**
      * 获取仓库
      * @return array
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function getStockWarehouse()
@@ -268,8 +273,9 @@ class Dao_Huskar_Stock
      * @param $intTime
      * @param $intPageNum
      * @param $intPageSize
-     * @param $intType
-     * @return array|mixed
+     * @param int $intType
+     * @return array
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function getStockFrozenInfo(
