@@ -212,12 +212,14 @@ class Dao_Ral_Stock
         }
 
         $strSkuIds = implode(',', $arrSkuIds);
+        $req[self::API_RALER_STOCK_PERIOD_DETAIL]['requestParams'] = [
+            'warehouse_id' => $intWarehouseId,
+            'sku_ids'      => $strSkuIds,
+        ];
 
-        $req[self::API_RALER_STOCK_PERIOD_DETAIL]['warehouse_id'] = $intWarehouseId;
-        $req[self::API_RALER_STOCK_PERIOD_DETAIL]['sku_ids'] = $strSkuIds;
-
-        Bd_Log::trace('ral call '. self::API_RALER_STOCK_PERIOD_DETAIL . ' input params ' . json_encode($req));
-        $ret = $this->objApiRal->getData($req);
+        Bd_Log::trace('huskar call '. self::API_RALER_STOCK_PERIOD_DETAIL . ' input params ' . json_encode($req));
+        $objApiRal = new Nscm_lib_ApiHuskar();
+        $ret = $objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_STOCK_PERIOD_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_PERIOD_DETAIL];
         if (empty($ret) || !empty($ret['error_no'])) {
             Bd_Log::warning(__METHOD__ . ' get sku period stock failed. ret is .' . print_r($ret, true));
