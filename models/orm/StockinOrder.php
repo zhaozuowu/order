@@ -73,6 +73,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param  int $intStockinOrderTotalPriceTax
      * @param  int $intCustomerId
      * @param  int $strCustomerName
+     * @param int $intStockinDevice
      * @return int
      */
     public static function createStockinOrder(
@@ -99,7 +100,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intStockinOrderTotalPrice,
         $intStockinOrderTotalPriceTax,
         $intCustomerId,
-        $strCustomerName
+        $strCustomerName,
+        $intStockinDevice = 0
     )
     {
         $arrRow = [
@@ -127,6 +129,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
             'customer_id' => $intCustomerId,
             'customer_name' => $strCustomerName,
+            'stockin_device' => $intStockinDevice,
         ];
         return self::insert($arrRow);
     }
