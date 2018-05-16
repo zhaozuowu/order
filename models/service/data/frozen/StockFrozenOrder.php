@@ -463,10 +463,10 @@ class Service_Data_Frozen_StockFrozenOrder
     protected function frozenStock($arrInput, $arrSkuInfos)
     {
         $arrStockFrozenArg = $this->getStockFrozenArg($arrInput, $arrSkuInfos);
-        Bd_Log::trace('ral call stock frozen param: ' . print_r($arrStockFrozenArg, true));
+        Bd_Log::trace('call stock frozen param: ' . print_r($arrStockFrozenArg, true));
 
         $arrRet =  $this->objDaoHuskarStock->frozenStock($arrStockFrozenArg);
-        Bd_Log::trace('ral call stock frozen return:  ' . print_r($arrRet,true));
+        Bd_Log::trace('call stock frozen return:  ' . print_r($arrRet,true));
     }
 
     /**
