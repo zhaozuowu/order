@@ -30,7 +30,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
     public function __construct() {
         $this->objDaoSku = new Dao_Ral_Sku();
         $this->objDataOrderDetail = new Service_Data_Frozen_StockFrozenOrderDetail();
-        $this->objDaoWrpcStockControl = new Dao_Wrpc_Stock(Stock_Define_Const::STOCK_CONTROL_SERVICE);
+        $this->objDaoWrpcStockControl = new Dao_Wrpc_Stock(Order_Define_Const::STOCK_CONTROL_SERVICE);
         $this->objDaoStock = new Dao_Ral_Stock();
     }
 

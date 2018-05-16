@@ -39,8 +39,8 @@ class Service_Data_Frozen_StockFrozenOrder
     {
         $this->objDaoSku = new Dao_Ral_Sku();
         $this->objDaoStock = new Dao_Ral_Stock();
-        $this->objDaoWrpcStockInfo = new Dao_Wrpc_Stock(Stock_Define_Const::STOCK_INFO_SERVICE);
-        $this->objDaoWrpcStockControl = new Dao_Wrpc_Stock(Stock_Define_Const::STOCK_CONTROL_SERVICE);
+        $this->objDaoWrpcStockInfo = new Dao_Wrpc_Stock(Order_Define_Const::STOCK_INFO_SERVICE);
+        $this->objDaoWrpcStockControl = new Dao_Wrpc_Stock(Order_Define_Const::STOCK_CONTROL_SERVICE);
         $this->objDaoWarehouse = new Dao_Ral_Order_Warehouse();
     }
 

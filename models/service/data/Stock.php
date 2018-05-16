@@ -26,7 +26,7 @@ class Service_Data_Stock
      */
     public function __construct() {
         $this->objDaoStock = new Dao_Ral_Stock();
-        $this->objDaoWrpcStockInfo = new Dao_Wrpc_Stock(Stock_Define_Const::STOCK_INFO_SERVICE);
+        $this->objDaoWrpcStockInfo = new Dao_Wrpc_Stock(Order_Define_Const::STOCK_INFO_SERVICE);
         $this->objDaoSku = new Dao_Ral_Sku();
     }
 
