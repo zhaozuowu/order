@@ -45,4 +45,22 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
         return Model_Orm_PlaceOrder::findRow($arrCols, $arrConditions);
     }
 
+    /**
+     * 通过上架单号数组批量获取sku信息
+     * @param $arrPlaceOrderIds
+     * @return array
+     */
+    public static function getPlaceOrderSkusByPlaceOrderIds($arrPlaceOrderIds)
+    {
+        if (empty($arrPlaceOrderIds)) {
+            return [];
+        }
+        $arrCols = self::getAllColumns();
+        $arrConditions = [
+            'place_order_id' => ['in', $arrPlaceOrderIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        return Model_Orm_PlaceOrderSku::findRows($arrCols, $arrConditions);
+    }
+
 }

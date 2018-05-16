@@ -194,6 +194,11 @@ class Service_Data_PlaceOrder
         return $arrPlaceOrderInfo;
     }
 
+    /**
+     * 获取上架单列表
+     * @param $arrInput
+     * @return array
+     */
     public function getPlaceOrderList($arrInput)
     {
         $arrCondtions = $this->getListConditions($arrInput);
@@ -207,6 +212,11 @@ class Service_Data_PlaceOrder
         ];
     }
 
+    /**
+     * 获取列表查询条件
+     * @param $arrInput
+     * @return array
+     */
     protected function getListConditions($arrInput)
     {
         $arrConditions = [];
@@ -231,6 +241,35 @@ class Service_Data_PlaceOrder
             $arrConditions['create_time'][] = ['<=', intval($arrInput['create_time_end'])];
         }
         return $arrConditions;
+    }
+
+    /**
+     * 获取打印列表
+     * @param $arrPlaceOrderIds
+     * @return array
+     */
+    public function getPlaceOrderPrint($arrPlaceOrderIds)
+    {
+        if (empty($arrPlaceOrderIds)) {
+            return [];
+        }
+        $arrPlaceOrderInfos = Model_Orm_PlaceOrder::getPlaceOrderInfosByPlaceOrderIds($arrPlaceOrderIds);
+        if (empty($arrPlaceOrderInfos)) {
+            return [];
+        }
+        $arrPlaceOrderSkus = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderIds($arrPlaceOrderIds);
+        if (empty($arrPlaceOrderSkus)) {
+            return [];
+        }
+        $arrMapPlaceOrderSkus = Order_Util_Util::arrayToKeyValues($arrPlaceOrderSkus, 'place_order_id');
+        foreach ((array)$arrPlaceOrderInfos as $intKey => $arrPlaceOrderInfoItem) {
+            $intPlaceOrderId = $arrPlaceOrderInfoItem['place_order_id'];
+            if (!isset($arrMapPlaceOrderSkus[$intPlaceOrderId])) {
+                continue;
+            }
+            $arrPlaceOrderInfos[$intKey]['skus'] = $arrMapPlaceOrderSkus[$intPlaceOrderId];
+        }
+        return $arrPlaceOrderInfos;
     }
 
 }
