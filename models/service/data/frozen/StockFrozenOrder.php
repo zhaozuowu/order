@@ -440,7 +440,7 @@ class Service_Data_Frozen_StockFrozenOrder
                 'sku_id'                    => $arrDetail['sku_id'],
                 'upc_id'                    => $arrSkuInfo['min_upc']['upc_id'],
                 'sku_name'                  => $arrSkuInfo['sku_name'],
-                'location_code'             => $arrSkuInfo['location_code'],
+                'location_code'             => $arrDetail['location_code'],
                 'origin_frozen_amount'      => $arrDetail['frozen_amount'],
                 'current_frozen_amount'     => $arrDetail['frozen_amount'],
                 'is_defective'              => $arrDetail['is_defective'],
@@ -454,9 +454,10 @@ class Service_Data_Frozen_StockFrozenOrder
     }
 
     /**
-     * 调用stock模块，冻结库存
+     * 冻结库存
      * @param $arrInput
      * @param $arrSkuInfos
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     protected function frozenStock($arrInput, $arrSkuInfos)

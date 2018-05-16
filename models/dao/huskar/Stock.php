@@ -206,7 +206,7 @@ class Dao_Huskar_Stock
 
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_FROZEN_STOCK]) ? [] : $arrRet[self::API_RALER_FROZEN_STOCK];
-        if (empty($arrRet) || !empty($arrRet['error_no'])) {
+        if (!empty($arrRet['error_no'])) {
             Bd_Log::warning('call stock model frozen failed. ret: ' . json_encode($arrRet, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL);
         }
