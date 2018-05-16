@@ -611,6 +611,14 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const PICKUP_ORDER_SKUS_NOT_EXISTED = 390031;
     /**
+     * 完成拣货通知库存失败
+     */
+    const FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL = 390040;
+    /**
+     * 作废拣货单通知库存失败
+     */
+    const CANCEL_PICKUP_ORDER_NOTIFY_STOCK_FAIL = 390041;
+    /**
      * 获取tms排线号失败
      */
     const NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL = 390032;

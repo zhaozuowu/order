@@ -111,6 +111,8 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::CREATE_PLACE_ORDER_PARAMS_ERROR => '创建上架单参数错误',
         Order_Error_Code::PLACE_ORDER_ALREADY_CREATE => '存在已生成上架单的入库单',
         Order_Error_Code::STOCKOUT_ORDER_IN_PICKING => '出库单存在于拣货任务中',
+        Order_Error_Code::FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL => '完成拣货通知库存失败',
+        Order_Error_Code::CANCEL_PICKUP_ORDER_NOTIFY_STOCK_FAIL => '作废拣货单通知库存失败',
     ];
 
 }

@@ -402,6 +402,7 @@ class Service_Data_PickupOrder
      * @param $userName
      * @return int
      * @throws Order_BusinessError
+     * @throws Exception
      */
     public function cancelPickupOrderById($intPickupOrderId,  $userId, $userName)
     {
@@ -416,10 +417,16 @@ class Service_Data_PickupOrder
         //update obj
         $objPickupOrder->pickup_order_status = Order_Define_PickupOrder::PICKUP_ORDER_STATUS_CANCEL;
         $objPickupOrder->update_operator = $userName;
-        $updateFlag =  $objPickupOrder->update();
-        if (!$updateFlag) {
-            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_CANCEL_FAILED);
-        }
+        $intWarehouseId = $objPickupOrder->warehouse_id;
+        Model_Orm_PickupOrder::getConnection()->transaction(function () use ($objPickupOrder, $intPickupOrderId, $intWarehouseId) {
+            $updateFlag =  $objPickupOrder->update();
+            if (!$updateFlag) {
+                Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_CANCEL_FAILED);
+            }
+            //作废
+            $objDaoWrpcStock = new Dao_Wrpc_Stock();
+            $objDaoWrpcStock->cancelStockLocRecommend($intPickupOrderId, $intWarehouseId);
+        });
         return Order_Define_Const::UPDATE_SUCCESS;
     }
 
@@ -511,6 +518,10 @@ class Service_Data_PickupOrder
                 $this->addLog($userId, $userName, '完成揽收:'.$intStockoutOrderId,$operationType, $intStockoutOrderId);
                 $this->notifyTmsFnishPick($intStockoutOrderId, $arrPickupStockOrderSkus);
             }
+            $intWarehouseId = $objPickupOrderInfo->warehouse_id;
+            //通知stock拣货完成
+            $objDaoWrpcStock = new Dao_Wrpc_Stock();
+            $objDaoWrpcStock->pickStock($intPickupOrderId, $intWarehouseId, $arrPickupSkus);
         });
         foreach ($arrStockoutOrderPickupList as $arrStockoutOrderPickupInfo) {
             $intStockoutOrderId = $arrStockoutOrderPickupInfo['stockout_order_id'];

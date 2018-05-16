@@ -54,4 +54,58 @@ class Dao_Wrpc_Stock
         return $arrRet['data'];
     }
 
+    /**
+     * 拣货完成通知仓库转移库存
+     * @param $intPickupOrderId
+     * @param $intWarehouseId
+     * @param $arrPickupSkus
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function pickStock($intPickupOrderId, $intWarehouseId, $arrPickupSkus)
+    {
+        $arrReqParams['requestParams'] = [
+            'warehouse_id' => $intWarehouseId,
+            'ext_order_id' => strval($intPickupOrderId),
+            'details' => $arrPickupSkus,
+        ];
+        Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_request[%d]",
+            __METHOD__, json_encode($arrReqParams)));
+        $arrRet = $this->objWrpcService->pickStock($arrReqParams);
+        Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_ret[%s]",
+            __METHOD__, json_encode($arrRet)));
+        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("method[%s] arrRet[%s] ret[%s]",
+                __METHOD__, json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL);
+        }
+        return $arrRet['data'];
+    }
+
+    /**
+     * 作废拣货单通知库存
+     * @param $intPickupOrderId
+     * @param $intWarehouseId
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function cancelStockLocRecommend($intPickupOrderId, $intWarehouseId)
+    {
+        $arrReqParams['requestParams'] = [
+            'warehouse_id' => $intWarehouseId,
+            'ext_order_id' => strval($intPickupOrderId),
+        ];
+        Bd_Log::trace(sprintf("method[%s] cancel_pickup_notify_stock_request[%d]",
+            __METHOD__, json_encode($arrReqParams)));
+        $arrRet = $this->objWrpcService->cancelStockLocRecommend($arrReqParams);
+        Bd_Log::trace(sprintf("method[%s] cancel_pickup_notify_stock_ret[%s]",
+            __METHOD__, json_encode($arrRet)));
+        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("method[%s] arrRet[%s] ret[%s]",
+                __METHOD__, json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::CANCEL_PICKUP_ORDER_NOTIFY_STOCK_FAIL);
+        }
+        return $arrRet['data'];
+    }
+
 }
