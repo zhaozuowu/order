@@ -38,8 +38,8 @@ class Order_Define_Wrpc
     const OMS_NAMESPACE = 'orderui';
 
     /**
-     * oms service name
+     * oms NWMS service name
      * @var string
      */
-    const OMS_SERVICE_NAME = 'EventService';
+    const OMS_NWMS_SERVICE_NAME = 'NwmsService';
 }
