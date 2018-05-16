@@ -194,6 +194,11 @@ class Service_Data_PlaceOrder
         return $arrPlaceOrderInfo;
     }
 
+    /**
+     * 获取上架单列表
+     * @param $arrInput
+     * @return array
+     */
     public function getPlaceOrderList($arrInput)
     {
         $arrCondtions = $this->getListConditions($arrInput);
@@ -207,6 +212,11 @@ class Service_Data_PlaceOrder
         ];
     }
 
+    /**
+     * 获取列表查询条件
+     * @param $arrInput
+     * @return array
+     */
     protected function getListConditions($arrInput)
     {
         $arrConditions = [];
@@ -231,6 +241,11 @@ class Service_Data_PlaceOrder
             $arrConditions['create_time'][] = ['<=', intval($arrInput['create_time_end'])];
         }
         return $arrConditions;
+    }
+
+    public function getPlaceOrderPrint($arrStockoutOrderIds)
+    {
+
     }
 
 }
