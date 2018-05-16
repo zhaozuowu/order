@@ -247,6 +247,12 @@ class Order_Error_Code extends Wm_Error_Code
      *
      */
     const NWMS_STOCKOUT_CANCEL_STOCK_FAIL = 340008;
+    /**
+     * 出库单存在于拣货任务中
+     * @var integer
+     *
+     */
+    const STOCKOUT_ORDER_IN_PICKING= 340012;
 
     /**
      * 创建业态订单参数错误

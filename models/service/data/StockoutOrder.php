@@ -1232,6 +1232,9 @@ class Service_Data_StockoutOrder
         if (!in_array($stockoutOrderInfo['stockout_order_status'], $allowOrderStatus)) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
         }
+        if (Order_Define_StockoutOrder::PICKUP_ORDERE_IS_CREATED == $stockoutOrderInfo['is_pickup_ordered']) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_IN_PICKING);
+        }
         $updateData = [
             'stockout_order_status' => Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS,
             'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
