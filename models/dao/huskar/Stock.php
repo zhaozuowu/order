@@ -102,17 +102,12 @@ class Dao_Huskar_Stock
     public function getBatchStorageLocation($intWarehouseId, $arrLocationCodes)
     {
         $ret = [];
-        if (empty($intWarehouseId) || empty($arrSkuIds)) {
-            Bd_Log::warning(__METHOD__ . ' get sku period stock failed. call ral param is empty.');
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
-            return $ret;
-        }
 
-        $strSkuIds = implode(',', $arrSkuIds);
+        $strLocationCodes = implode(',', $arrLocationCodes);
 
         $req[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION]['requestParams'] = [
             'warehouse_id'   => $intWarehouseId,
-            'location_codes' => $strSkuIds,
+            'location_codes' => $strLocationCodes,
         ];
 
         Bd_Log::trace('huskar call ' . self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION . ' input params ' . json_encode($req));
