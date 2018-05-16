@@ -394,6 +394,50 @@ class Service_Data_Reserve_ReserveOrder
     }
 
     /**
+     * 根据预约单号和商品编码sku_id/条码upc_id查询商品信息
+     * @param $strReserveOrderId
+     * @param $strSkuUpcId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getReserveOrderSkuInfo($strReserveOrderId, $strSkuUpcId)
+    {
+        $strReserveOrderId = Order_Util::trimReserveOrderIdPrefix($strReserveOrderId);
+
+        // 判断sku_id还是upc_id
+        $strSkuId = null;
+        if (Order_Define_Sku::SKU_ID_LENGTH == strlen($strSkuUpcId)) {
+            $strSkuId = $strSkuUpcId;
+        } else if (Order_Define_Sku::SKU_UPC_ID_MIN_LENGTH <= strlen($strSkuUpcId)) {
+            // 将upc_id转换成sku_id
+            $objVendorRalSku = new Dao_Ral_Sku();
+            $retInfo = $objVendorRalSku->getSkuInfosByIds([$strSkuUpcId]);
+            $strSkuId = $retInfo['result']['skus'][0]['sku_id'];
+            if(empty($strSkuId)) {
+                Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_UPC_ID_NOT_EXIST);
+            }
+        } else {
+            Order_BusinessError::throwException(Order_Error_Code::SKU_UPC_OR_SKU_ID_LENGTH_EXCEPTION);
+        }
+
+        // 根据sku_id拿到数据库sku信息
+        $arrOrderSkuInfo = Model_Orm_ReserveOrderSku::getReserveOrderSkuInfo($strReserveOrderId, $strSkuId);
+        if (empty($arrOrderSkuInfo)){
+            Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_SKU_NOT_FOUND);
+        }
+
+        // 根据库存函数计算过期时间 / 禁收日期信息
+        $intSkuEffectType = intval($arrOrderSkuInfo['sku_effect_type']);
+        $intSkuEffectDay = intval($arrOrderSkuInfo['sku_effect_day']);
+        $intSkuFromCountry = intval($arrOrderSkuInfo['sku_from_country']);
+        $arrRet = $arrOrderSkuInfo;
+        $arrRet['abandon_time'] = Nscm_Service_Stock::calculateProhibitStockinDate($intSkuEffectDay, $intSkuFromCountry);
+        $arrRet['product_expire_time'] = Nscm_Service_Stock::calculateShelfLifeTime($intSkuEffectType, $intSkuEffectDay);
+
+        return $arrRet;
+    }
+
+    /**
      * @param $intReserveOrderId
      * @return array
      */
