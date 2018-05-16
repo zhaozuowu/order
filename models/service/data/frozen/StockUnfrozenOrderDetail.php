@@ -17,6 +17,11 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      */
     protected $objDaoStock;
 
+    /**
+     * @var Dao_Wrpc_Stock
+     */
+    protected $objDaoWrpcStockControl;
+
     protected $objDataOrderDetail;
 
     /**
@@ -25,6 +30,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
     public function __construct() {
         $this->objDaoSku = new Dao_Ral_Sku();
         $this->objDataOrderDetail = new Service_Data_Frozen_StockFrozenOrderDetail();
+        $this->objDaoWrpcStockControl = new Dao_Wrpc_Stock(Stock_Define_Const::STOCK_CONTROL_SERVICE);
         $this->objDaoStock = new Dao_Ral_Stock();
     }
 
@@ -492,6 +498,6 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             'details'      => $arrDetails
         ];
 
-        $this->objDaoStock->unfrozenStock($arrPram);
+        $this->objDaoWrpcStockControl->unfrozenStock($arrPram);
     }
 }

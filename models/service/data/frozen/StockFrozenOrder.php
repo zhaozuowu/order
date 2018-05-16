@@ -18,6 +18,16 @@ class Service_Data_Frozen_StockFrozenOrder
     protected $objDaoSku;
 
     /**
+     * @var Dao_Wrpc_Stock
+     */
+    protected $objDaoWrpcStockInfo;
+
+    /**
+     * @var Dao_Wrpc_Stock
+     */
+    protected $objDaoWrpcStockControl;
+
+    /**
      * @var Dao_Ral_Order_Warehouse
      */
     protected $objDaoWarehouse;
@@ -29,6 +39,8 @@ class Service_Data_Frozen_StockFrozenOrder
     {
         $this->objDaoSku = new Dao_Ral_Sku();
         $this->objDaoStock = new Dao_Ral_Stock();
+        $this->objDaoWrpcStockInfo = new Dao_Wrpc_Stock(Stock_Define_Const::STOCK_INFO_SERVICE);
+        $this->objDaoWrpcStockControl = new Dao_Wrpc_Stock(Stock_Define_Const::STOCK_CONTROL_SERVICE);
         $this->objDaoWarehouse = new Dao_Ral_Order_Warehouse();
     }
 
@@ -75,7 +87,7 @@ class Service_Data_Frozen_StockFrozenOrder
     public function createFrozenOrderBySystem()
     {
         //获取库存仓库
-        $arrStockWarehouse = $this->objDaoStock->getStockWarehouse();
+        $arrStockWarehouse = $this->objDaoWrpcStockInfo->getStockWarehouse();
         echo sprintf("[create_frozen_order_by_system]warehouse_ids:%s\n", implode($arrStockWarehouse, ','));
         Bd_Log::trace(sprintf("[create_frozen_order_by_system]warehouse_ids:%s", implode($arrStockWarehouse, ',')));
 
@@ -92,7 +104,7 @@ class Service_Data_Frozen_StockFrozenOrder
                 Bd_Log::trace('[create_frozen_order_by_system]begin operate warehouse:' . $intWarehouseId);
 
                 //获取库存可冻结数据
-                $arrFrozenInfo = $this->objDaoStock->getStockFrozenInfo(
+                $arrFrozenInfo = $this->objDaoWrpcStockInfo->getStockFrozenInfo(
                     $intWarehouseId,
                     null,
                     null,
@@ -461,11 +473,10 @@ class Service_Data_Frozen_StockFrozenOrder
      */
     protected function frozenStock($arrInput, $arrSkuInfos)
     {
-        $arrRet = [];
         $arrStockFrozenArg = $this->getStockFrozenArg($arrInput, $arrSkuInfos);
         Bd_Log::trace('ral call stock frozen param: ' . print_r($arrStockFrozenArg, true));
 
-        $arrRet =  $this->objDaoStock->frozenStock($arrStockFrozenArg);
+        $arrRet =  $this->objDaoWrpcStockControl->frozenStock($arrStockFrozenArg);
         Bd_Log::trace('ral call stock frozen return:  ' . print_r($arrRet,true));
     }
 
