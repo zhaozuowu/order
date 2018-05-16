@@ -48,6 +48,24 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
     }
 
     /**
+     * 通过上架单号数组批量获取上架单信息
+     * @param $arrPlaceOrderIds
+     * @return array
+     */
+    public static function getPlaceOrderInfosByPlaceOrderId($arrPlaceOrderIds)
+    {
+        if (empty($arrPlaceOrderIds)) {
+            return [];
+        }
+        $arrConditions = [
+            'place_order_id' => ['in', $arrPlaceOrderIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrCols = self::getAllColumns();
+        return self::findRows($arrCols, $arrConditions);
+    }
+
+    /**
      * 获取上架单分页列表
      * @param $arrConditions
      * @param $intLimit
