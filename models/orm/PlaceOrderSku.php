@@ -4,12 +4,10 @@
  * @date 2018/5/3
  * @author 张雨星(yuxing.zhang@ele.me)
  */
-
-
-class Model_Orm_PlaceOrderDetail extends Order_Base_Orm
+class Model_Orm_PlaceOrderSku extends Order_Base_Orm
 {
 
-    public static $tableName = 'place_order_detail';
+    public static $tableName = 'place_order_sku';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
 
@@ -27,6 +25,24 @@ class Model_Orm_PlaceOrderDetail extends Order_Base_Orm
             $arrColumns = self::getAllColumns();
         }
         return self::findRows($arrColumns, $arrConditions, ['create_time' => 'desc'], $intOffset, $intLimit);
+    }
+
+    /**
+     * 通过上架单号获取上架单sku信息
+     * @param $intPlaceOrderId
+     * @return array
+     */
+    public static function getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId)
+    {
+        if (empty($intPlaceOrderId)) {
+            return [];
+        }
+        $arrCols = self::getAllColumns();
+        $arrConditions = [
+            'place_order_id' => $intPlaceOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        return Model_Orm_PlaceOrder::findRow($arrCols, $arrConditions);
     }
 
 }

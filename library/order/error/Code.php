@@ -595,9 +595,27 @@ class Order_Error_Code extends Wm_Error_Code
      * 拣货单商品不存在
      */
     const PICKUP_ORDER_SKUS_NOT_EXISTED = 390031;
-
     /**
      * 获取tms排线号失败
      */
     const NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL = 390032;
+
+
+    /**
+     * 上架单创建失败
+     * @var integer
+     */
+    const PLACE_ORDER_CREATE_FAILED = 400001;
+
+    /**
+     * 创建上架单参数错误
+     * @var integer
+     */
+    const CREATE_PLACE_ORDER_PARAMS_ERROR = 400002;
+
+    /**
+     * 存在已生成上架单的入库单
+     * @var integer
+     */
+    const PLACE_ORDER_ALREADY_CREATE = 400003;
 }

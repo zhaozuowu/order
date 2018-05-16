@@ -10,14 +10,14 @@ class Service_Page_Place_GetPlaceOrderList implements Order_Base_Page
     /**
      * @var Service_Data_Reserve_ReserveOrder
      */
-    private $objDataPlace;
+    private $objDataPlaceOrder;
 
     /**
      * Service_Page_Reserve_CreateReserveOrder constructor.
      */
     function __construct()
     {
-        $this->objDataPlace = new Service_Data_Place_PlaceOrder();
+        $this->objDataPlaceOrder = new Service_Data_PlaceOrder();
     }
 
     /**
@@ -27,7 +27,7 @@ class Service_Page_Place_GetPlaceOrderList implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $arrRet = $this->objDataPlace->getPlaceOrderStatistics();
+        $arrRet = $this->objDataPlaceOrder->getPlaceOrderList($arrInput);
         return $arrRet;
     }
 }
