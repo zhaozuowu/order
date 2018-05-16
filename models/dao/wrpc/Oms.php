@@ -57,7 +57,7 @@ class Dao_Wrpc_Oms
             'shipment_order_id' => $intShipmentOrderId,
             'sku_info' => $arrPickupSkuInfoList,
         ];
-        $arrRet = $this->objWrpcService->updateStockoutOrderSkuPickupInfo(['objAcceptedSkuInfo' => $arrParams]);
+        $arrRet = $this->objWrpcService->syncAcceptStockoutOrderSkuInfo(['objAcceptedSkuInfo' => $arrParams]);
         Bd_Log::trace(sprintf("method_%s_updateStockoutOrderSkuPickupInfo_params_%s",
             __METHOD__, json_encode($arrRet)));
         if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
