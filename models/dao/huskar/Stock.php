@@ -111,14 +111,15 @@ class Dao_Huskar_Stock
         ];
 
         Bd_Log::trace('huskar call ' . self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION . ' input params ' . json_encode($req));
+        $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $ret = $this->objApiHuskar->getData($req);
         $ret = empty($ret[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION]) ? [] : $ret[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION];
-        if (empty($ret) || !empty($ret['error_no'])) {
+        if (empty($ret) || !empty($ret['errno'])) {
             Bd_Log::warning(sprintf(__METHOD__ . ' location_code not exist ,$arrLocationIds[%s]', json_encode($arrLocationCodes)));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
         }
         Bd_Log::trace('huskar call ' . self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION . ' output params ' . json_encode($ret));
-        return $ret['result'];
+        return $ret['data'];
     }
 
     /**
@@ -146,15 +147,16 @@ class Dao_Huskar_Stock
         ];
 
         Bd_Log::trace('huskar call ' . self::API_RALER_STOCK_PERIOD_DETAIL . ' input params ' . json_encode($req));
+        $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $ret = $this->objApiHuskar->getData($req);
         $ret = empty($ret[self::API_RALER_STOCK_PERIOD_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_PERIOD_DETAIL];
-        if (empty($ret) || !empty($ret['error_no'])) {
+        if (empty($ret) || !empty($ret['errno'])) {
             Bd_Log::warning(__METHOD__ . ' get sku period stock failed. ret is .' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
         }
 
         Bd_Log::trace('huskar call ' . self::API_RALER_STOCK_PERIOD_DETAIL . ' output params ' . json_encode($ret));
-        return $ret['result'];
+        return $ret['data'];
     }
 
     /**
@@ -179,7 +181,8 @@ class Dao_Huskar_Stock
             'inventory_type'    => $intAdjustType,
             'stockout_details'  => $arrDetails,
         ];
-
+        Bd_Log::trace('huskar call ' . self::API_RALER_ADJUST_STOCKOUT . ' input params ' . json_encode($req));
+        $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $ret = $this->objApiHuskar->getData($req);
         $ret = empty($ret[self::API_RALER_ADJUST_STOCKOUT]) ? [] : $ret[self::API_RALER_ADJUST_STOCKOUT];
         if (empty($ret) || !empty($ret['errno'])) {
@@ -187,7 +190,7 @@ class Dao_Huskar_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 
-        return $ret;
+        return $ret['data'];
     }
 
     /***************************************************冻结单相关******************************************************/
