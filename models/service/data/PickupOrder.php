@@ -423,6 +423,15 @@ class Service_Data_PickupOrder
             if (!$updateFlag) {
                 Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_CANCEL_FAILED);
             }
+            //修改出库单为未生成拣货任务
+            $arrStockOutOrderIds = Model_Orm_StockoutPickupOrder::getStockoutOrderIdsByPickupOrderId($intPickupOrderId);
+            foreach ($arrStockOutOrderIds as $intStockOutOrderId) {
+                $objStockOutOrderInfo = Model_Orm_StockoutOrder::getStockoutOrderObjByOrderId($intStockOutOrderId);
+                if (!empty($objStockOutOrderInfo)) {
+                    $objStockOutOrderInfo->is_pickup_ordered = Order_Define_StockoutOrder::PICKUP_ORDERE_NOT_CREATED;
+                    $objStockOutOrderInfo->update();
+                }
+            }
             //作废
             $objDaoWrpcStock = new Dao_Wrpc_Stock();
             $objDaoWrpcStock->cancelStockLocRecommend($intPickupOrderId, $intWarehouseId);
