@@ -81,7 +81,7 @@ class Service_Data_Sku
             $tmp['upcUnit'] = $arrMapSkuInfos[$arrSkuItem['sku_id']]['min_upc']['upc_unit'];
             $tmp['specifications'] = $arrMapSkuInfos[$arrSkuItem['sku_id']]['min_upc']['upc_unit_num'];
             $tmp['back'] = Order_Define_StockoutOrder::SKUS_EVENTS_IS_BACK_MAP[$arrSkuItem['event_type']];
-            $tmp['eventype'] = $arrSkuItem['event_type'];
+            $tmp['eventType'] = $arrSkuItem['event_type'];
             $list[] = $tmp;
         }
        return $list;
