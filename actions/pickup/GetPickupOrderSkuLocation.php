@@ -14,6 +14,8 @@ class Action_GetPickupOrderSkuLocation extends Order_Base_Action
     protected $arrInputParams = [
         'pickup_order_id' => 'int|required',
         'sku_id' => 'int|required',
+        'location_code' => 'str',
+        'expire_time' => 'int',
     ];
     /**
      * request Method
