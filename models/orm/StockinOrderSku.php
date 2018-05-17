@@ -156,6 +156,23 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
     }
 
     /**
+     * 获取指定入库单的sku_id商品信息
+     * @param $strStockinOrderId
+     * @param $strSkuId
+     * @return array
+     */
+    public static function getStockinOrderSkuInfo($strStockinOrderId, $strSkuId)
+    {
+        $arrConds = [
+            'stockin_order_id' => $strStockinOrderId,
+            'sku_id' => $strSkuId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrResult = self::findRow(self::getAllColumns(), $arrConds);
+        return $arrResult;
+    }
+
+    /**
      * 获取入库单商品列表（不分页）
      * @param $intStockinOrderId
      * @return array

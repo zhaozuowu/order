@@ -39,6 +39,11 @@ class Order_Define_Sku
     const SKU_UPC_ID_MIN_LENGTH = 8;
 
     /**
+     * upc_id的字符串形式最大长度
+     */
+    const SKU_UPC_ID_MAX_LENGTH = 13;
+
+    /**
      * net gram
      * @var int
      */

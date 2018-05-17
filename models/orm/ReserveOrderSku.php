@@ -110,7 +110,7 @@ class Model_Orm_ReserveOrderSku extends Order_Base_Orm
 
 
     /**
-     * 获取指定业态单的sku_id商品信息
+     * 获取指定预约单的sku_id商品信息
      * @param $strReserveOrderId
      * @param $strSkuId
      * @return array

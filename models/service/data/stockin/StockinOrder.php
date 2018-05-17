@@ -135,6 +135,50 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
+     * 根据入库单号和商品编码/条码查询商品信息
+     * @param $strStockinOrderId
+     * @param $strSkuUpcId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockinOrderSkuInfo($strStockinOrderId, $strSkuUpcId)
+    {
+        $strStockinOrderId = Order_Util::trimStockinOrderIdPrefix($strStockinOrderId);
+
+        // 判断sku_id还是upc_id
+        $strSkuId = null;
+        if (true == Order_Util_Sku::isSkuId($strSkuUpcId)) {
+            $strSkuId = $strSkuUpcId;
+        } else if (true == Order_Util_Sku::isUpcId($strSkuUpcId)) {
+            // 将upc_id转换成sku_id
+            $objVendorRalSku = new Dao_Ral_Sku();
+            $retInfo = $objVendorRalSku->getSkuInfosByIds([$strSkuUpcId]);
+            $strSkuId = $retInfo['result']['skus'][0]['sku_id'];
+            if(empty($strSkuId)) {
+                Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_UPC_ID_NOT_EXIST);
+            }
+        } else {
+            Order_BusinessError::throwException(Order_Error_Code::SKU_UPC_OR_SKU_ID_LENGTH_EXCEPTION);
+        }
+
+        // 根据sku_id拿到数据库sku信息
+        $arrOrderSkuInfo = Model_Orm_StockinOrderSku::getStockinOrderSkuInfo($strStockinOrderId, $strSkuId);
+        if (empty($arrOrderSkuInfo)){
+            Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_SKU_NOT_FOUND);
+        }
+
+        // 根据库存函数计算过期时间 / 禁收日期信息
+        $intSkuEffectType = intval($arrOrderSkuInfo['sku_effect_type']);
+        $intSkuEffectDay = intval($arrOrderSkuInfo['sku_effect_day']);
+        $intSkuFromCountry = intval($arrOrderSkuInfo['sku_from_country']);
+        $arrRet = $arrOrderSkuInfo;
+        $arrRet['critical_time'] = Nscm_Service_Stock::calculateShelfLifeTime($intSkuEffectType, $intSkuEffectDay);
+        $arrRet['product_expire_time'] = Nscm_Service_Stock::calculateShelfLifeTime($intSkuEffectType, $intSkuEffectDay);
+
+        return $arrRet;
+    }
+
+    /**
      * get stock price
      * @param int $intWarehouseId
      * @param int[] $arrSkuIds

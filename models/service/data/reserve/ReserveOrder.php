@@ -406,9 +406,9 @@ class Service_Data_Reserve_ReserveOrder
 
         // 判断sku_id还是upc_id
         $strSkuId = null;
-        if (Order_Define_Sku::SKU_ID_LENGTH == strlen($strSkuUpcId)) {
+        if (true == Order_Util_Sku::isSkuId($strSkuUpcId)) {
             $strSkuId = $strSkuUpcId;
-        } else if (Order_Define_Sku::SKU_UPC_ID_MIN_LENGTH <= strlen($strSkuUpcId)) {
+        } else if (true == Order_Util_Sku::isUpcId($strSkuUpcId)) {
             // 将upc_id转换成sku_id
             $objVendorRalSku = new Dao_Ral_Sku();
             $retInfo = $objVendorRalSku->getSkuInfosByIds([$strSkuUpcId]);

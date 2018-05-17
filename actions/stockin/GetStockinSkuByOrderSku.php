@@ -1,18 +1,18 @@
 <?php
 /**
- * @name Action_GetReserveOrderSkuByOrderSku
- * @desc 根据预约单号和商品编码/条码查询商品信息
+ * @name Action_GetStockinSkuByOrderSku
+ * @desc 根据入库单号和商品编码/条码查询商品信息
  * @author chenwende@iwaimai.baidu.com
  */
 
-class Action_GetReserveOrderSkuByOrderSku extends Order_Base_Action
+class Action_GetStockinSkuByOrderSku extends Order_Base_Action
 {
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
-        'reserve_order_id' => 'regex|patern[/^ASN\d{13}$/]',
+        'stockin_order_id' => 'regex|patern[/^SIO\d{13}$/]',
         'sku_upc_id' => 'str|required',
     ];
 
@@ -27,7 +27,7 @@ class Action_GetReserveOrderSkuByOrderSku extends Order_Base_Action
      */
     function myConstruct()
     {
-        $this->objPage = new Service_Page_Reserve_GetReserveOrderSkuByOrderSku();
+        $this->objPage = new Service_Page_Stockin_GetStockinSkuByOrderSku();
     }
 
     /**
@@ -65,8 +65,8 @@ class Action_GetReserveOrderSkuByOrderSku extends Order_Base_Action
             $arrRoundResult['sku_main_image'] = empty($arrRet['sku_main_image'])
                 ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                 : strval($arrRet['sku_main_image']);
-            $arrRoundResult['abandon_time'] =
-                Order_Util::getFormatDateTime($arrRet['abandon_time']);
+            $arrRoundResult['critical_time'] =
+                Order_Util::getFormatDateTime($arrRet['critical_time']);
             $arrRoundResult['product_expire_time'] =
                 Order_Util::getFormatDateTime($arrRet['product_expire_time']);
 
