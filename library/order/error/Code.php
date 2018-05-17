@@ -476,6 +476,11 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_ORDER_RESERVE_ORDER_NOT_EXIST = 360002;
 
     /**
+     * 该采购单不存在，请确认后输入
+     */
+    const NWMS_ORDER_PURCHASE_ORDER_NOT_EXIST = 360003;
+
+    /**
      * 出库单已打印，无法取消
      */
     const NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT = 310013;

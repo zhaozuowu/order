@@ -235,6 +235,63 @@ class Order_Util
     }
 
     /**
+     * 判断是否是采购单号（校验前缀PUR+13位数字）
+     * 为空则返回false
+     * @param $strOrderId
+     * @return bool
+     */
+    public static function isPurchaseOrderId($strOrderId)
+    {
+        if (empty($strOrderId)) {
+            false;
+        }
+
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::PUR . '\d{13}$/', $strOrderId))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 判断是否是预约单号（校验前缀ASN+13位数字）
+     * 为空则返回false
+     * @param $strOrderId
+     * @return bool
+     */
+    public static function isReserveOrderId($strOrderId)
+    {
+        if (empty($strOrderId)) {
+            false;
+        }
+
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::ASN . '\d{13}$/', $strOrderId))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 判断是否是出库单号（校验前缀SOO+13位数字）
+     * 为空则返回false
+     * @param $strOrderId
+     * @return bool
+     */
+    public static function isStockoutOrderId($strOrderId)
+    {
+        if (empty($strOrderId)) {
+            false;
+        }
+
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::SOO . '\d{13}$/', $strOrderId))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * 判断value的值是否在数组中
      * 遇到空参数返回错误
      *

@@ -385,12 +385,32 @@ class Service_Data_Reserve_ReserveOrder
      */
     public function getReserveOrderInfoByReserveOrderId($strReserveOrderId)
     {
-        $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
-        if (empty($intReserveOrderId)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        $arrRet = [];
+
+        if (true == Order_Util::isReserveOrderId($strReserveOrderId)) {
+            $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
+            if (empty($intReserveOrderId)) {
+                Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+            }
+            $arrRet = Model_Orm_ReserveOrder::getReserveOrderInfoByReserveOrderId($intReserveOrderId);
+        } else if (true == Order_Util::isPurchaseOrderId($strReserveOrderId)) {
+            $intPurchaseOrderId = intval(Order_Util::trimPurchaseOrderIdPrefix($strReserveOrderId));
+            if (empty($intPurchaseOrderId)) {
+                Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+            }
+            $arrRet = Model_Orm_ReserveOrder::getReserveOrderInfoByPurchaseOrderId($intPurchaseOrderId);
         }
 
-        return Model_Orm_ReserveOrder::getReserveOrderInfoByReserveOrderId($intReserveOrderId);
+        // 检查当前用户id的操作记录，返回操作信息
+        $objDaoRedis = new Dao_Redis_StockInOrder();
+        $arrOrderOperateRecord = $objDaoRedis->getOperateRecord($strReserveOrderId);
+        if (!empty($arrOrderOperateRecord)) {
+            // 取出最后一条操作记录信息
+            $arrLastOperateRecord = end($arrOrderOperateRecord);
+            $arrRet['last_operate_record'] = $arrLastOperateRecord;
+        }
+
+        return $arrRet;
     }
 
     /**

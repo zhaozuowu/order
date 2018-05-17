@@ -199,6 +199,29 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     }
 
     /**
+     * 根据采购单号查询预约单详情，只查询未软删除的
+     *
+     * @param $intPurchaseOrderId
+     * @return mixed
+     */
+    public static function getReserveOrderInfoByPurchaseOrderId($intPurchaseOrderId)
+    {
+        // 只查询未软删除的
+        $arrCondition = [
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+            'purchase_order_id' => $intPurchaseOrderId,
+        ];
+
+        // 查找该行所有数据
+        $arrCols = self::getAllColumns();
+
+        // 查找满足条件的所有行数据
+        $arrResult = self::findRow($arrCols, $arrCondition);
+
+        return $arrResult;
+    }
+
+    /**
      * update status
      * @param $intStatus
      * @return bool
