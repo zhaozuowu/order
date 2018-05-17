@@ -368,13 +368,16 @@ class Service_Data_Stockin_StockinOrder
      * @param string $strCreatorName
      * @param int $intType
      * @param int $boolIgnoreCheckDate
+     * @param $intStockinDevice
      * @return int
      * @throws Exception
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      * @throws Order_Error
      */
     public function createStockinOrder($arrSourceOrderInfo, $arrSourceOrderSkus, $intWarehouseId, $strStockinOrderRemark,
-                                       $arrSkuInfoList, $intCreatorId, $strCreatorName, $intType, $boolIgnoreCheckDate)
+                                       $arrSkuInfoList, $intCreatorId, $strCreatorName, $intType, $boolIgnoreCheckDate,
+                                        $intStockinDevice)
     {
 
         if (!isset(Order_Define_StockinOrder::STOCKIN_ORDER_TYPES[$intType])) {
@@ -433,12 +436,13 @@ class Service_Data_Stockin_StockinOrder
         $intStockinOrderCreatorId = intval($intCreatorId);
         $strStockinOrderCreatorName = strval($strCreatorName);
         $strStockinOrderRemark = strval($strStockinOrderRemark);
+        $intStockinDevice = intval($intStockinDevice);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockinOrderId, $intStockinOrderType,
             $intStockInOrderDataSourceType, $intStockinOrderSource, $intSourceOrderId, $strSourceSupplierId, $strSourceInfo, $intStockinOrderStatus,
             $intWarehouseId, $strWarehouseName, $intCityId, $strCityName, $intStockinTime, $intReserveOrderPlanTime,
             $intStockinOrderPlanAmount, $intStockinOrderRealAmount, $intStockinOrderCreatorId, $strStockinOrderCreatorName,
             $strStockinOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax,
-            $intCustomerId,$strCustomerName) {
+            $intCustomerId,$strCustomerName, $intStockinDevice) {
             $intVendorId = $intStockinOrderType == Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE ?
                 intval($strSourceSupplierId) : 0;
             $arrStock = $this->notifyStock($intStockinOrderId, $intStockinOrderType, $intWarehouseId, $intVendorId, $arrDbSkuInfoList);
@@ -467,7 +471,8 @@ class Service_Data_Stockin_StockinOrder
                 $intStockinOrderTotalPrice,
                 $intStockinOrderTotalPriceTax,
                 $intCustomerId,
-                $strCustomerName);
+                $strCustomerName,
+                $intStockinDevice);
             Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockinOrderId);
             if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
                 $ormStockinOrder = Model_Orm_ReserveOrder::findReserveOrder($intSourceOrderId);
