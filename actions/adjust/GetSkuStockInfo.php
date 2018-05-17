@@ -63,8 +63,8 @@ class Action_GetSkuStockInfo extends Order_Base_Action
             }
             $arrFormatDetail['upc_unit'] = empty($value['min_upc']['upc_unit']) ? '' : $this->formatSkuUpcUnit($value['min_upc']['upc_unit']);
 
-            if (!empty($value['sku_batch_info'])) {
-                foreach ($value['sku_batch_info'] as $arrStockDetailRet) {
+            if (!empty($value['sku_batch_detail'])) {
+                foreach ($value['sku_batch_detail'] as $arrStockDetailRet) {
                     $arrStockDetail                      = [];
                     $arrStockDetail['location_code']     = $arrStockDetailRet['location_code'];
                     $arrStockDetail['available_amount']  = !isset($arrStockDetailRet['adjustable_amount']) ? '' : strval($arrStockDetailRet['adjustable_amount']);
