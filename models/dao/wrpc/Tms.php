@@ -160,7 +160,7 @@ class Dao_Wrpc_Tms
             $arrProdutItem['upcUnit'] = empty($arrSkuItem['upc_unit']) ? 0 : intval($arrSkuItem['upc_unit']);
             $arrProdutItem['specifications'] = empty($arrSkuItem['upc_unit_num']) ? 0 : intval($arrSkuItem['upc_unit_num']);
             $arrProdutItem['back'] = empty($arrSkuItem['back']) ? false : $arrSkuItem['back'];
-            $arrProdutItem['eventype'] = empty($arrSkuItem['eventype']) ? 0 : $arrSkuItem['eventype'];
+            $arrProdutItem['evenType'] = empty($arrSkuItem['eventype']) ? 0 : $arrSkuItem['eventype'];
             $arrProduts[] = $arrProdutItem;
         }
         $arrProduts = array_merge($arrProduts,$skusEvent);
