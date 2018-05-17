@@ -167,7 +167,7 @@ class Service_Data_Stockin_StockinOrder
             Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_SKU_NOT_FOUND);
         }
 
-        // 根据库存函数计算过期时间 / 禁收日期信息
+        // 根据库存函数计算过期时间 / 临期日期信息
         $intSkuEffectType = intval($arrOrderSkuInfo['sku_effect_type']);
         $intSkuEffectDay = intval($arrOrderSkuInfo['sku_effect_day']);
         $intSkuFromCountry = intval($arrOrderSkuInfo['sku_from_country']);
