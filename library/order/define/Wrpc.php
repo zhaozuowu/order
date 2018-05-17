@@ -42,4 +42,9 @@ class Order_Define_Wrpc
      * @var string
      */
     const OMS_NWMS_SERVICE_NAME = 'NwmsService';
+    /**
+     * oms service name
+     * @var string
+     */
+    const OMS_SERVICE_NAME = 'EventService';
 }
