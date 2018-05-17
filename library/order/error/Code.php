@@ -457,4 +457,8 @@ class Order_Error_Code extends Wm_Error_Code
      * 确认销退入库单通知OMS失败
      */
     const NWMS_ORDER_STOCKIN_ORDER_CONFIRM_STOCKIN_TO_OMS_FAIL = 370006;
+    /**
+     * 正向订单通知OMS效期失败
+     */
+    const NWMS_ORDER_STOCKOUT_PICKUP_NOTICE_OMS_FAILED = 380001;
 }

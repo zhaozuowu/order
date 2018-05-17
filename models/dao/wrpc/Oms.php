@@ -16,7 +16,7 @@ class Dao_Wrpc_Oms
      * init
      * @param string $strServiceName
      */
-    public function __construct($strServiceName)
+    public function __construct($strServiceName = Order_Define_Wrpc::OMS_SERVICE_NAME)
     {
         $this->objWrpcService = new Bd_Wrpc_Client(Order_Define_Wrpc::OMS_APP_ID,
                                                     Order_Define_Wrpc::OMS_NAMESPACE,
@@ -57,7 +57,7 @@ class Dao_Wrpc_Oms
             'shipment_order_id' => $intShipmentOrderId,
             'sku_info' => $arrPickupSkuInfoList,
         ];
-        $arrRet = $this->objWrpcService->updateStockoutOrderSkuPickupInfo(['objAcceptedSkuInfo' => $arrParams]);
+        $arrRet = $this->objWrpcService->syncAcceptStockoutOrderSkuInfo(['objAcceptedSkuInfo' => $arrParams]);
         Bd_Log::trace(sprintf("method_%s_updateStockoutOrderSkuPickupInfo_params_%s",
             __METHOD__, json_encode($arrRet)));
         if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
