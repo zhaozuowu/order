@@ -404,13 +404,16 @@ class Service_Data_Reserve_ReserveOrder
             $strOrderId = Nscm_Define_OrderPrefix::ASN . $arrRet['reserve_order_id'];
         }
 
-        // 检查当前用户id的操作记录，返回操作信息
-        $objDaoRedis = new Dao_Redis_StockInOrder();
-        $arrOrderOperateRecord = $objDaoRedis->getOperateRecord($strOrderId);
-        if (!empty($arrOrderOperateRecord)) {
-            // 取出最后一条操作记录信息
-            $arrLastOperateRecord = end($arrOrderOperateRecord);
-            $arrRet['last_operate_record'] = $arrLastOperateRecord;
+        // 存在入库单为空的场景，校验查出来的单号是否合法
+        if (true == Order_Util::isReserveOrderId($strOrderId)) {
+            // 检查当前用户id的操作记录，返回操作信息
+            $objDaoRedis = new Dao_Redis_StockInOrder();
+            $arrOrderOperateRecord = $objDaoRedis->getOperateRecord($strOrderId);
+            if (!empty($arrOrderOperateRecord)) {
+                // 取出最后一条操作记录信息
+                $arrLastOperateRecord = end($arrOrderOperateRecord);
+                $arrRet['last_operate_record'] = $arrLastOperateRecord;
+            }
         }
 
         return $arrRet;
