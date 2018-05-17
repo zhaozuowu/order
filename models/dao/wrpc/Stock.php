@@ -38,18 +38,22 @@ class Dao_Wrpc_Stock
         $arrReqParams['requestParams'] = [
             'warehouse_id' => $intWarehouseId,
             'sku_ids' => strval($intSkuId),
-            $strTimeParam => strtotime(date("Y-m-d H:i:s",$intExpireTime)),
-            'location_code' => $strLocationCode,
         ];
+        if (!empty($intExpireTime)) {
+            $arrReqParams['requestParams'][$strTimeParam] = strtotime(date("Y-m-d H:i:s",$intExpireTime));
+        }
+        if (!empty($strLocationCode)) {
+            $arrReqParams['requestParams']['location_code'] = $strLocationCode;
+        }
         Bd_Log::trace(sprintf("method[%s] get_sku_location_request[%d]",
             __METHOD__, json_encode($arrReqParams)));
         $arrRet = $this->objWrpcService->getPickableSkuBatchInfo($arrReqParams);
         Bd_Log::trace(sprintf("method[%s] get_sku_location_ret[%s]",
             __METHOD__, json_encode($arrRet)));
-        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+        if (0 != $arrRet['errno']) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
                 __METHOD__, json_encode($arrRet)));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_CREATE_SHIPMENTORDER_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::GET_SKU_STOCK_INFO_FAIL);
         }
         return $arrRet['data'];
     }

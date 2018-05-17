@@ -358,6 +358,12 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_ORDER_STOCKOUT_CUSTOMER_REGION_ID_ERROR = 340014;
 
     /**
+     * 获取仓库产效期失败
+     * @var integer
+     */
+    const GET_SKU_STOCK_INFO_FAIL = 350001;
+
+    /**
      * sku业态详细信息错误
      * @var integer
      */
@@ -602,6 +608,14 @@ class Order_Error_Code extends Wm_Error_Code
      * 拣货单不存在
      */
     const PICKUP_ORDER_CANCEL_FAILED = 390020;
+    /**
+     * 拣货单已取消
+     */
+    const PICKUP_ORDER_IS_CANCELED = 390021;
+    /**
+     * 拣货单已取消
+     */
+    const PICKUP_ORDER_IS_FINISHED = 390022;
     /**
      * 拣货商品数量小于等于零
      */
