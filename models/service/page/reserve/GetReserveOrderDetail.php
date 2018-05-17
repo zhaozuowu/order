@@ -41,17 +41,15 @@ class Service_Page_Reserve_GetReserveOrderDetail implements Order_Base_Page
             }
         }
 
-        // TODO: 此处的逻辑还需要再次检查
-
         $intCurrentUserId = $arrInput['_session']['user_id'];
-        $arrRet['display_operate_tip'] = false;
+        $ret['display_operate_tip'] = false;
         $arrRetLastRecord = $ret['last_operate_record'];
         if ((!empty($arrRetLastRecord))
             && ($intCurrentUserId != $arrRetLastRecord['operate_user_id'])) {
-            $arrRet['display_operate_tip'] = true;
-            $arrRet['last_operate_time'] = $arrRetLastRecord['operate_time'];
-            $arrRet['last_operate_name'] = $arrRetLastRecord['operate_user_name'];
-            $arrRet['last_operate_device'] = $arrRetLastRecord['operate_device'];
+            $ret['display_operate_tip'] = true;
+            $ret['last_operate_time'] = $arrRetLastRecord['operate_time'];
+            $ret['last_operate_name'] = $arrRetLastRecord['operate_user_name'];
+            $ret['last_operate_device'] = $arrRetLastRecord['operate_device'];
         }
 
         return $ret;
