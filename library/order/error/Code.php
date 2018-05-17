@@ -603,6 +603,10 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const PICKUP_ORDER_CANCEL_FAILED = 390020;
     /**
+     * 拣货单已取消
+     */
+    const PICKUP_ORDER_IS_CANCELED = 390021;
+    /**
      * 拣货商品数量小于等于零
      */
     const PICKUP_AMOUNT_ERROR = 390030;

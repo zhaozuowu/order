@@ -414,6 +414,9 @@ class Service_Data_PickupOrder
         if (empty($objPickupOrder)) {
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
         }
+        if (Order_Define_PickupOrder::PICKUP_ORDER_STATUS_CANCEL == $objPickupOrder->pickup_order_status) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_IS_CANCELED);
+        }
         //update obj
         $objPickupOrder->pickup_order_status = Order_Define_PickupOrder::PICKUP_ORDER_STATUS_CANCEL;
         $objPickupOrder->update_operator = $userName;
