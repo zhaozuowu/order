@@ -74,8 +74,7 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
                     : strval($arrRet['vendor_name']);
             $arrRoundResult['display_operate_tip'] = empty($arrRet['display_operate_tip']) ? false
                 : boolval($arrRet['display_operate_tip']);
-            $arrRoundResult['last_operate_time'] =
-                Order_Util::getFormatDateTime($arrRet['last_operate_time']);
+            $arrRoundResult['last_operate_time'] = intval($arrRet['last_operate_time']);
             $arrRoundResult['last_operate_name'] = empty($arrRet['last_operate_name'])
                 ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                 : strval($arrRet['last_operate_name']);

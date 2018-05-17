@@ -763,12 +763,11 @@ class Service_Data_Stockin_StockinOrder
         $arrRet = [];
         $intOrderId = intval(Order_Util::trimStockinOrderIdPrefix($strOrderId));
         $strStockinOrderId = null;
-        // TODO: do solve the algorithms
         if (true == Order_Util::isStockinOrderId($strOrderId)) {
             $arrRet = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intOrderId);
             $strStockinOrderId = Nscm_Define_OrderPrefix::SIO . $arrRet['stockin_order_id'];
         } else if (true == Order_Util::isShipmentOrderId($strOrderId)) {
-            $arrRet = Model_Orm_StockinOrder::getStockinOrderInfoByShipmentOrderId($intOrderId);
+            $arrRet = Model_Orm_StockinOrder::getStockinOrderInfoByShipmentOrderId($strOrderId);
             $strStockinOrderId = Nscm_Define_OrderPrefix::SIO . $arrRet['stockin_order_id'];
         } else {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);

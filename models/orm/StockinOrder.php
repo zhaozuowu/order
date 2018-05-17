@@ -402,8 +402,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     {
         // 只查询未软删除的
         $arrCondition = [
-            'is_delete' => Order_Define_Const::NOT_DELETE,
             'stockin_order_id' => $intStockinOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
 
         // 查找该行所有数据
@@ -425,8 +425,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     {
         // 只查询未软删除的
         $arrCondition = [
-            'is_delete' => Order_Define_Const::NOT_DELETE,
             'shipment_order_id' => $intShipmentOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
 
         // 查找该行所有数据

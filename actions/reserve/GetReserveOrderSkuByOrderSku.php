@@ -66,10 +66,8 @@ class Action_GetReserveOrderSkuByOrderSku extends Order_Base_Action
             $arrRoundResult['sku_main_image'] = empty($arrRet['sku_main_image'])
                 ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                 : strval($arrRet['sku_main_image']);
-            $arrRoundResult['abandon_time'] =
-                Order_Util::getFormatDateTime($arrRet['abandon_time']);
-            $arrRoundResult['product_expire_time'] =
-                Order_Util::getFormatDateTime($arrRet['product_expire_time']);
+            $arrRoundResult['abandon_time'] = intval($arrRet['abandon_time']);
+            $arrRoundResult['product_expire_time'] = intval($arrRet['product_expire_time']);
 
             $arrFormatResult = $arrRoundResult;
         }

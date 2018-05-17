@@ -12,7 +12,7 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'stockin_order_id' => 'regex|patern[/^((SIO\d{13})|(SIO\d{15}))$/]',
+        'stockin_order_id' => 'regex|patern[/^((SIO\d{13})|(\d{15}))$/]',
     ];
 
     /**
@@ -96,8 +96,7 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
             $arrRoundResult['stockin_order_status'] = intval($arrRet['stockin_order_status']);
             $arrRoundResult['display_operate_tip'] = empty($arrRet['display_operate_tip']) ? false
                 : boolval($arrRet['display_operate_tip']);
-            $arrRoundResult['last_operate_time'] =
-                Order_Util::getFormatDateTime($arrRet['last_operate_time']);
+            $arrRoundResult['last_operate_time'] = intval($arrRet['last_operate_time']);
             $arrRoundResult['last_operate_name'] = empty($arrRet['last_operate_name'])
                 ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                 : strval($arrRet['last_operate_name']);

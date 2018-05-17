@@ -311,7 +311,7 @@ class Order_Util
     }
 
     /**
-     * 判断是否是运单号（SIO+15位数字）
+     * 判断是否是运单号（15位数字）
      * 为空则返回false
      * @param $strOrderId
      * @return bool
@@ -322,7 +322,7 @@ class Order_Util
             false;
         }
 
-        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::SIO . '\d{15}$/', $strOrderId))) {
+        if (!empty(preg_match('/^\d{15}$/', $strOrderId))) {
             return true;
         }
 
