@@ -247,6 +247,12 @@ class Order_Error_Code extends Wm_Error_Code
      *
      */
     const NWMS_STOCKOUT_CANCEL_STOCK_FAIL = 340008;
+    /**
+     * 出库单存在于拣货任务中
+     * @var integer
+     *
+     */
+    const STOCKOUT_ORDER_IN_PICKING= 340012;
 
     /**
      * 创建业态订单参数错误
@@ -589,6 +595,10 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const PICKUP_ORDER_NOT_EXISTED = 390010;
     /**
+     * 拣货单在此状态下不允许拣货
+     */
+    const PICKUP_ORDER_STATUS_INVALID = 390011;
+    /**
      * 拣货单不存在
      */
     const PICKUP_ORDER_CANCEL_FAILED = 390020;
@@ -600,6 +610,14 @@ class Order_Error_Code extends Wm_Error_Code
      * 拣货单商品不存在
      */
     const PICKUP_ORDER_SKUS_NOT_EXISTED = 390031;
+    /**
+     * 完成拣货通知库存失败
+     */
+    const FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL = 390040;
+    /**
+     * 作废拣货单通知库存失败
+     */
+    const CANCEL_PICKUP_ORDER_NOTIFY_STOCK_FAIL = 390041;
     /**
      * 获取tms排线号失败
      */
