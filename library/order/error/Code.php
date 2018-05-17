@@ -358,6 +358,12 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_ORDER_STOCKOUT_CUSTOMER_REGION_ID_ERROR = 340014;
 
     /**
+     * 获取仓库产效期失败
+     * @var integer
+     */
+    const GET_SKU_STOCK_INFO_FAIL = 350001;
+
+    /**
      * sku业态详细信息错误
      * @var integer
      */
