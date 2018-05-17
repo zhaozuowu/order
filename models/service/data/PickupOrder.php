@@ -678,7 +678,7 @@ class Service_Data_PickupOrder
             $strTimeParam = 'expiration_time';
         }
 
-        $objWrpc = new Dao_Wrpc_Stock();
+        $objWrpc = new Dao_Wrpc_Stock(Order_Define_Wrpc::STOCK_INFO_SERVICE);
         return $objWrpc->getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $strTimeParam, $intExpireTime);
     }
 
