@@ -1685,4 +1685,27 @@ class Service_Data_StockoutOrder
         }
         return [];
     }
+
+    /**
+     * 批量根据仓库id获取仓库的地址
+     * @param $arrWarehouseIds
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function getWarehouseAddrByIds($arrWarehouseIds) {
+        $arrWarehouseList = $this->objWarehouseRal->getWareHouseList($arrWarehouseIds);
+        $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
+        if (empty($arrWarehouseList)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED);
+        }
+        $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
+        $arrWarehouseAddr = [];
+        foreach ($arrWarehouseList as $warehouseInfo) {
+            $arrWarehouseAddr[$warehouseInfo['warehouse_id']] = empty($warehouseInfo['address'])
+                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : $warehouseInfo['address'];
+        }
+        return $arrWarehouseAddr;
+    }
 }

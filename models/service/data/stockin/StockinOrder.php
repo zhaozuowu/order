@@ -1488,4 +1488,55 @@ class Service_Data_Stockin_StockinOrder
         $objWrpcOms = new Dao_Wrpc_Oms();
         return $objWrpcOms->confirmStockinOrderToOms($arrInput);
     }
+
+    /**
+     * 批量查询入库单详情
+     * @param $arrStockinOrderIds
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function getStockinOrderInfoByStockinOrderIds($arrStockinOrderIds)
+    {
+        if (empty($arrStockinOrderIds)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+
+        return Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderIds($arrStockinOrderIds);
+    }
+
+    /**
+     * 批量查询入库单商品列表（不分页）
+     * @param $arrStockinOrderIds
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getBatchStockinOrderSkus($arrStockinOrderIds)
+    {
+        $arrRetStockinOrderSkus = [
+            'total' => 0,
+            'list' => [],
+        ];
+
+        if (empty($arrStockinOrderIds)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $arrStockinOrderSkus = Model_Orm_StockinOrderSku::getBatchStockinOrderSkus($arrStockinOrderIds);
+
+        // 将查询的商品按照入库单维度进行封装
+        if (!empty($arrStockinOrderSkus)) {
+            $arrRetStockinOrderSkus['total'] = $arrStockinOrderSkus['total'];
+            $arrStockinOrderSkusList = $arrStockinOrderSkus['list'];
+            $arrOrderSkusInfoList = [];
+            if (!empty($arrStockinOrderSkusList)) {
+                foreach ($arrStockinOrderSkusList as $skuInfo) {
+                    if (!empty($skuInfo['stockin_order_id'])) {
+                        $arrOrderSkusInfoList[$skuInfo['stockin_order_id']][] = $skuInfo;
+                    }
+                }
+            }
+
+            $arrRetStockinOrderSkus['list'] = $arrOrderSkusInfoList;
+        }
+        return $arrRetStockinOrderSkus;
+    }
 }
