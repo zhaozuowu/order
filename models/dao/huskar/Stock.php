@@ -182,7 +182,7 @@ class Dao_Huskar_Stock
 
         $ret = $this->objApiHuskar->getData($req);
         $ret = empty($ret[self::API_RALER_ADJUST_STOCKOUT]) ? [] : $ret[self::API_RALER_ADJUST_STOCKOUT];
-        if (empty($ret) || !empty($ret['error_no'])) {
+        if (empty($ret) || !empty($ret['errno'])) {
             Bd_Log::warning(__METHOD__ . ' huskar call stock decrease failed' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
@@ -207,7 +207,7 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_FROZEN_STOCK]) ? [] : $arrRet[self::API_RALER_FROZEN_STOCK];
-        if (empty($arrRet) || !empty($arrRet['errorno'])) {
+        if (empty($arrRet) || !empty($arrRet['errno'])) {
             Bd_Log::warning('call stock model frozen failed. ret: ' . json_encode($arrRet, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL);
         }
@@ -231,7 +231,7 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_UNFROZEN_STOCK]) ? [] : $arrRet[self::API_RALER_UNFROZEN_STOCK];
-        if (empty($arrRet) || !empty($arrRet['errorno'])) {
+        if (empty($arrRet) || !empty($arrRet['errno'])) {
             Bd_Log::warning('call stock model unfrozen failed. ret:' . print_r($arrRet, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL);
         }
@@ -253,7 +253,7 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_GET_STOCK_WAREHOUSE]) ? [] : $arrRet[self::API_RALER_GET_STOCK_WAREHOUSE];
-        if (empty($arrRet) || !empty($arrRet['errorno'])) {
+        if (empty($arrRet) || !empty($arrRet['errno'])) {
             Bd_Log::warning('call stock model get stock warehouse failed. ret: ' . print_r($arrRet, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_GET_STOCK_WAREHOUSE_FAIL);
         }
@@ -330,7 +330,7 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_STOCK_FROZEN_INFO]) ? [] : $arrRet[self::API_RALER_STOCK_FROZEN_INFO];
-        if (empty($arrRet) || !empty($arrRet['errorno'])) {
+        if (empty($arrRet) || !empty($arrRet['errno'])) {
             Bd_Log::warning('call stock model get stock freezable info failed. ret: ' . print_r($arrRet, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
         }
