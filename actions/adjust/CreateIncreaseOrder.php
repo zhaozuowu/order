@@ -22,7 +22,7 @@ class Action_Createincreaseorder extends Order_Base_Action
             'params'   => [
                 'sku_id' => 'int|required',
                 'detail' => [
-                    'validate' => 'json|required|decode',
+                    'validate' => 'arr|required|decode',
                     'type'     => 'array',
                     'params'   => [
                         'production_or_expire_time' => 'int|required',

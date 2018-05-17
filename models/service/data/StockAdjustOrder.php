@@ -619,8 +619,9 @@ class Service_Data_StockAdjustOrder
         $arrLocationIds = [];
 
         foreach ($arrInput['detail'] as $arrSkuDetail) {
-            $arrTmp         = array_column($arrSkuDetail, 'location_code');
-            $arrLocationIds = array_merge($arrLocationIds, $arrTmp);
+            foreach ($arrSkuDetail['detail'] as $arrInfo){
+                $arrLocationIds[] = $arrInfo['location_code'];
+            }
         }
 
         $arrLocationIds = array_unique($arrLocationIds);
