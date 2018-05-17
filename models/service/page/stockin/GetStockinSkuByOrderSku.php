@@ -16,7 +16,7 @@ class Service_Page_Stockin_GetStockinSkuByOrderSku implements Order_Base_Page
     private $objServiceData;
 
     /**
-     * Service_Page_Reserve_GetReserveOrderDetail constructor.
+     * Service_Data_Stockin_StockinOrder constructor.
      */
     public function __construct()
     {
