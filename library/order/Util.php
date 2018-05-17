@@ -292,6 +292,44 @@ class Order_Util
     }
 
     /**
+     * 判断是否是入库单号（SIO+13位数字）
+     * 为空则返回false
+     * @param $strOrderId
+     * @return bool
+     */
+    public static function isStockinOrderId($strOrderId)
+    {
+        if (empty($strOrderId)) {
+            false;
+        }
+
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::SIO . '\d{13}$/', $strOrderId))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 判断是否是运单号（SIO+15位数字）
+     * 为空则返回false
+     * @param $strOrderId
+     * @return bool
+     */
+    public static function isShipmentOrderId($strOrderId)
+    {
+        if (empty($strOrderId)) {
+            false;
+        }
+
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::SIO . '\d{15}$/', $strOrderId))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * 判断value的值是否在数组中
      * 遇到空参数返回错误
      *

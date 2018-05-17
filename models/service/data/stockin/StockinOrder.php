@@ -753,20 +753,40 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
-     * 查询入库单详情
-     * @param $strStockinOrderId
+     * 查询入库单详情（入库单号或者运单号）
+     * @param $strOrderId
      * @return mixed
      * @throws Order_BusinessError
      */
-    public function getStockinOrderInfoByStockinOrderId($strStockinOrderId)
+    public function getStockinOrderInfoByStockinOrderId($strOrderId)
     {
-        $intStockinOrderId = intval(Order_Util::trimStockinOrderIdPrefix($strStockinOrderId));
-
-        if (empty($intStockinOrderId)) {
+        $arrRet = [];
+        $intOrderId = intval(Order_Util::trimStockinOrderIdPrefix($strOrderId));
+        $strStockinOrderId = null;
+        // TODO: do solve the algorithms
+        if (true == Order_Util::isStockinOrderId($strOrderId)) {
+            $arrRet = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intOrderId);
+            $strStockinOrderId = Nscm_Define_OrderPrefix::SIO . $arrRet['stockin_order_id'];
+        } else if (true == Order_Util::isShipmentOrderId($strOrderId)) {
+            $arrRet = Model_Orm_StockinOrder::getStockinOrderInfoByShipmentOrderId($intOrderId);
+            $strStockinOrderId = Nscm_Define_OrderPrefix::SIO . $arrRet['stockin_order_id'];
+        } else {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
 
-        return Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intStockinOrderId);
+        // 存在入库单为空的场景，校验查出来的单号是否合法
+        if (true == Order_Util::isStockinOrderId($strStockinOrderId)) {
+            // 检查当前用户id的操作记录，返回操作信息
+            $objDaoRedis = new Dao_Redis_StockInOrder();
+            $arrOrderOperateRecord = $objDaoRedis->getOperateRecord($strStockinOrderId);
+            if (!empty($arrOrderOperateRecord)) {
+                // 取出最后一条操作记录信息
+                $arrLastOperateRecord = end($arrOrderOperateRecord);
+                $arrRet['last_operate_record'] = $arrLastOperateRecord;
+            }
+        }
+
+        return $arrRet;
     }
 
     /**
