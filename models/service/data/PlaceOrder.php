@@ -249,7 +249,8 @@ class Service_Data_PlaceOrder
             Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_NOT_EXIST);
         }
         $arrPlaceOrderInfo['skus'] = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId);
-        $arrPlaceOrderInfo['stockin_order_ids'] = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+        $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+        $arrPlaceOrderInfo['source_order_id'] = implode(',', $arrStockinOrderIds);
         return $arrPlaceOrderInfo;
     }
 

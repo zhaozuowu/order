@@ -127,7 +127,6 @@ class Dao_Wrpc_Stock
         $arrRequestParams['details'] = $this->getLocationDetails($arrSkusPlace, $intIsDefective);
         $arrParams['requestParams'] = $arrRequestParams;
         $arrRet = $this->objWrpcService->confirmLocation($arrParams);
-        var_dump($arrRet);exit;
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
                 __METHOD__, json_encode($arrParams), json_encode($arrRet)));
         if (0 != $arrRet['errno']) {
