@@ -73,7 +73,7 @@ class Dao_Wrpc_Stock
             'ext_order_id' => strval($intPickupOrderId),
             'details' => $arrPickupSkus,
         ];
-        Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_request[%d]",
+        Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_request[%s]",
             __METHOD__, json_encode($arrReqParams)));
         $arrRet = $this->objWrpcService->pickStock($arrReqParams);
         Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_ret[%s]",
@@ -127,7 +127,6 @@ class Dao_Wrpc_Stock
         $arrRequestParams['details'] = $this->getLocationDetails($arrSkusPlace, $intIsDefective);
         $arrParams['requestParams'] = $arrRequestParams;
         $arrRet = $this->objWrpcService->confirmLocation($arrParams);
-        var_dump($arrRet);exit;
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
                 __METHOD__, json_encode($arrParams), json_encode($arrRet)));
         if (0 != $arrRet['errno']) {

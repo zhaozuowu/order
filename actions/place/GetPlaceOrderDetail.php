@@ -36,6 +36,10 @@ class Action_GetPlaceOrderDetail extends Order_Base_Action
      */
     public function format($data)
     {
+        $data['is_defective_text'] = Order_Define_PlaceOrder::PLACE_ORDER_QUALITY_MAP[$data['is_defective']];
+        $data['place_order_status_text'] = Order_Define_PlaceOrder::PLACE_ORDER_STATUS_SHOW[$data['place_order_status']];
+        $data['stockin_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$data['stockin_order_type']];
+        $data['create_time'] = date("Y-m-d H:i:s", $data['create_time']);
         return $data;
     }
 }
