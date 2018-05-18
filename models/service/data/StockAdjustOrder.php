@@ -636,8 +636,8 @@ class Service_Data_StockAdjustOrder
                     Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
                 }
 
-                $arrInput['detail'][$skuKey][$key]['detail']['roadway_code'] = $arrLocations[$arrDetail['location_code']]['roadway_code'];
-                $arrInput['detail'][$skuKey][$key]['detail']['area_code']    = $arrLocations[$arrDetail['location_code']]['area_code'];
+                $arrInput['detail'][$skuKey]['detail'][$key]['roadway_code'] = $arrLocations[$arrDetail['location_code']]['roadway_code'];
+                $arrInput['detail'][$skuKey]['detail'][$key]['area_code']    = $arrLocations[$arrDetail['location_code']]['area_code'];
             }
         }
 
