@@ -32,8 +32,24 @@ class Service_Page_Reserve_GetReserveOrderDetail implements Order_Base_Page
     {
         $strReserveOrderId = strval($arrInput['reserve_order_id']);
         $ret = $this->objServiceData->getReserveOrderInfoByReserveOrderId($strReserveOrderId);
+
         if(empty($ret)){
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_RESERVE_ORDER_NOT_EXIST);
+            if (true == Order_Util::isReserveOrderId($strReserveOrderId)) {
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_RESERVE_ORDER_NOT_EXIST);
+            } else if (true == Order_Util::isPurchaseOrderId($strReserveOrderId)) {
+                Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_PURCHASE_ORDER_NOT_EXIST);
+            }
+        }
+
+        $intCurrentUserId = $arrInput['_session']['user_id'];
+        $ret['display_operate_tip'] = false;
+        $arrRetLastRecord = $ret['last_operate_record'];
+        if ((!empty($arrRetLastRecord))
+            && ($intCurrentUserId != $arrRetLastRecord['operate_user_id'])) {
+            $ret['display_operate_tip'] = true;
+            $ret['last_operate_time'] = $arrRetLastRecord['operate_time'];
+            $ret['last_operate_name'] = $arrRetLastRecord['operate_user_name'];
+            $ret['last_operate_device'] = $arrRetLastRecord['operate_device'];
         }
 
         return $ret;

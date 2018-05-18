@@ -135,6 +135,50 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
+     * 根据入库单号和商品编码/条码查询商品信息
+     * @param $strStockinOrderId
+     * @param $strSkuUpcId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockinOrderSkuInfo($strStockinOrderId, $strSkuUpcId)
+    {
+        $strStockinOrderId = Order_Util::trimStockinOrderIdPrefix($strStockinOrderId);
+
+        // 判断sku_id还是upc_id
+        $strSkuId = null;
+        if (true == Order_Util_Sku::isSkuId($strSkuUpcId)) {
+            $strSkuId = $strSkuUpcId;
+        } else if (true == Order_Util_Sku::isUpcId($strSkuUpcId)) {
+            // 将upc_id转换成sku_id
+            $objVendorRalSku = new Dao_Ral_Sku();
+            $retInfo = $objVendorRalSku->getSkuInfosByIds([$strSkuUpcId]);
+            $strSkuId = $retInfo['result']['skus'][0]['sku_id'];
+            if(empty($strSkuId)) {
+                Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_UPC_ID_NOT_EXIST);
+            }
+        } else {
+            Order_BusinessError::throwException(Order_Error_Code::SKU_UPC_OR_SKU_ID_LENGTH_EXCEPTION);
+        }
+
+        // 根据sku_id拿到数据库sku信息
+        $arrOrderSkuInfo = Model_Orm_StockinOrderSku::getStockinOrderSkuInfo($strStockinOrderId, $strSkuId);
+        if (empty($arrOrderSkuInfo)){
+            Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_SKU_NOT_FOUND);
+        }
+
+        // 根据库存函数计算过期时间 / 临期日期信息
+        $intSkuEffectType = intval($arrOrderSkuInfo['sku_effect_type']);
+        $intSkuEffectDay = intval($arrOrderSkuInfo['sku_effect_day']);
+        $intSkuFromCountry = intval($arrOrderSkuInfo['sku_from_country']);
+        $arrRet = $arrOrderSkuInfo;
+        $arrRet['critical_time'] = Nscm_Service_Stock::calculateShelfLifeTime($intSkuEffectType, $intSkuEffectDay);
+        $arrRet['product_expire_time'] = Nscm_Service_Stock::calculateShelfLifeTime($intSkuEffectType, $intSkuEffectDay);
+
+        return $arrRet;
+    }
+
+    /**
      * get stock price
      * @param int $intWarehouseId
      * @param int[] $arrSkuIds
@@ -709,20 +753,39 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
-     * 查询入库单详情
-     * @param $strStockinOrderId
+     * 查询入库单详情（入库单号或者运单号）
+     * @param $strOrderId
      * @return mixed
      * @throws Order_BusinessError
      */
-    public function getStockinOrderInfoByStockinOrderId($strStockinOrderId)
+    public function getStockinOrderInfoByStockinOrderId($strOrderId)
     {
-        $intStockinOrderId = intval(Order_Util::trimStockinOrderIdPrefix($strStockinOrderId));
-
-        if (empty($intStockinOrderId)) {
+        $arrRet = [];
+        $intOrderId = intval(Order_Util::trimStockinOrderIdPrefix($strOrderId));
+        $strStockinOrderId = null;
+        if (true == Order_Util::isStockinOrderId($strOrderId)) {
+            $arrRet = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intOrderId);
+            $strStockinOrderId = Nscm_Define_OrderPrefix::SIO . $arrRet['stockin_order_id'];
+        } else if (true == Order_Util::isShipmentOrderId($strOrderId)) {
+            $arrRet = Model_Orm_StockinOrder::getStockinOrderInfoByShipmentOrderId($strOrderId);
+            $strStockinOrderId = Nscm_Define_OrderPrefix::SIO . $arrRet['stockin_order_id'];
+        } else {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
 
-        return Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intStockinOrderId);
+        // 存在入库单为空的场景，校验查出来的单号是否合法
+        if (true == Order_Util::isStockinOrderId($strStockinOrderId)) {
+            // 检查当前用户id的操作记录，返回操作信息
+            $objDaoRedis = new Dao_Redis_StockInOrder();
+            $arrOrderOperateRecord = $objDaoRedis->getOperateRecord($strStockinOrderId);
+            if (!empty($arrOrderOperateRecord)) {
+                // 取出最后一条操作记录信息
+                $arrLastOperateRecord = end($arrOrderOperateRecord);
+                $arrRet['last_operate_record'] = $arrLastOperateRecord;
+            }
+        }
+
+        return $arrRet;
     }
 
     /**

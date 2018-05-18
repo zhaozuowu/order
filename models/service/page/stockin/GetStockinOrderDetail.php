@@ -36,6 +36,17 @@ class Service_Page_Stockin_GetStockinOrderDetail implements Order_Base_Page
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_QUERY_RESULT_EMPTY);
         }
 
+        $intCurrentUserId = $arrInput['_session']['user_id'];
+        $ret['display_operate_tip'] = false;
+        $arrRetLastRecord = $ret['last_operate_record'];
+        if ((!empty($arrRetLastRecord))
+            && ($intCurrentUserId != $arrRetLastRecord['operate_user_id'])) {
+            $ret['display_operate_tip'] = true;
+            $ret['last_operate_time'] = $arrRetLastRecord['operate_time'];
+            $ret['last_operate_name'] = $arrRetLastRecord['operate_user_name'];
+            $ret['last_operate_device'] = $arrRetLastRecord['operate_device'];
+        }
+
         return $ret;
     }
 }

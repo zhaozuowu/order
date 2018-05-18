@@ -1,7 +1,7 @@
 <?php
 /**
- * @name Action_GeReserveOrderDetail
- * @desc 查询预约单详情
+ * @name Action_GetReserveOrderDetail
+ * @desc 查询采购（预约）单详情
  * @author chenwende@iwaimai.baidu.com
  */
 
@@ -12,7 +12,7 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'reserve_order_id' => 'regex|patern[/^ASN\d{13}$/]',
+        'reserve_order_id' => 'regex|patern[/^(ASN|PUR)\d{13}$/]',
     ];
 
     /**
@@ -34,6 +34,7 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
      *
      * @param array $arrRet
      * @return array
+     * @throws Nscm_Exception_System
      */
     public function format($arrRet)
     {
@@ -44,6 +45,9 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
                 : Nscm_Define_OrderPrefix::ASN . strval($arrRet['reserve_order_id']);
             $arrRoundResult['stockin_order_id'] = empty($arrRet['stockin_order_id']) ? ''
                 : Nscm_Define_OrderPrefix::SIO . strval($arrRet['stockin_order_id']);
+            $arrRoundResult['purchase_order_id'] = empty($arrRet['purchase_order_id'])
+                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : Nscm_Define_OrderPrefix::PUR . strval($arrRet['purchase_order_id']);
             $arrRoundResult['warehouse_id'] = empty($arrRet['warehouse_id']) ? 0
                 : intval($arrRet['warehouse_id']);
             $arrRoundResult['warehouse_session_privilege'] =
@@ -68,6 +72,15 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
             $arrRoundResult['vendor_name'] =
                 empty($arrRet['vendor_name']) ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                     : strval($arrRet['vendor_name']);
+            $arrRoundResult['display_operate_tip'] = empty($arrRet['display_operate_tip']) ? false
+                : boolval($arrRet['display_operate_tip']);
+            $arrRoundResult['last_operate_time'] = intval($arrRet['last_operate_time']);
+            $arrRoundResult['last_operate_name'] = empty($arrRet['last_operate_name'])
+                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : strval($arrRet['last_operate_name']);
+            $arrRoundResult['last_operate_device'] = empty($arrRet['last_operate_device'])
+                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : strval($arrRet['last_operate_device']);
 
             $arrFormatResult = $arrRoundResult;
         }
