@@ -679,7 +679,26 @@ class Service_Data_PickupOrder
         }
 
         $objWrpc = new Dao_Wrpc_Stock(Order_Define_Wrpc::STOCK_INFO_SERVICE);
-        return $objWrpc->getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $strTimeParam, $intExpireTime);
+        $arrSkusLocationList =  $objWrpc->getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $strTimeParam, $intExpireTime);
+        $arrSkusLocationListRet = [];
+        foreach ($arrSkusLocationList as $arrSkuLocation) {
+            $arrSkuLocationListItem = [
+                'sku_id' => $arrSkuLocation['sku_id'],
+                'location_code' => $arrSkuLocation['location_code'],
+                'expiration_time' => $arrSkuLocation['expiration_time'],
+                'pickable_amount' => $arrSkuLocation['pickable_amount'],
+            ];
+            if (Nscm_Define_Sku::SKU_EFFECT_FROM == $intSkuEffectType) {
+                $arrSkuLocationListItem['time'] = strtotime(date('Y-m-d',
+                    $arrSkuLocation['production_time']));
+            } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
+                $arrSkuLocationListItem['time'] = strtotime(date('Y-m-d',
+                    $arrSkuLocation['expiration_time']));
+            }
+            $arrSkusLocationListRet[] = $arrSkuLocationListItem;
+        }
+
+        return $arrSkusLocationListRet;
     }
 
     /**
