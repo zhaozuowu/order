@@ -34,7 +34,7 @@ class Service_Page_Adjust_CreateOrder
     public function execute($arrInput)
     {
         //校验传入参数 库位是否有效
-        $this->objStockAdjustOrder->checkCreateInputByLocation($arrInput);
+        $arrInput = $this->objStockAdjustOrder->checkCreateInputByLocation($arrInput);
 
         // 生成一个调整单号
         $arrInput['stock_adjust_order_id'] = Order_Util_Util::generateStockAdjustOrderId();

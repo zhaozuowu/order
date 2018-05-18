@@ -597,7 +597,7 @@ class Service_Data_StockAdjustOrder
         $data = $this->objDaoHuskarStock->getBatchStorageLocation($intWarehouseId,$arrLocationCodes);
 
         $arrData = [];
-        foreach ($data['result']['list'] as $item){
+        foreach ($data as $item){
             $arrData[$item['location_code']] = $item;
         }
 
@@ -629,15 +629,15 @@ class Service_Data_StockAdjustOrder
         $arrLocations = $this->getLocationInfoByIds($arrInput['warehouse_id'], $arrLocationIds);
 
         foreach ($arrInput['detail'] as $skuKey => $arrSkuDetail) {
-            foreach ($arrSkuDetail as $key => $arrDetail) {
+            foreach ($arrSkuDetail['detail'] as $key => $arrDetail) {
 
                 if (!isset($arrLocations[$arrDetail['location_code']])) {
                     Bd_Log::warning(__METHOD__ . ' location_code[' . $arrDetail['location_code'] . '] not exist ');
                     Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
                 }
 
-                $arrInput['detail'][$skuKey][$key]['roadway_code'] = $arrLocations[$arrDetail['location_code']]['roadway_code'];
-                $arrInput['detail'][$skuKey][$key]['area_code']    = $arrLocations[$arrDetail['location_code']]['area_code'];
+                $arrInput['detail'][$skuKey][$key]['detail']['roadway_code'] = $arrLocations[$arrDetail['location_code']]['roadway_code'];
+                $arrInput['detail'][$skuKey][$key]['detail']['area_code']    = $arrLocations[$arrDetail['location_code']]['area_code'];
             }
         }
 
