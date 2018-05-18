@@ -46,15 +46,13 @@ class Order_Define_Wrpc
      * nwms stock service name
      * @var string
      */
-<<<<<<< Updated upstream
     const NWMS_STOCK_SERVICE_NAME = 'StockOutService';
+
     /**
      * nwms stock service name
      * @var string
      */
     const STOCK_INFO_SERVICE = 'StockInfoService';
-=======
-    const NWMS_STOCK_SERVICE_NAME = 'StockService';
 
     /**
      * nwms stock control service
@@ -67,5 +65,4 @@ class Order_Define_Wrpc
      * @var string
      */
     const NWMS_WAREHOUSE_SERVICE_NAME = 'WarehouseInfoService';
->>>>>>> Stashed changes
 }
