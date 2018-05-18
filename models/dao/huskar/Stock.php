@@ -102,12 +102,11 @@ class Dao_Huskar_Stock
     public function getBatchStorageLocation($intWarehouseId, $arrLocationCodes)
     {
         $ret = [];
-
-        $strLocationCodes = implode(',', $arrLocationCodes);
+        
 
         $req[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION] = [
             'warehouse_id'   => $intWarehouseId,
-            'location_codes' => $strLocationCodes,
+            'location_codes' => $arrLocationCodes,
         ];
 
         Bd_Log::trace('huskar call ' . self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION . ' input params ' . json_encode($req));
