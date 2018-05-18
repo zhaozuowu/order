@@ -691,9 +691,11 @@ class Service_Data_PickupOrder
             if (Nscm_Define_Sku::SKU_EFFECT_FROM == $intSkuEffectType) {
                 $arrSkuLocationListItem['time'] = strtotime(date('Y-m-d',
                     $arrSkuLocation['production_time']));
+                $arrSkuLocationListItem['expire_time'] = $arrSkuLocation['production_time'];
             } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
                 $arrSkuLocationListItem['time'] = strtotime(date('Y-m-d',
                     $arrSkuLocation['expiration_time']));
+                $arrSkuLocationListItem['expire_time'] = $arrSkuLocation['expiration_time'];
             }
             $arrSkusLocationListRet[] = $arrSkuLocationListItem;
         }
