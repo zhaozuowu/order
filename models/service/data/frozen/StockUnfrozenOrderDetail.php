@@ -72,6 +72,11 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_NOT_EXIST);
         }
 
+        //冻结单已关闭
+        if(Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_CLOSED == $objFrozenOrder->order_status) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_UNFROZEN_ORDER_STATUS_ERROR);
+        }
+
         //查询冻结单明细
         $arrSkuIds = array_unique(array_column($arrInput['detail'], 'sku_id'));
         $arrFrozenDetail = $this->objDataOrderDetail->getOrderDetailBySku($arrInput['stock_frozen_order_id'], $arrSkuIds);
@@ -197,7 +202,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function getOrderListGroupBySku($arrInput) {
+    public function getOrderListGroupBySku($arrInput)
+    {
         $arrSkuIds = $this->getSkuIdsByOrderId($arrInput);
         if(empty($arrSkuIds)) {
             Bd_Log::warning('frozen order id: ' . $arrInput['stock_frozen_order_id'] . ' detail is empty.');

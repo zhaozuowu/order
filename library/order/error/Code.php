@@ -247,12 +247,6 @@ class Order_Error_Code extends Wm_Error_Code
      *
      */
     const NWMS_STOCKOUT_CANCEL_STOCK_FAIL = 340008;
-    /**
-     * 出库单存在于拣货任务中
-     * @var integer
-     *
-     */
-    const STOCKOUT_ORDER_IN_PICKING= 340012;
 
     /**
      * 创建业态订单参数错误
@@ -356,12 +350,6 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_STOCKOUT_CUSTOMER_REGION_ID_ERROR = 340014;
-
-    /**
-     * 获取仓库产效期失败
-     * @var integer
-     */
-    const GET_SKU_STOCK_INFO_FAIL = 350001;
 
     /**
      * sku业态详细信息错误
@@ -560,6 +548,12 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_GET_STOCK_WAREHOUSE_FAIL = 351016;
 
+    /**
+     * 冻结单-冻结单已关闭
+     * @var integer
+     */
+    const NWMS_UNFROZEN_ORDER_STATUS_ERROR = 351017;
+
     //------------------------------------------------冻结单------------------------------------------------
 
     /**
@@ -601,21 +595,9 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const PICKUP_ORDER_NOT_EXISTED = 390010;
     /**
-     * 拣货单在此状态下不允许拣货
-     */
-    const PICKUP_ORDER_STATUS_INVALID = 390011;
-    /**
      * 拣货单不存在
      */
     const PICKUP_ORDER_CANCEL_FAILED = 390020;
-    /**
-     * 拣货单已取消
-     */
-    const PICKUP_ORDER_IS_CANCELED = 390021;
-    /**
-     * 拣货单已取消
-     */
-    const PICKUP_ORDER_IS_FINISHED = 390022;
     /**
      * 拣货商品数量小于等于零
      */
@@ -624,14 +606,6 @@ class Order_Error_Code extends Wm_Error_Code
      * 拣货单商品不存在
      */
     const PICKUP_ORDER_SKUS_NOT_EXISTED = 390031;
-    /**
-     * 完成拣货通知库存失败
-     */
-    const FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL = 390040;
-    /**
-     * 作废拣货单通知库存失败
-     */
-    const CANCEL_PICKUP_ORDER_NOTIFY_STOCK_FAIL = 390041;
     /**
      * 获取tms排线号失败
      */
@@ -655,16 +629,4 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const PLACE_ORDER_ALREADY_CREATE = 400003;
-
-    /**
-     * 通知库存上架单确认失败
-     * @var integer
-     */
-    const NOTIFY_STOCK_PLACE_ORDER_CONFIRM_FAILE = 400004;
-
-    /**
-     * 上架单不存在
-     * @var integer
-     */
-    const PLACE_ORDER_NOT_EXIST = 400005;
 }

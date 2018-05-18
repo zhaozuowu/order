@@ -7,6 +7,7 @@
 
 class Action_CreateFrozenOrder extends Order_Base_Action
 {
+
     /**
      * input params
      * @var array
