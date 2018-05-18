@@ -21,12 +21,14 @@ class Service_Page_Place_GetPlaceOrderPrint implements Order_Base_Page
     }
 
     /**
+     * execute
      * @param array $arrInput
-     * @return array|void
+     * @return array
+     * @throws Order_BusinessError
      */
     public function execute($arrInput)
     {
-        $arrPlaceOrderIds = json_decode($arrInput['place_order_ids'], true);
+        $arrPlaceOrderIds = explode(',', $arrInput['place_order_ids']);
         return $this->objDsPlaceOrder->getPlaceOrderPrint($arrPlaceOrderIds);
     }
 }
