@@ -42,7 +42,7 @@ class Service_Page_Shift_GetOrderDetail
             return [];
         }
 
-        $intOrderDetailCount = $this->objShiftOrderDetail->getCount($arrInput);
+        $intOrderDetailCount = $this->objShiftOrderDetail->getCountWithGroup($arrInput);
         $arrOrderDetail = $this->objShiftOrderDetail->get($arrInput);
 
         return $this->formatResult($arrOrder, $intOrderDetailCount, $arrOrderDetail);
@@ -58,9 +58,9 @@ class Service_Page_Shift_GetOrderDetail
     public function formatResult($arrOrder = array(), $intCount = 0, $arrDetail = array())
     {
         $arrRet = $arrOrder;
-        $arrRet['stock_adjust_order_detail'] = array();
-        $arrRet['stock_adjust_order_detail']['total'] = $intCount;
-        $arrRet['stock_adjust_order_detail']['detail'] = $arrDetail;
+        $arrRet['shift_order_detail'] = array();
+        $arrRet['shift_order_detail']['total'] = $intCount;
+        $arrRet['shift_order_detail']['detail'] = $arrDetail;
 
         return $arrRet;
     }

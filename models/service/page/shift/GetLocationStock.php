@@ -18,7 +18,7 @@ class Service_Page_Shift_GetLocationStock
      */
     public function __construct()
     {
-        $this->objStock = new Service_Data_Stock();
+        $this->objStock = new Dao_Huskar_Stock();
     }
 
     /**
@@ -28,7 +28,7 @@ class Service_Page_Shift_GetLocationStock
      */
     public function execute($arrInput)
     {
-        $arrOutput = $this->objStock->getStockPeriodStock($arrInput['warehouse_id'], $arrInput['sku_ids']);
+        $arrOutput = $this->objStock->getBatchStorageLocation($arrInput['warehouse_id'], $arrInput['source_location']);
         return $arrOutput;
     }
 }

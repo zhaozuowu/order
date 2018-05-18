@@ -41,4 +41,13 @@ class Model_Orm_ShiftOrderDetail extends Wm_Orm_ActiveRecord
     public static $tableName = 'shift_order_detail';
     public static $dbName = 'nwms_order';
     public static $clusterName = 'nwms_order_cluster';
+
+    /**
+     * get all columns
+     * @return array
+     */
+    public static function getAllColumns()
+    {
+        return array_keys(static::getColumnsDefine());
+    }
 }

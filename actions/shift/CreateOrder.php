@@ -12,15 +12,15 @@ class Action_CreateOrder extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_id'   => 'int|required',
-        'source_location' => 'int|required',
-        'target_location'    => 'int|required',
-        'detail'         => [
-            'validate' => 'json|required|decode',
-            'type'     => 'array',
-            'params'   => [
-                'sku_id' => 'int|required',
-                'sku_name' => 'int|required',
+        'warehouse_id'      => 'int|required',
+        'source_location'   => 'str|required',
+        'target_location'   => 'str|required',
+        'detail'            => [
+            'validate'      => 'json|required|decode',
+            'type'          => 'array',
+            'params'        => [
+                'sku_id'    => 'int|required',
+                'sku_name'  => 'str|required',
                 'upc_id'                => 'str|required|min[1]|len[64]',
                 'upc_unit'              => 'int|required',
                 'upc_unit_num'          => 'int|required',

@@ -1,8 +1,8 @@
 <?php
 /**
- * @name Service_Page_Adjust_GetOrder
- * @desc 获取采购单
- * @author sunzhixin@iwaimai.baidu.com
+ * @name Service_Page_Shift_GetOrder
+ * @desc 获取移位单
+ * @author songwenkai@iwaimai.baidu.com
  */
 
 class Service_Page_Shift_GetOrder
@@ -11,14 +11,14 @@ class Service_Page_Shift_GetOrder
      * adjust order data service
      * @var Service_Data_StockAdjustOrder
      */
-    protected $objStockAdjustOrder;
+    protected $objShiftOrder;
 
     /**
      * init
      */
     public function __construct()
     {
-        $this->objStockAdjustOrder = new Service_Data_StockAdjustOrder();
+        $this->objShiftOrder = new Service_Data_ShiftOrder();
     }
 
     /**
@@ -28,15 +28,15 @@ class Service_Page_Shift_GetOrder
      */
     public function execute($arrInput)
     {
-        // 去掉SAO前缀
-        if(!empty($arrInput['stock_adjust_order_id'])) {
-            $arrInput['stock_adjust_order_id'] =
-                intval(Order_Util::trimStockAdjustOrderIdPrefix($arrInput['stock_adjust_order_id']));
+        // 去掉前缀
+        if(!empty($arrInput['shift_order_id'])) {
+            $arrInput['shift_order_id'] =
+                intval(Order_Util::trimShiftOrderIdPrefix($arrInput['shift_order_id']));
         }
 
-        $intCount = $this->objStockAdjustOrder->getCount($arrInput);
-        $arrOutput = $this->objStockAdjustOrder->get($arrInput);
+        $intCount = $this->objShiftOrder->getCount($arrInput);
+        $arrOutput = $this->objShiftOrder->get($arrInput);
 
-        return array('total' => $intCount, 'stock_adjust_order_list' => $arrOutput);
+        return array('total' => $intCount, 'shift_order_list' => $arrOutput);
     }
 }

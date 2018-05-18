@@ -5,13 +5,12 @@
  * @author sunzhixin@iwaimai.baidu.com
  */
 
-class Controller_Adjust extends Ap_Controller_Abstract {
+class Controller_Shift extends Ap_Controller_Abstract {
     public $actions = array(
-        'createincreaseorder' => 'actions/adjust/CreateIncreaseOrder.php', #创建库存调整单-调增#
-        'createdecreaseorder' => 'actions/adjust/CreateDecreaseOrder.php', #创建库存调整单-调减#
-        'getorder' => 'actions/adjust/GetOrder.php', #查询库存调整单#
-        'getorderdetail' => 'actions/adjust/GetOrderDetail.php', #查询单个库存调整单SKU#
-        'getorderdetailform' => 'actions/adjust/GetOrderDetailForm.php', #导出页面查询库存调整单SKU#
-        'getskustockinfo' => 'actions/adjust/GetSkuStockInfo.php', #查询商品库存信息#
+        'createincreaseorder' => 'actions/shift/CreateOrder.php', #新建移位单#
+        'createdecreaseorder' => 'actions/shift/CancelOrder.php', #取消移位单#
+        'getorder' => 'actions/shift/GetOrder.php', #查询移位单#
+        'getorderdetail' => 'actions/shift/GetOrderDetail.php', #查询移位单详情#
+        'getlocationstock' => 'actions/shift/GetLocationStock.php', #查询库位库存信息#
     );
 }
