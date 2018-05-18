@@ -171,4 +171,25 @@ class Order_Define_StockinOrder
         self::STOCKIN_DATA_SOURCE_FROM_SYSTEM   => '系统对接',
         self::STOCKIN_DATA_SOURCE_MANUAL_CREATE => '手工创建',
     ];
+
+    /**
+     * 已生成上架单
+     * @var integer
+     */
+    const STOCKIN_IS_PLACED = 1;
+
+    /**
+     * 未生成上架单
+     * @var integer
+     */
+    const STOCKIN_NOT_PLACED = 0;
+
+    /**
+     * 是否生成上架单map
+     * @var array
+     */
+    const STOCKIN_IS_PLACED_MAP = [
+        self::STOCKIN_IS_PLACED => '已生成',
+        self::STOCKIN_NOT_PLACED => '未生成',
+    ];
 }

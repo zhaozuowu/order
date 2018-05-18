@@ -13,14 +13,9 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
     protected $objDaoSku;
 
     /**
-     * @var Dao_Ral_Stock
+     * @var Dao_Huskar_Stock
      */
-    protected $objDaoStock;
-
-    /**
-     * @var Dao_Wrpc_Stock
-     */
-    protected $objDaoWrpcStockControl;
+    protected $objHuskarStock;
 
     /**
      * @var Service_Data_Frozen_StockFrozenOrderDetail
@@ -33,9 +28,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
     public function __construct()
     {
         $this->objDaoSku = new Dao_Ral_Sku();
-        $this->objDaoStock = new Dao_Ral_Stock();
         $this->objDataOrderDetail = new Service_Data_Frozen_StockFrozenOrderDetail();
-        $this->objDaoWrpcStockControl = new Dao_Wrpc_Stock(Order_Define_Const::STOCK_CONTROL_SERVICE);
+        $this->objHuskarStock = new Dao_Huskar_Stock();
     }
 
     /**
@@ -486,6 +480,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * 调用库存解冻
      * @param $arrInput
      * @param $arrSkuInfos
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function frozenSkuStock($arrInput, $arrSkuInfos)
@@ -520,6 +515,6 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             'details'      => $arrDetails
         ];
 
-        $this->objDaoWrpcStockControl->unfrozenStock($arrPram);
+        $this->objHuskarStock->unfrozenStock($arrPram);
     }
 }

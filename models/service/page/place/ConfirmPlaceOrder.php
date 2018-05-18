@@ -1,11 +1,11 @@
 <?php
 /**
- * @name GetPlaceOrderDetail.php
- * @desc GetPlaceOrderDetail.php
+ * @name ConfirmPlaceOrder.php
+ * @desc ConfirmPlaceOrder.php
  * @author yu.jin03@ele.me
  */
 
-class Service_Page_Place_GetPlaceOrderDetail implements Order_Base_Page
+class Service_Page_Place_ConfirmPlaceOrder implements Order_Base_Page
 {
     /**
      * @var Service_Data_PlaceOrder
@@ -13,7 +13,7 @@ class Service_Page_Place_GetPlaceOrderDetail implements Order_Base_Page
     protected $objDsPlaceOrder;
 
     /**
-     * Service_Page_Place_GetPlaceOrderDetail constructor.
+     * Service_Page_Place_ConfirmPlaceOrder constructor.
      */
     public function __construct()
     {
@@ -28,6 +28,7 @@ class Service_Page_Place_GetPlaceOrderDetail implements Order_Base_Page
     public function execute($arrInput)
     {
         $intPlaceOrderId = $arrInput['place_order_id'];
-        return $this->objDsPlaceOrder->getPlaceOrderDetail($intPlaceOrderId);
+        $arrSkus = $arrInput['skus'];
+        return $this->objDsPlaceOrder->confirmPlaceOrder($intPlaceOrderId, $arrSkus);
     }
 }

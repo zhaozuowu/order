@@ -1,11 +1,11 @@
 <?php
 /**
- * @name Action_Createfrozenorder
+ * @name Action_CreateFrozenOrder
  * @desc 创建冻结单
  * @author sunzhixin@iwaimai.baidu.com
  */
 
-class Action_Createfrozenorder extends Order_Base_Action
+class Action_CreateFrozenOrder extends Order_Base_Action
 {
     /**
      * input params

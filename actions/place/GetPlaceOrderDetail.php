@@ -7,6 +7,14 @@
 class Action_GetPlaceOrderDetail extends Order_Base_Action
 {
     /**
+     * 参数数组
+     * @var array
+     */
+    protected $arrInputParams = [
+        'place_order_id' => 'int|required',
+    ];
+
+    /**
      * method post
      * @var int
      */

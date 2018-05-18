@@ -27,151 +27,157 @@ class Dao_Wrpc_Stock
      * 获取sku库区库位信息
      * @param $intWarehouseId
      * @param $intSkuId
+     * @param $strLocationCode
+     * @param $strTimeParam
+     * @param $intExpireTime
      * @return mixed
      * @throws Order_BusinessError
      */
-    public function getSkuLocation($intWarehouseId, $intSkuId)
+    public function getSkuLocation($intWarehouseId, $intSkuId, $strLocationCode, $strTimeParam, $intExpireTime)
     {
-        Bd_Log::trace(sprintf("method[%s] get_sku_location_request_warehouse[%d]_sku[%d]",
-            __METHOD__, $intWarehouseId, $intSkuId));
-        $arrRet = $this->objWrpcService->getSkuLocation($intWarehouseId, $intSkuId);
+        $arrReqParams['requestParams'] = [
+            'warehouse_id' => $intWarehouseId,
+            'sku_ids' => strval($intSkuId),
+        ];
+        if (!empty($intExpireTime)) {
+            $arrReqParams['requestParams'][$strTimeParam] = strtotime(date("Y-m-d H:i:s",$intExpireTime));
+        }
+        if (!empty($strLocationCode)) {
+            $arrReqParams['requestParams']['location_code'] = $strLocationCode;
+        }
+        Bd_Log::trace(sprintf("method[%s] get_sku_location_request[%d]",
+            __METHOD__, json_encode($arrReqParams)));
+        $arrRet = $this->objWrpcService->getPickableSkuBatchInfo($arrReqParams);
         Bd_Log::trace(sprintf("method[%s] get_sku_location_ret[%s]",
             __METHOD__, json_encode($arrRet)));
-        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+        if (0 != $arrRet['errno']) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
                 __METHOD__, json_encode($arrRet)));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_CREATE_SHIPMENTORDER_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::GET_SKU_STOCK_INFO_FAIL);
         }
         return $arrRet['data'];
     }
 
     /**
-     * 获取仓库商品可冻结数据
+     * 拣货完成通知仓库转移库存
+     * @param $intPickupOrderId
      * @param $intWarehouseId
-     * @param $intSkuId
-     * @param $intIsDefective
-     * @param $intSkuEffectType
-     * @param $intTime
-     * @param $intPageNum
-     * @param $intPageSize
-     * @param $intType
-     * @return array|mixed
+     * @param $arrPickupSkus
+     * @return mixed
      * @throws Order_BusinessError
      */
-    public function getStockFrozenInfo(
-        $intWarehouseId,
-        $intSkuId,
-        $intIsDefective,
-        $intSkuEffectType,
-        $intTime,
-        $intPageNum,
-        $intPageSize,
-        $intType = Nscm_Define_Stock::FROZEN_TYPE_CREATE_BY_USER
-    )
+    public function pickStock($intPickupOrderId, $intWarehouseId, $arrPickupSkus)
     {
-        $arrRequest = [];
-        //仓库ID
-        if(empty($intWarehouseId)) {
-            Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is empty');
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR);
+        $arrReqParams['requestParams'] = [
+            'warehouse_id' => $intWarehouseId,
+            'ext_order_id' => strval($intPickupOrderId),
+            'details' => $arrPickupSkus,
+        ];
+        Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_request[%d]",
+            __METHOD__, json_encode($arrReqParams)));
+        $arrRet = $this->objWrpcService->pickStock($arrReqParams);
+        Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_ret[%s]",
+            __METHOD__, json_encode($arrRet)));
+        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("method[%s] arrRet[%s] ret[%s]",
+                __METHOD__, json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL);
         }
-        $arrRequest['warehouse_id'] = $intWarehouseId;
+        return $arrRet['data'];
+    }
 
-        //商品ID
-        if (!empty($intSkuId)) {
-            $arrRequest['sku_ids'] = $intSkuId;
+    /**
+     * 作废拣货单通知库存
+     * @param $intPickupOrderId
+     * @param $intWarehouseId
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function cancelStockLocRecommend($intPickupOrderId, $intWarehouseId)
+    {
+        $arrReqParams['requestParams'] = [
+            'warehouse_id' => $intWarehouseId,
+            'ext_order_id' => strval($intPickupOrderId),
+        ];
+        Bd_Log::trace(sprintf("method[%s] cancel_pickup_notify_stock_request[%d]",
+            __METHOD__, json_encode($arrReqParams)));
+        $arrRet = $this->objWrpcService->cancelStockLocRecommend($arrReqParams);
+        Bd_Log::trace(sprintf("method[%s] cancel_pickup_notify_stock_ret[%s]",
+            __METHOD__, json_encode($arrRet)));
+        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("method[%s] arrRet[%s] ret[%s]",
+                __METHOD__, json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::CANCEL_PICKUP_ORDER_NOTIFY_STOCK_FAIL);
         }
+        return $arrRet['data'];
+    }
 
-        //效期类型与时间
-        if (!empty($intSkuEffectType) && empty($intTime) || empty($intSkuEffectType) && !empty($intTime)) {
-            Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is error');
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR);
-        } else if (!empty($intSkuEffectType) && !empty($intTime)) {
-            if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
-                $intTime = Order_Util_Stock::formatExpireTime($intTime);
-                $arrRequest['expiration_time'] = $intTime;
-            } else {
-                $arrRequest['production_time'] = $intTime;
+    /**
+     * 确认上架单
+     * @param $intPlaceOrderId
+     * @param $intWarehouseId
+     * @param $arrSkusPlace
+     * @throws Order_BusinessError
+     */
+    public function confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrSkusPlace)
+    {
+        $arrParams = [];
+        $arrRequestParams['p_order_id'] = $intPlaceOrderId;
+        $arrRequestParams['warehouse_id'] = $intWarehouseId;
+        $arrRequestParams['details'] = $this->getLocationDetails($arrSkusPlace, $intIsDefective);
+        $arrParams['requestParams'] = $arrRequestParams;
+        $arrRet = $this->objWrpcService->confirmLocation($arrParams);
+        var_dump($arrRet);exit;
+        Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
+                __METHOD__, json_encode($arrParams), json_encode($arrRet)));
+        if (0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("confirm place order failed params[%s] ret[%s]",
+                            json_encode($arrParams), json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::NOTIFY_STOCK_PLACE_ORDER_CONFIRM_FAILE);
+        }
+    }
+
+    /**
+     * 获取库位参数详情
+     * @param $arrSkusPlace
+     * @param $intIsDefective
+     * @return array
+     */
+    protected function getLocationDetails($arrSkusPlace, $intIsDefective)
+    {
+        $arrLocationDetails = [];
+        foreach ((array)$arrSkusPlace as $arrSkusPlaceItem) {
+            $arrLocationDetailItem = [];
+            $arrLocationDetailItem['sku_id'] = $arrSkusPlaceItem['sku_id'];
+            $arrLocationDetailItem['expiration_time'] = intval($arrSkusPlaceItem['expire_date']);
+            $arrLocationDetailItem['is_defective'] = $intIsDefective;
+            $arrLocationDetailItem['target_details'] = $this->getTargetDetails($arrSkusPlaceItem['actual_info']);
+            if (!empty($arrLocationDetailItem['target_details'])) {
+                $arrLocationDetails[] = $arrLocationDetailItem;
             }
         }
-
-        //质量状态
-        if (!empty($intIsDefective)) {
-            $arrRequest['is_defective'] = $intIsDefective;
-        }
-
-        //冻结类型
-        $arrRequest['type'] = $intType;
-
-        //分页
-        if (!empty($intPageNum) && !empty($intPageSize)) {
-            $arrRequest['page_num'] = $intPageNum;
-            $arrRequest['page_size'] = $intPageSize;
-        }
-
-        $arrRequest = ['requestParams' => $arrRequest];
-        Bd_log::trace(sprintf('get stock frozen info, param:%s', json_encode($arrRequest)));
-
-        $arrRet = $this->objWrpcService->getFreezableSkuBatchInfo($arrRequest);
-        Bd_Log::trace(sprintf("method[%s] get stock frozen info ret[%s]",
-            __METHOD__, json_encode($arrRet)));
-        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
-            Bd_Log::warning(__METHOD__ . ' get sku stock failed, result is empty.' . print_r($arrRet, true));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
-        }
-        return $arrRet['data'];
+        return $arrLocationDetails;
     }
 
     /**
-     * 获取仓库
+     * 拼接实际上架数量信息
+     * @param $arrActualInfo
      * @return array
-     * @throws Order_BusinessError
      */
-    public function getStockWarehouse()
+    protected function getTargetDetails($arrActualInfo)
     {
-        $arrRet = $this->objWrpcService->getStockWarehouse();
-        Bd_Log::trace(sprintf("method[%s] get stock warehouse ret[%s]",
-            __METHOD__, json_encode($arrRet)));
-        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
-            Bd_Log::warning('wrpc call stock model get stock warehouse failed. ret: ' . print_r($arrRet, true));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_GET_STOCK_WAREHOUSE_FAIL);
+        $arrTargetDetails = [];
+        foreach ((array)$arrActualInfo as $arrActualInfoItem) {
+            $arrTargetDetailItem = [];
+            $arrTargetDetailItem['amount'] = $arrActualInfoItem['place_amount'];
+            $arrLocation = explode('-', $arrActualInfoItem['place_location_id']);
+            $arrTargetDetailItem['target_location_code'] = $arrLocation[0];
+            $arrTargetDetailItem['target_area_code'] = $arrLocation[1];
+            $arrTargetDetailItem['target_roadway_code'] = $arrLocation[2];
+            $arrTargetDetails[] = $arrTargetDetailItem;
         }
-        return $arrRet['data'];
+        return $arrTargetDetails;
     }
 
-    /**
-     * 调用库存冻结
-     * @param $arrFrozenArg
-     * @return mixed
-     * @throws Order_BusinessError
-     */
-    public function frozenStock($arrFrozenArg)
-    {
-        $arrRet = $this->objWrpcService->freezeStock(['requestParams' => $arrFrozenArg]);
-        Bd_Log::trace(sprintf("method[%s]frozen sku ret[%s]",
-            __METHOD__, json_encode($arrRet)));
-        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
-            Bd_Log::warning('wrpc call stock model frozen sku failed. ret: ' . print_r($arrRet, true));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL);
-        }
-        return $arrRet['data'];
-    }
 
-    /**
-     * 调用库存解冻
-     * @param $arrUnfrozenArg
-     * @return mixed
-     * @throws Order_BusinessError
-     */
-    public function unfrozenStock($arrUnfrozenArg)
-    {
-        $arrRet = $this->objWrpcService->unfreezeStock(['requestParams' => $arrUnfrozenArg]);
-        Bd_Log::trace(sprintf("method[%s]unfrozen sku ret[%s]",
-            __METHOD__, json_encode($arrRet)));
-        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
-            Bd_Log::warning('wrpc call stock model unfrozen sku failed. ret:' . print_r($arrRet, true));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL);
-        }
-        return $arrRet['data'];
-    }
 }
