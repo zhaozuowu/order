@@ -264,6 +264,14 @@ class Service_Data_PlaceOrder
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
         $arrRet = Model_Orm_PlaceOrder::getPlaceOrderList($arrCondtions, $intLimit, $intOffset);
+        foreach ((array)$arrRet as $intKey => $arrRetItem) {
+            $intPlaceOrderId = $arrRetItem['place_order_id'];
+            $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+            if (!empty($arrStockinOrderIds)) {
+                $strStockinOrderIds = implode(',', $arrStockinOrderIds);
+                $arrRet[$intKey]['source_order_id'] = $strStockinOrderIds;
+            }
+        }
         $intTotal = Model_Orm_PlaceOrder::count($arrCondtions);
         return [
             'total' => $intTotal,
@@ -327,6 +335,8 @@ class Service_Data_PlaceOrder
             if (!isset($arrMapPlaceOrderSkus[$intPlaceOrderId])) {
                 continue;
             }
+            $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+            $arrPlaceOrderInfos[$intKey]['source_order_id'] = implode(',', $arrStockinOrderIds);
             $arrPlaceOrderInfos[$intKey]['skus'] = $arrMapPlaceOrderSkus[$intPlaceOrderId];
         }
         return $arrPlaceOrderInfos;
