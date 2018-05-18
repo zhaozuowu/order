@@ -42,7 +42,7 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
             'place_order_id' => $intPlaceOrderId,
             'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
-        return Model_Orm_PlaceOrder::findRow($arrCols, $arrConditions);
+        return self::findRows($arrCols, $arrConditions);
     }
 
     /**

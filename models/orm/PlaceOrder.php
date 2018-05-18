@@ -77,6 +77,4 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
         $arrCols = self::getAllColumns();
         return self::findRows($arrCols, $arrConditions, ['id' => 'asc'], $intOffset, $intLimit);
     }
-
-
 }

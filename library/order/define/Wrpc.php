@@ -37,13 +37,35 @@ class Order_Define_Wrpc
     const NWMS_STOCK_NAMESPACE = 'stock';
 
     /**
+     * nwms warehouse namespace
+     * @var string
+     */
+    const NWMS_WAREHOUSE_NAMESPACE = 'warehouse';
+
+    /**
      * nwms stock service name
      * @var string
      */
+<<<<<<< Updated upstream
     const NWMS_STOCK_SERVICE_NAME = 'StockOutService';
     /**
      * nwms stock service name
      * @var string
      */
     const STOCK_INFO_SERVICE = 'StockInfoService';
+=======
+    const NWMS_STOCK_SERVICE_NAME = 'StockService';
+
+    /**
+     * nwms stock control service
+     * @var string
+     */
+    const NWMS_STOCK_CONTROL_SERVICE_NAME = 'StockControlService';
+
+    /**
+     * nwms warehouse service name
+     * @var string
+     */
+    const NWMS_WAREHOUSE_SERVICE_NAME = 'WarehouseInfoService';
+>>>>>>> Stashed changes
 }

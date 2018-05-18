@@ -116,6 +116,8 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL => '完成拣货通知库存失败',
         Order_Error_Code::CANCEL_PICKUP_ORDER_NOTIFY_STOCK_FAIL => '作废拣货单通知库存失败',
         Order_Error_Code::GET_SKU_STOCK_INFO_FAIL => '获取商品库存信息失败',
+        Order_Error_Code::NOTIFY_STOCK_PLACE_ORDER_CONFIRM_FAILE => '通知库存上架单确认失败',
+        Order_Error_Code::PLACE_ORDER_NOT_EXIST => '上架单不存在',
     ];
 
 }

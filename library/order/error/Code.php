@@ -655,4 +655,16 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const PLACE_ORDER_ALREADY_CREATE = 400003;
+
+    /**
+     * 通知库存上架单确认失败
+     * @var integer
+     */
+    const NOTIFY_STOCK_PLACE_ORDER_CONFIRM_FAILE = 400004;
+
+    /**
+     * 上架单不存在
+     * @var integer
+     */
+    const PLACE_ORDER_NOT_EXIST = 400005;
 }

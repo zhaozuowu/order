@@ -112,4 +112,72 @@ class Dao_Wrpc_Stock
         return $arrRet['data'];
     }
 
+    /**
+     * 确认上架单
+     * @param $intPlaceOrderId
+     * @param $intWarehouseId
+     * @param $arrSkusPlace
+     * @throws Order_BusinessError
+     */
+    public function confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrSkusPlace)
+    {
+        $arrParams = [];
+        $arrRequestParams['p_order_id'] = $intPlaceOrderId;
+        $arrRequestParams['warehouse_id'] = $intWarehouseId;
+        $arrRequestParams['details'] = $this->getLocationDetails($arrSkusPlace, $intIsDefective);
+        $arrParams['requestParams'] = $arrRequestParams;
+        $arrRet = $this->objWrpcService->confirmLocation($arrParams);
+        var_dump($arrRet);exit;
+        Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
+                __METHOD__, json_encode($arrParams), json_encode($arrRet)));
+        if (0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("confirm place order failed params[%s] ret[%s]",
+                            json_encode($arrParams), json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::NOTIFY_STOCK_PLACE_ORDER_CONFIRM_FAILE);
+        }
+    }
+
+    /**
+     * 获取库位参数详情
+     * @param $arrSkusPlace
+     * @param $intIsDefective
+     * @return array
+     */
+    protected function getLocationDetails($arrSkusPlace, $intIsDefective)
+    {
+        $arrLocationDetails = [];
+        foreach ((array)$arrSkusPlace as $arrSkusPlaceItem) {
+            $arrLocationDetailItem = [];
+            $arrLocationDetailItem['sku_id'] = $arrSkusPlaceItem['sku_id'];
+            $arrLocationDetailItem['expiration_time'] = intval($arrSkusPlaceItem['expire_date']);
+            $arrLocationDetailItem['is_defective'] = $intIsDefective;
+            $arrLocationDetailItem['target_details'] = $this->getTargetDetails($arrSkusPlaceItem['actual_info']);
+            if (!empty($arrLocationDetailItem['target_details'])) {
+                $arrLocationDetails[] = $arrLocationDetailItem;
+            }
+        }
+        return $arrLocationDetails;
+    }
+
+    /**
+     * 拼接实际上架数量信息
+     * @param $arrActualInfo
+     * @return array
+     */
+    protected function getTargetDetails($arrActualInfo)
+    {
+        $arrTargetDetails = [];
+        foreach ((array)$arrActualInfo as $arrActualInfoItem) {
+            $arrTargetDetailItem = [];
+            $arrTargetDetailItem['amount'] = $arrActualInfoItem['place_amount'];
+            $arrLocation = explode('-', $arrActualInfoItem['place_location_id']);
+            $arrTargetDetailItem['target_location_code'] = $arrLocation[0];
+            $arrTargetDetailItem['target_area_code'] = $arrLocation[1];
+            $arrTargetDetailItem['target_roadway_code'] = $arrLocation[2];
+            $arrTargetDetails[] = $arrTargetDetailItem;
+        }
+        return $arrTargetDetails;
+    }
+
+
 }
