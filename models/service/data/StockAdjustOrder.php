@@ -421,7 +421,7 @@ class Service_Data_StockAdjustOrder
                     'roadway_code'    => $arrDetail['roadway_code'],
                     'area_code'       => $arrDetail['area_code'],
                 ];
-                $mapSku2Batch[$arrDetail['sku_id']][] = $batchInfo;
+                $mapSku2Batch[$arrSkuDetail['sku_id']][] = $batchInfo;
             }
         }
 
