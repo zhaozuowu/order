@@ -6,9 +6,6 @@
  */
 class Action_GetPlaceOrderDetail extends Order_Base_Action
 {
-    protected $boolCheckAuth = false;
-    protected $boolCheckLogin = false;
-
     /**
      * 参数数组
      * @var array
