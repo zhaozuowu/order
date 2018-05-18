@@ -469,7 +469,7 @@ class Service_Data_PickupOrder
         if (empty($arrPickupSkus)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
-        $objPickupOrderInfo = Model_Orm_PickupOrder::getPickupOrderInfo($intPickupOrderId, true);
+        $objPickupOrderInfo = Model_Orm_PickupOrder::getPickupOrderInfo($intPickupOrderId);
         if (empty($objPickupOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
         }
@@ -502,7 +502,7 @@ class Service_Data_PickupOrder
             $objPickupOrderInfo->update_operator = $userName;
             $objPickupOrderInfo->update();
             //更新拣货单sku
-            Model_Orm_PickupOrderSku::updateAll($arrSkuUpdateFields, $arrSkuUpdateCondition);
+            Model_Orm_PickupOrderSku::updatePickupInfo($arrSkuUpdateFields, $arrSkuUpdateCondition);
             //更新出库单
             foreach ($arrStockoutOrderPickupList as $arrStockoutOrderPickupInfo) {
                 $intStockoutOrderId = $arrStockoutOrderPickupInfo['stockout_order_id'];
@@ -586,8 +586,8 @@ class Service_Data_PickupOrder
             ];
         }
         return [
-            'arrSkuUpdateFields' => $arrUpdateFields,
-            'arrSkuUpdateCondition' => $arrUpdateCondition,
+            $arrUpdateFields,
+            $arrUpdateCondition,
         ];
     }
 

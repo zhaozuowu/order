@@ -72,4 +72,20 @@ class Model_Orm_PickupOrderSku extends Order_Base_Orm
         ];
         return self::findRows(self::getAllColumns(), $arrConds);
     }
+
+    /**
+     * 更新拣货单sku信息
+     * @param $arrSkuUpdateFields
+     * @param $arrSkuUpdateCondition
+     */
+    public static function updatePickupInfo($arrSkuUpdateFields, $arrSkuUpdateCondition)
+    {
+        foreach ($arrSkuUpdateFields as $key => $arrSkuUpdateField) {
+            $objPickupOrderSkuInfo = Model_Orm_StockoutOrderSku::findOne($arrSkuUpdateCondition[$key]);
+            if (!empty($objPickupOrderSkuInfo)) {
+                $objPickupOrderSkuInfo->pickup_amount = $arrSkuUpdateField['pickup_amount'];
+                $objPickupOrderSkuInfo->pickup_extra_info = $arrSkuUpdateField['pickup_extra_info'];
+            }
+        }
+    }
 }
