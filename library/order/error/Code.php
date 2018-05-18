@@ -611,7 +611,6 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL = 390032;
 
-
     /**
      * 上架单创建失败
      * @var integer

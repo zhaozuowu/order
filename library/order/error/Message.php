@@ -109,7 +109,6 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL => '获取tms排线号失败',
         Order_Error_Code::CREATE_PLACE_ORDER_PARAMS_ERROR => '创建上架单参数错误',
         Order_Error_Code::PLACE_ORDER_ALREADY_CREATE => '存在已生成上架单的入库单',
-
         Order_Error_Code::NWMS_UNFROZEN_BY_SYSTEM_ERROR => '自动冻结异常',
         Order_Error_Code::NWMS_GET_STOCK_WAREHOUSE_FAIL => '获取库存仓库失败',
         Order_Error_Code::NWMS_UNFROZEN_ORDER_STATUS_ERROR => '冻结单已关闭',
