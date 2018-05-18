@@ -82,6 +82,8 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
                 'stockout_order_sku_amount' => intval($arrRow['stockout_order_sku_amount']),
                 'stockin_order_sku_real_amount' => intval($arrRow['stockin_order_sku_real_amount']),
                 'stockin_order_sku_extra_info' => strval($arrRow['stockin_order_sku_extra_info']),
+                'sku_main_image' => strval($arrRow['sku_main_image']),
+                'upc_min_unit' => intval($arrRow['upc_min_unit']),
             ];
         }
         return self::batchInsert($arrDb);
