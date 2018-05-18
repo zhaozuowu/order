@@ -73,7 +73,7 @@ class Dao_Wrpc_Stock
             'ext_order_id' => strval($intPickupOrderId),
             'details' => $arrPickupSkus,
         ];
-        Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_request[%d]",
+        Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_request[%s]",
             __METHOD__, json_encode($arrReqParams)));
         $arrRet = $this->objWrpcService->pickStock($arrReqParams);
         Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_ret[%s]",
