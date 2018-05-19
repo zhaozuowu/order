@@ -14,7 +14,7 @@ class Service_Data_PickupOrder
         $this->objOrmStockoutOrder = new Model_Orm_StockoutOrder();
         $this->objOrmSku = new Model_Orm_StockoutOrderSku();
         $this->objWrpcTms = new Dao_Wrpc_Tms();
-        $this->objWrpcStock = new Dao_Wrpc_Stock(Order_Define_Wrpc::NWMS_STOCKOUT_SERVICE_NAME);
+        $this->objWrpcStock = new Dao_Wrpc_Stock(Order_Define_Wrpc::NWMS_STOCK_SERVICE_NAME);
     }
 
     /**
