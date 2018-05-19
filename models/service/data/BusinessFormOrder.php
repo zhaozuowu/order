@@ -6,6 +6,10 @@
  */
 class Service_Data_BusinessFormOrder
 {
+    /**
+     * @var Dao_Wrpc_Stock
+     */
+    protected $objWrpcStock;
 
     /**
      * @var Dao_Ral_Stock
@@ -27,6 +31,7 @@ class Service_Data_BusinessFormOrder
      */
     public function __construct() {
         $this->objDaoStock = new Dao_Ral_Stock();
+        $this->objWrpcStock = new Dao_Wrpc_Stock();
         $this->objDaoSku = new Dao_Ral_Sku();
         $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
     }
@@ -48,7 +53,7 @@ class Service_Data_BusinessFormOrder
         if (Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_SUCCESS
             == $arrInput['business_form_order_status']) {
             list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $this->getFreezeStockParams($arrInput);
-            $arrStockSkus = $this->objDaoStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
+            $arrStockSkus = $this->objWrpcStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
             $arrInput = $this->appendStockSkuInfoToOrder($arrInput, $arrStockSkus);
             $arrInput = $this->appendSkuTotalAmountToOrder($arrInput);
         }

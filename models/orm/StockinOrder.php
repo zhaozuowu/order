@@ -484,7 +484,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         if (empty($arrStockinOrderIds)) {
             return false;
         }
-        $arrCols = ['is_placed' => true];
+        $arrCols = ['is_placed_order' => Order_Define_StockinOrder::STOCKIN_IS_PLACED];
         $arrConditions = [
             'stockin_order_id' => ['in', $arrStockinOrderIds],
             'is_delete' => Order_Define_Const::NOT_DELETE,

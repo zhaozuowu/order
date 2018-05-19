@@ -13,6 +13,11 @@ class Service_Data_StockAdjustOrder
     protected $objDaoStock;
 
     /**
+     * @var Dao_Huskar_Stock
+     */
+    protected $objDaoHuskarStock;
+
+    /**
      * @var Dao_Ral_Sku
      */
     protected $objDaoSku;
@@ -24,6 +29,7 @@ class Service_Data_StockAdjustOrder
     {
         $this->objDaoSku   = new Dao_Ral_Sku();
         $this->objDaoStock = new Dao_Ral_Stock();
+        $this->objDaoHuskarStock = new Dao_Huskar_Stock();
     }
 
     /**
@@ -415,7 +421,7 @@ class Service_Data_StockAdjustOrder
                     'roadway_code'    => $arrDetail['roadway_code'],
                     'area_code'       => $arrDetail['area_code'],
                 ];
-                $mapSku2Batch[$arrDetail['sku_id']][] = $batchInfo;
+                $mapSku2Batch[$arrSkuDetail['sku_id']][] = $batchInfo;
             }
         }
 
@@ -498,7 +504,7 @@ class Service_Data_StockAdjustOrder
         $arrRet = [];
         Bd_Log::trace('ral call stock decrease param: ' . print_r($arrStockOut, true));
 
-        $arrRet = $this->objDaoStock->adjustStockout(
+        $arrRet = $this->objDaoHuskarStock->adjustStockout(
             $arrStockOut['stockout_order_id'],
             $arrStockOut['warehouse_id'],
             $arrStockOut['inventory_type'],
@@ -582,26 +588,16 @@ class Service_Data_StockAdjustOrder
      * @param $intWarehouseId
      * @param $arrLocationIds
      */
-    protected function getLocationInfoByIds($intWarehouseId, $arrLocationIds)
+    protected function getLocationInfoByIds($intWarehouseId, $arrLocationCodes)
     {
-        if (empty($arrLocationIds)) {
+        if (empty($arrLocationCodes)) {
             return [];
         }
-        $req = [];
-        $req['getBatchStorageLocation'] = [
-            'warehouse_id' => $intWarehouseId,
-            'location_codes'=> $arrLocationIds,
-        ];
-        $objApiHuskar = new Nscm_lib_ApiHuskar();
-        $data = $objApiHuskar->getData($req);
 
-        if ($data['error_no']!=0){
-            Bd_Log::warning(sprintf(' location_code not exist ,$arrLocationIds[%s]',json_encode($arrLocationIds)));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
-        }
+        $data = $this->objDaoHuskarStock->getBatchStorageLocation($intWarehouseId,$arrLocationCodes);
 
         $arrData = [];
-        foreach ($data['result']['list'] as $item){
+        foreach ($data as $item){
             $arrData[$item['location_code']] = $item;
         }
 
@@ -623,8 +619,9 @@ class Service_Data_StockAdjustOrder
         $arrLocationIds = [];
 
         foreach ($arrInput['detail'] as $arrSkuDetail) {
-            $arrTmp         = array_column($arrSkuDetail, 'location_code');
-            $arrLocationIds = array_merge($arrLocationIds, $arrTmp);
+            foreach ($arrSkuDetail['detail'] as $arrInfo){
+                $arrLocationIds[] = $arrInfo['location_code'];
+            }
         }
 
         $arrLocationIds = array_unique($arrLocationIds);
@@ -632,15 +629,15 @@ class Service_Data_StockAdjustOrder
         $arrLocations = $this->getLocationInfoByIds($arrInput['warehouse_id'], $arrLocationIds);
 
         foreach ($arrInput['detail'] as $skuKey => $arrSkuDetail) {
-            foreach ($arrSkuDetail as $key => $arrDetail) {
+            foreach ($arrSkuDetail['detail'] as $key => $arrDetail) {
 
                 if (!isset($arrLocations[$arrDetail['location_code']])) {
                     Bd_Log::warning(__METHOD__ . ' location_code[' . $arrDetail['location_code'] . '] not exist ');
                     Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
                 }
 
-                $arrInput['detail'][$skuKey][$key]['roadway_code'] = $arrLocations[$arrDetail['location_code']]['roadway_code'];
-                $arrInput['detail'][$skuKey][$key]['area_code']    = $arrLocations[$arrDetail['location_code']]['area_code'];
+                $arrInput['detail'][$skuKey]['detail'][$key]['roadway_code'] = $arrLocations[$arrDetail['location_code']]['roadway_code'];
+                $arrInput['detail'][$skuKey]['detail'][$key]['area_code']    = $arrLocations[$arrDetail['location_code']]['area_code'];
             }
         }
 

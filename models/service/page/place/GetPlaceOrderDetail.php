@@ -12,13 +12,22 @@ class Service_Page_Place_GetPlaceOrderDetail implements Order_Base_Page
      */
     protected $objDsPlaceOrder;
 
+    /**
+     * Service_Page_Place_GetPlaceOrderDetail constructor.
+     */
     public function __construct()
     {
         $this->objDsPlaceOrder = new Service_Data_PlaceOrder();
     }
 
+    /**
+     * execute
+     * @param array $arrInput
+     * @return array
+     */
     public function execute($arrInput)
     {
-        return $this->objDsPlaceOrder->getPlaceOrderDetail($arrInput);
+        $intPlaceOrderId = $arrInput['place_order_id'];
+        return $this->objDsPlaceOrder->getPlaceOrderDetail($intPlaceOrderId);
     }
 }

@@ -8,8 +8,27 @@
 class Service_Data_PlaceOrder
 {
     /**
+     * @var Dao_Wrpc_Stock
+     */
+    protected $objDaoWprcStock;
+
+    /**
+     * @var Dao_Wrpc_Warehouse
+     */
+    protected $objDaoWrpcWarehouse;
+
+    /**
+     * Service_Data_PlaceOrder constructor.
+     */
+    public function __construct()
+    {
+        $this->objDaoWprcStock = new Dao_Wrpc_Stock(Order_Define_Wrpc::NWMS_STOCK_CONTROL_SERVICE_NAME);
+        $this->objDaoWrpcWarehouse = new Dao_Wrpc_Warehouse();
+    }
+
+    /**
      * 创建上架单
-     * @param $intStockinOrderId
+     * @param $arrStockinOrderIds
      * @return array
      * @throws Wm_Error
      */
@@ -55,6 +74,9 @@ class Service_Data_PlaceOrder
             }
             $arrStockinInfo['vendor_id'] = $arrStockinInfoDb['vendor_id'];
             $arrStockinInfo['vendor_name'] = $arrStockinInfoDb['vendor_name'];
+            $arrStockinInfo['warehouse_id'] = $arrStockinInfoDb['warehouse_id'];
+            $arrStockinInfo['warehouse_name'] = $arrStockinInfoDb['warehouse_name'];
+            $arrStockinInfo['stockin_order_type'] = $arrStockinInfoDb['stockin_order_type'];
         }
         $arrStockinInfo['skus'] = Model_Orm_StockinOrderSku::getStockinOrderSkusByStockinOrderIds($arrStockinOrderIds);
         return $arrStockinInfo;
@@ -74,6 +96,9 @@ class Service_Data_PlaceOrder
         $arrRetOrderInfo['stockin_order_ids'] = $arrInput['stockin_order_ids'];
         $arrRetOrderInfo['vendor_id'] = $arrInput['vendor_id'];
         $arrRetOrderInfo['vendor_name'] = $arrInput['vendor_name'];
+        $arrRetOrderInfo['stockin_order_type'] = $arrInput['stockin_order_type'];
+        $arrRetOrderInfo['warehouse_id'] = $arrInput['warehouse_id'];
+        $arrRetOrderInfo['warehouse_name'] = $arrInput['warehouse_name'];
         foreach ((array)$arrInput['skus'] as $arrSkuItem) {
             $arrPlaceOrderSkuInfo = [];
             $arrPlaceOrderSkuInfo['sku_id'] = $arrSkuItem['sku_id'];
@@ -83,16 +108,29 @@ class Service_Data_PlaceOrder
             $arrPlaceOrderSkuInfo['upc_unit_num'] = $arrSkuItem['upc_unit_num'];
             $arrPlaceOrderSkuInfo['sku_net'] = $arrSkuItem['sku_net'];
             $arrPlaceOrderSkuInfo['sku_net_unit'] = $arrSkuItem['sku_net_unit'];
-            $arrPlaceOrderSkuInfo['sku_effect_time'] = $arrSkuItem['sku_effect_time'];
-            if ($arrSkuItem['stockin_extra_info']['good_amount'] > 0) {
-                $arrPlaceOrderSkuInfo['plan_amount'] =
-                    $arrSkuItem['stockin_extra_info']['good_amount'];
-                $arrRetOrderInfo['good_skus'][] = $arrPlaceOrderSkuInfo;
-            }
-            if ($arrSkuItem['stockin_extra_info']['bad_amount'] > 0) {
-                $arrPlaceOrderSkuInfo['plan_amount'] =
-                    $arrSkuItem['stockin_extra_info']['bad_amount'];
-                $arrRetOrderInfo['bad_skus'][] = $arrPlaceOrderSkuInfo;
+            $arrSkuItem['stockin_order_sku_extra_info'] =
+                json_decode($arrSkuItem['stockin_order_sku_extra_info'], true);
+            foreach ((array)$arrSkuItem['stockin_order_sku_extra_info'] as $arrExtraInfoItem) {
+                if (isset($arrExtraInfoItem['sku_good_amount'])
+                    && $arrExtraInfoItem['sku_good_amount'] > 0) {
+                    $arrPlaceOrderSkuInfo['plan_amount'] =
+                        $arrExtraInfoItem['sku_good_amount'];
+                    $arrPlaceOrderSkuInfo['expire_date'] = $arrExtraInfoItem['expire_date'];
+                    $arrRetOrderInfo['good_skus'][] = $arrPlaceOrderSkuInfo;
+                }
+                if (isset($arrExtraInfoItem['sku_defective_amount'])
+                    && $arrExtraInfoItem['sku_defective_amount'] > 0) {
+                    $arrPlaceOrderSkuInfo['plan_amount'] =
+                        $arrExtraInfoItem['sku_defective_amount'];
+                    $arrPlaceOrderSkuInfo['expire_date'] = $arrExtraInfoItem['expire_date'];
+                    $arrRetOrderInfo['bad_skus'][] = $arrPlaceOrderSkuInfo;
+                }
+                if (!isset($arrExtraInfoItem['sku_good_amount'])
+                    && !isset($arrExtraInfoItem['sku_defective_amount'])) {
+                    $arrPlaceOrderSkuInfo['plan_amount'] = intval($arrExtraInfoItem['amount']);
+                    $arrPlaceOrderSkuInfo['expire_date'] = intval($arrExtraInfoItem['expire_date']);
+                    $arrRetOrderInfo['good_skus'][] = $arrPlaceOrderSkuInfo;
+                }
             }
         }
         return $arrRetOrderInfo;
@@ -109,30 +147,47 @@ class Service_Data_PlaceOrder
         $arrOrderList = [];
         $arrSkuList = [];
         $arrMapOrderList = [];
+        $arrOrderInfo = [];
+        $arrOrderInfo['vendor_id'] = intval($arrInput['vendor_id']);
+        $arrOrderInfo['vendor_name'] = strval($arrInput['vendor_name']);
+        $arrOrderInfo['warehouse_id'] = intval($arrInput['warehouse_id']);
+        $arrOrderInfo['warehouse_name'] = strval($arrInput['warehouse_name']);
+        $arrOrderInfo['stockin_order_type'] = intval($arrInput['stockin_order_type']);
+        $arrOrderInfo['place_order_status'] = Order_Define_PlaceOrder::STATUS_WILL_PLACE;
+        $intLocationTag = $this->getWarehouseLocationTag($arrInput['warehouse_id']);
+        if (Order_Define_Warehouse::STORAGE_LOCATION_TAG_DISABLE
+            == $intLocationTag) {
+            $arrOrderInfo['place_order_status'] = Order_Define_PlaceOrder::STATUS_PLACED;
+        }
         //非良品订单信息
-        if (!empty($arrInput['good_skus'])) {
+        if (!empty($arrInput['bad_skus'])) {
             $arrBadSkuOrderInfo['place_order_id'] = Order_Util_Util::generatePlaceOrderId();
-            $arrBadSkuOrderInfo['vendor_id'] = intval($arrInput['vendor_id']);
-            $arrBadSkuOrderInfo['vendor_name'] = strval($arrInput['vendor_name']);
-            $arrBadSkuOrderInfo['place_order_status'] = Order_Define_PlaceOrder::STATUS_WILL_PLACE;
             $arrBadSkuOrderInfo['is_defective'] = Order_Define_PlaceOrder::PLACE_ORDER_QUALITY_BAD;
+            $arrBadSkuOrderInfo = array_merge($arrBadSkuOrderInfo, $arrOrderInfo);
             $arrOrderList[] = $arrBadSkuOrderInfo;
-            $arrInput['bad_skus']['place_order_id'] = intval($arrBadSkuOrderInfo['place_order_id']);
-            $arrSkuList[] = $arrInput['bad_skus'];
-            $arrGoodMapOrderList = $this->getMapOrderList($arrInput['stockin_order_ids'], $arrInput['place_order_id']);
-            $arrMapOrderList = array_merge($arrMapOrderList, $arrGoodMapOrderList);
+            foreach ((array)$arrInput['bad_skus'] as $intKey => $arrVal) {
+                $arrInput['bad_skus'][$intKey]['place_order_id'] =
+                    intval($arrBadSkuOrderInfo['place_order_id']);
+                $arrInput['bad_skus'][$intKey]['actual_info'] = '';
+            }
+            $arrSkuList = array_merge($arrSkuList, $arrInput['bad_skus']);
+            $arrBadMapOrderList = $this->getMapOrderList($arrInput['stockin_order_ids'], $arrBadSkuOrderInfo['place_order_id']);
+            $arrMapOrderList = array_merge($arrMapOrderList, $arrBadMapOrderList);
         }
         //良品订单信息
-        if (!empty($arrInput['bad_skus'])) {
+        if (!empty($arrInput['good_skus'])) {
             $arrGoodSkuOrderInfo['place_order_id'] = Order_Util_Util::generatePlaceOrderId();
-            $arrGoodSkuOrderInfo['vendor_id'] = $arrInput['vendor_id'];
-            $arrGoodSkuOrderInfo['vendor_name'] = $arrInput['vendor_name'];
             $arrGoodSkuOrderInfo['is_defective'] = Order_Define_PlaceOrder::PLACE_ORDER_QUALITY_GOOD;
+            $arrGoodSkuOrderInfo = array_merge($arrGoodSkuOrderInfo, $arrOrderInfo);
             $arrOrderList[] = $arrGoodSkuOrderInfo;
-            $arrInput['good_skus']['place_order_id'] = $arrGoodSkuOrderInfo['place_order_id'];
-            $arrSkuList[] = $arrInput['good_skus'];
-            $arrBadMapOrderList = $this->getMapOrderList($arrInput['stockin_order_ids'], $arrInput['place_order_id']);
-            $arrMapOrderList = array_merge($arrMapOrderList, $arrBadMapOrderList);
+            foreach ((array)$arrInput['good_skus'] as $intKey => $arrVal) {
+                $arrInput['good_skus'][$intKey]['place_order_id'] =
+                    intval($arrGoodSkuOrderInfo['place_order_id']);
+                $arrInput['good_skus'][$intKey]['actual_info'] = '';
+            }
+            $arrSkuList = array_merge($arrSkuList, $arrInput['good_skus']);
+            $arrGoodMapOrderList = $this->getMapOrderList($arrInput['stockin_order_ids'], $arrGoodSkuOrderInfo['place_order_id']);
+            $arrMapOrderList = array_merge($arrMapOrderList, $arrGoodMapOrderList);
         }
         return [$arrOrderList, $arrSkuList, $arrMapOrderList];
     }
@@ -182,6 +237,7 @@ class Service_Data_PlaceOrder
      * 获取上架单详情
      * @param $intPlaceOrderId
      * @return array
+     * @throws Order_BusinessError
      */
     public function getPlaceOrderDetail($intPlaceOrderId)
     {
@@ -189,17 +245,34 @@ class Service_Data_PlaceOrder
             return [];
         }
         $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
+        if (empty($arrPlaceOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_NOT_EXIST);
+        }
         $arrPlaceOrderInfo['skus'] = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId);
-        $arrPlaceOrderInfo['stockin_order_ids'] = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+        $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+        $arrPlaceOrderInfo['source_order_id'] = implode(',', $arrStockinOrderIds);
         return $arrPlaceOrderInfo;
     }
 
+    /**
+     * 获取上架单列表
+     * @param $arrInput
+     * @return array
+     */
     public function getPlaceOrderList($arrInput)
     {
         $arrCondtions = $this->getListConditions($arrInput);
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
         $arrRet = Model_Orm_PlaceOrder::getPlaceOrderList($arrCondtions, $intLimit, $intOffset);
+        foreach ((array)$arrRet as $intKey => $arrRetItem) {
+            $intPlaceOrderId = $arrRetItem['place_order_id'];
+            $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+            if (!empty($arrStockinOrderIds)) {
+                $strStockinOrderIds = implode(',', $arrStockinOrderIds);
+                $arrRet[$intKey]['source_order_id'] = $strStockinOrderIds;
+            }
+        }
         $intTotal = Model_Orm_PlaceOrder::count($arrCondtions);
         return [
             'total' => $intTotal,
@@ -207,6 +280,11 @@ class Service_Data_PlaceOrder
         ];
     }
 
+    /**
+     * 获取列表查询条件
+     * @param $arrInput
+     * @return array
+     */
     protected function getListConditions($arrInput)
     {
         $arrConditions = [];
@@ -231,6 +309,110 @@ class Service_Data_PlaceOrder
             $arrConditions['create_time'][] = ['<=', intval($arrInput['create_time_end'])];
         }
         return $arrConditions;
+    }
+
+    /**
+     * 获取上架单打印列表
+     * @param $arrPlaceOrderIds
+     * @param $strUserName
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getPlaceOrderPrint($arrPlaceOrderIds, $strUserName)
+    {
+        if (empty($arrPlaceOrderIds)) {
+            return [];
+        }
+        $arrPlaceOrderInfos = Model_Orm_PlaceOrder::getPlaceOrderInfosByPlaceOrderIds($arrPlaceOrderIds);
+        if (empty($arrPlaceOrderInfos)) {
+            Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_NOT_EXIST);
+        }
+        $arrPlaceOrderSkus = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderIds($arrPlaceOrderIds);
+        if (empty($arrPlaceOrderSkus)) {
+            return [];
+        }
+        $arrMapPlaceOrderSkus = Order_Util_Util::arrayToKeyValues($arrPlaceOrderSkus, 'place_order_id');
+        foreach ((array)$arrPlaceOrderInfos as $intKey => $arrPlaceOrderInfoItem) {
+            $intPlaceOrderId = $arrPlaceOrderInfoItem['place_order_id'];
+            if (!isset($arrMapPlaceOrderSkus[$intPlaceOrderId])) {
+                continue;
+            }
+            $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+            $arrPlaceOrderInfos[$intKey]['source_order_id'] = implode(',', $arrStockinOrderIds);
+            $arrPlaceOrderInfos[$intKey]['print_uname'] = $strUserName;
+            $arrPlaceOrderInfos[$intKey]['print_time'] = date("Y-m-d H:i:s", time());
+            $arrPlaceOrderInfos[$intKey]['skus'] = $arrMapPlaceOrderSkus[$intPlaceOrderId];
+            $intTotalAmount = 0;
+            foreach ((array)$arrPlaceOrderInfos[$intKey]['skus'] as $arrSkuItem) {
+                $intTotalAmount += $arrSkuItem['plan_amount'];
+            }
+            $arrPlaceOrderInfos[$intKey]['total_amount'] = $intTotalAmount;
+        }
+        return $arrPlaceOrderInfos;
+    }
+
+    /**
+     * 确认上架单
+     * @param $intPlaceOrderId
+     * @param $arrPlacedSkus
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function confirmPlaceOrder($intPlaceOrderId, $arrPlacedSkus)
+    {
+        if (empty($intPlaceOrderId) || empty($arrPlacedSkus)) {
+            return [];
+        }
+        $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
+        if (empty($arrPlaceOrderInfo)) {
+
+        }
+        $intWarehouseId = $arrPlaceOrderInfo['warehouse_id'];
+        $intIsDefective = $arrPlaceOrderInfo['is_defective'];
+        $arrPlaceOrderSkus = $this->appendPlaceOrderSkuInfo($arrPlacedSkus, $intPlaceOrderId);
+        $this->objDaoWprcStock->confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrPlaceOrderSkus);
+    }
+
+    /**
+     * 在确认上架单sku列表中增加sku信息
+     * @param $arrPlacedSkus
+     * @param $intPlaceOrderId
+     * @return array
+     */
+    protected function appendPlaceOrderSkuInfo($arrPlacedSkus, $intPlaceOrderId) {
+        if (empty($arrPlacedSkus)) {
+            return [];
+        }
+        $arrPlaceOrderSkus = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId);
+        if (empty($arrPlaceOrderSkus)) {
+
+        }
+        //构造一个skuid和expire_date的map
+        $arrMapSkuExpireDate = [];
+        foreach ((array)$arrPlacedSkus as $arrPlacedSkusItem) {
+            $intExpireDate = $arrPlacedSkusItem['expire_date'];
+            $intSkuId = $arrPlacedSkusItem['sku_id'];
+            $arrMapSkuExpireDate[$intSkuId .'#'. $intExpireDate][] = $arrPlacedSkusItem;
+        }
+        //在place order sku中增加sku属性
+        foreach ((array)$arrPlaceOrderSkus as $intKey => $arrPlaceOrderSkuItem) {
+            $intSkuId = $arrPlaceOrderSkuItem['sku_id'];
+            $intExpireDate = $arrPlaceOrderSkuItem['expire_date'];
+            $arrActualInfo = $arrMapSkuExpireDate[$intSkuId.'#'.$intExpireDate];
+            $arrPlaceOrderSkus[$intKey]['actual_info'] = $arrActualInfo;
+        }
+        return $arrPlaceOrderSkus;
+    }
+
+    /**
+     * 获取仓库是否开启库区库位校验
+     * @param $intWarehouseId
+     * @return mixed
+     */
+    protected function getWarehouseLocationTag($intWarehouseId)
+    {
+        $arrWarehouseInfo = $this->objDaoWrpcWarehouse->getWarehouseInfoByWarehouseId($intWarehouseId);
+        return $arrWarehouseInfo['storage_location_tag'];
     }
 
 }

@@ -78,6 +78,15 @@ class Order_Util_Util
     }
 
     /**
+     * generate pickup order id
+     * @return void
+     */
+    public static function generateShiftOrderId()
+    {
+        return NScm_Lib_IdGenerator::sequenceDateNumber();
+    }
+
+	/*
      * generate place order id
      * @return int
      * @throws Wm_Error

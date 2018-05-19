@@ -235,6 +235,26 @@ public static function verifyUnixTimeSpan($intStartTime, $intEndTime, $intMaxInt
     }
 
     /**
+     * 去除移位单开头的S前缀
+     *
+     * @param $strStockAdjustOrderId
+     * @return string
+     */
+    public static function trimShiftOrderIdPrefix($strShiftOrderId)
+    {
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strStockAdjustOrderId)) {
+            return $strResult;
+        }
+
+        $strResult = ltrim($strStockAdjustOrderId, Nscm_Define_OrderPrefix::SHO);
+
+        return $strResult;
+    }
+
+    /**
      * 判断value的值是否在数组中
      * 遇到空参数返回错误
      *

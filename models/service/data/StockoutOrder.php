@@ -44,6 +44,12 @@ class Service_Data_StockoutOrder
     protected $objRalStock;
 
     /**
+     * dao ral stock
+     * @var Dao_Wrpc_Stock
+     */
+    protected $objWrpcStock;
+
+    /**
      * dao ral sku
      * @var Dao_Ral_Sku
      */
@@ -75,6 +81,7 @@ class Service_Data_StockoutOrder
         $this->objWrpcTms = new Dao_Wrpc_Tms();
         $this->objRalSKu  = new Dao_Ral_Sku();
         $this->daoOms = new Dao_Ral_Oms();
+        $this->objWrpcStock = new Dao_Wrpc_Stock();
     }
 
     /**
@@ -217,6 +224,7 @@ class Service_Data_StockoutOrder
      * @param $strStockoutOrderId 出库单号
      * @return array
      * @throws Order_BusinessError
+     * @throws Exception
      */
     public function deliveryOrder($strStockoutOrderId,$userId,$userName)
     {
@@ -252,7 +260,8 @@ class Service_Data_StockoutOrder
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS);
             }
             $arrStockoutDetail = $this->formatUnfreezeSkuStock($arrStockoutDetail);
-            $rs = $this->objRalStock->unfreezeSkuStock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id'], $arrStockoutDetail);
+            $rs = $this->objWrpcStock->unfreezeSkuStock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id'], $arrStockoutDetail);
+//            $rs = $this->objRalStock->unfreezeSkuStock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id'], $arrStockoutDetail);
             if (empty($rs)) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
             }
@@ -436,7 +445,7 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR);
         }
         list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $dataBussniessObj->getFreezeStockParams($arrInput);
-        $arrStockSkus = $this->objRalStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
+        $arrStockSkus = $this->objWrpcStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
         if(empty($arrStockSkus) || empty($arrInput)) {
             Bd_Log::warning(sprintf("checkSkuStock failed stockoutOrderId[%s]",
                 $intStockoutOrderId));
@@ -1236,6 +1245,9 @@ class Service_Data_StockoutOrder
         if (!in_array($stockoutOrderInfo['stockout_order_status'], $allowOrderStatus)) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
         }
+        if (Order_Define_StockoutOrder::PICKUP_ORDERE_IS_CREATED == $stockoutOrderInfo['is_pickup_ordered']) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_IN_PICKING);
+        }
         $updateData = [
             'stockout_order_status' => Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS,
             'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
@@ -1511,12 +1523,12 @@ class Service_Data_StockoutOrder
      * 订单商品库存-作废-上游
      * @param $strStockoutOrderId
      * @param $warehouseId
-     * @throws Nscm_Exception_Error
+     * @return bool
      * @throws Order_BusinessError
      */
     public function cancelStockoutOrder($strStockoutOrderId, $warehouseId)
     {
-        $rs = $this->objRalStock->cancelfreezeskustock($strStockoutOrderId, $warehouseId);
+        $rs = $this->objWrpcStock->cancelFreezeSkuStock($strStockoutOrderId, $warehouseId);
         if (empty($rs)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
         }

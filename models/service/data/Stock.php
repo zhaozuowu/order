@@ -12,9 +12,9 @@ class Service_Data_Stock
     protected $objDaoStock;
 
     /**
-     * @var Dao_Wrpc_Stock
+     * @var Dao_Huskar_Stock
      */
-    protected $objDaoWrpcStockInfo;
+    protected $objDaoHuskarStock;
 
     /**
      * @var Dao_Ral_Sku
@@ -25,9 +25,9 @@ class Service_Data_Stock
      * init
      */
     public function __construct() {
-        $this->objDaoStock = new Dao_Ral_Stock();
-        $this->objDaoWrpcStockInfo = new Dao_Wrpc_Stock(Stock_Define_Const::STOCK_INFO_SERVICE);
         $this->objDaoSku = new Dao_Ral_Sku();
+        $this->objDaoStock = new Dao_Ral_Stock();
+        $this->objDaoHuskarStock = new Dao_Huskar_Stock();
     }
 
     /**
@@ -96,7 +96,7 @@ class Service_Data_Stock
     public function getStockPeriodStock($intWarehouseId, $arrSkuIds) {
         $arrRet = [];
 
-        $arrStockInfo = $this->objDaoStock->getStockPeriodStock($intWarehouseId, $arrSkuIds);
+        $arrStockInfo = $this->objDaoHuskarStock->getStockPeriodStock($intWarehouseId, $arrSkuIds);
         if(empty($arrStockInfo)) {
             return $arrRet;
         }
@@ -127,7 +127,7 @@ class Service_Data_Stock
         $arrRet = [];
 
         //get stock info
-        $arrStockFrozenInfo = $this->objDaoWrpcStockInfo->getStockFrozenInfo(
+        $arrStockFrozenInfo = $this->objDaoHuskarStock->getStockFrozenInfo(
             $arrInput['warehouse_id'],
             $arrInput['sku_id'],
             $arrInput['is_defective'],
