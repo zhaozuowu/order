@@ -857,8 +857,14 @@ class Service_Data_Stockin_StockinOrder
         $strCustomerName = $arrSourceInfo['name'];
         $arrSourceInfo['customer_id'] = $arrSourceInfo['id'];
         $arrSourceInfo['customer_name'] = $arrSourceInfo['name'];
+        $arrSourceInfo['customer_contactor'] = $arrSourceInfo['contactor'];
+        $arrSourceInfo['customer_contact'] = $arrSourceInfo['contact'];
+        $arrSourceInfo['customer_address'] = $arrSourceInfo['address'];
         unset($arrSourceInfo['id']);
         unset($arrSourceInfo['name']);
+        unset($arrSourceInfo['contactor']);
+        unset($arrSourceInfo['contact']);
+        unset($arrSourceInfo['address']);
         $strSourceInfo = json_encode($arrSourceInfo);
         $intStockinOrderStatus = Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_WAITING;
         $arrWarehouseInfo = $this->getWarehouseInfoById($intWarehouseId);
