@@ -380,7 +380,7 @@ class Service_Data_PlaceOrder
         $intWarehouseId = $arrPlaceOrderInfo['warehouse_id'];
         $intIsDefective = $arrPlaceOrderInfo['is_defective'];
         $arrPlaceOrderSkus = $this->appendPlaceOrderSkuInfo($arrPlacedSkus, $intPlaceOrderId);
-        $this->objDaoWprcStock->confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrPlaceOrderSkus);
+        //$this->objDaoWprcStock->confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrPlaceOrderSkus);
         $this->updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus);
     }
 
@@ -398,13 +398,14 @@ class Service_Data_PlaceOrder
         $arrMapPlacedSkus = [];
         foreach ((array)$arrPlacedSkus as $arrPlacedSkuItem) {
             $intSkuId = $arrPlacedSkuItem['sku_id'];
+            $intExpireDate = $arrPlacedSkuItem['expire_date'];
             if (empty($intSkuId)) {
                 continue;
             }
-            $arrMapPlacedSkus[$intSkuId][] = $arrPlacedSkuItem;
+            $arrMapPlacedSkus[$intSkuId . '#' . $intExpireDate][] = $arrPlacedSkuItem;
         }
-        Model_Orm_PlaceOrder::getConnection()->transaction(function () use ($intPlaceOrderId, $arrPlacedSkus) {
-            $boolFlag = Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus);
+        Model_Orm_PlaceOrder::getConnection()->transaction(function () use ($intPlaceOrderId, $arrMapPlacedSkus) {
+            $boolFlag = Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrMapPlacedSkus);
             if (!$boolFlag) {
                 Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
             }
