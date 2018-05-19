@@ -13,5 +13,6 @@ class Controller_Place extends Ap_Controller_Abstract {
         'getplaceorderlist' => 'actions/place/GetPlaceOrderList.php', #获取上架单列表#
         'getplaceorderdetail' => 'actions/place/GetPlaceOrderDetail.php', #获取上架单详情#
         'getplaceorderprint' => 'actions/place/GetPlaceOrderPrint.php', #获取上架单打印列表#
+        'sugstoragelocation' => 'actions/place/SugStorageLocation.php', #sug库位信息#
     );
 }
