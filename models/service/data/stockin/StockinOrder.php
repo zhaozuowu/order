@@ -853,8 +853,8 @@ class Service_Data_Stockin_StockinOrder
         $intStockinOrderTotalPrice = $this->calculateTotalPrice($arrDbSkuInfoList);
         $intStockinOrderTotalPriceTax = $this->calculateTotalPriceTax($arrDbSkuInfoList);
         $arrSourceInfo = $arrInput['customer_info'];
-        $strSourceSupplierId = $strCustomerId = $arrSourceInfo['customer_id'];
-        $strCustomerName = $arrSourceInfo['customer_name'];
+        $strSourceSupplierId = $strCustomerId = $arrSourceInfo['id'];
+        $strCustomerName = $arrSourceInfo['name'];
         $strSourceInfo = json_encode($arrSourceInfo);
         $intStockinOrderStatus = Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_WAITING;
         $arrWarehouseInfo = $this->getWarehouseInfoById($intWarehouseId);
