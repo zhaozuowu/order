@@ -22,7 +22,7 @@ class Action_CreateRemoveSiteStockInOrderApi extends Order_Base_ApiAction
         'shipment_order_id' => 'int|required',
         'stockin_order_remark' => 'strutf8',
         'stockin_order_source' => 'int|required',
-        'asset_information' => 'str',
+        'asset_information' => 'json|decode',
         'customer_info'=>'json|decode|required',
         'sku_info_list' => [
             'validate' => 'json|required|decode',
