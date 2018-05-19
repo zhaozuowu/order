@@ -7,8 +7,6 @@
 
 class Action_ConfirmPlaceOrder extends Order_Base_Action
 {
-    protected $boolCheckAuth = false;
-    protected $boolCheckLogin = false;
     /**
      * method post
      * @var int
