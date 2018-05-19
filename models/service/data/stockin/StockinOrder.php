@@ -1166,6 +1166,12 @@ class Service_Data_Stockin_StockinOrder
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
             $intType = Order_Statistics_Type::ACTION_CREATE;
             Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
+            $arrInput['stockin_order_ids'] = $strStockInOrderId;
+            $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrInput);
+            if (false == $ret) {
+                Bd_Log::warning("send wmq failed arrInput[%s] cmd[%s]",
+                    json_encode($arrInput), Order_Define_Cmd::CMD_PLACE_ORDER_CREATE);
+            }
         }
     }
 

@@ -308,6 +308,15 @@ class Service_Data_PlaceOrder
         if (!empty($arrInput['create_time_end'])) {
             $arrConditions['create_time'][] = ['<=', intval($arrInput['create_time_end'])];
         }
+        if (Order_Define_PlaceOrder::STATUS_PLACED
+            == $arrInput['place_order_status']) {
+            if (!empty($arrInput['place_time_start'])) {
+                $arrConditions['update_time'] = ['>=', intval($arrInput['place_time_start'])];
+            }
+            if (!empty($arrInput['place_time_end'])) {
+                $arrConditions['update_time'] = ['<=', intval($arrInput['place_time_end'])];
+            }
+        }
         return $arrConditions;
     }
 
