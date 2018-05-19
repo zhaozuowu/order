@@ -269,7 +269,6 @@ class Dao_Wrpc_Stock
             'details'=> $details,
         ];
         $arrRet = $this->objWrpcService->recommendStockLoc($param);
-        print_r($arrRet);exit();
         $arrRet = is_array($arrRet) ? $arrRet:[];
         Bd_Log::trace(sprintf("method[%s] get_recommend_stock_loc_ret[%s]",
             __METHOD__, json_encode($arrRet)));
