@@ -86,10 +86,12 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
             $arrConditions = [
                 'place_order_id' => $intPlaceOrderId,
                 'sku_id' => $intSkuId,
+                'expire_date' => $arrPlacedSkuItem['expire_date'],
             ];
-            $objPlaceOrder = self::findOne($arrConditions);
-            $objPlaceOrder->actual_info = json_encode($arrPlacedSkuItem);
-            $objPlaceOrder->update();
+            $arrVal = [
+                'actual_info' => json_encode($arrPlacedSkuItem),
+            ];
+            self::updateAll($arrVal, $arrConditions);
         }
         return true;
     }

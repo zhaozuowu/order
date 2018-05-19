@@ -375,7 +375,7 @@ class Service_Data_PlaceOrder
         }
         $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
         if (empty($arrPlaceOrderInfo)) {
-
+            Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_NOT_EXIST);
         }
         $intWarehouseId = $arrPlaceOrderInfo['warehouse_id'];
         $intIsDefective = $arrPlaceOrderInfo['is_defective'];
