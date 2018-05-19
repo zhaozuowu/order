@@ -93,6 +93,10 @@ class Action_GetStockinStockoutOrderInfoListApi extends Order_Base_ApiAction
                 : intval($orderInfo['stockin_order_real_amount']);
             $arrRoundResult['stockin_order_remark'] = empty($orderInfo['stockin_order_remark']) ? ''
                 : strval($orderInfo['stockin_order_remark']);
+
+            // 添加资产信息
+            $arrRoundResult['asset_information'] = $this->formatAssetInformation($orderInfo['asset_information']);
+
             $arrOrderSkuList = $orderInfo['skus_list_info'];
             $arrRoundSkuList = [];
             foreach ($arrOrderSkuList as $skuItems){
@@ -122,4 +126,38 @@ class Action_GetStockinStockoutOrderInfoListApi extends Order_Base_ApiAction
 
         return $arrFormatResult;
     }
+
+    /**
+     * 格式化处理设备资产信息
+     * @param $strAssetInfo
+     * @return array
+     */
+    private function formatAssetInformation($strAssetInfo)
+    {
+        $arrResult = [];
+        if (empty($strAssetInfo)) {
+            return $arrResult;
+        }
+
+        $arrAssetInfo = json_decode($strAssetInfo, true);
+        if (empty($arrAssetInfo)) {
+            return $arrResult;
+        }
+
+        foreach ($arrAssetInfo as $info) {
+            $infoLine = [
+                'device_no' => strval($info['device_no']),
+                'device_type' => intval($info['device_type']),
+                'device_type_text' => (
+                    isset(Order_Define_BusinessFormOrder::ORDER_DEVICE_MAP[intval($info['device_type'])])
+                        ? Order_Define_BusinessFormOrder::ORDER_DEVICE_MAP[intval($info['device_type'])]
+                        : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                ),
+            ];
+            $arrResult[] = $infoLine;
+        }
+
+        return $arrResult;
+    }
 }
+
