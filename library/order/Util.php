@@ -403,4 +403,27 @@ class Order_Util
 
         return $arrFullRet;
     }
+
+    /**
+     * 显示命令行的进度条
+     * 注释：进度条使用环境内如果出现输出换行则会从新行重新显示进度条
+     * 函数不做校验进度高于最大值的场景，方便发现不合理的计数场景
+     * @param $iValue          // 进度值
+     * @param $intMaxVal       // 最大值
+     */
+    public static function progressBar($iValue, $intMaxVal)
+    {
+        if ((0 > $iValue) || (0 >= $intMaxVal)) {
+            printf("\n progress bar arguments error, cannot below 0");
+            return;
+        }
+
+        printf("progress: [%-50s] %d%%\r",
+            str_repeat('#', $iValue * 50 / $intMaxVal),
+            $iValue * 100 / $intMaxVal);
+
+        if ($iValue == $intMaxVal) {
+            printf("\n");
+        }
+    }
 }
