@@ -501,6 +501,13 @@ class Service_Data_Stockin_StockinOrder
         Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockinOrderId);
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
             $this->notifyNscm($intSourceOrderId, $intStockinTime, $arrDbSkuInfoList);
+            // drop redis key
+            try {
+                $daoRedis = new Dao_Redis_StockInOrder();
+                $daoRedis->dropOperateRecord(Nscm_Define_OrderPrefix::ASN . $intSourceOrderId);
+            } catch (Exception $e) {
+                Bd_Log::warning('drop_redis_key_error: ' . $e->getMessage());
+            }
         }
         // @todo log
         return $intStockinOrderId;
@@ -1258,6 +1265,12 @@ class Service_Data_Stockin_StockinOrder
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
             $intType = Order_Statistics_Type::ACTION_CREATE;
             Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
+        }
+        try {
+            $daoRedis = new Dao_Redis_StockInOrder();
+            $daoRedis->dropOperateRecord(Nscm_Define_OrderPrefix::SIO . $intStockInOrderId);
+        } catch (Exception $e) {
+            Bd_Log::warning('drop_redis_key_error: ' . $e->getMessage());
         }
     }
 
