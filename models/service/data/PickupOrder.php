@@ -831,6 +831,7 @@ class Service_Data_PickupOrder
      */
     private function formatRecommendStockLocList($recommendStockLocList)
     {
+        
         $list = [];
         foreach ($recommendStockLocList as $key=>$item) {
             $tmp['location_code'] = $item['location_code'];
