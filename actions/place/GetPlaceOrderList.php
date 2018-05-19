@@ -7,6 +7,8 @@
 
 class Action_GetPlaceOrderList extends Order_Base_Action
 {
+    protected $boolCheckAuth = false;
+    protected $boolCheckLogin = false;
     /**
      * method
      * @var int
