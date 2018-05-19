@@ -65,4 +65,10 @@ class Order_Define_Wrpc
      * @var string
      */
     const NWMS_WAREHOUSE_SERVICE_NAME = 'WarehouseInfoService';
+
+    /**
+     * nwms warehouse service name
+     * @var string
+     */
+    const NWMS_WAREHOUSE_STORAGE_SERVICE_NAME = 'StorageService';
 }
