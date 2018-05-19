@@ -314,6 +314,7 @@ class Service_Data_PlaceOrder
     /**
      * 获取上架单打印列表
      * @param $arrPlaceOrderIds
+     * @param $strUserName
      * @return array
      * @throws Order_BusinessError
      */

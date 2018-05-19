@@ -29,6 +29,7 @@ class Service_Page_Place_GetPlaceOrderPrint implements Order_Base_Page
     public function execute($arrInput)
     {
         $arrPlaceOrderIds = explode(',', $arrInput['place_order_ids']);
-        return $this->objDsPlaceOrder->getPlaceOrderPrint($arrPlaceOrderIds);
+        $strUserName = $arrInput['_session']['user_name'];
+        return $this->objDsPlaceOrder->getPlaceOrderPrint($arrPlaceOrderIds, $strUserName);
     }
 }
