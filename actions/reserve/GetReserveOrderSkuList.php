@@ -100,6 +100,8 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
             $arrRoundResult['sku_main_image'] = empty($arrListItem['sku_main_image'])
                 ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                 : strval($arrListItem['sku_main_image']);
+            $arrRoundResult['upc_min_unit'] = empty($arrListItem['upc_min_unit']) ? 0
+                : intval($arrListItem['upc_min_unit']);
             $arrRoundResult['upc_min_unit_text'] = empty($arrListItem['upc_min_unit'])
                 ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                 : (isset(Order_Define_Sku::UPC_UNIT_MAP[intval($arrListItem['upc_min_unit'])])
