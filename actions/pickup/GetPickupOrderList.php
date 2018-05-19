@@ -15,7 +15,7 @@ class Action_GetPickupOrderList extends Order_Base_Action
     protected $arrInputParams = [
         'page_num' => 'int|default[1]',
         'page_size' => 'int|required',
-        'warehouse_id' => 'str',
+        'warehouse_ids' => 'str|required',
         'pickup_order_id' => 'str',
         'stockout_order_id' => 'str',
         'pickup_order_is_print' => 'int',
