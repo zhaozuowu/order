@@ -470,6 +470,7 @@ class Service_Data_PickupOrder
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         $objPickupOrderInfo = Model_Orm_PickupOrder::getPickupOrderInfo($intPickupOrderId);
+        $intWarehouseId = $objPickupOrderInfo->warehouse_id;
         if (empty($objPickupOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
         }
@@ -503,7 +504,7 @@ class Service_Data_PickupOrder
         //开启事务写入数据
         Model_Orm_PickupOrder::getConnection()->transaction(function () use ($arrSkuUpdateFields, $arrSkuUpdateCondition,
                 $intPickupOrderId, $userName, $userId, $intPickupOrderSkuAmount, $intPickupOrderSkuKindCount,
-                $arrPickupSkus, $arrStockoutOrderPickupList){
+                $intWarehouseId, $arrPickupSkus, $arrStockoutOrderPickupList){
             $arrOrderUpdateFields = [
                 'sku_pickup_amount' => $intPickupOrderSkuAmount,
                 'sku_kind_amount' => $intPickupOrderSkuKindCount,
@@ -544,7 +545,6 @@ class Service_Data_PickupOrder
                 $this->addLog($userId, $userName, '完成揽收:'.$intStockoutOrderId,$operationType, $intStockoutOrderId);
                 $this->notifyTmsFnishPick($intStockoutOrderId, $arrPickupStockOrderSkus);
             }
-            $intWarehouseId = $objPickupOrderInfo->warehouse_id;
             //通知stock拣货完成
             $objDaoWrpcStock = new Dao_Wrpc_Stock();
             $objDaoWrpcStock->pickStock($intPickupOrderId, $intWarehouseId, $arrPickupSkus);
@@ -730,7 +730,7 @@ class Service_Data_PickupOrder
             'pickup_skus' => $pickupSkus
         ];
         $strCmd = Order_Define_Cmd::CMD_FINISH_PRICKUP_ORDER;
-        $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrStockoutParams, $strStockoutOrderId);
+        $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrStockoutParams, strval($strStockoutOrderId));
         if (false == $ret) {
             Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_FINISH_PICKUP_FAIL);
