@@ -38,8 +38,12 @@ class Action_GetPlaceOrderDetail extends Order_Base_Action
     {
         $data['is_defective_text'] = Order_Define_PlaceOrder::PLACE_ORDER_QUALITY_MAP[$data['is_defective']];
         $data['place_order_status_text'] = Order_Define_PlaceOrder::PLACE_ORDER_STATUS_SHOW[$data['place_order_status']];
-        $data['stockin_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$data['stockin_order_type']];
+        $data['stockin_order_type_text'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$data['stockin_order_type']];
         $data['create_time'] = date("Y-m-d H:i:s", $data['create_time']);
+        foreach ((array)$data['skus'] as $intKey => $dataItem) {
+            $data['skus'][$intKey]['upc_unit_text'] = Order_Define_Sku::UPC_UNIT_MAP[$dataItem['upc_unit']];
+            $data['skus'][$intKey]['sku_effect_time'] = date("Y-m-d H:i:s", $dataItem['expire_date']);
+        }
         return $data;
     }
 }

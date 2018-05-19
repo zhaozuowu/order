@@ -317,7 +317,7 @@ class Service_Data_PlaceOrder
      * @return array
      * @throws Order_BusinessError
      */
-    public function getPlaceOrderPrint($arrPlaceOrderIds)
+    public function getPlaceOrderPrint($arrPlaceOrderIds, $strUserName)
     {
         if (empty($arrPlaceOrderIds)) {
             return [];
@@ -338,7 +338,14 @@ class Service_Data_PlaceOrder
             }
             $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
             $arrPlaceOrderInfos[$intKey]['source_order_id'] = implode(',', $arrStockinOrderIds);
+            $arrPlaceOrderInfos[$intKey]['print_uname'] = $strUserName;
+            $arrPlaceOrderInfos[$intKey]['print_time'] = date("Y-m-d H:i:s", time());
             $arrPlaceOrderInfos[$intKey]['skus'] = $arrMapPlaceOrderSkus[$intPlaceOrderId];
+            $intTotalAmount = 0;
+            foreach ((array)$arrPlaceOrderInfos[$intKey]['skus'] as $arrSkuItem) {
+                $intTotalAmount += $arrSkuItem['plan_amount'];
+            }
+            $arrPlaceOrderInfos[$intKey]['total_amount'] = $intTotalAmount;
         }
         return $arrPlaceOrderInfos;
     }
