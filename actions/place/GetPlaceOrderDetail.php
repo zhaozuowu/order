@@ -43,6 +43,7 @@ class Action_GetPlaceOrderDetail extends Order_Base_Action
         foreach ((array)$data['skus'] as $intKey => $dataItem) {
             $data['skus'][$intKey]['upc_unit_text'] = Order_Define_Sku::UPC_UNIT_MAP[$dataItem['upc_unit']];
             $data['skus'][$intKey]['sku_effect_time'] = date("Y-m-d H:i:s", $dataItem['expire_date']);
+            $data['skus'][$intKey]['upc_unit_num_text'] = '1*' . $dataItem['upc_unit_num'];
         }
         return $data;
     }

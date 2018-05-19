@@ -163,4 +163,19 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
         }
         return $objPickupOrderInfo;
     }
+
+    /**
+     * 通过拣货单id更新拣货订单信息
+     * @param $intPickupOrderId
+     * @param $arrOrderUpdateFields
+     * @throws Order_BusinessError
+     */
+    public static function updatePickupOrderInfoById($intPickupOrderId, $arrOrderUpdateFields)
+    {
+        $objPickupOrderInfo = self::getPickupOrderInfo($intPickupOrderId);
+        if (empty($objPickupOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
+        }
+        $objPickupOrderInfo->update($arrOrderUpdateFields);
+    }
 }

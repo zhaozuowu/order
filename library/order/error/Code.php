@@ -683,4 +683,10 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const PLACE_ORDER_NOT_EXIST = 400005;
+
+    /**
+     * 上架单上架失败
+     * @var integer
+     */
+    const PLACE_ORDER_PLACE_FAILED = 400006;
 }
