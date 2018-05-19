@@ -371,7 +371,7 @@ class Service_Data_PlaceOrder
     public function confirmPlaceOrder($intPlaceOrderId, $arrPlacedSkus)
     {
         if (empty($intPlaceOrderId) || empty($arrPlacedSkus)) {
-            return [];
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
         if (empty($arrPlaceOrderInfo)) {
@@ -380,7 +380,7 @@ class Service_Data_PlaceOrder
         $intWarehouseId = $arrPlaceOrderInfo['warehouse_id'];
         $intIsDefective = $arrPlaceOrderInfo['is_defective'];
         $arrPlaceOrderSkus = $this->appendPlaceOrderSkuInfo($arrPlacedSkus, $intPlaceOrderId);
-        //$this->objDaoWprcStock->confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrPlaceOrderSkus);
+        $this->objDaoWprcStock->confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrPlaceOrderSkus);
         $this->updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus);
     }
 
