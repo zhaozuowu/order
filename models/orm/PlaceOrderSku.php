@@ -78,20 +78,22 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
         if (empty($arrPlaceOrderInfo)) {
             return false;
         }
-        foreach ((array)$arrPlacedSkus as $arrPlacedSkuItem) {
-            $intSkuId = $arrPlacedSkuItem['sku_id'];
+        foreach ((array)$arrPlacedSkus as $strKey => $arrPlacedSkuItem) {
+            $arrKey = explode('#', $strKey);
+            $intSkuId = $arrKey[0];
             if (empty($intSkuId)) {
                 continue;
             }
             $arrConditions = [
                 'place_order_id' => $intPlaceOrderId,
                 'sku_id' => $intSkuId,
-                'expire_date' => $arrPlacedSkuItem['expire_date'],
             ];
-            $arrVal = [
-                'actual_info' => json_encode($arrPlacedSkuItem),
-            ];
-            self::updateAll($arrVal, $arrConditions);
+            $objPlaceOrder = self::findOne($arrConditions);
+            if (empty($objPlaceOrder)) {
+                return false;
+            }
+            $objPlaceOrder->actual_info = json_encode($arrPlacedSkuItem);
+            $objPlaceOrder->update();
         }
         return true;
     }

@@ -90,6 +90,7 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
         }
         $arrConditions = [
             'place_order_id' => $intPlaceOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
         $objPlaceOrderInfo = self::findOne($arrConditions);
         $objPlaceOrderInfo->place_order_status = Order_Define_PlaceOrder::STATUS_PLACED;
