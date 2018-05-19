@@ -308,14 +308,15 @@ class Service_Data_PlaceOrder
         if (!empty($arrInput['create_time_end'])) {
             $arrConditions['create_time'][] = ['<=', intval($arrInput['create_time_end'])];
         }
-        if (Order_Define_PlaceOrder::STATUS_PLACED
-            == $arrInput['place_order_status']) {
-            if (!empty($arrInput['place_time_start'])) {
-                $arrConditions['update_time'] = ['>=', intval($arrInput['place_time_start'])];
-            }
-            if (!empty($arrInput['place_time_end'])) {
-                $arrConditions['update_time'] = ['<=', intval($arrInput['place_time_end'])];
-            }
+        if (!empty($arrInput['place_time_start'])) {
+            $arrConditions['update_time'][] = ['>=', intval($arrInput['place_time_start'])];
+        }
+        if (!empty($arrInput['place_time_end'])) {
+            $arrConditions['update_time'][] = ['<=', intval($arrInput['place_time_end'])];
+        }
+        if (!empty($arrInput['place_time_start'])
+            || !empty($arrInput['place_time_end'])) {
+            $arrConditions['place_order_status'] = Order_Define_PlaceOrder::STATUS_PLACED;
         }
         return $arrConditions;
     }
@@ -380,6 +381,38 @@ class Service_Data_PlaceOrder
         $intIsDefective = $arrPlaceOrderInfo['is_defective'];
         $arrPlaceOrderSkus = $this->appendPlaceOrderSkuInfo($arrPlacedSkus, $intPlaceOrderId);
         $this->objDaoWprcStock->confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrPlaceOrderSkus);
+        $this->updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus);
+    }
+
+    /**
+     * 上架单上架
+     * @param $intPlaceOrderId
+     * @param $arrPlacedSkus
+     * @return array
+     */
+    protected function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus)
+    {
+        if (empty($intPlaceOrderId) || empty($arrPlacedSkus)) {
+            return [];
+        }
+        $arrMapPlacedSkus = [];
+        foreach ((array)$arrPlacedSkus as $arrPlacedSkuItem) {
+            $intSkuId = $arrPlacedSkuItem['sku_id'];
+            if (empty($intSkuId)) {
+                continue;
+            }
+            $arrMapPlacedSkus[$intSkuId][] = $arrPlacedSkuItem;
+        }
+        Model_Orm_PlaceOrder::getConnection()->transaction(function () use ($intPlaceOrderId, $arrPlacedSkus) {
+            $boolFlag = Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus);
+            if (!$boolFlag) {
+                Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
+            }
+            $boolFlag = Model_Orm_PlaceOrder::placeOrder($intPlaceOrderId);
+            if (!$boolFlag) {
+                Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
+            }
+        });
     }
 
     /**
