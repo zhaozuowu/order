@@ -473,6 +473,14 @@ class Service_Data_PickupOrder
         if (empty($objPickupOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
         }
+        if (Order_Define_PickupOrder::PICKUP_ORDER_STATUS_FINISHED == $objPickupOrderInfo->pickup_order_status) {
+            Bd_Log::warning("pickupOrder can't modify pickup_order_status by pickupOrderId:". $intPickupOrderId);
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_IS_FINISHED);
+        }
+        if (Order_Define_PickupOrder::PICKUP_ORDER_STATUS_CANCEL == $objPickupOrderInfo->pickup_order_status) {
+            Bd_Log::warning("pickupOrder can't modify pickup_order_status by pickupOrderId:". $intPickupOrderId);
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_IS_CANCELED);
+        }
         if (Order_Define_PickupOrder::PICKUP_ORDER_STATUS_INIT != $objPickupOrderInfo->pickup_order_status) {
             Bd_Log::warning("pickupOrder can't modify pickup_order_status by pickupOrderId:". $intPickupOrderId);
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_STATUS_INVALID);
@@ -495,12 +503,15 @@ class Service_Data_PickupOrder
         //开启事务写入数据
         Model_Orm_PickupOrder::getConnection()->transaction(function () use ($arrSkuUpdateFields, $arrSkuUpdateCondition,
                 $intPickupOrderId, $userName, $userId, $intPickupOrderSkuAmount, $intPickupOrderSkuKindCount,
-                $objPickupOrderInfo, $arrPickupSkus, $arrStockoutOrderPickupList){
+                $arrPickupSkus, $arrStockoutOrderPickupList){
+            $arrOrderUpdateFields = [
+                'sku_pickup_amount' => $intPickupOrderSkuAmount,
+                'sku_kind_amount' => $intPickupOrderSkuKindCount,
+                'update_operator' => $userName,
+                'pickup_order_status' => Order_Define_PickupOrder::PICKUP_ORDER_STATUS_FINISHED,
+            ];
             //更新订单数据
-            $objPickupOrderInfo->sku_pickup_amount = $intPickupOrderSkuAmount;
-            $objPickupOrderInfo->sku_kind_amount = $intPickupOrderSkuKindCount;
-            $objPickupOrderInfo->update_operator = $userName;
-            $objPickupOrderInfo->update();
+            Model_Orm_PickupOrder::updatePickupOrderInfoById($intPickupOrderId, $arrOrderUpdateFields);
             //更新拣货单sku
             Model_Orm_PickupOrderSku::updatePickupInfo($arrSkuUpdateFields, $arrSkuUpdateCondition);
             //更新出库单
@@ -608,11 +619,10 @@ class Service_Data_PickupOrder
             }
             $arrPickupSkusMap[$arrPickupSku['sku_id']] = $arrPickupSku['pickup_amount'];
         }
-        $arrPickupSkusDB = Model_Orm_PickupOrderSku::getSkuListByPickupOrderId($intPickupOrderId);
-        if (empty($arrPickupSkusDB)) {
+        $arrStockouOrderIds = Model_Orm_StockoutPickupOrder::getStockoutOrderIdsByPickupOrderId($intPickupOrderId);
+        if (empty($arrStockouOrderIds)) {
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_SKUS_NOT_EXISTED);
         }
-        $arrStockouOrderIds = array_unique(array_column($arrPickupSkusDB, 'stockout_order_id'));
         $objOrmSku = new Model_Orm_StockoutOrderSku();
 
         $arrStockouOrderSkuPickupMap = [];
