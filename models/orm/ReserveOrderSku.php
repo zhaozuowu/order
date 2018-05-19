@@ -80,6 +80,8 @@ class Model_Orm_ReserveOrderSku extends Order_Base_Orm
                 'reserve_order_sku_plan_amount' => $arrInputRow['reserve_order_sku_plan_amount'],
                 'stockin_order_sku_real_amount' => 0,
                 'stockin_order_sku_extra_info' => '',
+                'sku_main_image' => $arrInputRow['sku_main_image'],
+                'upc_min_unit' => $arrInputRow['upc_min_unit'],
             ];
             $arrDbReserveOrderSkus[] = $arrRow;
         }

@@ -65,6 +65,13 @@ class Service_Data_Reserve_ReserveOrder
         $arrRes = [];
         foreach ($arrSourceSku as $row)
         {
+            $strRowImage = $row['sku_image'][0]['url'];
+            foreach ($arrSkuInfo[$row['sku_id']]['sku_image'] as $rowImage) {
+                if (true == $rowImage['is_master']) {
+                    $strRowImage = $rowImage['url'];
+                    break;
+                }
+            }
             $arrRes[] = [
                 'sku_id' => $row['sku_id'],
                 'upc_id' => $row['upc_id'],
@@ -83,6 +90,8 @@ class Service_Data_Reserve_ReserveOrder
                 'reserve_order_sku_total_price' => $row['reserve_order_sku_total_price'],
                 'reserve_order_sku_total_price_tax' => $row['reserve_order_sku_total_price_tax'],
                 'reserve_order_sku_plan_amount' => $row['reserve_order_sku_plan_amount'],
+                'sku_main_image' => strval($strRowImage),
+                'upc_min_unit' => intval($arrSkuInfo[$row['sku_id']]['min_upc']['upc_unit']),
             ];
         }
         return $arrRes;
@@ -127,9 +136,11 @@ class Service_Data_Reserve_ReserveOrder
             $strVendorEmail = '';
             $strVendorAddress = '';
             $strReserveOrderRemark = strval($arrOrderInfo['purchase_order_remark']);
+            $intCountSkus = count($arrSkus);
             Model_Orm_ReserveOrder::createReserveOrder($intReserveOrderId, $intPurchaseOrderId, $intWarehouseId,
                 $strWarehouseName, $intReserveOrderPlanTime, $intReserveOrderPlanAmount, $intVendorId, $strVendorName,
-                $strVendorContactor, $strVendorMobile, $strVendorEmail, $strVendorAddress, $strReserveOrderRemark);
+                $strVendorContactor, $strVendorMobile, $strVendorEmail, $strVendorAddress, $strReserveOrderRemark,
+                $intCountSkus);
             Bd_Log::debug('ORDER_SKUS:' . json_encode($arrSkus));
             Model_Orm_ReserveOrderSku::createReserveOrderSku($arrSkus, $intReserveOrderId);
         });

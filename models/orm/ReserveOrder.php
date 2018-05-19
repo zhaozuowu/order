@@ -261,12 +261,13 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
      * @param $strVendorEmail
      * @param $strVendorAddress
      * @param $strReserveOrderRemark
+     * @param $intSkuKindAmount
      * @return int
      */
     public static function createReserveOrder($intReserveOrderId, $intPurchaseOrderId,
                                               $intWarehouseId, $strWarehouseName, $intReserveOrderPlanTime, $intReserveOrderPlanAmount,
                                               $intVendorId, $strVendorName, $strVendorContactor, $strVendorMobile, $strVendorEmail,
-                                              $strVendorAddress, $strReserveOrderRemark
+                                              $strVendorAddress, $strReserveOrderRemark, $intSkuKindAmount
     )
     {
         $arrDb = [
@@ -287,6 +288,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
             'vendor_email' => $strVendorEmail,
             'vendor_address' => $strVendorAddress,
             'reserve_order_remark' => $strReserveOrderRemark,
+            'sku_kind_amount' => $intSkuKindAmount
         ];
         return self::insert($arrDb);
     }

@@ -158,6 +158,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param string $strCustomerId 客户id
      * @param string $strCustomerName 客户名称
      * @param string $strSourceSupplierId 客户id
+     * @param int $intSkuKindAmount
      * @return int
      */
     public static function createStayStockInOrder(
@@ -183,7 +184,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intShipmentOrderId,
         $strCustomerId,
         $strCustomerName,
-        $strSourceSupplierId
+        $strSourceSupplierId,
+        $intSkuKindAmount
     )
     {
         $arrRow = [
@@ -210,6 +212,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'customer_id' => $strCustomerId,
             'customer_name' => $strCustomerName,
             'source_supplier_id' => $strSourceSupplierId,
+            'sku_kind_amount' => $intSkuKindAmount,
         ];
         return self::insert($arrRow);
     }

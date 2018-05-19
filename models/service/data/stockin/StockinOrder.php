@@ -501,6 +501,13 @@ class Service_Data_Stockin_StockinOrder
         Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockinOrderId);
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intStockinOrderType) {
             $this->notifyNscm($intSourceOrderId, $intStockinTime, $arrDbSkuInfoList);
+            // drop redis key
+            try {
+                $daoRedis = new Dao_Redis_StockInOrder();
+                $daoRedis->dropOperateRecord(Nscm_Define_OrderPrefix::ASN . $intSourceOrderId);
+            } catch (Exception $e) {
+                Bd_Log::warning('drop_redis_key_error: ' . $e->getMessage());
+            }
         }
         // @todo log
         return $intStockinOrderId;
@@ -1037,6 +1044,7 @@ class Service_Data_Stockin_StockinOrder
             $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId, $strCustomerName, $strCustomerId, $intStockInOrderSource,
             $intStockinOrderPlanAmount, $intStockInOrderCreatorId, $strStockInOrderCreatorName, $strOrderReturnReasonText,
             $strSourceSupplierId, $strStockInOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax) {
+            $intSkuKindAmount = count($arrDbSkuInfoList);
             Model_Orm_StockinOrder::createStayStockInOrder(
                 $intStockInOrderId,
                 $intStockInOrderType,
@@ -1060,7 +1068,8 @@ class Service_Data_Stockin_StockinOrder
                 $intShipmentOrderId,
                 $strCustomerId,
                 $strCustomerName,
-                $strSourceSupplierId);
+                $strSourceSupplierId,
+                $intSkuKindAmount);
             Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockInOrderId);
         });
         return $intStockInOrderId;
@@ -1147,6 +1156,13 @@ class Service_Data_Stockin_StockinOrder
                 continue;
             }
             $arrSkuInfo = $arrSkuInfoList[$intSkuId];
+            $strSkuMainImage = $arrSkuInfo['sku_image'][0]['url'];
+            foreach ($arrSkuInfo['sku_image'] as $arrImage) {
+                if (true == $arrImage['is_master']) {
+                    $strSkuMainImage = $arrImage['url'];
+                    break;
+                }
+            }
             $arrDbSku = [
                 'sku_id' => $intSkuId,
                 'upc_id' => $arrSkuInfo['min_upc']['upc_id'],
@@ -1164,6 +1180,8 @@ class Service_Data_Stockin_StockinOrder
                 'sku_from_country' => $arrSkuInfo['sku_from_country'],
                 'reserve_order_sku_plan_amount' => $arrRequestSkuInfoList[$intSkuId],
                 'stockout_order_sku_amount' => 0,
+                'upc_min_unit' => $arrSkuInfo['min_upc']['upc_unit'],
+                'sku_main_image' => strval($strSkuMainImage),
             ];
             $arrDbSku['stockin_order_sku_total_price'] = bcmul($arrRequestSkuInfoList[$intSkuId], $arrSkuPriceInfo['sku_price']);
             $arrDbSku['stockin_order_sku_total_price_tax'] = bcmul($arrRequestSkuInfoList[$intSkuId], $arrSkuPriceInfo['sku_price_tax']);
@@ -1247,6 +1265,12 @@ class Service_Data_Stockin_StockinOrder
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
             $intType = Order_Statistics_Type::ACTION_CREATE;
             Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
+        }
+        try {
+            $daoRedis = new Dao_Redis_StockInOrder();
+            $daoRedis->dropOperateRecord(Nscm_Define_OrderPrefix::SIO . $intStockInOrderId);
+        } catch (Exception $e) {
+            Bd_Log::warning('drop_redis_key_error: ' . $e->getMessage());
         }
     }
 
