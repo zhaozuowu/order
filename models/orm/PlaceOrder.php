@@ -77,4 +77,23 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
         $arrCols = self::getAllColumns();
         return self::findRows($arrCols, $arrConditions, ['id' => 'asc'], $intOffset, $intLimit);
     }
+
+    /**
+     * 上架单上架
+     * @param $intPlaceOrderId
+     * @return bool
+     */
+    public static function placeOrder($intPlaceOrderId)
+    {
+        if (empty($intPlaceOrderId)) {
+            return false;
+        }
+        $arrConditions = [
+            'place_order_id' => $intPlaceOrderId,
+        ];
+        $objPlaceOrderInfo = self::findOne($arrConditions);
+        $objPlaceOrderInfo->place_order_status = Order_Define_PlaceOrder::STATUS_PLACED;
+        $objPlaceOrderInfo->update();
+        return true;
+    }
 }
