@@ -56,10 +56,8 @@ class AppendSkuMainImageAndMinUpcUnit
         if (count($arrAllSkuId) != count($arrSkuInfosAll)) {
             Bd_Log::warning('some sku info can`t get. sku_ids: ' . json_encode(array_diff($arrAllSkuId,
                     array_keys($arrSkuInfosAll))));
-            printf("\n ERROR: Skus List get not match source skus [%d], get skus[%d] \n",
+            printf("\n WARNING: get skus not match, source skus [%d], get skus[%d] \n",
                 count($arrAllSkuId), count($arrSkuInfosAll));
-            printf("\n\n Script Teriminated \n\n");
-            exit(0);
         }
 
         // parse sku_main_images out
@@ -69,7 +67,7 @@ class AppendSkuMainImageAndMinUpcUnit
         $arrSkuInfos = [];
         printf("\n pre-processing all sku infos get ...\n");
         foreach ($arrSkuInfosAll as $row) {
-            foreach ($arrSkuInfosAll[$row['sku_id']]['sku_image'] as $rowImage) {
+            foreach ($row['sku_image'] as $rowImage) {
                 if (true == $rowImage['is_master']) {
                     $row['after_pre_processor_sku_main_image_url'] = strval($rowImage['url']);
                     $row['after_pre_processor_sku_upc_min_unit'] =
@@ -81,11 +79,6 @@ class AppendSkuMainImageAndMinUpcUnit
             printf("progress: [%-50s] %d%%\r", str_repeat('#', $i * 50 / $intTotalCount),
                 $i * 100 / $intTotalCount);
             $arrSkuInfos[$row['sku_id']] = $row;
-        }
-
-        if (count($arrAllSkuId) != count($arrSkuInfos)) {
-            Bd_Log::warning('some sku info can`t get. sku_ids: ' . json_encode(array_diff($arrAllSkuId,
-                    array_keys($arrSkuInfos))));
         }
 
         printf("\n\n writing all sku info...\n");
