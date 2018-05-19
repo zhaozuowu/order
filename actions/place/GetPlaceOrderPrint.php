@@ -49,6 +49,7 @@ class Action_GetPlaceOrderPrint extends Order_Base_Action
                 $intUpcUnitNum = $skuItem['upc_unit_num'];
                 $data[$intKey]['skus'][$intSkuKey]['upc_unit_text'] = Order_Define_Sku::UPC_UNIT_MAP[$intUpcUnit];
                 $data[$intKey]['skus'][$intSkuKey]['upc_unit_num_text'] = '1*' . $intUpcUnitNum;
+                $data[$intKey]['skus'][$intSkuKey]['sku_effect_time'] = date("Y-m-d H:i:s", $skuItem['expire_date']);
             }
         }
         return $data;
