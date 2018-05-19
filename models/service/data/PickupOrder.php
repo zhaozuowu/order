@@ -229,6 +229,7 @@ class Service_Data_PickupOrder
                     $createParam[$key . "_" . $skuId]['order_amount'] = $skuInfo['order_amount'];
                     $createParam[$key . "_" . $skuId]['distribute_amount'] = $skuInfo['distribute_amount'];
                     $createParam[$key . "_" . $skuId]['pickup_order_id'] = $key;
+                    $createParam[$key . "_" . $skuId]['pickup_extra_info'] = '';
                     $details[$key."_" .$skuId]['sku_id'] = $skuId;
                     $details[$key."_" .$skuId]['amount']= $skuInfo['distribute_amount'];
                     continue;
@@ -832,7 +833,11 @@ class Service_Data_PickupOrder
     {
         $list = [];
         foreach ($recommendStockLocList as $key=>$item) {
-            $list[$item['sku_id']][] = $item;
+            $tmp['location_code'] = $item['location_code'];
+            $tmp['recommend_amount'] = $item['recommend_amount'];
+            $tmp['expiration_time'] = empty($item['expiration_time']) ? 0: $item['expiration_time'];
+            $tmp['production_time'] = empty($item['production_time']) ? 0:$item['production_time'];
+            $list[$item['sku_id']][] = $tmp;
         }
         return $list;
     }
