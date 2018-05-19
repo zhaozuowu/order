@@ -14,6 +14,7 @@ class Service_Data_PickupOrder
         $this->objOrmStockoutOrder = new Model_Orm_StockoutOrder();
         $this->objOrmSku = new Model_Orm_StockoutOrderSku();
         $this->objWrpcTms = new Dao_Wrpc_Tms();
+        $this->objWrpcStock = new Dao_Wrpc_Stock(Order_Define_Wrpc::NWMS_STOCKOUT_SERVICE_NAME);
     }
 
     /**
@@ -66,7 +67,8 @@ class Service_Data_PickupOrder
             Model_Orm_StockoutPickupOrder::batchInsert($arrStockoutPickOrderData, false);
             $arrPickupOrderData  = $this->getCreatePickupOrderData($arrStockoutPickOrderData,$stockoutOrderList,$pickupOrderType,$userId,$userName);
             Model_Orm_PickupOrder::batchInsert($arrPickupOrderData, false);
-            $arrPickupOrderSkuData = $this->getCreatePickupOrderSkuData($arrStockoutPickOrderData,$stockoutOrderList);
+            $wareHouseIds = array_column($arrPickupOrderData,'warehouse_id','pickup_order_id');
+            $arrPickupOrderSkuData = $this->getCreatePickupOrderSkuData($arrStockoutPickOrderData,$stockoutOrderList,$wareHouseIds);
             Model_Orm_PickupOrderSku::batchInsert($arrPickupOrderSkuData, false);
             $updateData = [
                 'is_pickup_ordered' => Order_Define_StockoutOrder::PICKUP_ORDERE_IS_CREATED,
@@ -193,21 +195,27 @@ class Service_Data_PickupOrder
 
     }
 
-    private function getCreatePickupOrderSkuData($arrStockoutPickOrderData, $stockoutOrderList)
+    /**
+     * 拼接拣货单sku信息
+     * @param $arrStockoutPickOrderData
+     * @param $stockoutOrderList
+     * @param $wareHouseIds
+     * @return array
+     */
+    private function getCreatePickupOrderSkuData($arrStockoutPickOrderData, $stockoutOrderList, $wareHouseIds)
     {
         $list = [];
         foreach ($arrStockoutPickOrderData as $orderData) {
             $list[$orderData['pickup_order_id']][] = $orderData['stockout_order_id'];
         }
-
         $createParam = [];
-
         foreach ($list as $key => $item) {
             $arrConditions = [
                 'stockout_order_id' => ['in', $item],
             ];
             $arrColumns = $this->objOrmSku->getAllColumns();
             $skuList = $this->objOrmSku->findRows($arrColumns, $arrConditions);
+            $details  = [];
             foreach ($skuList as $skuKey => $skuInfo) {
                 $skuId = $skuInfo['sku_id'];
                 if (!isset($createParam[$key."_" .$skuId])) {
@@ -221,14 +229,24 @@ class Service_Data_PickupOrder
                     $createParam[$key . "_" . $skuId]['order_amount'] = $skuInfo['order_amount'];
                     $createParam[$key . "_" . $skuId]['distribute_amount'] = $skuInfo['distribute_amount'];
                     $createParam[$key . "_" . $skuId]['pickup_order_id'] = $key;
+                    $details[$key."_" .$skuId]['sku_id'] = $skuId;
+                    $details[$key."_" .$skuId]['amount']= $skuInfo['distribute_amount'];
                     continue;
                 }
                 $createParam[$key . "_" . $skuId]['upc_unit_num'] += $skuInfo['upc_unit_num'];
                 $createParam[$key . "_" . $skuId]['order_amount'] += $skuInfo['order_amount'];
                 $createParam[$key . "_" . $skuId]['distribute_amount'] += $skuInfo['distribute_amount'];
+                $details[$key."_" .$skuId]['amount']+= $skuInfo['distribute_amount'];
             }
-
-
+            $pickupOrderId = $key;
+            $intWarehouseId = isset($wareHouseIds[$key]) ? $wareHouseIds[$key]:0;
+            $recommendStockLocList = $this->objWrpcStock->getRecommendStockLoc($intWarehouseId,$pickupOrderId,$details);
+            $recommendStockLocList = $this->formatRecommendStockLocList($recommendStockLocList);
+            foreach($recommendStockLocList as $stockKey=>$stockItem) {
+                if (isset($createParam[$key."_" .$stockKey])) {
+                    $createParam[$key."_" .$stockKey]['pickup_extra_info'] = json_encode($stockItem);
+                }
+            }
         }
         return $createParam;
     }
@@ -744,5 +762,19 @@ class Service_Data_PickupOrder
             $res['noSnapshootOrderNum']++;
         }
         return $res;
+    }
+
+    /**
+     * 格式化库位推荐列表
+     * @param $recommendStockLocList
+     * @return array
+     */
+    private function formatRecommendStockLocList($recommendStockLocList)
+    {
+        $list = [];
+        foreach ($recommendStockLocList as $key=>$item) {
+            $list[$item['sku_id']][] = $item;
+        }
+        return $list;
     }
 }

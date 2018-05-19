@@ -605,6 +605,16 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL = 390032;
 
+    /**
+     * 已生成拣货单，无法取消
+     */
+    const NWMS_ORDER_STOCKOUT_ORDER_IS_PICKUP_ORDERED = 390033;
+
+    /**
+     * 库位推荐获取失败
+     */
+    const NWMS_ORDER_STOCKOUT_ORDER_GET_RECOMEND_STOCKLOC_FAIL = 390034;
+
 
     /**
      * 上架单创建失败

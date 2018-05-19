@@ -109,6 +109,8 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL => '获取tms排线号失败',
         Order_Error_Code::CREATE_PLACE_ORDER_PARAMS_ERROR => '创建上架单参数错误',
         Order_Error_Code::PLACE_ORDER_ALREADY_CREATE => '存在已生成上架单的入库单',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PICKUP_ORDERED => '已生成拣货单，无法取消',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_GET_RECOMEND_STOCKLOC_FAIL => '库位推荐获取失败',
     ];
 
 }

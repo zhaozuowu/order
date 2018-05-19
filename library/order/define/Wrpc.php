@@ -41,4 +41,9 @@ class Order_Define_Wrpc
      * @var string
      */
     const NWMS_STOCK_SERVICE_NAME = 'StockService';
+
+    /**
+     * nwms stockout service name
+     */
+    const NWMS_STOCKOUT_SERVICE_NAME = 'StockOutService';
 }

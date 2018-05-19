@@ -976,6 +976,10 @@ class Service_Data_StockoutOrder
         if($stockoutOrderInfo['stockout_order_pre_cancel'] != Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_PRE_CANCEL_ERROR);
         }
+
+        if($stockoutOrderInfo['is_pickup_ordered'] == Order_Define_StockoutOrder::PICKUP_ORDERE_IS_CREATED) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PICKUP_ORDERED);
+        }
         $updateData = [
             'stockout_order_status' => Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS,
             'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
@@ -1624,11 +1628,12 @@ class Service_Data_StockoutOrder
         }
         $intStockOutOrderStatus = $objStockOutOrderInfo->stockout_order_status;
         $intStockOutOrderIsPrint = $objStockOutOrderInfo->stockout_order_is_print;
+        $intPickupOrderd = $objStockOutOrderInfo->is_pickup_ordered;
         $intStockOutOrderPreCancel = $objStockOutOrderInfo->stockout_order_pre_cancel;
         $intStockOutOrderCancelType = $objStockOutOrderInfo->stockout_order_cancel_type;
-        if (Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRINT == $intStockOutOrderIsPrint
+        if (Order_Define_StockoutOrder::PICKUP_ORDERE_IS_CREATED == $intPickupOrderd
             && Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS != $intStockOutOrderStatus) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PICKUP_ORDERED);
         }
         if ($intStockOutOrderCancelType == Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_DEFAULT
             && $intStockOutOrderPreCancel == Order_Define_StockoutOrder::STOCKOUT_ORDER_DEFAULT_PRE_CANCEL
