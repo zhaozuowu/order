@@ -85,8 +85,8 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
         $boolIgnoreCheckDate = $arrInput['ignore_check_date'];
         $intStockinOrderId = $this->objDataStockin->createStockinOrder($arrSourceOrderInfo, $arrSourceOrderSkus, $intWarehouseId,
             $strStockinOrderRemark, $arrSkuInfoList, $intCreatorId, $strCreatorName, $intType, $boolIgnoreCheckDate);
-        $arrInput['stockin_order_ids'] = strval($intStockinOrderId);
-        $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrInput);
+        $arrCmdInput['stockin_order_ids'] = strval($intStockinOrderId);
+        $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrCmdInput);
         if (false == $ret) {
             Bd_Log::warning("send wmq failed arrInput[%s] cmd[%s]",
                 json_encode($arrInput), Order_Define_Cmd::CMD_PLACE_ORDER_CREATE);
