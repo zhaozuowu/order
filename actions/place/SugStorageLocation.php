@@ -14,6 +14,7 @@ class Action_SugStorageLocation extends Order_Base_Action
         'warehouse_id' => 'int|required',
         'location_code' => 'regex|patern[/\w+/]',
         'is_default'   => 'int|default[1]|min[1]|max[2]',
+        'is_default_temporary'   => 'int|default[2]|min[1]|max[2]',
     ];
 
     /**

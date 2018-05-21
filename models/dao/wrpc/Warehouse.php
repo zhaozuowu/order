@@ -41,13 +41,14 @@ class Dao_Wrpc_Warehouse
      * @param $intIsDefault
      * @return array
      */
-    public function sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault)
+    public function sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault, $intIsDefaultTemporary)
     {
         $arrParams = [
             'objData' => [
                 'warehouse_id'  => $intWarehouseId,
                 'location_code' => $strLocationCode,
                 'is_default'    => $intIsDefault,
+                'is_default_temporary'    => $intIsDefaultTemporary,
             ]
         ];
         $arrRet = $this->objWrpcService->sugStorageLocation($arrParams);

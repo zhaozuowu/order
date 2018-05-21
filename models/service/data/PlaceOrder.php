@@ -465,10 +465,10 @@ class Service_Data_PlaceOrder
      * @param $intIsDefault
      * @return array
      */
-    public function sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault)
+    public function sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault, $intIsDefaultTemporary)
     {
         $objDaoWrpcWarehouseStorage = new Dao_Wrpc_Warehouse(Order_Define_Wrpc::NWMS_WAREHOUSE_STORAGE_SERVICE_NAME);
-        $arrLocation = $objDaoWrpcWarehouseStorage->sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault);
+        $arrLocation = $objDaoWrpcWarehouseStorage->sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault, $intIsDefaultTemporary);
         return $arrLocation;
     }
 }
