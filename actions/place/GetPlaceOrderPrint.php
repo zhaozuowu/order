@@ -43,7 +43,7 @@ class Action_GetPlaceOrderPrint extends Order_Base_Action
             $data[$intKey]['stockin_order_type_text']
                 = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$dataItem['stockin_order_type']];
             $data[$intKey]['is_defective_text']
-                = Order_Define_PlaceOrder::PLACE_ORDER_QUALITY_MAP[$dataItem['is_defective']];
+                = Nscm_Define_Stock::QUALITY_TEXT_MAP[$dataItem['is_defective']];
             foreach ((array)$data[$intKey]['skus'] as $intSkuKey => $skuItem) {
                 $intUpcUnit = $skuItem['upc_unit'];
                 $intUpcUnitNum = $skuItem['upc_unit_num'];

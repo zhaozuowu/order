@@ -46,8 +46,8 @@ class Service_Data_PlaceOrder
         }
         //创建上架单
         $arrSplitOrderInfo = $this->splitStockinOrderByQuality($arrStockinOrderInfo);
-        if (empty($arrSplitOrderInfo) || empty($arrSplitOrderInfo['good_skus'])
-            || empty($arrSplitOrderInfo['bad_skus'])) {
+        if (empty($arrSplitOrderInfo) || (empty($arrSplitOrderInfo['good_skus'])
+            && empty($arrSplitOrderInfo['bad_skus']))) {
             return [];
         }
         list($arrOrderList, $arrSkuList, $arrMapOrderList) =
@@ -175,7 +175,7 @@ class Service_Data_PlaceOrder
         //非良品订单信息
         if (!empty($arrInput['bad_skus'])) {
             $arrBadSkuOrderInfo['place_order_id'] = Order_Util_Util::generatePlaceOrderId();
-            $arrBadSkuOrderInfo['is_defective'] = Order_Define_PlaceOrder::PLACE_ORDER_QUALITY_BAD;
+            $arrBadSkuOrderInfo['is_defective'] = Nscm_Define_Stock::QUALITY_DEFECTIVE;
             $arrBadSkuOrderInfo = array_merge($arrBadSkuOrderInfo, $arrOrderInfo);
             $arrOrderList[] = $arrBadSkuOrderInfo;
             foreach ((array)$arrInput['bad_skus'] as $intKey => $arrVal) {
@@ -190,7 +190,7 @@ class Service_Data_PlaceOrder
         //良品订单信息
         if (!empty($arrInput['good_skus'])) {
             $arrGoodSkuOrderInfo['place_order_id'] = Order_Util_Util::generatePlaceOrderId();
-            $arrGoodSkuOrderInfo['is_defective'] = Order_Define_PlaceOrder::PLACE_ORDER_QUALITY_GOOD;
+            $arrGoodSkuOrderInfo['is_defective'] = Nscm_Define_Stock::QUALITY_GOOD;
             $arrGoodSkuOrderInfo = array_merge($arrGoodSkuOrderInfo, $arrOrderInfo);
             $arrOrderList[] = $arrGoodSkuOrderInfo;
             foreach ((array)$arrInput['good_skus'] as $intKey => $arrVal) {
