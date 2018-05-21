@@ -13,6 +13,11 @@ class Dao_Wrpc_Stock
     private $objWrpcService;
 
     /**
+     * @var Dao_Ral_Sku
+     */
+    protected $objDaoRal;
+
+    /**
      * init
      * @param string $strServiceName 请求服务的service
      */
@@ -21,6 +26,7 @@ class Dao_Wrpc_Stock
         $this->objWrpcService = new Bd_Wrpc_Client(Order_Define_Wrpc::NWMS_APP_ID,
                                                     Order_Define_Wrpc::NWMS_STOCK_NAMESPACE,
                                                     $strServiceName);
+        $this->objDaoRal = new Dao_Ral_Sku();
     }
 
     /**
@@ -137,18 +143,27 @@ class Dao_Wrpc_Stock
     }
 
     /**
-     * 获取库位参数详情
+     * 获取详情信息
      * @param $arrSkusPlace
      * @param $intIsDefective
      * @return array
+     * @throws Nscm_Exception_Error
      */
     protected function getLocationDetails($arrSkusPlace, $intIsDefective)
     {
         $arrLocationDetails = [];
         foreach ((array)$arrSkusPlace as $arrSkusPlaceItem) {
             $arrLocationDetailItem = [];
+            $intSkuId = $arrSkusPlaceItem['sku_id'];
             $arrLocationDetailItem['sku_id'] = $arrSkusPlaceItem['sku_id'];
-            $arrLocationDetailItem['expiration_time'] = intval($arrSkusPlaceItem['expire_date']);
+            $arrSkuInfos = $this->objDaoRal->getSkuInfos([$intSkuId]);
+            $intExpireDate = intval($arrSkusPlaceItem['expire_date']);
+            if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $arrSkuInfos[$intSkuId]['sku_effect_type']) {
+                $intExpireTime = $intExpireDate + intval($arrSkuInfos[$intSkuId]['sku_effect_day']) * 86400 - 1;
+            } else {
+                $intExpireTime = $intExpireDate + 86399;
+            }
+            $arrLocationDetailItem['expiration_time'] = $intExpireTime;
             $arrLocationDetailItem['is_defective'] = $intIsDefective;
             $arrLocationDetailItem['target_details'] = $this->getTargetDetails($arrSkusPlaceItem['actual_info']);
             if (!empty($arrLocationDetailItem['target_details'])) {
