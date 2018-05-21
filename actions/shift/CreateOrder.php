@@ -59,7 +59,6 @@ class Action_CreateOrder extends Order_Base_Action
      */
     public function format($data)
     {
-        return $data;
         $arrFormatResult                          = [];
         $arrFormatResult['shift_order_id'] = empty($data['shift_order_id']) ? '' : Nscm_Define_OrderPrefix::SHO . intval($data['shift_order_id']);
 
