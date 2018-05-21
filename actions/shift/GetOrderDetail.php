@@ -13,7 +13,7 @@ class Action_GetOrderDetail extends Order_Base_Action
      */
     protected $arrInputParams = [
         'warehouse_id'          => 'int|optional',
-        'shift_order_id'        => 'regex|patern[/^(S\d{13})?$/]',
+        'shift_order_id'        => 'regex|patern[/^(M\d{13})?$/]',
         'page_num'              => 'int|optional|default[1]',
         'page_size'             => 'int|optional|default[50]',
     ];

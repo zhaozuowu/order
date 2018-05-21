@@ -13,7 +13,7 @@ class Action_GetOrder extends Order_Base_Action
      */
     protected $arrInputParams = [
         'warehouse_ids'             => 'arr|required',
-        'shift_order_id'            => 'regex|patern[/^(S\d{13})?$/]',
+        'shift_order_id'            => 'regex|patern[/^(M\d{13})?$/]',
         'status'                    => 'int|optional',
         'source_location'           => 'str|optional',
         'target_location'           => 'str|optional',

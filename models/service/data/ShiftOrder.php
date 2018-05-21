@@ -204,6 +204,7 @@ class Service_Data_ShiftOrder
             'detail'            => json_encode($skuList),
             'creator'           => $intCreator,
             'creator_name'      => $strCreatorName,
+            'create_time'       => time(),
         ];
 
         return $arrOrderArg;
