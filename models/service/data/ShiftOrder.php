@@ -72,6 +72,15 @@ class Service_Data_ShiftOrder
             Bd_Log::warning(sprintf("finish shift order failed order_id[%s] ",$arrInput['shift_order_id']));
             return false;
         }
+        $condition = ['shift_order_id' => $arrInput['shift_order_id']];
+        $ormOrderInfo = Model_Orm_ShiftOrder::findOne($condition);
+        $ormOrderInfo->status = 2;
+        $intAffectRows = $ormOrderInfo->update();
+        if (1 !== $intAffectRows) {
+            Bd_Log::warning(sprintf("finish shift order failed order_id[%s] ",$arrInput['shift_order_id']));
+            return false;
+        }
+
         Bd_Log::trace('finish shift order return ' . print_r($ret, true));
         return true;
     }

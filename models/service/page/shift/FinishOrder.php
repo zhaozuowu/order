@@ -55,11 +55,15 @@ class Service_Page_Shift_FinishOrder
             $detailInput['sku_id']          = $value['sku_id'];
             $detailInput['expiration_time'] = $value['expiration_time'];
             $detailInput['is_defective']    = $value['is_defective'];
-            $detailInput['amount']          = $value['amount'];
+            $detailInput['amount']          = $value['shift_amount'];
             $finishInput['batch_detail'][] = $detailInput;
         }
         // 完成移位单
-        $arrOutput = $this->objShiftOrder->finishShiftOrder($finishInput);
-        return $arrOutput;
+       if(!$this->objShiftOrder->finishShiftOrder($finishInput)){
+            return false;
+       }
+
+
+        return true;
     }
 }
