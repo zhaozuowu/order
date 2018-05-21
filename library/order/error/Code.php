@@ -222,7 +222,7 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_BUSINESS_FORM_ORDER_SUPPLY_TYPE_ERROR = 340004;
-    
+
     /**
      * 业态订单创建sku_id不能为空
      * @var integer
@@ -319,7 +319,7 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_ADJUST_GET_SKU_FAILED = 350019;
-    
+
     /**
      * 库存调整-SKU没有库存信息
      * @var integer
@@ -338,7 +338,7 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST = 350022;
-    
+
     /**
      * 获取商品信息失败
      * @var integer
@@ -560,6 +560,12 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_GET_STOCK_WAREHOUSE_FAIL = 351016;
 
+    /**
+     * 冻结单-冻结单已关闭
+     * @var integer
+     */
+    const NWMS_UNFROZEN_ORDER_STATUS_ERROR = 351017;
+
     //------------------------------------------------冻结单------------------------------------------------
 
     /**
@@ -637,6 +643,16 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL = 390032;
 
+    /**
+     * 已生成拣货单，无法取消
+     */
+    const NWMS_ORDER_STOCKOUT_ORDER_IS_PICKUP_ORDERED = 390033;
+
+    /**
+     * 库位推荐获取失败
+     */
+    const NWMS_ORDER_STOCKOUT_ORDER_GET_RECOMEND_STOCKLOC_FAIL = 390034;
+
 
     /**
      * 上架单创建失败
@@ -667,4 +683,10 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const PLACE_ORDER_NOT_EXIST = 400005;
+
+    /**
+     * 上架单上架失败
+     * @var integer
+     */
+    const PLACE_ORDER_PLACE_FAILED = 400006;
 }

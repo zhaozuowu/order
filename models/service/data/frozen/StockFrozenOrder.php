@@ -197,7 +197,8 @@ class Service_Data_Frozen_StockFrozenOrder
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    protected function getSkuInfos($arrSkuIds) {
+    protected function getSkuInfos($arrSkuIds)
+    {
         if(empty($arrSkuIds)) {
             return [];
         }
@@ -219,7 +220,8 @@ class Service_Data_Frozen_StockFrozenOrder
      * @return bool|mixed
      * @throws Exception
      */
-    public function insert($arrOrderArg, $arrOrderDetailArg) {
+    public function insert($arrOrderArg, $arrOrderDetailArg)
+    {
         Bd_Log::trace('insert into stock frozen order ' . json_encode($arrOrderArg));
         Bd_Log::trace('insert into stock frozen order detail ' . json_encode($arrOrderDetailArg));
 
@@ -236,7 +238,8 @@ class Service_Data_Frozen_StockFrozenOrder
      * @param $arrInput
      * @return array
      */
-    public function getOrderList($arrInput) {
+    public function getOrderList($arrInput)
+    {
         Bd_Log::trace(__METHOD__ . '  param ', 0, $arrInput);
 
         if(!empty($arrInput['sku_id'])) {
@@ -255,7 +258,8 @@ class Service_Data_Frozen_StockFrozenOrder
     }
 
     // 根据SKU ID 查询所有冻结单ID
-    protected function getOrderIdsBySku($arrInput) {
+    protected function getOrderIdsBySku($arrInput)
+    {
         $arrOrderIds = Model_Orm_StockFrozenOrderDetail::getOrderIdsBySkuId($arrInput['sku_id']);
         if(empty($arrOrderIds)) {
             return [];
@@ -269,7 +273,8 @@ class Service_Data_Frozen_StockFrozenOrder
      * @param $arrInput
      * @return int
      */
-    public function getOrderListCount($arrInput) {
+    public function getOrderListCount($arrInput)
+    {
         Bd_Log::trace(__METHOD__ . '  param ', 0, $arrInput);
 
         if(!empty($arrInput['sku_id'])) {
@@ -291,7 +296,8 @@ class Service_Data_Frozen_StockFrozenOrder
      * @param $arrInput
      * @return array
      */
-    protected function buildGetOrderListSql($arrInput) {
+    protected function buildGetOrderListSql($arrInput)
+    {
         $arrSql = [];
         $intOffset = 0;
         $intLimit = null;
@@ -433,7 +439,6 @@ class Service_Data_Frozen_StockFrozenOrder
             }
 
             // 根据商品效期类型，计算生产日期和有效期
-            //$arrDetail = Order_Util_Stock::getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
             $arrDetail = [
                 'stock_frozen_order_id'     => $arrInput['stock_frozen_order_id'],
                 'warehouse_id'              => $arrInput['warehouse_id'],
@@ -446,7 +451,6 @@ class Service_Data_Frozen_StockFrozenOrder
                 'is_defective'              => $arrDetail['is_defective'],
                 'sku_valid_time'            => $arrDetail['production_or_expire_time'],
             ];
-
             $arrOrderDetailArg[] = $arrDetail;
         }
 

@@ -73,7 +73,7 @@ class Dao_Wrpc_Stock
             'ext_order_id' => strval($intPickupOrderId),
             'details' => $arrPickupSkus,
         ];
-        Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_request[%d]",
+        Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_request[%s]",
             __METHOD__, json_encode($arrReqParams)));
         $arrRet = $this->objWrpcService->pickStock($arrReqParams);
         Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_ret[%s]",
@@ -127,7 +127,6 @@ class Dao_Wrpc_Stock
         $arrRequestParams['details'] = $this->getLocationDetails($arrSkusPlace, $intIsDefective);
         $arrParams['requestParams'] = $arrRequestParams;
         $arrRet = $this->objWrpcService->confirmLocation($arrParams);
-        var_dump($arrRet);exit;
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
                 __METHOD__, json_encode($arrParams), json_encode($arrRet)));
         if (0 != $arrRet['errno']) {
@@ -179,5 +178,105 @@ class Dao_Wrpc_Stock
         return $arrTargetDetails;
     }
 
+    /**
+     * 拣货完成释放库存
+     * @param $intStockoutOrderId
+     * @param $intWarehouseId
+     * @param $arrStockoutDetail
+     * @return bool
+     * @throws Order_BusinessError
+     */
+    public function unfreezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrStockoutDetail)
+    {
+        $arrRequestParams['stockout_order_id'] = $intStockoutOrderId;
+        $arrRequestParams['warehouse_id'] = $intWarehouseId;
+        $arrRequestParams['stockout_details'] = $arrStockoutDetail;
+        $arrParams['requestParams'] = $arrRequestParams;
+        $arrRet = $this->objWrpcService->deliverStock($arrParams);
+        Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
+            __METHOD__, json_encode($arrParams), json_encode($arrRet)));
+        if (0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("unfreeze sku stock failed params[%s] ret[%s]",
+                json_encode($arrParams), json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
+        }
+        return true;
+    }
 
+    /**
+     * 冻结库存
+     * @param $intStockoutOrderId
+     * @param $intWarehouseId
+     * @param $arrFreezeStockDetail
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail)
+    {
+        $arrRequestParams['stockout_order_id'] = $intStockoutOrderId;
+        $arrRequestParams['warehouse_id'] = $intWarehouseId;
+        $arrRequestParams['freeze_details'] = $arrFreezeStockDetail;
+        $arrParams['requestParams'] = $arrRequestParams;
+        $arrRet = $this->objWrpcService->reserveStock($arrParams);
+        Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
+            __METHOD__, json_encode($arrParams), json_encode($arrRet)));
+        if (0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("reserve sku stock failed params[%s] ret[%s]",
+                json_encode($arrParams), json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
+        }
+        return $arrRet['data'];
+    }
+
+    /**
+     * 取消出库单释放库存
+     * @param $intStockoutOrderId
+     * @param $intWarehouseId
+     * @return bool
+     * @throws Order_BusinessError
+     */
+    public function cancelFreezeSkuStock($intStockoutOrderId, $intWarehouseId)
+    {
+        $arrRequestParams['stockout_order_id'] = $intStockoutOrderId;
+        $arrRequestParams['warehouse_id'] = $intWarehouseId;
+        $arrParams['requestParams'] = $arrRequestParams;
+        $arrRet = $this->objWrpcService->cancelReserveStock($arrParams);
+        Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
+            __METHOD__, json_encode($arrParams), json_encode($arrRet)));
+        if (0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("cancel reserve sku stock failed params[%s] ret[%s]",
+                json_encode($arrParams), json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
+        }
+        return $arrRet['data'];
+    }
+
+    /**
+     * @param $intWarehouseId
+     * @param $pickupOrderId
+     * @param $details
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function getRecommendStockLoc($intWarehouseId, $pickupOrderId, $details)
+    {
+        Bd_Log::trace(sprintf("method[%s] get_recommend_stock_loc_details_[%d]_pickup_order_id[%d]_details_[%d]",
+            __METHOD__,$details, $intWarehouseId, json_encode($details)));
+
+        $param['requestParams']= [
+            'ext_order_id'=>$pickupOrderId,
+            'warehouse_id'=>$intWarehouseId,
+            'details'=> $details,
+        ];
+        $arrRet = $this->objWrpcService->recommendStockLoc($param);
+        $arrRet = is_array($arrRet) ? $arrRet:[];
+        Bd_Log::trace(sprintf("method[%s] get_recommend_stock_loc_ret[%s]",
+            __METHOD__, json_encode($arrRet)));
+        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("method[%s] arrRet[%s]",
+                __METHOD__, json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_GET_RECOMEND_STOCKLOC_FAIL);
+        }
+        return $arrRet['data'];
+    }
 }

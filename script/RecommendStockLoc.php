@@ -15,10 +15,10 @@ try{
 //    exit();
     $param['requestParams']= [
         'ext_order_id'=>'1801180001809',
-        'warehouse_id'=>'1000025',
+        'warehouse_id'=>'1000027',
         'details'=>[
-            ['sku_id'=>'1000705','amount'=>'4'],
-            ['sku_id'=>'1000763','amount'=>'4'],
+            ['sku_id'=>'1000128','amount'=>'4'],
+            ['sku_id'=>'1000225','amount'=>'4'],
         ]
     ];
     $serviceName = new Bd_Wrpc_Client("bdwaimai_earthnet.nwms",'stock','StockOutService');

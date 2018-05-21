@@ -15,11 +15,11 @@ class Dao_Wrpc_Warehouse
     /**
      * Dao_Wrpc_Warehouse constructor.
      */
-    public function __construct()
+    public function __construct($strServiceName = Order_Define_Wrpc::NWMS_WAREHOUSE_SERVICE_NAME)
     {
         $this->objWrpcService = new Bd_Wrpc_Client(Order_Define_Wrpc::NWMS_APP_ID,
-            Order_Define_Wrpc::NWMS_WAREHOUSE_NAMESPACE,
-            Order_Define_Wrpc::NWMS_WAREHOUSE_SERVICE_NAME);
+            Order_Define_Wrpc::NWMS_WAREHOUSE_NAMESPACE, $strServiceName
+            );
     }
 
     /**
@@ -32,5 +32,25 @@ class Dao_Wrpc_Warehouse
         $arrParams['warehouse_id'] = $intWarehouseId;
         $arrRet = $this->objWrpcService->getWarehouseByConds($arrParams);
         return $arrRet['data']['query_result'][0];
+    }
+
+    /**
+     * sug库位信息
+     * @param $intWarehouseId
+     * @param $strLocationCode
+     * @param $intIsDefault
+     * @return array
+     */
+    public function sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault)
+    {
+        $arrParams = [
+            'objData' => [
+                'warehouse_id'  => $intWarehouseId,
+                'location_code' => $strLocationCode,
+                'is_default'    => $intIsDefault,
+            ]
+        ];
+        $arrRet = $this->objWrpcService->sugStorageLocation($arrParams);
+        return (array)$arrRet['data'];
     }
 }

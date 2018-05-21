@@ -21,7 +21,7 @@ class Action_GetPlaceOrderList extends Order_Base_Action
         $this->arrInputParams = [
             'place_order_status' => 'int|optional',
             'place_order_id'     => 'str|len[16]|min[4]|optional',
-            'stockin_order_id'   => 'str|len[16]|min[4]|optional',
+            'source_order_id'   => 'str|len[16]|min[4]|optional',
             'vendor_id'          => 'int|min[0]|optional',
             'create_time_start'  => 'int|min[0]|optional',
             'create_time_end'    => 'int|min[0]|optional',
@@ -40,14 +40,23 @@ class Action_GetPlaceOrderList extends Order_Base_Action
      * @param array $data
      * @return array
      */
-    public function format($data)
+    public function format($arrData)
     {
-
         $ret = [];
-        if (empty($data)) {
+        if (empty($arrData)) {
             return $ret;
         }
-        return $data;
+        foreach ((array)$arrData['orders'] as $intKey => $arrItem) {
+            $arrData['orders'][$intKey]['create_time']
+                = date('Y-m-d H:i:s', $arrItem['create_time']);
+            $arrData['orders'][$intKey]['place_order_status_text']
+                = Order_Define_PlaceOrder::PLACE_ORDER_STATUS_SHOW[$arrItem['place_order_status']];
+            $arrData['orders'][$intKey]['stockin_order_type_text']
+                = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$arrItem['stockin_order_type']];
+            $arrData['orders'][$intKey]['is_defective_text']
+                = Order_Define_PlaceOrder::PLACE_ORDER_QUALITY_MAP[$arrItem['is_defective']];
+        }
+        return $arrData;
         //$arrFormatRet
 
     }

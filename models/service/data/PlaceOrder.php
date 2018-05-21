@@ -249,7 +249,8 @@ class Service_Data_PlaceOrder
             Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_NOT_EXIST);
         }
         $arrPlaceOrderInfo['skus'] = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId);
-        $arrPlaceOrderInfo['stockin_order_ids'] = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+        $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+        $arrPlaceOrderInfo['source_order_id'] = implode(',', $arrStockinOrderIds);
         return $arrPlaceOrderInfo;
     }
 
@@ -264,6 +265,14 @@ class Service_Data_PlaceOrder
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
         $arrRet = Model_Orm_PlaceOrder::getPlaceOrderList($arrCondtions, $intLimit, $intOffset);
+        foreach ((array)$arrRet as $intKey => $arrRetItem) {
+            $intPlaceOrderId = $arrRetItem['place_order_id'];
+            $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+            if (!empty($arrStockinOrderIds)) {
+                $strStockinOrderIds = implode(',', $arrStockinOrderIds);
+                $arrRet[$intKey]['source_order_id'] = $strStockinOrderIds;
+            }
+        }
         $intTotal = Model_Orm_PlaceOrder::count($arrCondtions);
         return [
             'total' => $intTotal,
@@ -299,16 +308,27 @@ class Service_Data_PlaceOrder
         if (!empty($arrInput['create_time_end'])) {
             $arrConditions['create_time'][] = ['<=', intval($arrInput['create_time_end'])];
         }
+        if (!empty($arrInput['place_time_start'])) {
+            $arrConditions['update_time'][] = ['>=', intval($arrInput['place_time_start'])];
+        }
+        if (!empty($arrInput['place_time_end'])) {
+            $arrConditions['update_time'][] = ['<=', intval($arrInput['place_time_end'])];
+        }
+        if (!empty($arrInput['place_time_start'])
+            || !empty($arrInput['place_time_end'])) {
+            $arrConditions['place_order_status'] = Order_Define_PlaceOrder::STATUS_PLACED;
+        }
         return $arrConditions;
     }
 
     /**
      * 获取上架单打印列表
      * @param $arrPlaceOrderIds
+     * @param $strUserName
      * @return array
      * @throws Order_BusinessError
      */
-    public function getPlaceOrderPrint($arrPlaceOrderIds)
+    public function getPlaceOrderPrint($arrPlaceOrderIds, $strUserName)
     {
         if (empty($arrPlaceOrderIds)) {
             return [];
@@ -327,7 +347,16 @@ class Service_Data_PlaceOrder
             if (!isset($arrMapPlaceOrderSkus[$intPlaceOrderId])) {
                 continue;
             }
+            $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
+            $arrPlaceOrderInfos[$intKey]['source_order_id'] = implode(',', $arrStockinOrderIds);
+            $arrPlaceOrderInfos[$intKey]['print_uname'] = $strUserName;
+            $arrPlaceOrderInfos[$intKey]['print_time'] = date("Y-m-d H:i:s", time());
             $arrPlaceOrderInfos[$intKey]['skus'] = $arrMapPlaceOrderSkus[$intPlaceOrderId];
+            $intTotalAmount = 0;
+            foreach ((array)$arrPlaceOrderInfos[$intKey]['skus'] as $arrSkuItem) {
+                $intTotalAmount += $arrSkuItem['plan_amount'];
+            }
+            $arrPlaceOrderInfos[$intKey]['total_amount'] = $intTotalAmount;
         }
         return $arrPlaceOrderInfos;
     }
@@ -342,16 +371,49 @@ class Service_Data_PlaceOrder
     public function confirmPlaceOrder($intPlaceOrderId, $arrPlacedSkus)
     {
         if (empty($intPlaceOrderId) || empty($arrPlacedSkus)) {
-            return [];
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
         if (empty($arrPlaceOrderInfo)) {
-
+            Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_NOT_EXIST);
         }
         $intWarehouseId = $arrPlaceOrderInfo['warehouse_id'];
         $intIsDefective = $arrPlaceOrderInfo['is_defective'];
         $arrPlaceOrderSkus = $this->appendPlaceOrderSkuInfo($arrPlacedSkus, $intPlaceOrderId);
         $this->objDaoWprcStock->confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrPlaceOrderSkus);
+        $this->updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus);
+    }
+
+    /**
+     * 上架单上架
+     * @param $intPlaceOrderId
+     * @param $arrPlacedSkus
+     * @return array
+     */
+    protected function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus)
+    {
+        if (empty($intPlaceOrderId) || empty($arrPlacedSkus)) {
+            return [];
+        }
+        $arrMapPlacedSkus = [];
+        foreach ((array)$arrPlacedSkus as $arrPlacedSkuItem) {
+            $intSkuId = $arrPlacedSkuItem['sku_id'];
+            $intExpireDate = $arrPlacedSkuItem['expire_date'];
+            if (empty($intSkuId)) {
+                continue;
+            }
+            $arrMapPlacedSkus[$intSkuId . '#' . $intExpireDate][] = $arrPlacedSkuItem;
+        }
+        Model_Orm_PlaceOrder::getConnection()->transaction(function () use ($intPlaceOrderId, $arrMapPlacedSkus) {
+            $boolFlag = Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrMapPlacedSkus);
+            if (!$boolFlag) {
+                Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
+            }
+            $boolFlag = Model_Orm_PlaceOrder::placeOrder($intPlaceOrderId);
+            if (!$boolFlag) {
+                Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
+            }
+        });
     }
 
     /**
@@ -396,4 +458,17 @@ class Service_Data_PlaceOrder
         return $arrWarehouseInfo['storage_location_tag'];
     }
 
+    /**
+     * sug库位信息
+     * @param $intWarehouseId
+     * @param $strLocationCode
+     * @param $intIsDefault
+     * @return array
+     */
+    public function sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault)
+    {
+        $objDaoWrpcWarehouseStorage = new Dao_Wrpc_Warehouse(Order_Define_Wrpc::NWMS_WAREHOUSE_STORAGE_SERVICE_NAME);
+        $arrLocation = $objDaoWrpcWarehouseStorage->sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault);
+        return $arrLocation;
+    }
 }

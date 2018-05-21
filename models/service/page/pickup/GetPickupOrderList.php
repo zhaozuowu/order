@@ -30,7 +30,7 @@ class Service_Page_Pickup_GetPickupOrderList
     public function execute($arrInput)
     {
         $ret = $this->objPickupOrder->getPickupOrderList(
-            $arrInput['warehouse_id'],
+            $arrInput['warehouse_ids'],
             $arrInput['create_start_time'],
             $arrInput['create_end_time'],
             $arrInput['page_size'],

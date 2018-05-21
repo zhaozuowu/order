@@ -63,4 +63,39 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
         return Model_Orm_PlaceOrderSku::findRows($arrCols, $arrConditions);
     }
 
+    /**
+     * 更新实际上架信息
+     * @param $intPlaceOrderId
+     * @param $arrPlacedSkus
+     * @return bool
+     */
+    public static function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus)
+    {
+        if (empty($intPlaceOrderId)) {
+            return false;
+        }
+        $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
+        if (empty($arrPlaceOrderInfo)) {
+            return false;
+        }
+        foreach ((array)$arrPlacedSkus as $strKey => $arrPlacedSkuItem) {
+            $arrKey = explode('#', $strKey);
+            $intSkuId = $arrKey[0];
+            if (empty($intSkuId)) {
+                continue;
+            }
+            $arrConditions = [
+                'place_order_id' => $intPlaceOrderId,
+                'sku_id' => $intSkuId,
+            ];
+            $objPlaceOrder = self::findOne($arrConditions);
+            if (empty($objPlaceOrder)) {
+                return false;
+            }
+            $objPlaceOrder->actual_info = json_encode($arrPlacedSkuItem);
+            $objPlaceOrder->update();
+        }
+        return true;
+    }
+
 }
