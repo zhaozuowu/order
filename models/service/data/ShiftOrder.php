@@ -169,13 +169,12 @@ class Service_Data_ShiftOrder
             $intTotalKinds++;
         }
 
-
         $intCreator     = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
         $strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
 
         if (empty($intCreator) || empty($strCreatorName)) {
             Bd_Log::warning('get user info failed ', Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR, $arrInput);
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR);
+//            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR);
         }
 
         $arrOrderArg = [
@@ -218,7 +217,8 @@ class Service_Data_ShiftOrder
                 'upc_unit'              => $arrDetail['upc_unit'],
                 'upc_unit_num'          => $arrDetail['upc_unit_num'],
                 'production_time'       => $arrDetail['production_time'],
-                'expire_time'           => $arrDetail['expire_time'],
+                'expiration_time'       => $arrDetail['expiration_time'],
+                'create_time'           => time(),
             ];
 
             $arrOrderDetailArg[] = $arrDetailItem;
