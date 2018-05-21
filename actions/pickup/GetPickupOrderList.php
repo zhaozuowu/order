@@ -17,6 +17,7 @@ class Action_GetPickupOrderList extends Order_Base_Action
         'page_size' => 'int|required',
         'warehouse_ids' => 'str|required',
         'pickup_order_id' => 'str',
+        'pickup_order_status' => 'int|default[0]',
         'stockout_order_id' => 'str',
         'pickup_order_is_print' => 'int',
         'create_start_time' => 'int|required',

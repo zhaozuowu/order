@@ -50,6 +50,7 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
      * @param $intCreateEndTime
      * @param $intPageSize
      * @param int $intPageNum
+     * @param int $intPickupOrderStatus
      * @param array $arrPickupOrderIds
      * @param int $intPickupOrderIsPrint
      * @param int $intUpdateStartTime
@@ -61,6 +62,7 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
                                               $intCreateEndTime,
                                               $intPageSize,
                                               $intPageNum = 1,
+                                              $intPickupOrderStatus = 0,
                                               $arrPickupOrderIds = [],
                                               $intPickupOrderIsPrint = 0,
                                               $intUpdateStartTime = 0,
@@ -82,6 +84,9 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
         }
         if (!empty($arrWarehouseIds)) {
             $arrCondition['warehouse_id'] = ['in', $arrWarehouseIds];
+        }
+        if (!empty($intPickupOrderStatus)) {
+            $arrCondition['pickup_order_status'] = intval($intPickupOrderStatus);
         }
         if (!empty($arrPickupOrderIds)) {
             $arrCondition['pickup_order_id'] = [
