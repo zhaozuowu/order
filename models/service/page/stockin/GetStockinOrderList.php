@@ -61,6 +61,7 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
         $intPrintStatus = intval($arrInput['print_status']);
         $intPageNum = $arrInput['page_num'];
         $intPageSize = $arrInput['page_size'];
+        $intIsPlacedOrder = $arrInput['is_placed_order'];
         return $this->objServiceData->getStockinOrderList(
             $strStockinOrderType,
             $intDataSource,
@@ -77,6 +78,7 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
             $arrStockinTime,
             $arrStockinDestroyTime,
             $intPrintStatus,
+            $intIsPlacedOrder,
             $intPageNum,
             $intPageSize);
     }

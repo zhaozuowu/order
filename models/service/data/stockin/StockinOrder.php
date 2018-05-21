@@ -598,6 +598,7 @@ class Service_Data_Stockin_StockinOrder
         $arrStockinTime,
         $arrStockinDestroyTime,
         $intPrintStatus,
+        $intIsPlacedOrder,
         $intPageNum,
         $intPageSize)
     {
@@ -686,6 +687,7 @@ class Service_Data_Stockin_StockinOrder
             $arrStockinTime,
             $arrStockinDestroyTime,
             $intPrintStatus,
+            $intIsPlacedOrder,
             $intPageNum,
             $intPageSize);
     }

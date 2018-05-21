@@ -249,6 +249,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrStockinTime,
         $arrStockinDestroyTime,
         $intPrintStatus,
+        $intIsPlacedOrder,
         $intPageNum,
         $intPageSize
     )
@@ -354,6 +355,9 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
         if (!empty($intPrintStatus)) {
             $arrCondition['stockin_order_is_print'] = $intPrintStatus;
+        }
+        if (!empty($intIsPlacedOrder)) {
+            $arrCondition['is_placed_order'] = $intIsPlacedOrder;
         }
 
         // 至少要有一个必传的时间段
@@ -491,6 +495,24 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         ];
         self::updateAll($arrCols, $arrConditions);
         return true;
+    }
+
+    /**
+     * 通过入库单号批量获取入库单信息
+     * @param $arrStockinOrderIds
+     * @return array
+     */
+    public static function getStockinOrderInfosByStockinOrderIds($arrStockinOrderIds)
+    {
+        if (empty($arrStockinOrderIds)) {
+            return [];
+        }
+        $arrConditions = [
+            'stockin_order_id' => ['in', $arrStockinOrderIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrCols = self::getAllColumns();
+        return self::findRows($arrCols, $arrConditions);
     }
 
 }

@@ -26,7 +26,9 @@ class Action_ConfirmPlaceOrder extends Order_Base_Action
                 'sku_id' => 'int|required',
                 'place_amount' => 'int|required',
                 'expire_date' => 'int|required',
-                'place_location_id' => 'str|required',
+                'area_code' => 'str|required',
+                'location_code' => 'str|required',
+                'roadway_code' => 'str|required',
             ],
         ],
     ];

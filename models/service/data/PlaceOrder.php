@@ -67,16 +67,20 @@ class Service_Data_PlaceOrder
             return $arrStockinInfo;
         }
         $arrStockinInfo['stockin_order_ids'] = $arrStockinOrderIds;
+        $arrStockinInfoDb = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($arrStockinOrderIds[0]);
+        if (empty($arrStockinInfoDb)) {
+            return [];
+        }
         if (1 == count($arrStockinOrderIds)) {
-            $arrStockinInfoDb = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($arrStockinOrderIds[0]);
-            if (empty($arrStockinInfoDb)) {
-                return [];
-            }
             $arrStockinInfo['vendor_id'] = $arrStockinInfoDb['vendor_id'];
             $arrStockinInfo['vendor_name'] = $arrStockinInfoDb['vendor_name'];
             $arrStockinInfo['warehouse_id'] = $arrStockinInfoDb['warehouse_id'];
             $arrStockinInfo['warehouse_name'] = $arrStockinInfoDb['warehouse_name'];
             $arrStockinInfo['stockin_order_type'] = $arrStockinInfoDb['stockin_order_type'];
+        } else {
+            $arrStockinInfo['warehouse_id'] = $arrStockinInfoDb['warehouse_id'];
+            $arrStockinInfo['warehouse_name'] = $arrStockinInfoDb['warehouse_name'];
+            $arrStockinInfo['stockin_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
         }
         $arrStockinInfo['skus'] = Model_Orm_StockinOrderSku::getStockinOrderSkusByStockinOrderIds($arrStockinOrderIds);
         return $arrStockinInfo;
@@ -230,6 +234,16 @@ class Service_Data_PlaceOrder
         $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
         if (!empty($arrStockinOrderIds)) {
             Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_ALREADY_CREATE);
+        }
+        //校验是否来自同一个仓库
+        $arrStockinOrderInfos = Model_Orm_StockinOrder::getStockinOrderInfosByStockinOrderIds($arrStockinOrderIds);
+        $arrMapWarehouseStockinInfos = [];
+        foreach ((array)$arrStockinOrderInfos as $arrStockinOrderInfoItem) {
+            $intWarehouseId = $arrStockinOrderInfoItem['warehouse_id'];
+            $arrMapWarehouseStockinInfos[$intWarehouseId] = true;
+        }
+        if (count($arrMapWarehouseStockinInfos) > 1) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_FROM_DIFFERENT_WAREHOUSE);
         }
     }
 
@@ -465,10 +479,10 @@ class Service_Data_PlaceOrder
      * @param $intIsDefault
      * @return array
      */
-    public function sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault)
+    public function sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault, $intIsDefaultTemporary)
     {
         $objDaoWrpcWarehouseStorage = new Dao_Wrpc_Warehouse(Order_Define_Wrpc::NWMS_WAREHOUSE_STORAGE_SERVICE_NAME);
-        $arrLocation = $objDaoWrpcWarehouseStorage->sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault);
+        $arrLocation = $objDaoWrpcWarehouseStorage->sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault, $intIsDefaultTemporary);
         return $arrLocation;
     }
 }

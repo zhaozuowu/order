@@ -176,13 +176,13 @@ class Order_Define_StockinOrder
      * 已生成上架单
      * @var integer
      */
-    const STOCKIN_IS_PLACED = 1;
+    const STOCKIN_IS_PLACED = 2;
 
     /**
      * 未生成上架单
      * @var integer
      */
-    const STOCKIN_NOT_PLACED = 0;
+    const STOCKIN_NOT_PLACED = 1;
 
     /**
      * 是否生成上架单map
