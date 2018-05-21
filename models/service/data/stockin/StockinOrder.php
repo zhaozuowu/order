@@ -1212,9 +1212,9 @@ class Service_Data_Stockin_StockinOrder
         if (empty($strStockInOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
-        if (empty($arrSkuInfoList)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
-        }
+//        if (empty($arrSkuInfoList)) {
+//            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+//        }
         $intStockInOrderId = Order_Util::trimStockinOrderIdPrefix($strStockInOrderId);
         $arrStockInOrderInfo = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intStockInOrderId);
         if (empty($arrStockInOrderInfo)) {
@@ -1235,13 +1235,17 @@ class Service_Data_Stockin_StockinOrder
             Model_Orm_StockinOrder::getConnection()->transaction(function () use (
                 $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList, $strRemark,
                 $intWarehouseId, $arrStockInSkuList) {
-                $objRalStock = new Dao_Ral_Stock();
-                $arrStock = $objRalStock->stockIn($intStockInOrderId,
-                    Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN,
-                    $intWarehouseId,
-                    $arrStockInSkuList);
+                $intBatchId = 0;
+                if (!empty($arrStockInSkuList)) {
+                    $objRalStock = new Dao_Ral_Stock();
+                    $arrStock = $objRalStock->stockIn($intStockInOrderId,
+                        Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN,
+                        $intWarehouseId,
+                        $arrStockInSkuList);
+                    $intBatchId = $arrStock['stockin_batch_id'];
+                }
                 Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime,
-                    $intStockInOrderRealAmount, $strRemark, $arrStock['stockin_batch_id']);
+                    $intStockInOrderRealAmount, $strRemark, $intBatchId);
                 Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
             });
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
