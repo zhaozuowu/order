@@ -757,6 +757,9 @@ class Service_Data_Stockin_StockinOrder
             $arrRetList[$key]['vendor_id'] = isset($arrSourceInfo['vendor_id']) ? $arrSourceInfo['vendor_id']:0;
             $arrRetList[$key]['vendor_name'] = isset($arrSourceInfo['vendor_name']) ? $arrSourceInfo['vendor_name']:'';
             $arrRetList[$key]['customer_id'] = isset($arrSourceInfo['customer_id']) ? $arrSourceInfo['customer_id']:0;
+            $arrRetList[$key]['customer_contactor'] = isset($arrSourceInfo['customer_contactor']) ? $arrSourceInfo['customer_contactor']:'';
+            $arrRetList[$key]['customer_contact'] = isset($arrSourceInfo['customer_contact']) ? $arrSourceInfo['customer_contact']:'';
+            $arrRetList[$key]['customer_address'] = isset($arrSourceInfo['customer_address']) ? $arrSourceInfo['customer_address']:'';
             $arrRetList[$key]['customer_name'] = isset($arrSourceInfo['customer_name']) ? $arrSourceInfo['customer_name']:'';
             $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):$item['warehouse_name'];
             $arrRetList[$key]['warehouse_contact'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact']:'';
