@@ -8,9 +8,9 @@
 class Service_Page_Shift_CreateOrder
 {
     /**
-     * @var Service_Data_StockAdjustOrder
+     * @var Service_Data_objShiftOrderr
      */
-    protected $objStockAdjustOrder;
+    protected $objShiftOrder;
 
     /**
      * @var Service_Data_StockAdjustOrderDetail

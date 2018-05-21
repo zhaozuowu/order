@@ -1,35 +1,18 @@
 <?php
 /**
- * @name Action_Createincreaseorder
+ * @name Action_Finishorder
  * @desc 创建库存调整单-调增
  * @author sunzhixin@iwaimai.baidu.com
  */
 
-class Action_CreateOrder extends Order_Base_Action
+class Action_FinishOrder extends Order_Base_Action
 {
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_id'      => 'int|required',
-        'source_location'   => 'str|required',
-        'target_location'   => 'str|required',
-        'detail'            => [
-            'validate'      => 'json|required|decode',
-            'type'          => 'array',
-            'params'        => [
-                'sku_id'                => 'int|required',
-                'sku_name'              => 'str|required',
-                'upc_id'                => 'str|required|min[1]|len[64]',
-                'upc_unit'              => 'int|required',
-                'upc_unit_num'          => 'int|required',
-                'production_time'       => 'int|required',
-                'expiration_time'       => 'int|required',
-                'shift_amount'          => 'int|required',
-                'is_defective'          => 'int|required',
-            ],
-        ],
+        'shift_order_id' => 'str|required',
     ];
 
     /**
@@ -49,7 +32,7 @@ class Action_CreateOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->objPage = new Service_Page_Shift_CreateOrder();
+        $this->objPage = new Service_Page_Shift_FinishOrder();
     }
 
     /**

@@ -343,4 +343,29 @@ class Dao_Huskar_Stock
 
     /***************************************************冻结单相关******************************************************/
 
+    CONST API_RALER_MOVE_LOCATION = 'movelocation';
+
+    /**
+     * 获取仓库
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function moveLocation($shift_order_id)
+    {
+        $arrReq[self::API_RALER_MOVE_LOCATION]['requestParams'] = $shift_order_id;
+
+        $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
+        $arrRet = $this->objApiHuskar->getData($arrReq);
+        $arrRet = empty($arrRet[self::API_RALER_MOVE_LOCATION]) ? [] : $arrRet[self::API_RALER_MOVE_LOCATION];
+        if (empty($arrRet) || !empty($arrRet['errno'])) {
+            Bd_Log::warning('call stock model move location failed. ret: ' . print_r($arrRet, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_GET_STOCK_WAREHOUSE_FAIL);
+        }
+        Bd_Log::trace('call stock model move location, ret: ' . json_encode($arrRet));
+
+        return $arrRet['data'];
+    }
+
+    /***************************************************移位单相关******************************************************/
 }
