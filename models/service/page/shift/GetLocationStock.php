@@ -13,12 +13,15 @@ class Service_Page_Shift_GetLocationStock
      */
     protected $objStock;
 
+    protected $objSku;
+
     /**
      * init
      */
     public function __construct()
     {
         $this->objStock = new Dao_Huskar_Stock();
+        $this->objSku = new Dao_Ral_Sku();
     }
 
     /**
@@ -29,6 +32,21 @@ class Service_Page_Shift_GetLocationStock
     public function execute($arrInput)
     {
         $arrOutput = $this->objStock->getRemovableSkuBatchInfo($arrInput );
-        return $arrOutput;
+
+        return $this->formatResult($arrOutput);
+    }
+
+    public function formatResult($arrInput){
+        $skuIds = array_column($arrInput,'sku_id');
+        $skuInfos = $this->objSku->getSkuInfos($skuIds);
+        foreach ($arrInput as &$value){
+           foreach ($skuInfos as $sku){
+               if($value['sku_id'] == $sku['sku_id']){
+                   $value['sku_name'] = $sku['sku_id'];
+                   $value['upc_id'] = $sku['main_upc_id'];
+               }
+           }
+        }
+        return $arrInput;
     }
 }
