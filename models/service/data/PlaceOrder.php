@@ -67,16 +67,20 @@ class Service_Data_PlaceOrder
             return $arrStockinInfo;
         }
         $arrStockinInfo['stockin_order_ids'] = $arrStockinOrderIds;
+        $arrStockinInfoDb = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($arrStockinOrderIds[0]);
+        if (empty($arrStockinInfoDb)) {
+            return [];
+        }
         if (1 == count($arrStockinOrderIds)) {
-            $arrStockinInfoDb = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($arrStockinOrderIds[0]);
-            if (empty($arrStockinInfoDb)) {
-                return [];
-            }
             $arrStockinInfo['vendor_id'] = $arrStockinInfoDb['vendor_id'];
             $arrStockinInfo['vendor_name'] = $arrStockinInfoDb['vendor_name'];
             $arrStockinInfo['warehouse_id'] = $arrStockinInfoDb['warehouse_id'];
             $arrStockinInfo['warehouse_name'] = $arrStockinInfoDb['warehouse_name'];
             $arrStockinInfo['stockin_order_type'] = $arrStockinInfoDb['stockin_order_type'];
+        } else {
+            $arrStockinInfo['warehouse_id'] = $arrStockinInfoDb['warehouse_id'];
+            $arrStockinInfo['warehouse_name'] = $arrStockinInfoDb['warehouse_name'];
+            $arrStockinInfo['stockin_order_type'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
         }
         $arrStockinInfo['skus'] = Model_Orm_StockinOrderSku::getStockinOrderSkusByStockinOrderIds($arrStockinOrderIds);
         return $arrStockinInfo;

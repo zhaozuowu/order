@@ -249,6 +249,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrStockinTime,
         $arrStockinDestroyTime,
         $intPrintStatus,
+        $intIsPlacedOrder,
         $intPageNum,
         $intPageSize
     )
@@ -354,6 +355,9 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
         if (!empty($intPrintStatus)) {
             $arrCondition['stockin_order_is_print'] = $intPrintStatus;
+        }
+        if (!empty($intIsPlacedOrder)) {
+            $arrCondition['is_placed_order'] = $intIsPlacedOrder;
         }
 
         // 至少要有一个必传的时间段

@@ -29,7 +29,6 @@ class Action_GetPlaceOrderList extends Order_Base_Action
             'place_time_end'     => 'int|min[0]|optional',
             'page_num'           => 'int|default[1]|min[1]|optional',
             'page_size'          => 'int|required|min[1]|max[200]',
-
         ];
 
         $this->objPage = new Service_Page_Place_GetPlaceOrderList();
