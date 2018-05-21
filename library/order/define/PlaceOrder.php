@@ -30,13 +30,13 @@ class Order_Define_PlaceOrder
      * 上架单质量为非良品
      * @var integer
      */
-    const PLACE_ORDER_QUALITY_GOOD = 2;
+    const PLACE_ORDER_QUALITY_BAD = 2;
 
     /**
      * 上架单质量为良品
      * @var integer
      */
-    const PLACE_ORDER_QUALITY_BAD = 1;
+    const PLACE_ORDER_QUALITY_GOOD = 1;
 
     /**
      * 上架单质量数组
