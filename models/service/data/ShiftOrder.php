@@ -10,14 +10,14 @@ class Service_Data_ShiftOrder
     /**
      * @var Dao_Ral_Stock
      */
-//    protected $objDaoShiftOrder;
+    protected $objDaoShiftOrder;
 
     /**
      * init
      */
     public function __construct()
     {
-//        $this->objDaoShiftOrder = new Dao_Ral_Stock();
+        $this->objDaoShiftOrder = new Dao_Huskar_Stock();
     }
 
     /**
@@ -57,6 +57,22 @@ class Service_Data_ShiftOrder
             return false;
         }
         Bd_Log::trace('cancel shift order return ' . print_r($intAffectRows, true));
+        return true;
+    }
+
+    /**
+     * 取消移位单
+     * @param $arrInput
+     * @return arrayShift
+     */
+    public function finishShiftOrder($arrInput)
+    {
+        $ret = $this->objDaoShiftOrder->moveLocation($arrInput);
+        if (empty($ret)) {
+            Bd_Log::warning(sprintf("finish shift order failed order_id[%s] ",$arrInput['shift_order_id']));
+            return false;
+        }
+        Bd_Log::trace('finish shift order return ' . print_r($ret, true));
         return true;
     }
 
