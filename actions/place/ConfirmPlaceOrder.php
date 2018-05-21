@@ -20,7 +20,7 @@ class Action_ConfirmPlaceOrder extends Order_Base_Action
     protected $arrInputParams = [
         'place_order_id' => 'int|required',
         'skus' => [
-            'validate' => 'json|decode|required',
+            'validate' => 'arr|required',
             'type' => 'array',
             'params' => [
                 'sku_id' => 'int|required',

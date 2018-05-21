@@ -12,7 +12,7 @@ class Action_CancelOrder extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'shift_order_id' => 'int|required',
+        'shift_order_id' => 'str|required',
     ];
 
     /**
@@ -42,9 +42,6 @@ class Action_CancelOrder extends Order_Base_Action
      */
     public function format($data)
     {
-        $arrFormatResult                          = [];
-        $arrFormatResult['stock_adjust_order_id'] = empty($data['stock_adjust_order_id']) ? '' : Nscm_Define_OrderPrefix::SAO . intval($data['stock_adjust_order_id']);
-
-        return $arrFormatResult;
+        return $data;
     }
 }

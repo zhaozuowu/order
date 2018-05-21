@@ -1,8 +1,8 @@
 <?php
 /**
- * @name    Service_Data_StockAdjustOrder
- * @desc 库存调整单
- * @author sunzhixin@iwaimai.baidu.com
+ * @name    Service_Data_ShiftOrder
+ * @desc 移位单
+ * @author songwenkai@iwaimai.baidu.com
  */
 
 class Service_Data_ShiftOrder
@@ -21,7 +21,7 @@ class Service_Data_ShiftOrder
     }
 
     /**
-     * 新建调整单
+     * 新建移位单
      * @param $arrInput
      * @return arrayShift
      */
@@ -42,61 +42,26 @@ class Service_Data_ShiftOrder
     }
 
     /**
-     * 新建调整单
+     * 取消移位单
      * @param $arrInput
      * @return arrayShift
      */
     public function cancelShiftOrder($arrInput)
     {
-        $arrRet = [];
-        $arrRet = $this->insert($arrOrderArg, $arrOrderDetailArg);
-
-        Bd_Log::trace('create shift order return ' . print_r($arrRet, true));
-        return $arrRet;
-    }
-
-
-    /**
-     * 获取商品库存信息
-     * @param $intWarehouseId
-     * @param $arrSkuIds
-     * @return array
-     */
-    protected function getSkuStocks($intWarehouseId, $arrSkuIds)
-    {
-        $arrStocks = $this->objDaoStock->getStockInfo($intWarehouseId, $arrSkuIds);
-        if (empty($arrStocks)) {
-            Bd_Log::warning(__METHOD__ . ' get sku stock failed. call ral failed.');
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
+        $condition = ['shift_order_id' => $arrInput['shift_order_id']];
+        $ormOrderInfo = Model_Orm_ShiftOrder::findOne($condition);
+        $ormOrderInfo->status = 0;
+        $intAffectRows = $ormOrderInfo->update();
+        if (1 !== $intAffectRows) {
+            Bd_Log::warning(sprintf("cancel shift order failed order_id[%s] ",$arrInput['shift_order_id']));
+            return false;
         }
-
-        return Order_Util_Util::arrayToKeyValue($arrStocks, 'sku_id');
+        Bd_Log::trace('cancel shift order return ' . print_r($intAffectRows, true));
+        return true;
     }
 
     /**
-     * 获取sku详情
-     * @param array $arrSkuIds sku id 数组
-     * @return array
-     */
-    protected function getSkuInfos($arrSkuIds)
-    {
-        if (empty($arrSkuIds)) {
-            return [];
-        }
-        $arrSkuIds = array_unique($arrSkuIds);
-
-        $arrSkuInfos = $this->objDaoSku->getSkuInfos($arrSkuIds);
-
-        if (empty($arrSkuInfos)) {
-            Bd_Log::warning(__METHOD__ . ' get sku info failed. call ral failed.');
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED);
-        }
-
-        return $arrSkuInfos;
-    }
-
-    /**
-     * 查询调整单
+     * 查询移位单
      * 如果传入page_size，则分页返回结果，否则不分页。
      * @param $arrInput
      * @return array
@@ -105,7 +70,7 @@ class Service_Data_ShiftOrder
     {
         Bd_Log::debug(__METHOD__ . '  param ', 0, $arrInput);
 
-        $arrColumns    = Model_Orm_StockAdjustOrder::getAllColumns();
+        $arrColumns    = Model_Orm_ShiftOrder::getAllColumns();
         $arrConditions = $this->getConditions($arrInput);
         $arrOrderBy    = ['warehouse_id' => 'asc', 'id' => 'desc'];
 
@@ -120,7 +85,7 @@ class Service_Data_ShiftOrder
             $intLimit  = $arrInput['page_size'];
         }
 
-        $arrRet = Model_Orm_StockAdjustOrder::findRows($arrColumns, $arrConditions, $arrOrderBy, $intOffset, $intLimit);
+        $arrRet = Model_Orm_ShiftOrder::findRows($arrColumns, $arrConditions, $arrOrderBy, $intOffset, $intLimit);
         Bd_Log::debug(__METHOD__ . 'sql return: ' . json_encode($arrRet));
         return $arrRet;
     }
@@ -135,7 +100,7 @@ class Service_Data_ShiftOrder
         Bd_Log::debug(__METHOD__ . '  param ', 0, $arrInput);
 
         $arrConditions = $this->getConditions($arrInput);
-        $ret           = Model_Orm_StockAdjustOrder::count($arrConditions);
+        $ret           = Model_Orm_ShiftOrder::count($arrConditions);
         Bd_Log::debug(__METHOD__ . 'sql return: ' . $ret);
         return $ret;
     }
@@ -156,21 +121,24 @@ class Service_Data_ShiftOrder
         if (!empty($arrInput['warehouse_id'])) {
             $arrFormatInput['warehouse_id'] = $arrInput['warehouse_id'];
         }
-        if (!empty($arrInput['stock_adjust_order_id'])) {
-            $arrFormatInput['stock_adjust_order_id'] = $arrInput['stock_adjust_order_id'];
+        if (!empty($arrInput['shift_order_id'])) {
+            $arrFormatInput['shift_order_id'] = $arrInput['shift_order_id'];
         }
-        if (!empty($arrInput['stock_adjust_order_ids'])) {
-            $arrFormatInput['stock_adjust_order_id'] = ['in', $arrInput['stock_adjust_order_ids']];
+        if (!empty($arrInput['status'])) {
+            $arrFormatInput['status'] = $arrInput['status'];
         }
-        if (!empty($arrInput['adjust_type'])) {
-            $strAdjustType = Nscm_Define_Stock::ADJUST_TYPE_MAP[$arrInput['adjust_type']];
-            if (empty($strAdjustType)) {
-                Bd_Log::warning('adjust type invalid ', Order_Error_Code::PARAMS_ERROR, $arrInput);
-                Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
-            }
-            $arrFormatInput['adjust_type'] = $arrInput['adjust_type'];
+        if (!empty($arrInput['source_location'])) {
+            $arrFormatInput['source_location'] = $arrInput['source_location'];
         }
-
+        if (!empty($arrInput['target_location'])) {
+            $arrFormatInput['target_location'] = $arrInput['target_location'];
+        }
+        if (!empty($arrInput['sku_id'])) {
+            $arrFormatInput['sku_id'][] = ['like ',$arrInput['sku_id']];
+        }
+        if (!empty($arrInput['sku_name'])) {
+            $arrFormatInput['sku_name'][] = ['like ',$arrInput['sku_name']];
+        }
         if (!empty($arrInput['begin_date'])) {
             $arrFormatInput['create_time'][] = ['>=', $arrInput['begin_date']];
         }
@@ -201,13 +169,12 @@ class Service_Data_ShiftOrder
             $intTotalKinds++;
         }
 
-
         $intCreator     = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
         $strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
 
         if (empty($intCreator) || empty($strCreatorName)) {
             Bd_Log::warning('get user info failed ', Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR, $arrInput);
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR);
+//            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR);
         }
 
         $arrOrderArg = [
@@ -250,7 +217,8 @@ class Service_Data_ShiftOrder
                 'upc_unit'              => $arrDetail['upc_unit'],
                 'upc_unit_num'          => $arrDetail['upc_unit_num'],
                 'production_time'       => $arrDetail['production_time'],
-                'expire_time'           => $arrDetail['expire_time'],
+                'expiration_time'       => $arrDetail['expiration_time'],
+                'create_time'           => time(),
             ];
 
             $arrOrderDetailArg[] = $arrDetailItem;
@@ -261,9 +229,9 @@ class Service_Data_ShiftOrder
 
 
     /**
-     * 获取移位单详情
-     * @param $stock_adjust_order_id
-     * @return Model_Orm_StockAdjustOrder
+     * 获取移位单
+     * @param $stock_shift_order_id
+     * @return Model_Orm_ShiftOrder
      */
     public static function getByOrderId($shift_order_id)
     {

@@ -29,6 +29,7 @@ class Service_Page_Place_ConfirmPlaceOrder implements Order_Base_Page
     {
         $intPlaceOrderId = $arrInput['place_order_id'];
         $arrSkus = $arrInput['skus'];
+        Bd_Log::trace(sprintf("method[%s] arrInput[%s]", __METHOD__, json_encode($arrInput)));
         return $this->objDsPlaceOrder->confirmPlaceOrder($intPlaceOrderId, $arrSkus);
     }
 }
