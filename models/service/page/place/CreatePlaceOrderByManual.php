@@ -31,6 +31,9 @@ class Service_Page_Place_CreatePlaceOrderByManual implements Order_Base_Page
     {
         $this->objDsPlaceOrder->checkPlaceOrderExisted($arrInput['stockin_order_ids']);
         $arrStockinOrderIds = explode(',', $arrInput['stockin_order_ids']);
+        foreach ((array)$arrStockinOrderIds as $intKey => $strStockinOrderId) {
+            $arrStockinOrderIds[$intKey] = ltrim($strStockinOrderId, Nscm_Define_OrderPrefix::SIO);
+        }
         $this->objDsPlaceOrder->createPlaceOrder($arrStockinOrderIds);
         $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrInput);
         if (false == $ret) {
