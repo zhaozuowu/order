@@ -39,8 +39,17 @@ class Service_Data_PlaceOrder
         if (empty($arrStockinOrderInfo)) {
             return [];
         }
+        //校验是否已生成上架单
+        $arrStockinPlaceOrderInfo = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
+        if (!empty($arrStockinPlaceOrderInfo)) {
+            return [];
+        }
         //创建上架单
         $arrSplitOrderInfo = $this->splitStockinOrderByQuality($arrStockinOrderInfo);
+        if (empty($arrSplitOrderInfo) || empty($arrSplitOrderInfo['good_skus'])
+            || empty($arrSplitOrderInfo['bad_skus'])) {
+            return [];
+        }
         list($arrOrderList, $arrSkuList, $arrMapOrderList) =
             $this->getCreateParams($arrSplitOrderInfo);
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
