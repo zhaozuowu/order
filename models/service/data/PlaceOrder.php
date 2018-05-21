@@ -39,6 +39,7 @@ class Service_Data_PlaceOrder
         if (empty($arrStockinOrderInfo)) {
             return [];
         }
+        //校验是否已生成上架单
         $arrStockinPlaceOrderInfo = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
         if (empty($arrStockinPlaceOrderInfo)) {
             return [];
