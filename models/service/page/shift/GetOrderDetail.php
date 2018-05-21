@@ -57,9 +57,9 @@ class Service_Page_Shift_GetOrderDetail
     public function formatResult($arrOrder = array(), $intCount = 0, $arrDetail = array())
     {
         $arrRet = $arrOrder;
+        $arrRet['total'] = $intCount;
         $arrRet['shift_order_detail'] = array();
-        $arrRet['shift_order_detail']['total'] = $intCount;
-        $arrRet['shift_order_detail']['detail'] = $arrDetail;
+        $arrRet['shift_order_detail'] = $arrDetail;
 
         return $arrRet;
     }
