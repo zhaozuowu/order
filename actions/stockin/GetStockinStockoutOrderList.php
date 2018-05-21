@@ -32,7 +32,7 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
         'stockin_destroy_time_start' => 'int|min[0]',
         'stockin_destroy_time_end' => 'int|min[0]',
         'print_status' => 'int|min[0]',
-        'is_placed_order' => 'int|required',
+        'is_placed_order' => 'int|min[0]',
         'page_num' => 'int|default[1]|min[1]|optional',
         'page_size' => 'int|required|min[1]|max[200]',
     ];
