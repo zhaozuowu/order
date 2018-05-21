@@ -11,6 +11,6 @@ abstract class Order_Base_Action extends Order_Base_BaseAction {
      * @var bool
      */
     protected $boolCheckWarehouse = true;
-//    protected $boolCheckLogin = false;
-//    protected $boolCheckAuth = false;
+    protected $boolCheckLogin = false;
+    protected $boolCheckAuth = false;
 }

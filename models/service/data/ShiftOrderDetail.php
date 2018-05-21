@@ -22,16 +22,12 @@ class Service_Data_ShiftOrderDetail
         $arrConditions = $this->getConditions($arrInput);
         // 库存调整明细：仓库ID排期（ID从小到大）> 创建时间倒序
         $arrOrderBy = ['warehouse_id' => 'asc', 'id' => 'desc'];
-        if(empty($arrInput['page_num'])) {
-            $arrInput['page_num'] = 1;
+        if(!empty($arrInput['page_num']) && !empty($arrInput['page_size'])){
+            $intOffset = ($arrInput['page_num'] - 1) * $arrInput['page_size'];
+            $intLimit = $arrInput['page_size'];
         }
-        if(empty($arrInput['page_size'])) {
-            $arrInput['page_size'] = 20;
-        }
-        $intOffset = ($arrInput['page_num'] - 1) * $arrInput['page_size'];
-        $intLimit = $arrInput['page_size'];
 
-        $ret = Model_Orm_StockAdjustOrderDetail::findRows($arrColumns, $arrConditions, $arrOrderBy, $intOffset, $intLimit);
+        $ret = Model_Orm_ShiftOrderDetail::findRows($arrColumns, $arrConditions, $arrOrderBy, $intOffset, $intLimit);
         return $ret;
     }
 

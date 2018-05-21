@@ -28,7 +28,9 @@ class Service_Page_Shift_GetLocationStock
      */
     public function execute($arrInput)
     {
-        $arrOutput = $this->objStock->getBatchStorageLocation($arrInput['warehouse_id'], $arrInput['source_location']);
+        $warehouseId = $arrInput['warehouse_id'];
+        $locationcodes[] = $arrInput['location_code'];
+        $arrOutput = $this->objStock->getLocationStockNum($warehouseId,$locationcodes );
         return $arrOutput;
     }
 }

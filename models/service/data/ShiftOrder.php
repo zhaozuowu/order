@@ -251,18 +251,18 @@ class Service_Data_ShiftOrder
      */
     public static function getByOrderId($shift_order_id)
     {
-        if(empty($stock_adjust_order_id)) {
+        if(empty($shift_order_id)) {
             Bd_Log::warning('stock shift order id invalid', Order_Error_Code::PARAMS_ERROR, $shift_order_id);
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
 
         $arrConditions = [
             'is_delete'             => Order_Define_Const::NOT_DELETE,
-            'shift_order_id' => $shift_order_id,
+            'shift_order_id'        => $shift_order_id,
         ];
 
         // 获取所有字段
-        $arrColumns = self::getAllColumns();
+        $arrColumns = Model_Orm_ShiftOrder::getAllColumns();
 
         $arrRet = Model_Orm_ShiftOrder::findRow($arrColumns, $arrConditions);
 

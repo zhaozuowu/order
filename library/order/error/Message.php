@@ -10,6 +10,7 @@ class Order_Error_Message extends Wm_Error_Message
     protected $_disp_app_err_msg = [
         Order_Error_Code::SUCCESS                                            => '',
         Order_Error_Code::RAL_ERROR                                          => 'X',
+        Order_Error_Code::HUSKER_ERROR                                       => 'HUSKER ERROR',
         Order_Error_Code::INTERFACE_HAS_BEEN_DISCARDED                       => '此接口已废弃',
         Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS                           => '出库单不存在',
         Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS                  => '出库单sku不存在',
@@ -79,7 +80,6 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH              => '调整SKU个数超过100个',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT                 => '出库单已打印，无法取消',
         Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST          => '库区编码不存在',
-        Order_Error_Code::NWMS_ORDER_ADJUST_GET_LOCATION_INFO_FAIL           => '获取库位信息失败',
         //销退入库错误码
         Order_Error_Code::INVALID_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN => '已作废出库单不允许入库',
         Order_Error_Code::NOT_STOCKOUT_ORDER_STATUS_NOT_ALLOW_STOCKIN => '未出库出库单不允许入库',

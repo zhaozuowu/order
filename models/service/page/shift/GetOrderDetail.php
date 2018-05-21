@@ -33,8 +33,7 @@ class Service_Page_Shift_GetOrderDetail
     {
         // 去掉SAO前缀
         if(!empty($arrInput['shift_order_id'])) {
-            $arrInput['shift_order_id'] =
-                intval(Order_Util::trimShiftOrderIdPrefix($arrInput['shift_order_id']));
+            $arrInput['shift_order_id'] = intval(Order_Util::trimShiftOrderIdPrefix($arrInput['shift_order_id']));
         }else return [];
 
         $arrOrder = $this->objShiftOrder->getByOrderId($arrInput['shift_order_id']);
