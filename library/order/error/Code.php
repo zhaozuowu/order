@@ -340,6 +340,12 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST = 350022;
 
     /**
+     * 库存调整-库区编码不存在
+     * @var integer
+     */
+    const NWMS_ORDER_ADJUST_GET_LOCATION_INFO_FAIL = 350023;
+
+    /**
      * 获取商品信息失败
      * @var integer
      */
