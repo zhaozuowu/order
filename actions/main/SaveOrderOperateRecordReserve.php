@@ -1,12 +1,12 @@
 <?php
 /**
- * @name SaveOrderOperateRecord.php
+ * @name Action_SaveOrderOperateRecordReserve
  * @desc
  * @author: bochao.lv@ele.me
  * @createtime: 2018/5/15 21:15
  */
 
-class Action_SaveOrderOperateRecord extends Order_Base_Action
+class Action_SaveOrderOperateRecordReserve extends Order_Base_Action
 {
 
     /**
@@ -14,7 +14,7 @@ class Action_SaveOrderOperateRecord extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'order_id' => 'regex|patern[/^(SIO|ASN)\d{13}$/]',
+        'order_id' => 'regex|patern[/^ASN\d{13}$/]',
         'device' => 'str|required',
     ];
 
