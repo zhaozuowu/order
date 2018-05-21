@@ -39,6 +39,10 @@ class Service_Data_PlaceOrder
         if (empty($arrStockinOrderInfo)) {
             return [];
         }
+        $arrStockinPlaceOrderInfo = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
+        if (empty($arrStockinPlaceOrderInfo)) {
+            return [];
+        }
         //创建上架单
         $arrSplitOrderInfo = $this->splitStockinOrderByQuality($arrStockinOrderInfo);
         list($arrOrderList, $arrSkuList, $arrMapOrderList) =
