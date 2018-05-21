@@ -493,9 +493,22 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         return true;
     }
 
+    /**
+     * 通过入库单号批量获取入库单信息
+     * @param $arrStockinOrderIds
+     * @return array
+     */
     public static function getStockinOrderInfosByStockinOrderIds($arrStockinOrderIds)
     {
-
+        if (empty($arrStockinOrderIds)) {
+            return [];
+        }
+        $arrConditions = [
+            'stockin_order_id' => ['in', $arrStockinOrderIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrCols = self::getAllColumns();
+        return self::findRows($arrCols, $arrConditions);
     }
 
 }

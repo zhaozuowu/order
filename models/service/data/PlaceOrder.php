@@ -231,6 +231,16 @@ class Service_Data_PlaceOrder
         if (!empty($arrStockinOrderIds)) {
             Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_ALREADY_CREATE);
         }
+        //校验是否来自同一个仓库
+        $arrStockinOrderInfos = Model_Orm_StockinOrder::getStockinOrderInfosByStockinOrderIds($arrStockinOrderIds);
+        $arrMapWarehouseStockinInfos = [];
+        foreach ((array)$arrStockinOrderInfos as $arrStockinOrderInfoItem) {
+            $intWarehouseId = $arrStockinOrderInfoItem['warehouse_id'];
+            $arrMapWarehouseStockinInfos[$intWarehouseId] = true;
+        }
+        if (count($arrMapWarehouseStockinInfos) > 1) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_FROM_DIFFERENT_WAREHOUSE);
+        }
     }
 
     /**

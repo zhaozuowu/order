@@ -695,4 +695,10 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const PLACE_ORDER_PLACE_FAILED = 400006;
+
+    /**
+     * 入库单来自不同仓库
+     * @var integer
+     */
+    const STOCKIN_ORDER_FROM_DIFFERENT_WAREHOUSE = 400007;
 }
