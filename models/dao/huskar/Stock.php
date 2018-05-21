@@ -368,7 +368,7 @@ class Dao_Huskar_Stock
     }
 
 
-        CONST API_RALER_GET_LOCATION_STOCK = 'getLocationStockNum';
+        CONST API_RALER_GET_REMOVABLE_STOCK = 'getRemovableSkuBatchInfo';
 
     /**
      * 获取仓库
@@ -376,17 +376,17 @@ class Dao_Huskar_Stock
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function getLocationStockNum($intWarehouseId,$arrLocationCodes)
+    public function getRemovableSkuBatchInfo($intWarehouseId,$arrLocationCode)
     {
-        $arrReq[self::API_RALER_GET_LOCATION_STOCK]['requestParams'] =
+        $arrReq[self::API_RALER_GET_REMOVABLE_STOCK]['requestParams'] =
             [
                 'warehouse_id'   => $intWarehouseId,
-                'location_codes' => $arrLocationCodes,
+                'location_code' => $arrLocationCode,
             ];
 
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
-        $arrRet = empty($arrRet[self::API_RALER_GET_LOCATION_STOCK]) ? [] : $arrRet[self::API_RALER_GET_LOCATION_STOCK];
+        $arrRet = empty($arrRet[self::API_RALER_GET_REMOVABLE_STOCK]) ? [] : $arrRet[self::API_RALER_GET_REMOVABLE_STOCK];
         if (empty($arrRet) || !empty($arrRet['errno'])) {
             Bd_Log::warning('call stock model get location stock failed. ret: ' . print_r($arrRet, true));
             Order_BusinessError::throwException(Order_Error_Code::HUSKER_ERROR);
