@@ -45,6 +45,9 @@ class Action_GetStockinStockoutOrderPrintList extends Order_Base_Action
             $arrFormatRetItem['vendor_id'] = empty($arrRetItem['vendor_id']) ? 0 : $arrRetItem['vendor_id'];
             $arrFormatRetItem['vendor_name'] = empty($arrRetItem['vendor_name']) ? '' : $arrRetItem['vendor_name'];
             $arrFormatRetItem['customer_id'] = isset($arrRetItem['customer_id']) ? $arrRetItem['customer_id']:0;
+            $arrFormatRetItem['customer_contactor'] = isset($arrRetItem['customer_contactor']) ? $arrRetItem['customer_contactor']:'';
+            $arrFormatRetItem['customer_contact'] = isset($arrRetItem['customer_contact']) ? $arrRetItem['customer_contact']:'';
+            $arrFormatRetItem['customer_address'] = isset($arrRetItem['customer_address']) ? $arrRetItem['customer_address']:'';
             $arrFormatRetItem['customer_name'] = isset($arrRetItem['customer_name']) ? $arrRetItem['customer_name']:'';
             $arrFormatRetItem['warehouse_name'] = empty($arrRetItem['warehouse_name']) ? '' : $arrRetItem['warehouse_name'];
             $arrFormatRetItem['warehouse_contact'] = empty($arrRetItem['warehouse_contact']) ? '' : $arrRetItem['warehouse_contact'];
