@@ -35,8 +35,8 @@ class Action_CreateRemoveSiteStockInOrderApi extends Order_Base_ApiAction
             'validate' => 'json|required|decode',
             'type' => 'array',
             'params' => [
-                'sku_id' => 'int|required|min[1000000]|max[9999999]',
-                'sku_amount' => 'int|required',
+                'sku_id' => 'int|min[1000000]|max[9999999]',
+                'sku_amount' => 'int',
             ],
         ],
     ];

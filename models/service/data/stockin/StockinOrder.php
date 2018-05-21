@@ -843,10 +843,15 @@ class Service_Data_Stockin_StockinOrder
         foreach ($arrRequestSkuInfoList as $arrRequestSkuInfo) {
             $arrRequestSkuInfoMap[$arrRequestSkuInfo['sku_id']] = $arrRequestSkuInfo['sku_amount'];
         }
-        $arrSkuInfoList = $this->getSkuInfoList($arrSkuIds);
-        $arrSkuPriceList = $this->getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList);
-        $arrDbSkuInfoList = $this->assembleWithdrawDbSkuList($arrRequestSkuInfoMap, $arrSkuInfoList,
-            $arrSkuPriceList);
+        $arrSkuInfoList  = [];
+        $arrSkuPriceList = [];
+        $arrDbSkuInfoList = [];
+        if (!empty($arrRequestSkuInfoList)) {
+            $arrSkuInfoList = $this->getSkuInfoList($arrSkuIds);
+            $arrSkuPriceList = $this->getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList);
+            $arrDbSkuInfoList = $this->assembleWithdrawDbSkuList($arrRequestSkuInfoMap, $arrSkuInfoList,
+                $arrSkuPriceList);
+        }
         $intOrderReturnReason = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REMOVE_SITE;
         $strOrderReturnReasonText = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_MAP[$intOrderReturnReason];
         $intStockinOrderPlanAmount = $this->calculateTotalSkuPlanAmount($arrDbSkuInfoList);
