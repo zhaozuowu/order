@@ -887,11 +887,6 @@ class Service_Data_Stockin_StockinOrder
         $intStockInOrderType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
         $intStockInOrderDataSourceType = Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_FROM_SYSTEM;
         $strStockInOrderRemark = empty($arrInput['stockin_order_remark']) ? '':strval($arrInput['stockin_order_remark']);
-        if(!empty($assetInformation)) {
-            foreach ($assetInformation as $item) {
-                $strStockInOrderRemark.=":".$item['device_no'].":".Order_Define_BusinessFormOrder::ORDER_DEVICE_MAP[$item['device_type']];
-            }
-        }
         $assetInformation = json_encode($assetInformation);
         Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockInOrderId,$intStockInOrderType,
             $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intOrderReturnReason, $intStockInOrderDataSourceType,
