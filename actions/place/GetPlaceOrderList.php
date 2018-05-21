@@ -53,7 +53,7 @@ class Action_GetPlaceOrderList extends Order_Base_Action
             $arrData['orders'][$intKey]['stockin_order_type_text']
                 = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$arrItem['stockin_order_type']];
             $arrData['orders'][$intKey]['is_defective_text']
-                = Order_Define_PlaceOrder::PLACE_ORDER_QUALITY_MAP[$arrItem['is_defective']];
+                = Nscm_Define_Stock::QUALITY_TEXT_MAP[$arrItem['is_defective']];
         }
         return $arrData;
         //$arrFormatRet
