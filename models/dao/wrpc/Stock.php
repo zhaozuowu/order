@@ -169,10 +169,9 @@ class Dao_Wrpc_Stock
         foreach ((array)$arrActualInfo as $arrActualInfoItem) {
             $arrTargetDetailItem = [];
             $arrTargetDetailItem['amount'] = $arrActualInfoItem['place_amount'];
-            $arrLocation = explode('-', $arrActualInfoItem['place_location_id']);
-            $arrTargetDetailItem['target_location_code'] = $arrLocation[0];
-            $arrTargetDetailItem['target_area_code'] = $arrLocation[1];
-            $arrTargetDetailItem['target_roadway_code'] = $arrLocation[2];
+            $arrTargetDetailItem['target_location_code'] = $arrActualInfoItem['location_code'];
+            $arrTargetDetailItem['target_area_code'] = $arrActualInfoItem['area_code'];
+            $arrTargetDetailItem['target_roadway_code'] = $arrActualInfoItem['roadway_code'];
             $arrTargetDetails[] = $arrTargetDetailItem;
         }
         return $arrTargetDetails;
