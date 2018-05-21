@@ -46,6 +46,10 @@ class Service_Data_PlaceOrder
         }
         //创建上架单
         $arrSplitOrderInfo = $this->splitStockinOrderByQuality($arrStockinOrderInfo);
+        if (empty($arrSplitOrderInfo) || empty($arrSplitOrderInfo['good_skus'])
+            || empty($arrSplitOrderInfo['bad_skus'])) {
+            return [];
+        }
         list($arrOrderList, $arrSkuList, $arrMapOrderList) =
             $this->getCreateParams($arrSplitOrderInfo);
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
