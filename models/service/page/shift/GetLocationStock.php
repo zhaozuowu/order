@@ -37,13 +37,15 @@ class Service_Page_Shift_GetLocationStock
     }
 
     public function formatResult($arrInput){
-        $skuIds = array_column($arrInput,'sku_id');
+        $skuIds = array_column($arrInput['detail'],'sku_id');
         $skuInfos = $this->objSku->getSkuInfos($skuIds);
-        foreach ($arrInput as &$value){
+        foreach ($arrInput['detail'] as &$value){
            foreach ($skuInfos as $sku){
                if($value['sku_id'] == $sku['sku_id']){
                    $value['sku_name'] = $sku['sku_id'];
-                   $value['upc_id'] = $sku['main_upc_id'];
+                   $value['upc_id'] = $sku['min_upc']['display_upc_id'];
+                   $value['upc_unit'] = $sku['min_upc']['upc_unit'];
+                   $value['upc_unit_num'] = $sku['min_upc']['upc_unit_num'];
                }
            }
         }
