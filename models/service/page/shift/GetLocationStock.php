@@ -28,9 +28,7 @@ class Service_Page_Shift_GetLocationStock
      */
     public function execute($arrInput)
     {
-        $warehouseId = $arrInput['warehouse_id'];
-        $locationcode = $arrInput['location_code'];
-        $arrOutput = $this->objStock->getRemovableSkuBatchInfo($warehouseId,$locationcode );
+        $arrOutput = $this->objStock->getRemovableSkuBatchInfo($arrInput );
         return $arrOutput;
     }
 }

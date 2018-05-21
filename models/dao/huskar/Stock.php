@@ -376,12 +376,14 @@ class Dao_Huskar_Stock
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function getRemovableSkuBatchInfo($intWarehouseId,$arrLocationCode)
+    public function getRemovableSkuBatchInfo($arrInput)
     {
         $arrReq[self::API_RALER_GET_REMOVABLE_STOCK]['requestParams'] =
             [
-                'warehouse_id'   => $intWarehouseId,
-                'location_code' => $arrLocationCode,
+                'warehouse_id'   => $arrInput['warehouse_id'],
+                'location_code' => $arrInput['location_code'],
+                'page_num' => $arrInput['page_num'],
+                'page_size' => $arrInput['page_size'],
             ];
 
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
