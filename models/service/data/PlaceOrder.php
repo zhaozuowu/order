@@ -118,9 +118,11 @@ class Service_Data_PlaceOrder
             return [];
         }
         $arrRetOrderInfo = [];
+        $arrStockinSourceInfo = empty($arrInput['source_info']) ?
+            '' : json_decode($arrInput['source_info'], true);
         $arrRetOrderInfo['stockin_order_ids'] = $arrInput['stockin_order_ids'];
-        $arrRetOrderInfo['vendor_id'] = $arrInput['vendor_id'];
-        $arrRetOrderInfo['vendor_name'] = $arrInput['vendor_name'];
+        $arrRetOrderInfo['vendor_id'] = intval($arrStockinSourceInfo['vendor_id']);
+        $arrRetOrderInfo['vendor_name'] = strval($arrStockinSourceInfo['vendor_name']);
         $arrRetOrderInfo['stockin_order_type'] = $arrInput['stockin_order_type'];
         $arrRetOrderInfo['warehouse_id'] = $arrInput['warehouse_id'];
         $arrRetOrderInfo['warehouse_name'] = $arrInput['warehouse_name'];
