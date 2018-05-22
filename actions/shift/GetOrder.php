@@ -32,8 +32,7 @@ class Action_GetOrder extends Order_Base_Action
     protected $intMethod = Order_Define_Const::METHOD_GET;
 
     /**
-     * page service
-     * @var Service_Page_Adjust_GetOrder
+     * @var
      */
     protected $objPage;
 

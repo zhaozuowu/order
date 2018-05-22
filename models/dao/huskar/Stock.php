@@ -360,7 +360,7 @@ class Dao_Huskar_Stock
         $arrRet = empty($arrRet[self::API_RALER_MOVE_LOCATION]) ? [] : $arrRet[self::API_RALER_MOVE_LOCATION];
         if (empty($arrRet) || !empty($arrRet['errno'])) {
             Bd_Log::warning('call stock model move location failed. ret: ' . print_r($arrRet, true));
-            Order_BusinessError::throwException(Order_Error_Code::HUSKER_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
         }
         Bd_Log::trace('call stock model move location, ret: ' . json_encode($arrRet));
 
@@ -380,10 +380,10 @@ class Dao_Huskar_Stock
     {
         $arrReq[self::API_RALER_GET_REMOVABLE_STOCK]['requestParams'] =
             [
-                'warehouse_id'   => $arrInput['warehouse_id'],
-                'location_code' => $arrInput['location_code'],
-                'page_num' => $arrInput['page_num'],
-                'page_size' => $arrInput['page_size'],
+                'warehouse_id'      => $arrInput['warehouse_id'],
+                'location_code'     => $arrInput['location_code'],
+                'page_num'          => $arrInput['page_num'],
+                'page_size'         => $arrInput['page_size'],
             ];
 
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
@@ -391,7 +391,7 @@ class Dao_Huskar_Stock
         $arrRet = empty($arrRet[self::API_RALER_GET_REMOVABLE_STOCK]) ? [] : $arrRet[self::API_RALER_GET_REMOVABLE_STOCK];
         if (empty($arrRet) || !empty($arrRet['errno'])) {
             Bd_Log::warning('call stock model get location stock failed. ret: ' . print_r($arrRet, true));
-            Order_BusinessError::throwException(Order_Error_Code::HUSKER_ERROR);
+            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_GET_LOCATION_STOCK_FAILED);
         }
         Bd_Log::trace('call stock model get location stock, ret: ' . json_encode($arrRet));
 

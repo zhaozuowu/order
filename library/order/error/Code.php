@@ -696,4 +696,16 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const PLACE_ORDER_PLACE_FAILED = 400006;
 
+    /**
+     * 移位失败
+     * @var integer
+     */
+    const SHIFT_ORDER_MOVE_FAILED = 500001;
+
+    /**
+     * 获取可移位库存失败
+     * @var integer
+     */
+    const SHIFT_ORDER_GET_LOCATION_STOCK_FAILED = 500002;
+
 }

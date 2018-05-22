@@ -124,6 +124,8 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::NWMS_UNFROZEN_BY_SYSTEM_ERROR => '自动冻结异常',
         Order_Error_Code::NWMS_GET_STOCK_WAREHOUSE_FAIL => '获取库存仓库失败',
         Order_Error_Code::NWMS_UNFROZEN_ORDER_STATUS_ERROR => '冻结单已关闭',
+        Order_Error_Code::SHIFT_ORDER_MOVE_FAILED => '移位单移位失败',
+        Order_Error_Code::SHIFT_ORDER_GET_LOCATION_STOCK_FAILED => '获取库位库存失败',
     ];
 
 }

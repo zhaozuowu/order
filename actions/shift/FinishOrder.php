@@ -12,7 +12,7 @@ class Action_FinishOrder extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'shift_order_id' => 'str|required',
+        'shift_order_id' => 'str|required|min[1]|len[64]',
     ];
 
     /**
@@ -22,8 +22,7 @@ class Action_FinishOrder extends Order_Base_Action
     protected $intMethod = Order_Define_Const::METHOD_POST;
 
     /**
-     * page service
-     * @var Service_Page_Adjust_CreateOrder
+     * @var
      */
     protected $objPage;
 

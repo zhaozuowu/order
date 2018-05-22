@@ -31,11 +31,6 @@ class Service_Page_Shift_GetOrderDetail
      */
     public function execute($arrInput)
     {
-        // 去掉SHO前缀
-//        if(!empty($arrInput['shift_order_id'])) {
-//            $arrInput['shift_order_id'] = intval(Order_Util::trimShiftOrderIdPrefix($arrInput['shift_order_id']));
-//        }else return [];
-
         $arrOrder = $this->objShiftOrder->getByOrderId($arrInput['shift_order_id']);
         if(empty($arrOrder)) {
             return [];
@@ -56,7 +51,30 @@ class Service_Page_Shift_GetOrderDetail
      */
     public function formatResult($arrOrder = array(), $intCount = 0, $arrDetail = array())
     {
-        $arrRet = $arrOrder;
+        $row['shift_order_id']  = $arrOrder['shift_order_id'];
+        $row['warehouse_id']    = $arrOrder['warehouse_id'];
+        $row['source_location'] = $arrOrder['source_location'];
+        $row['sourc$rowe_roadway']  = $arrOrder['source_roadway'];
+        $row['source_area']     = $arrOrder['source_area'];
+        $row['target_location'] = $arrOrder['target_location'];
+        $row['target_roadway']  = $arrOrder['target_roadway'];
+        $row['target_area']     = $arrOrder['target_area'];
+        $row['status']          = $arrOrder['status'];
+        $row['creator_name']    = $arrOrder['creater_name'];
+        $row['sku_kinds']       = $arrOrder['sku_kinds'];
+        $row['sku_amount']      = $arrOrder['sku_amount'];
+        $row['create_time']     = strtotime(date('Y-m-d',$arrOrder['create_time']));
+        foreach ($arrDetail as &$value){
+            $value['upc_unit_text'] = Nscm_Define_Sku::UPC_UNIT_MAP[$value['upc_unit']];
+            $value['sku_effect_type_text'] = Nscm_Define_Sku::SKU_EFFECT_TYPE_TEXT[$value['sku_effect_type']];
+            $value['is_defective_text'] = Nscm_Define_Stock::QUALITY_TEXT_MAP[$value['is_defective']];
+            if (Nscm_Define_Sku::SKU_EFFECT_FROM == $value['sku_effect_type']) {
+                $value['production_or_expiration_time'] = strtotime(date('Y-m-d',$value['production_time']));
+            } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $value['sku_effect_type']) {
+                $value['production_or_expiration_time'] = strtotime(date('Y-m-d',$value['expiration_time']));
+            }
+        }
+        $arrRet = $row;
         $arrRet['total'] = $intCount;
         $arrRet['shift_order_detail'] = array();
         $arrRet['shift_order_detail'] = $arrDetail;

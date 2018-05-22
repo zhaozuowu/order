@@ -1,24 +1,22 @@
 <?php
 /**
- * @name Service_Page_Adjust_FinishOrder
- * @desc 新建调整单
- * @author sunzhixin@iwaimai.baidu.com
+ * Class Service_Page_Shift_FinishOrder
  */
 
 class Service_Page_Shift_FinishOrder
 {
     /**
-     * @var Service_Data_StockAdjustOrder
+     * @var Service_Data_ShiftOrder
      */
     protected $objShiftOrder;
 
     /**
-     * @var Service_Data_StockAdjustOrderDetail
+     * @var Service_Data_ShiftOrderDetail
      */
     protected $objShiftOrderDetail;
 
     /**
-     * init
+     * Service_Page_Shift_FinishOrder constructor.
      */
     public function __construct()
     {
@@ -33,10 +31,6 @@ class Service_Page_Shift_FinishOrder
      */
     public function execute($arrInput)
     {
-//        // 去掉SHO前缀
-//        if(!empty($arrInput['shift_order_id'])) {
-//            $arrInput['shift_order_id'] = intval(Order_Util::trimShiftOrderIdPrefix($arrInput['shift_order_id']));
-//        }else return [];
 
         $arrOrder = $this->objShiftOrder->getByOrderId($arrInput['shift_order_id']);
         $arrOrderDetail = $this->objShiftOrderDetail->get($arrInput);
@@ -45,11 +39,11 @@ class Service_Page_Shift_FinishOrder
         $finishInput['m_order_id']              = $arrInput['shift_order_id'];
         $finishInput['warehouse_id']            = $arrOrder['warehouse_id'];
         $finishInput['origin_location_code']    = $arrOrder['source_location'];
-        $finishInput['origin_area_code']        = $arrOrder['source_area']=1;
-        $finishInput['origin_roadway_code']     = $arrOrder['source_roadway']=1;
+        $finishInput['origin_area_code']        = $arrOrder['source_area'];
+        $finishInput['origin_roadway_code']     = $arrOrder['source_roadway'];
         $finishInput['target_location_code']    = $arrOrder['target_location'];
-        $finishInput['target_area_code']        = $arrOrder['target_area']=1;
-        $finishInput['target_roadway_code']     = $arrOrder['target_roadway']=1;
+        $finishInput['target_area_code']        = $arrOrder['target_area'];
+        $finishInput['target_roadway_code']     = $arrOrder['target_roadway'];
         foreach ($arrOrderDetail as $value){
             $detailInput = array();
             $detailInput['sku_id']          = $value['sku_id'];
@@ -59,11 +53,6 @@ class Service_Page_Shift_FinishOrder
             $finishInput['batch_detail'][] = $detailInput;
         }
         // 完成移位单
-       if(!$this->objShiftOrder->finishShiftOrder($finishInput)){
-            return false;
-       }
-
-
-        return true;
+       return $this->objShiftOrder->finishShiftOrder($finishInput);
     }
 }

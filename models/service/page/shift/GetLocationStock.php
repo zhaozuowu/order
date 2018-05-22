@@ -32,7 +32,7 @@ class Service_Page_Shift_GetLocationStock
     public function execute($arrInput)
     {
         $arrOutput = $this->objStock->getRemovableSkuBatchInfo($arrInput );
-
+        if(empty($arrOutput)) return [];
         return $this->formatResult($arrOutput);
     }
 
@@ -45,7 +45,15 @@ class Service_Page_Shift_GetLocationStock
                    $value['sku_name'] = $sku['sku_id'];
                    $value['upc_id'] = $sku['min_upc']['display_upc_id'];
                    $value['upc_unit'] = $sku['min_upc']['upc_unit'];
+                   $value['upc_unit_text'] = Nscm_Define_Sku::UPC_UNIT_MAP[$sku['min_upc']['upc_unit']];
                    $value['upc_unit_num'] = $sku['min_upc']['upc_unit_num'];
+                   $value['sku_effect_type_text'] = Nscm_Define_Sku::SKU_EFFECT_TYPE_TEXT[$sku['sku_effect_type']];
+                   $value['is_defective_text'] = Nscm_Define_Stock::QUALITY_TEXT_MAP[$value['is_defective']];
+                   if (Nscm_Define_Sku::SKU_EFFECT_FROM == $sku['sku_effect_type']) {
+                       $value['production_or_expiration_time'] = strtotime(date('Y-m-d',$value['production_time']));
+                   } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $sku['sku_effect_type']) {
+                       $value['production_or_expiration_time'] = strtotime(date('Y-m-d',$value['expiration_time']));
+                   }
                }
            }
         }

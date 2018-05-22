@@ -70,12 +70,6 @@ class Service_Data_ShiftOrderDetail
         $arrFormatInput = [
             'is_delete'     => Order_Define_Const::NOT_DELETE,
         ];
-//        if(!empty($arrInput['warehouse_ids'])) {
-//            $arrFormatInput['warehouse_id'] = ['in', $arrInput['warehouse_ids']];
-//        }
-//        if(!empty($arrInput['warehouse_id'])) {
-//            $arrFormatInput['warehouse_id'] = $arrInput['warehouse_id'];
-//        }
         if(!empty($arrInput['shift_order_id'])) {
             $arrFormatInput['shift_order_id'] = $arrInput['shift_order_id'];
         }
