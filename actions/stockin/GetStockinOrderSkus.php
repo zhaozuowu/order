@@ -87,8 +87,7 @@ class Action_GetStockinOrderSkus extends Order_Base_Action
             $arrRoundResult['stockout_order_sku_amount'] = empty($arrListItem['stockout_order_sku_amount']) ? 0
                 : intval($arrListItem['stockout_order_sku_amount']);
             // 数据库存放的stockin_order_sku_extra_info是json编码的Unix时间戳，转为文本形式时间给FE
-            $arrSkuExtInf = empty($arrListItem['stockin_order_sku_extra_info']) ? ''
-                : json_decode($arrListItem['stockin_order_sku_extra_info'], true);
+            $arrSkuExtInf = json_decode($arrListItem['stockin_order_sku_extra_info'], true) ?? [];
             foreach ($arrSkuExtInf as $item => $value) {
                 $arrSkuExtInfRet = [];
                 if (isset($value['amount'])) {

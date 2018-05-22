@@ -88,8 +88,7 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
                 : intval($arrListItem['stockin_order_sku_real_amount']);
 
             // 数据库存放的stockin_order_sku_extra_info是json编码的Unix时间戳，转为文本形式时间给FE
-            $arrSkuExtInf = empty($arrListItem['stockin_order_sku_extra_info']) ? ''
-                : json_decode($arrListItem['stockin_order_sku_extra_info'], true);
+            $arrSkuExtInf = json_decode($arrListItem['stockin_order_sku_extra_info'], true) ?? [];
             foreach ($arrSkuExtInf as $item => $value) {
                 if (isset($value['expire_date'])) {
                     $arrSkuExtInf[$item]['expire_date'] = Order_Util::getFormatDate(intval($value['expire_date']));
