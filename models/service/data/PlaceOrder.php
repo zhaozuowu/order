@@ -93,8 +93,10 @@ class Service_Data_PlaceOrder
             return [];
         }
         if (1 == count($arrStockinOrderIds)) {
-            $arrStockinInfo['vendor_id'] = $arrStockinInfoDb['vendor_id'];
-            $arrStockinInfo['vendor_name'] = $arrStockinInfoDb['vendor_name'];
+            $arrStockinSourceInfo = empty($arrStockinInfoDb['source_info']) ?
+                [] : json_decode($arrStockinInfoDb['source_info'], true);
+            $arrStockinInfo['vendor_id'] = $arrStockinSourceInfo['vendor_id'];
+            $arrStockinInfo['vendor_name'] = $arrStockinSourceInfo['vendor_name'];
             $arrStockinInfo['warehouse_id'] = $arrStockinInfoDb['warehouse_id'];
             $arrStockinInfo['warehouse_name'] = $arrStockinInfoDb['warehouse_name'];
             $arrStockinInfo['stockin_order_type'] = $arrStockinInfoDb['stockin_order_type'];
@@ -118,11 +120,9 @@ class Service_Data_PlaceOrder
             return [];
         }
         $arrRetOrderInfo = [];
-        $arrStockinSourceInfo = empty($arrInput['source_info']) ?
-            '' : json_decode($arrInput['source_info'], true);
         $arrRetOrderInfo['stockin_order_ids'] = $arrInput['stockin_order_ids'];
-        $arrRetOrderInfo['vendor_id'] = intval($arrStockinSourceInfo['vendor_id']);
-        $arrRetOrderInfo['vendor_name'] = strval($arrStockinSourceInfo['vendor_name']);
+        $arrRetOrderInfo['vendor_id'] = $arrInput['vendor_id'];
+        $arrRetOrderInfo['vendor_name'] = $arrInput['vendor_name'];
         $arrRetOrderInfo['stockin_order_type'] = $arrInput['stockin_order_type'];
         $arrRetOrderInfo['warehouse_id'] = $arrInput['warehouse_id'];
         $arrRetOrderInfo['warehouse_name'] = $arrInput['warehouse_name'];
