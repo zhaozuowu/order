@@ -95,8 +95,8 @@ class Service_Data_PlaceOrder
         if (1 == count($arrStockinOrderIds)) {
             $arrStockinSourceInfo = empty($arrStockinInfoDb['source_info']) ?
                 [] : json_decode($arrStockinInfoDb['source_info'], true);
-            $arrStockinInfo['vendor_id'] = $arrStockinSourceInfo['vendor_id'];
-            $arrStockinInfo['vendor_name'] = $arrStockinSourceInfo['vendor_name'];
+            $arrStockinInfo['vendor_id'] = intval($arrStockinSourceInfo['vendor_id']);
+            $arrStockinInfo['vendor_name'] = strval($arrStockinSourceInfo['vendor_name']);
             $arrStockinInfo['warehouse_id'] = $arrStockinInfoDb['warehouse_id'];
             $arrStockinInfo['warehouse_name'] = $arrStockinInfoDb['warehouse_name'];
             $arrStockinInfo['stockin_order_type'] = $arrStockinInfoDb['stockin_order_type'];
