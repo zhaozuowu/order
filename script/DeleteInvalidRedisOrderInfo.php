@@ -1,7 +1,7 @@
 #!php/bin/php
 <?php
 /**
- * @name DeleteInvalidRedisOrderInfos
+ * @name DeleteInvalidRedisOrderInfo
  * @desc wipe out cached data in redis which is created for over 24hours that order type is reserve order, stockin order
  *       after data wiped out, an email will be send to order related operator automatically
  * @author wende.chen@ele.me
@@ -10,7 +10,7 @@
 Bd_Init::init();
 
 try {
-    $objWork = new DeleteInvalidRedisOrderInfos();
+    $objWork = new DeleteInvalidRedisOrderInfo();
     $objWork->work();
 } catch (Exception $e) {
     Bd_Log::warning(sprintf('exec %s error. code[%d], msg[%s]',
@@ -19,7 +19,7 @@ try {
 }
 
 
-class DeleteInvalidRedisOrderInfos
+class DeleteInvalidRedisOrderInfo
 {
     /**
      * work
@@ -50,7 +50,7 @@ class DeleteInvalidRedisOrderInfos
             if (!empty($objRedisReserve->getOperateRecord($strRedisKey))) {
                 $arrRemovedReserveOrderIds[] = $intOrderId;
                 if (empty($objRedisReserve->dropOperateRecord($strRedisKey))) {
-                    Bd_Log::warning('delete redis reserve order [' . $strRedisKey . '] failed');
+                    Bd_Log::warning('delete_redis_reserve_order_failed_order_id[' . $strRedisKey . ']');
                 }
             }
         }
@@ -58,14 +58,11 @@ class DeleteInvalidRedisOrderInfos
         if (empty($arrRemovedReserveOrderIds)) {
             Bd_Log::trace('finish process reserve order');
         } else {
-            Bd_Log::warning('reserve_order_id_in_redis_found, count:' . count($arrRemovedReserveOrderIds));
+            Bd_Log::warning('reserve_order_id_in_redis_found_count:' . count($arrRemovedReserveOrderIds));
             Bd_Log::trace('remove from redis reserve_order_id, value:' . json_encode($arrRemovedReserveOrderIds));
         }
 
         // Query all stockin order info in a day
-        $intStartTime = strtotime(date('Ymd', strtotime('-1 day')));
-        $intEndTime = $intStartTime + Order_Define_Const::UNIX_TIME_SPAN_PER_DAY - 1;
-
         // conditions include stockin order created by system
         $arrConditionStockin = [
             'stockin_time' => [
@@ -83,14 +80,14 @@ class DeleteInvalidRedisOrderInfos
         $arrOrderIds = Model_Orm_StockinOrder::findColumn('stockin_order_id', $arrConditionStockin);
 
         // query redis and remove existed keys
-        $objRedisStockin = new Dao_Redis_StockInOrder();
+        $objRedisStockin = $objRedisReserve;
         $arrRemovedStockinOrderIds = [];
         foreach ($arrOrderIds as $intOrderId) {
             $strRedisKey = Nscm_Define_OrderPrefix::SIO . $intOrderId;
             if (!empty($objRedisStockin->getOperateRecord($strRedisKey))) {
                 $arrRemovedStockinOrderIds[] = $intOrderId;
                 if (empty($objRedisStockin->dropOperateRecord($strRedisKey))) {
-                    Bd_Log::warning('delete redis reserve order [' . $strRedisKey . '] failed');
+                    Bd_Log::warning('delete_redis_stockin_order_failed_order_id[' . $strRedisKey . ']');
                 }
             }
         }
@@ -98,7 +95,7 @@ class DeleteInvalidRedisOrderInfos
         if (empty($arrRemovedStockinOrderIds)) {
             Bd_Log::trace('finish process stockin order');
         } else {
-            Bd_Log::warning('stockin_order_id_in_redis_found, count:' . count($arrRemovedStockinOrderIds));
+            Bd_Log::warning('stockin_order_id_in_redis_found_count:' . count($arrRemovedStockinOrderIds));
             Bd_Log::trace('remove from redis stockin_order_id, value:' . json_encode($arrRemovedStockinOrderIds));
         }
     }
