@@ -328,6 +328,12 @@ class Service_Data_PlaceOrder
     public function getPlaceOrderList($arrInput)
     {
         $arrCondtions = $this->getListConditions($arrInput);
+        if (false == $arrCondtions) {
+            return [
+                'total' => 0,
+                'orders' => [],
+            ];
+        }
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
         $arrRet = Model_Orm_PlaceOrder::getPlaceOrderList($arrCondtions, $intLimit, $intOffset);
@@ -360,6 +366,9 @@ class Service_Data_PlaceOrder
         if (!empty($arrInput['source_order_id'])) {
             $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::
                                     getPlaceOrdersByStockinOrderIds([$arrInput['source_order_id']]);
+            if (empty($arrPlaceOrderIds)) {
+                return false;
+            }
             $arrConditions['place_order_id'] = ['in', $arrPlaceOrderIds];
         }
         if (!empty($arrInput['place_order_id'])) {
