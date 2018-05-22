@@ -53,25 +53,32 @@ class  Order_Define_Const
     const HALF_AN_HOUR_FORMAT_SECONDS = 1800;
 
     /**
-     * Unix时间戳长度 -30天(24h * 30)，based on second
-     * 2592000 === 86400 * 30;
+     * Unix时间戳长度 - 30天(24h * 30)，based on second
+     * 2592000s === 86400 * 30;
      */
     const UNIX_TIME_SPAN_PER_30_DAYS = 2592000;
 
     /**
-     * Unix时间戳长度 - 一天(24h)，based on second
+     * Unix时间戳长度 - 7天(24h * 7)，based on second
+     * 604800s === 86400 * 7;
+     */
+    const UNIX_TIME_SPAN_PER_7_DAYS = 604800;
+
+    /**
+     * Unix时间戳长度 - 1天(24h)，based on second
+     * 86400s === 3600 * 24
      */
     const UNIX_TIME_SPAN_PER_DAY = 86400;
 
     /**
-     * Unix时间戳长度 - 一小时(1h === 60min)，based on second
-     * 3600 === 86400 / 24
+     * Unix时间戳长度 - 1小时(1h === 60min)，based on second
+     * 3600s === 86400 / 24
      */
     const UNIX_TIME_SPAN_PER_HOUR = 3600;
 
     /**
-     * Unix时间戳长度 - 一分钟(1min === 60s)，based on second
-     * 60 === 3600 / 60
+     * Unix时间戳长度 - 1分钟(1min === 60s)，based on second
+     * 60s === 3600 / 60
      */
     const UNIX_TIME_SPAN_PER_MINUTE = 60;
 }
