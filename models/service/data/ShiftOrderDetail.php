@@ -32,6 +32,30 @@ class Service_Data_ShiftOrderDetail
     }
 
     /**
+     * 查询移位详情
+     * @param $arrInput
+     * @return array
+     */
+    public function getBatch($arrInput)
+    {
+        Bd_Log::debug(__METHOD__ . '  param ', 0, $arrInput);
+
+        // 获取所有字段
+        $arrColumns = Model_Orm_ShiftOrderDetail::getAllColumns();
+
+        $arrConditions = [
+            'is_delete'     => Order_Define_Const::NOT_DELETE,
+        ];
+        if(!empty($arrInput['shift_order_id'])) {
+            $arrConditions['shift_order_id'] = ['in', $arrInput['shift_order_ids']];
+        }
+        // 库存调整明细：仓库ID排期（ID从小到大）> 创建时间倒序
+        $arrOrderBy = ['warehouse_id' => 'asc', 'id' => 'desc'];
+        $ret = Model_Orm_ShiftOrderDetail::findRows($arrColumns, $arrConditions, $arrOrderBy);
+        return $ret;
+    }
+
+    /**
      * 查询符合条件的采购单详情个数
      * @param $arrInput
      * @return int

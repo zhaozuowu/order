@@ -1,8 +1,6 @@
 <?php
 /**
- * @name Action_GetSkuStockInfo
- * @desc 查询商品库存信息
- * @author sunzhixin@iwaimai.baidu.com
+ * Class Action_GetLocationStock
  */
 
 class Action_GetLocationStock extends Order_Base_Action

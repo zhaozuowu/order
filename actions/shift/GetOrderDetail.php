@@ -1,8 +1,6 @@
 <?php
 /**
- * @name Action_GetOrderDetail
- * @desc 获取采购单详情
- * @author sunzhixin@iwaimai.baidu.com
+ * Class Action_GetOrderDetail
  */
 
 class Action_GetOrderDetail extends Order_Base_Action

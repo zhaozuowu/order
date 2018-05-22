@@ -1,8 +1,6 @@
 <?php
 /**
- * @name Action_Createincreaseorder
- * @desc 创建库存调整单-调增
- * @author sunzhixin@iwaimai.baidu.com
+ * Class Action_CreateOrder
  */
 
 class Action_CreateOrder extends Order_Base_Action
