@@ -363,11 +363,13 @@ class Dao_Huskar_Stock
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_MOVE_LOCATION]) ? [] : $arrRet[self::API_RALER_MOVE_LOCATION];
         if (empty($arrRet) || !empty($arrRet['errno'])) {
-//            Bd_Log::warning('call stock model move location failed. ret: ' . print_r($arrRet, true));
+            if(310000 == $arrRet['errno']){
+                Bd_Log::warning('call stock method movelocation,idempotency need, ret: ' . json_encode($arrRet));
+                $arrRet['data'];
+            }
             throw new Nscm_Exception_Business($arrRet['errno'],$arrRet['errmsg'] );
-//            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
         }
-        Bd_Log::trace('call stock model move location, ret: ' . json_encode($arrRet));
+        Bd_Log::trace('call stock method movelocation, ret: ' . json_encode($arrRet));
 
         return $arrRet['data'];
     }
