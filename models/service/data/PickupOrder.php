@@ -502,10 +502,10 @@ class Service_Data_PickupOrder
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         $objPickupOrderInfo = Model_Orm_PickupOrder::getPickupOrderInfo($intPickupOrderId);
-        $intWarehouseId = $objPickupOrderInfo->warehouse_id;
         if (empty($objPickupOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
         }
+        $intWarehouseId = $objPickupOrderInfo->warehouse_id;
         if (Order_Define_PickupOrder::PICKUP_ORDER_STATUS_FINISHED == $objPickupOrderInfo->pickup_order_status) {
             Bd_Log::warning("pickupOrder can't modify pickup_order_status by pickupOrderId:". $intPickupOrderId);
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_IS_FINISHED);
