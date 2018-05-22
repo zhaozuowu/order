@@ -365,7 +365,7 @@ class Dao_Huskar_Stock
         if (empty($arrRet) || !empty($arrRet['errno'])) {
             if(310000 == $arrRet['errno']){
                 Bd_Log::warning('call stock method movelocation,idempotency need, ret: ' . json_encode($arrRet));
-                $arrRet['data'];
+                return $arrRet['data'];
             }
             throw new Nscm_Exception_Business($arrRet['errno'],$arrRet['errmsg'] );
         }

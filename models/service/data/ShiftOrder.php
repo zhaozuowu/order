@@ -51,7 +51,7 @@ class Service_Data_ShiftOrder
         $ormOrderInfo->update_time = time();
         $intAffectRows = $ormOrderInfo->update();
         if (1 !== $intAffectRows) {
-            Bd_Log::warning(sprintf("cancel shift order failed order_id[%s] ",$arrInput['shift_order_id']));
+            Bd_Log::warning(sprintf("cancel shift order failed arrInput[%s] ",$arrInput));
             return false;
         }
         Bd_Log::trace('cancel shift order return ' . print_r($intAffectRows, true));
@@ -66,14 +66,14 @@ class Service_Data_ShiftOrder
     public function finishShiftOrder($arrInput)
     {
         $this->objDaoShiftOrder->moveLocation($arrInput);
-        $condition = ['shift_order_id' => $arrInput['shift_order_id']];
+        $condition = ['shift_order_id' => $arrInput['m_order_id']];
         $ormOrderInfo = Model_Orm_ShiftOrder::findOne($condition);
         $ormOrderInfo->status = Order_Define_ShiftOrder::SHIFT_ORDER_STATUS_FINISH;
         $ormOrderInfo->update_time = time();
         $intAffectRows = $ormOrderInfo->update();
         if (1 !== $intAffectRows) {
-            Bd_Log::warning(sprintf("finish shift order failed order_id[%s] ",$arrInput['shift_order_id']));
-            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
+            Bd_Log::warning(sprintf("finish shift order failed arrInput[%s] ",$arrInput));
+            return false;
         }
 
         return true;
