@@ -75,6 +75,7 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
                 'sku_tax_rate' => intval($arrRow['sku_tax_rate'] ?? 0),
                 'sku_effect_type' => intval($arrRow['sku_effect_type'] ?? 0),
                 'sku_effect_day' => intval($arrRow['sku_effect_day'] ?? 0),
+                'sku_from_country' => intval($arrRow['sku_from_country'] ?? 0),
                 'stockin_order_sku_total_price' => intval($arrRow['stockin_order_sku_total_price']),
                 'stockin_order_sku_total_price_tax' => intval($arrRow['stockin_order_sku_total_price_tax']),
                 'reserve_order_sku_plan_amount' => intval($arrRow['reserve_order_sku_plan_amount']),
@@ -137,6 +138,21 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
         $arrResult['total'] = $arrRowsAndTotal['total'];
         $arrResult['list'] = $arrRowsAndTotal['rows'];
         return $arrResult;
+    }
+
+    /**
+     * get batch stockin order sku list
+     * @param $arrStockinOrderIds
+     * @return array
+     */
+    public static function getBatchStockinOrderSkuList($arrStockinOrderIds)
+    {
+        $arrCondition = [
+            'stockin_order_id' => ['in', $arrStockinOrderIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrOrderBy = ['id' => 'asc'];
+        return self::findRows(self::getAllColumns(), $arrCondition, $arrOrderBy);
     }
 
     /**

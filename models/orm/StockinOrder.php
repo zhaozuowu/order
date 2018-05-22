@@ -290,10 +290,10 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     /**
      * 获取入库单列表（分页）
      * @param $arrStockinOrderType
-     * @param $intDataSource
+     * @param int $intDataSource
      * @param $intStockinOrderId
      * @param $intStockinOrderSourceType
-     * @param $intStockinOrderStatus
+     * @param int $intStockinOrderStatus
      * @param $arrWarehouseId
      * @param $strSourceSupplierId
      * @param $strCustomerName
@@ -326,7 +326,9 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $arrStockinDestroyTime,
         $intPrintStatus,
         $intPageNum,
-        $intPageSize)
+        $intPageSize
+    )
+
     {
         // 拼装查询条件
         if (!empty($intStockinOrderId)) {
@@ -443,7 +445,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
         // 分页条件
         $offset = (intval($intPageNum) - 1) * intval($intPageSize);
-        $limitCount = intval($intPageSize);
+        $limitCount = empty($intPageSize) ? null : intval($intPageSize);
+
 
         // 查找满足条件的所有列数据
         $arrCols = self::getAllColumns();

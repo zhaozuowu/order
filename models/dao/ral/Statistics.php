@@ -37,7 +37,7 @@ class Dao_Ral_Statistics
         ];
         Bd_Log::trace('send wmq cmd, req: ' . json_encode($arrInput));
         Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_SYNC_FORM_STATISTICS, $arrInput,
-            strval($intType . $intKey), Order_Define_Cmd::NWMS_ORDER_TOPIC);
+            strval($intType . $intKey));
         return true;
     }
 }

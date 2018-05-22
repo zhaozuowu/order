@@ -35,6 +35,10 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::ALL_SKU_MUST_STOCKIN => '全部商品必须入库',
         Order_Error_Code::SKU_AMOUNT_CANNOT_EMPTY => '商品数量不允许为0',
         Order_Error_Code::TOTAL_COUNT_CANNOT_EMPTY => '商品入库总数不允许为0',
+        Order_Error_Code::REPEAT_LOGISTICS_ORDER_ID => '运单号重复',
+        Order_Error_Code::STOCK_FREEZE_ERROR => '【系统异常】创建订单并发异常，请重试',
+        Order_Error_Code::STOCKOUT_ORDER_ID_REPEAT => '输入参数中存在重复的出库单号',
+        Order_Error_Code::RESERVE_STOCKIN_SEND_WMQ_FAIL => '沧海系统内部错误',
         Order_Error_Code::NWMS_STOCKOUT_ORDER_CREATE_FAIL => '出库单创建失败',
         Order_Error_Code::NWMS_STOCKOUT_ORDER_TYPE_ERROR => '出库单类型错误',
         Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_SUPPLY_TYPE_ERROR => '业态订单补货类型错误',
@@ -84,6 +88,22 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::STOCKIN_ORDER_STATUS_FINISHED => '此订单已入库完成，无需再次入库',
         Order_Error_Code::NWMS_ORDER_STOCKIN_ORDER_CONFIRM_STOCKIN_TO_OMS_FAIL => '确认销退入库单结果通知OMS失败',
         Order_Error_Code::NWMS_ORDER_STOCKOUT_PICKUP_NOTICE_OMS_FAILED => '正向订单通知OMS效期失败',
+        Order_Error_Code::NWMS_ORDER_STOCKOUT_PICKUP_NOTICE_OMS_FAILED => '出库单拣货通知OMS失败',
+        //冻结单错误码
+        Order_Error_Code::NWMS_ORDER_FROZEN_SKU_AMOUNT_TOO_MUCH => '一次最多冻结100个SKU',
+        Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL => '调用库存模块冻结库存失败',
+        Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL => '获取仓库商品冻结数据失败',
+        Order_Error_Code::NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST => '冻结单明细获取失败',
+        Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR => '冻结单冻结数量不正确',
+        Order_Error_Code::NWMS_FROZEN_ORDER_NOT_EXIST => '冻结单不存在',
+        Order_Error_Code::NWMS_FROZEN_ORDER_DETAIL_NOT_FOUND => '未找到匹配的冻结单明细',
+        Order_Error_Code::NWMS_UNFROZEN_CURRENT_FROZEN_AMOUNT_NOT_NATCH => '当前冻结量不匹配',
+        Order_Error_Code::NWMS_UNFROZEN_AMOUNT_OVER_FROZEN_AMOUNT => '解冻数量超过已冻结数量',
+        Order_Error_Code::NWMS_UNFROZEN_PARAM_REPEATED => '解冻参数重复',
+        Order_Error_Code::NWMS_UNFROZEN_CHECK_VERSION_FAIL => '解冻校验版本失败',
+        Order_Error_code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL => '调用库存模块解冻库存失败',
+        Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR => '获取仓库商品冻结数据参数有误',
+        Order_Error_code::NWMS_UNFROZEN_DETAIL_PARAM_EMPTY => '获取仓库商品冻结数据参数有误',
     ];
 
 }

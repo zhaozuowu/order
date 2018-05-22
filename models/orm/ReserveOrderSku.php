@@ -74,6 +74,7 @@ class Model_Orm_ReserveOrderSku extends Order_Base_Orm
                 'sku_tax_rate' => $arrInputRow['sku_tax_rate'],
                 'sku_effect_type' => $arrInputRow['sku_effect_type'],
                 'sku_effect_day' => $arrInputRow['sku_effect_day'],
+                'sku_from_country' => $arrInputRow['sku_from_country'],
                 'reserve_order_sku_total_price' => $arrInputRow['reserve_order_sku_total_price'],
                 'reserve_order_sku_total_price_tax' => $arrInputRow['reserve_order_sku_total_price_tax'],
                 'reserve_order_sku_plan_amount' => $arrInputRow['reserve_order_sku_plan_amount'],

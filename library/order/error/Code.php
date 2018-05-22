@@ -180,6 +180,33 @@ class Order_Error_Code extends Wm_Error_Code
     const TOTAL_COUNT_CANNOT_EMPTY = 330016;
 
     /**
+     * repeat logistics order id
+     */
+    const REPEAT_LOGISTICS_ORDER_ID = 330017;
+
+    /**
+     * not ignore warning date
+     */
+    const NOT_IGNORE_ILLEGAL_DATE = 330018;
+
+    /**
+     * reserve stockin send wmq fail
+     * @var int
+     */
+    const RESERVE_STOCKIN_SEND_WMQ_FAIL = 330019;
+
+    /**
+     * stock freeze error
+     * @var int
+     */
+    const STOCK_FREEZE_ERROR = 330020;
+
+    /**
+     * repeat stockout order
+     */
+    const STOCKOUT_ORDER_ID_REPEAT = 331001;
+
+    /**
      * 查询时间范围错误
      */
     const QUERY_TIME_SPAN_ERROR = 340000;
@@ -428,6 +455,101 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT = 310013;
 
+
+
+    //------------------------------------------------冻结单------------------------------------------------
+
+    /**
+     * 冻结单-冻结SKU个数超过100个
+     * @var integer
+     */
+    const NWMS_ORDER_FROZEN_SKU_AMOUNT_TOO_MUCH = 351001;
+
+    /**
+     * 冻结单-调用库存模块冻结库存失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL = 351002;
+
+    /**
+     * 冻结单-获取仓库商品冻结数据失败
+     */
+    const NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL = 351003;
+
+    /**
+     * 冻结单-冻结单明细获取失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_DETAIL_NOT_EXIST = 351004;
+
+    /**
+     * 冻结单-冻结单信息获取失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_NOT_EXIST = 351005;
+
+    /**
+     * 冻结单-解冻参数重复
+     * @var integer
+     */
+    const NWMS_UNFROZEN_PARAM_REPEATED = 351006;
+
+    /**
+     * 冻结单-当前冻结量不匹配
+     * @var integer
+     */
+    const NWMS_UNFROZEN_CURRENT_FROZEN_AMOUNT_NOT_NATCH = 351007;
+
+    /**
+     * 冻结单-解冻数量超过已冻结数量
+     * @var integer
+     */
+    const NWMS_UNFROZEN_AMOUNT_OVER_FROZEN_AMOUNT = 351008;
+
+    /**
+     * 冻结单冻结数量不正确
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_FROZEN_AMOUNT_ERROR = 351009;
+
+    /**
+     * 冻结单-未找到匹配的冻结单明细
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_DETAIL_NOT_FOUND = 351010;
+
+    /**
+     * 冻结单-解冻校验版本失败
+     * @var integer
+     */
+    const NWMS_UNFROZEN_CHECK_VERSION_FAIL = 351011;
+
+    /**
+     * 冻结单-调用库存模块解冻库存失败
+     * @var integer
+     */
+    const NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL = 351012;
+
+    /**
+     * 冻结单-获取仓库商品冻结数据参数有误
+     */
+    const NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR = 351013;
+
+    /**
+     * 冻结单-解冻详情参数为空
+     * @var integer
+     */
+    const NWMS_UNFROZEN_DETAIL_PARAM_EMPTY = 351014;
+
+    /**
+     * 冻结单-自动冻结异常
+     * @var integer
+     */
+    const NWMS_UNFROZEN_BY_SYSTEM_ERROR = 351015;
+
+
+    //------------------------------------------------冻结单------------------------------------------------
+
     /**
      *已作废出库单不允许入库
      */
@@ -461,4 +583,31 @@ class Order_Error_Code extends Wm_Error_Code
      * 正向订单通知OMS效期失败
      */
     const NWMS_ORDER_STOCKOUT_PICKUP_NOTICE_OMS_FAILED = 380001;
+    /**
+     * 出库单拣货通知OMS失败
+     */
+    const NWMS_ORDER_STOCKOUT_PICKUP_NOTICE_OMS_FAILED = 370006;
+
+    /***
+     * 退货入库失败
+     */
+    const NWMS_ORDER_RETURNS_STOCKIN_FAIL =  370007;
+
+
+
+    //////////////////////////
+    /// outside error code ///
+    //////////////////////////
+
+    /**
+     * do not need retry
+     */
+    const STOCK_ORDER_STATUS_INVALID = 310008;
+    const STOCK_STOCKOUT_NO_ENOUGH_STOCKS = 310009;
+    const STOCK_REPETITIVE_OPRATION = 310000;
+
+    /**
+     * stock lock
+     */
+    const STOCK_LOCK_CONFLICT = 310001;
 }
