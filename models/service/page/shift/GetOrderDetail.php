@@ -69,6 +69,7 @@ class Service_Page_Shift_GetOrderDetail
         $row['sku_amount']      = $arrOrder['sku_amount'];
         $row['create_time']     = date('Y-m-d',$arrOrder['create_time']);
         foreach ($arrDetail as &$value){
+            $value['sku_net_text'] = $skuInfos[$value['sku_id']]['sku_net'].Nscm_Define_Sku::SKU_NET_UNIT_TEXT[$skuInfos[$value['sku_id']]['sku_net_unit']];;
             $value['upc_unit_text'] = Nscm_Define_Sku::UPC_UNIT_MAP[$value['upc_unit']];
             $value['sku_effect_type_text'] = Nscm_Define_Sku::SKU_EFFECT_TYPE_TEXT[$skuInfos[$value['sku_id']]['sku_effect_type']];
             $value['is_defective_text'] = Nscm_Define_Stock::QUALITY_TEXT_MAP[$value['is_defective']];

@@ -47,7 +47,7 @@ class Service_Data_ShiftOrder
     {
         $condition = ['shift_order_id' => $arrInput['shift_order_id']];
         $ormOrderInfo = Model_Orm_ShiftOrder::findOne($condition);
-        $ormOrderInfo->status = 0;
+        $ormOrderInfo->status = Order_Define_ShiftOrder::SHIFT_ORDER_STATUS_CANCEL;
         $intAffectRows = $ormOrderInfo->update();
         if (1 !== $intAffectRows) {
             Bd_Log::warning(sprintf("cancel shift order failed order_id[%s] ",$arrInput['shift_order_id']));
@@ -67,7 +67,7 @@ class Service_Data_ShiftOrder
         $this->objDaoShiftOrder->moveLocation($arrInput);
         $condition = ['shift_order_id' => $arrInput['shift_order_id']];
         $ormOrderInfo = Model_Orm_ShiftOrder::findOne($condition);
-        $ormOrderInfo->status = 2;
+        $ormOrderInfo->status = Order_Define_ShiftOrder::SHIFT_ORDER_STATUS_FINISH;
         $intAffectRows = $ormOrderInfo->update();
         if (1 !== $intAffectRows) {
             Bd_Log::warning(sprintf("finish shift order failed order_id[%s] ",$arrInput['shift_order_id']));
@@ -200,7 +200,11 @@ class Service_Data_ShiftOrder
             'sku_amount'        => $intTotalAmount,
             'status'            => Order_Define_ShiftOrder::SHIFT_ORDER_STATUS_CREATE,
             'source_location'   => $arrInput['source_location'],
+            'source_roadway'    => $arrInput['source_roadway'],
+            'source_area'       => $arrInput['source_area'],
             'target_location'   => $arrInput['target_location'],
+            'target_roadway'    => $arrInput['target_roadway'],
+            'target_area'       => $arrInput['target_area'],
             'detail'            => json_encode($skuList),
             'creator'           => $intCreator,
             'creator_name'      => $strCreatorName,

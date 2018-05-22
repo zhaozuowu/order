@@ -55,7 +55,7 @@ class Service_Page_Shift_GetOrder
             $row['creator_name']    = $value['creator_name'];
             $row['sku_kinds']       = $value['sku_kinds'];
             $row['sku_amount']      = $value['sku_amount'];
-            $row['create_time']     = strtotime(date('Y-m-d',$value['create_time']));
+            $row['create_time']     = date('Y-m-d',$value['create_time']);
 
             $arrResult[] = $row;
         }
