@@ -241,11 +241,13 @@ class Service_Data_PickupOrder
             }
             $pickupOrderId = $key;
             $intWarehouseId = isset($wareHouseIds[$key]) ? $wareHouseIds[$key]:0;
-            $recommendStockLocList = $this->objWrpcStock->getRecommendStockLoc($intWarehouseId,$pickupOrderId,$details);
-            $recommendStockLocList = $this->formatRecommendStockLocList($recommendStockLocList);
-            foreach($recommendStockLocList as $stockKey=>$stockItem) {
-                if (isset($createParam[$key."_" .$stockKey])) {
-                    $createParam[$key."_" .$stockKey]['pickup_extra_info'] = json_encode($stockItem);
+            if (!empty($details)) {
+                $recommendStockLocList = $this->objWrpcStock->getRecommendStockLoc($intWarehouseId,$pickupOrderId,$details);
+                $recommendStockLocList = $this->formatRecommendStockLocList($recommendStockLocList);
+                foreach($recommendStockLocList as $stockKey=>$stockItem) {
+                    if (isset($createParam[$key."_" .$stockKey])) {
+                        $createParam[$key."_" .$stockKey]['pickup_extra_info'] = json_encode($stockItem);
+                    }
                 }
             }
         }
