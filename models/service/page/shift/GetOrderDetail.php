@@ -57,7 +57,11 @@ class Service_Page_Shift_GetOrderDetail
     {
         unset($arrOrder['id']);
         unset($arrOrder['version']);
+        unset($arrOrder['is_detete']);
         foreach ($arrDetail as &$value){
+            unset($value['id']);
+            unset($value['version']);
+            unset($value['is_delete']);
             $value['sku_net_text'] = $skuInfos[$value['sku_id']]['sku_net'].Nscm_Define_Sku::SKU_NET_UNIT_TEXT[$skuInfos[$value['sku_id']]['sku_net_unit']];;
             $value['upc_unit_text'] = Nscm_Define_Sku::UPC_UNIT_MAP[$value['upc_unit']];
             $value['sku_effect_type_text'] = Nscm_Define_Sku::SKU_EFFECT_TYPE_TEXT[$skuInfos[$value['sku_id']]['sku_effect_type']];

@@ -48,6 +48,7 @@ class Service_Data_ShiftOrder
         $condition = ['shift_order_id' => $arrInput['shift_order_id']];
         $ormOrderInfo = Model_Orm_ShiftOrder::findOne($condition);
         $ormOrderInfo->status = Order_Define_ShiftOrder::SHIFT_ORDER_STATUS_CANCEL;
+        $ormOrderInfo->update_time = time();
         $intAffectRows = $ormOrderInfo->update();
         if (1 !== $intAffectRows) {
             Bd_Log::warning(sprintf("cancel shift order failed order_id[%s] ",$arrInput['shift_order_id']));
@@ -68,6 +69,7 @@ class Service_Data_ShiftOrder
         $condition = ['shift_order_id' => $arrInput['shift_order_id']];
         $ormOrderInfo = Model_Orm_ShiftOrder::findOne($condition);
         $ormOrderInfo->status = Order_Define_ShiftOrder::SHIFT_ORDER_STATUS_FINISH;
+        $ormOrderInfo->update_time = time();
         $intAffectRows = $ormOrderInfo->update();
         if (1 !== $intAffectRows) {
             Bd_Log::warning(sprintf("finish shift order failed order_id[%s] ",$arrInput['shift_order_id']));

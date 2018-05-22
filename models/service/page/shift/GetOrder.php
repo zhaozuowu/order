@@ -43,21 +43,10 @@ class Service_Page_Shift_GetOrder
     public function formatResult($arrInput){
         $arrResult = array();
         foreach ($arrInput as $value){
-            $row['shift_order_id']  = $value['shift_order_id'];
-            $row['warehouse_id']    = $value['warehouse_id'];
-            $row['source_location'] = $value['source_location'];
-            $row['source_roadway']  = $value['source_roadway'];
-            $row['source_area']     = $value['source_area'];
-            $row['target_location'] = $value['target_location'];
-            $row['target_roadway']  = $value['target_roadway'];
-            $row['target_area']     = $value['target_area'];
-            $row['status']          = $value['status'];
-            $row['creator_name']    = $value['creator_name'];
-            $row['sku_kinds']       = $value['sku_kinds'];
-            $row['sku_amount']      = $value['sku_amount'];
-            $row['create_time']     = $value['create_time'];
-
-            $arrResult[] = $row;
+            unset($value['id']);
+            unset($value['version']);
+            unset($value['is_delete']);
+            $arrResult[] = $value;
         }
         return $arrResult;
     }
