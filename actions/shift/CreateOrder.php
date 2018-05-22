@@ -14,7 +14,11 @@ class Action_CreateOrder extends Order_Base_Action
     protected $arrInputParams = [
         'warehouse_id'      => 'int|required|min[1]|len[64]',
         'source_location'   => 'str|required|min[1]|len[64]',
+        'source_roadway'    => 'str|required|min[1]|len[64]',
+        'source_area'       => 'str|required|min[1]|len[64]',
         'target_location'   => 'str|required|min[1]|len[64]',
+        'target_roadway'    => 'str|required|min[1]|len[64]',
+        'target_area'       => 'str|required|min[1]|len[64]',
         'detail'            => [
             'validate'      => 'json|required|decode',
             'type'          => 'array',

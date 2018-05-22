@@ -190,6 +190,8 @@ class Service_Data_ShiftOrder
         $strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
 
         if (empty($intCreator) || empty($strCreatorName)) {
+            $intCreator = '0';
+            $strCreatorName = 'auto';
             Bd_Log::warning(sprintf('get user info failed arrInput[%s] ', $arrInput));
         }
 

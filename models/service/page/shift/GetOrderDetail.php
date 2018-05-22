@@ -55,19 +55,8 @@ class Service_Page_Shift_GetOrderDetail
      */
     public function formatResult($arrOrder = array(), $intCount = 0, $arrDetail = array(),$skuInfos = array())
     {
-        $row['shift_order_id']  = $arrOrder['shift_order_id'];
-        $row['warehouse_id']    = $arrOrder['warehouse_id'];
-        $row['source_location'] = $arrOrder['source_location'];
-        $row['source_roadway']  = $arrOrder['source_roadway'];
-        $row['source_area']     = $arrOrder['source_area'];
-        $row['target_location'] = $arrOrder['target_location'];
-        $row['target_roadway']  = $arrOrder['target_roadway'];
-        $row['target_area']     = $arrOrder['target_area'];
-        $row['status']          = $arrOrder['status'];
-        $row['creator_name']    = $arrOrder['creater_name'];
-        $row['sku_kinds']       = $arrOrder['sku_kinds'];
-        $row['sku_amount']      = $arrOrder['sku_amount'];
-        $row['create_time']     = $arrOrder['create_time'];
+        unset($arrOrder['id']);
+        unset($arrOrder['version']);
         foreach ($arrDetail as &$value){
             $value['sku_net_text'] = $skuInfos[$value['sku_id']]['sku_net'].Nscm_Define_Sku::SKU_NET_UNIT_TEXT[$skuInfos[$value['sku_id']]['sku_net_unit']];;
             $value['upc_unit_text'] = Nscm_Define_Sku::UPC_UNIT_MAP[$value['upc_unit']];
@@ -79,7 +68,7 @@ class Service_Page_Shift_GetOrderDetail
                 $value['production_or_expiration_time'] = strtotime(date('Y-m-d',$value['expiration_time']));
             }
         }
-        $arrRet = $row;
+        $arrRet = $arrOrder;
         $arrRet['total'] = $intCount;
         $arrRet['shift_order_detail'] = array();
         $arrRet['shift_order_detail'] = $arrDetail;
