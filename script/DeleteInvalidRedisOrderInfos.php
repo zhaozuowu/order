@@ -47,13 +47,7 @@ class DeleteInvalidRedisOrderInfos
         $arrRemovedReserveOrderIds = [];
         foreach ($arrOrderIds as $intOrderId) {
             $strRedisKey = Nscm_Define_OrderPrefix::ASN . $intOrderId;
-
-            echo json_encode($objRedisReserve->getOperateRecord($strRedisKey));
-
             if (!empty($objRedisReserve->getOperateRecord($strRedisKey))) {
-
-                echo 'TEST';
-
                 $arrRemovedReserveOrderIds[] = $intOrderId;
                 if (empty($objRedisReserve->dropOperateRecord($strRedisKey))) {
                     Bd_Log::warning('delete redis reserve order [' . $strRedisKey . '] failed');
@@ -94,7 +88,7 @@ class DeleteInvalidRedisOrderInfos
         $objRedisStockin = new Dao_Redis_StockInOrder();
         $arrRemovedStockinOrderIds = [];
         foreach ($arrOrderIds as $intOrderId) {
-            $strRedisKey = Nscm_Define_OrderPrefix::ASN . $intOrderId;
+            $strRedisKey = Nscm_Define_OrderPrefix::SIO . $intOrderId;
             if (!empty($objRedisStockin->getOperateRecord($strRedisKey))) {
                 $arrRemovedStockinOrderIds[] = $intOrderId;
                 if (empty($objRedisStockin->dropOperateRecord($strRedisKey))) {
