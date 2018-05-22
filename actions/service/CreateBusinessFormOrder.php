@@ -43,6 +43,16 @@ class Action_Service_CreateBusinessFormOrder extends Order_Base_ServiceAction {
 				'order_amount' => 'int|required|min[1]',
 			],
 		],
+        'skus_event' => [
+            'validate' => 'json|decode',
+            'type' => 'array',
+            'params' => [
+                'sku_id' => 'int',
+                'order_amount' => 'int',
+                'event_type'   => 'int'
+            ],
+
+        ],
 	];
 
 	/**

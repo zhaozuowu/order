@@ -136,6 +136,82 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param int $intStockInOrderType 入库单类型
      * @param int $intStockInOrderDataSourceType 销退入库单类型
      * @param int $intStockInOrderSource 销退入库单业态
+     * @param int $intOrderReturnReason 销退入库原因
+     * @param string $strOrderReturnReasonText 销退入库原因
+     * @param string $strSourceInfo 来源订单json字符串
+     * @param int $intStockinOrderStatus 入库单状态
+     * @param int $intCityId 城市id
+     * @param string $strCityName 城市名称
+     * @param int $intWarehouseId 入库仓库id
+     * @param string $strWarehouseName 入库仓库名称
+     * @param int $intStockinOrderPlanAmount 计划入库数量
+     * @param int $intStockInOrderCreatorId 操作人员id
+     * @param string $strStockInOrderCreatorName 操作人员名称
+     * @param string $strStockInOrderRemark 备注
+     * @param int $intStockinOrderTotalPrice 入库单未税总价格
+     * @param int $intStockinOrderTotalPriceTax 入库单含税总价
+     * @param int $intShipmentOrderId 运单号
+     * @param string $strCustomerId 客户id
+     * @param string $strCustomerName 客户名称
+     * @param string $strSourceSupplierId 客户id
+     * @return int
+     */
+    public function createRemoveSiteStockInOrder(
+        $intStockInOrderId,
+        $intStockInOrderType,
+        $intStockInOrderDataSourceType,
+        $intStockInOrderSource,
+        $intOrderReturnReason,
+        $strOrderReturnReasonText,
+        $strSourceInfo,
+        $intStockinOrderStatus,
+        $intCityId,
+        $strCityName,
+        $intWarehouseId,
+        $strWarehouseName,
+        $intStockinOrderPlanAmount,
+        $intStockInOrderCreatorId,
+        $strStockInOrderCreatorName,
+        $strStockInOrderRemark,
+        $intStockinOrderTotalPrice,
+        $intStockinOrderTotalPriceTax,
+        $intShipmentOrderId,
+        $strCustomerId,
+        $strCustomerName,
+        $strSourceSupplierId,$assetInformation)
+    {
+        $arrRow = [
+            'stockin_order_id' => intval($intStockInOrderId),
+            'stockin_order_type' => intval($intStockInOrderType),
+            'data_source' => intval($intStockInOrderDataSourceType),
+            'stockin_order_source' => intval($intStockInOrderSource),
+            'stockin_order_reason' => intval($intOrderReturnReason),
+            'stockin_order_reason_text' => strval($strOrderReturnReasonText),
+            'shipment_order_id' => intval($intShipmentOrderId),
+            'source_info' => strval($strSourceInfo),
+            'stockin_order_status' => intval($intStockinOrderStatus),
+            'city_id' => intval($intCityId),
+            'city_name' => strval($strCityName),
+            'warehouse_id' => intval($intWarehouseId),
+            'warehouse_name' => strval($strWarehouseName),
+            'stockin_order_plan_amount' => $intStockinOrderPlanAmount,
+            'stockin_order_creator_id' => $intStockInOrderCreatorId,
+            'stockin_order_creator_name' => $strStockInOrderCreatorName,
+            'stockin_order_remark' => $strStockInOrderRemark,
+            'stockin_order_total_price' => $intStockinOrderTotalPrice,
+            'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
+            'customer_id' => $strCustomerId,
+            'customer_name' => $strCustomerName,
+            'source_supplier_id' => $strSourceSupplierId,
+            'asset_information' => $assetInformation,
+        ];
+        return self::insert($arrRow);
+    }
+    /**
+     * @param int $intStockInOrderId 入库单id
+     * @param int $intStockInOrderType 入库单类型
+     * @param int $intStockInOrderDataSourceType 销退入库单类型
+     * @param int $intStockInOrderSource 销退入库单业态
      * @param int $intSourceOrderId 出库单id
      * @param int $intOrderReturnReason 销退入库原因
      * @param string $strOrderReturnReasonText 销退入库原因
@@ -472,6 +548,31 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             return $objStockInOrder->toArray();
         }
         return [];
+    }
+
+    /**
+     * 批量查询入库单详情
+     *
+     * @param $arrStockinOrderIds
+     * @return mixed
+     */
+    public static function getStockinOrderInfoByStockinOrderIds($arrStockinOrderIds)
+    {
+        // 只查询未软删除的
+        $arrCondition = [
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+            'stockin_order_id' => [
+                'in',
+                $arrStockinOrderIds,
+            ],
+        ];
+
+        // 查找该行所有数据
+        $arrCols = self::getAllColumns();
+
+        // 查找满足条件的所有行数据
+        $arrResult = self::findRows($arrCols, $arrCondition);
+        return $arrResult;
     }
 
 }

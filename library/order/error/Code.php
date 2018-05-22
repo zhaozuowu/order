@@ -574,6 +574,15 @@ class Order_Error_Code extends Wm_Error_Code
      * 此订单已入库完成，无需再次入库
      */
     const STOCKIN_ORDER_STATUS_FINISHED = 370005;
+
+    /**
+     * 确认销退入库单通知OMS失败
+     */
+    const NWMS_ORDER_STOCKIN_ORDER_CONFIRM_STOCKIN_TO_OMS_FAIL = 370006;
+    /**
+     * 正向订单通知OMS效期失败
+     */
+//    const NWMS_ORDER_STOCKOUT_PICKUP_NOTICE_OMS_FAILED = 380001;
     /**
      * 出库单拣货通知OMS失败
      */

@@ -213,4 +213,48 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
             self::findOne($arrCondition)->update($arrUpdateInfo);
         }
     }
+
+    /**
+     * 批量获取入库单商品列表（不分页）
+     * @param $arrStockinOrderIds
+     * @return array
+     */
+    public static function getBatchStockinOrderSkus($arrStockinOrderIds)
+    {
+        $arrResult = [
+            'total' => '0',
+            'list' => [],
+        ];
+
+        if (empty($arrStockinOrderIds)) {
+            return $arrResult;
+        }
+
+        // 只查询未软删除的
+        $arrCondition = [
+            'stockin_order_id' => [
+                'in',
+                $arrStockinOrderIds,
+            ],
+
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+
+        // 排序条件
+        $orderBy = ['stockin_order_id' => 'asc'];
+
+        // 查找满足条件的所有列数据
+        $arrCols = self::getAllColumns();
+
+        // 执行一次性查找
+        $arrRowsAndTotal = self::findRowsAndTotalCount(
+            $arrCols,
+            $arrCondition,
+            $orderBy
+        );
+
+        $arrResult['total'] = $arrRowsAndTotal['total'];
+        $arrResult['list'] = $arrRowsAndTotal['rows'];
+        return $arrResult;
+    }
 }
