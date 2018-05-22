@@ -34,11 +34,7 @@ class Service_Page_Reserve_GetReserveOrderDetail implements Order_Base_Page
         $ret = $this->objServiceData->getReserveOrderInfoByReserveOrderId($strReserveOrderId);
 
         if(empty($ret)){
-            if (true == Order_Util::isReserveOrderId($strReserveOrderId)) {
-                Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_RESERVE_ORDER_NOT_EXIST);
-            } else if (true == Order_Util::isPurchaseOrderId($strReserveOrderId)) {
-                Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_PURCHASE_ORDER_NOT_EXIST);
-            }
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_QUERY_RESULT_EMPTY);
         }
 
         $intCurrentUserId = $arrInput['_session']['user_id'];

@@ -93,7 +93,7 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
                     : (Order_Define_Sku::UPC_UNIT_MAP[$arrListItem['upc_min_unit']]
                     ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR);
             $arrRoundResult['sku_main_image'] = empty($arrListItem['sku_main_image'])
-                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                ? Order_Define_Sku::SKU_IMAGE_DEFAULT_URL
                 : strval($arrListItem['sku_main_image']);
             // 数据库存放的stockin_order_sku_extra_info是json编码的Unix时间戳，转为文本形式时间给FE
             $arrSkuExtInf = empty($arrListItem['stockin_order_sku_extra_info']) ? ''

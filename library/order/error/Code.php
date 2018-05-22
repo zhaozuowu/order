@@ -465,7 +465,7 @@ class Order_Error_Code extends Wm_Error_Code
 
 
     /**
-     * 查询返回结果为空
+     * 未找到结果
      * @var integer
      */
     const NWMS_ORDER_QUERY_RESULT_EMPTY = 360001;

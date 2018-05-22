@@ -154,6 +154,11 @@ class Order_Define_Sku
     const SKU_PRICE_TYPE_COST = 3;
 
     /**
+     * 默认的sku商品图像url
+     */
+    const SKU_IMAGE_DEFAULT_URL = 'https://s.waimai.baidu.com/c/static/mis/pics/ele-back.jpeg';
+
+    /**
      * sku tax rate
      * @var array
      */

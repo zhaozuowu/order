@@ -64,7 +64,7 @@ class Action_GetReserveOrderSkuByOrderSku extends Order_Base_Action
             $arrRoundResult['reserve_order_sku_plan_amount'] = empty($arrRet['reserve_order_sku_plan_amount'])
                 ? 0 : intval($arrRet['reserve_order_sku_plan_amount']);
             $arrRoundResult['sku_main_image'] = empty($arrRet['sku_main_image'])
-                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                ? Order_Define_Sku::SKU_IMAGE_DEFAULT_URL
                 : strval($arrRet['sku_main_image']);
             $arrRoundResult['abandon_time'] = intval($arrRet['abandon_time']);
             $arrRoundResult['product_expire_time'] = intval($arrRet['product_expire_time']);

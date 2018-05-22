@@ -98,7 +98,7 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
                 empty($arrListItem['stockin_order_sku_extra_info']) ? ''
                     : strval($arrListItem['stockin_order_sku_extra_info']);
             $arrRoundResult['sku_main_image'] = empty($arrListItem['sku_main_image'])
-                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                ? Order_Define_Sku::SKU_IMAGE_DEFAULT_URL
                 : strval($arrListItem['sku_main_image']);
             $arrRoundResult['upc_min_unit'] = empty($arrListItem['upc_min_unit']) ? 0
                 : intval($arrListItem['upc_min_unit']);
