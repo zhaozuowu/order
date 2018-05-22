@@ -343,6 +343,10 @@ class Dao_Huskar_Stock
 
     /***************************************************冻结单相关******************************************************/
 
+
+    /**
+     *
+     */
     CONST API_RALER_MOVE_LOCATION = 'movelocation';
 
     /**
@@ -359,16 +363,19 @@ class Dao_Huskar_Stock
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_MOVE_LOCATION]) ? [] : $arrRet[self::API_RALER_MOVE_LOCATION];
         if (empty($arrRet) || !empty($arrRet['errno'])) {
-            Bd_Log::warning('call stock model move location failed. ret: ' . print_r($arrRet, true));
-            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
+//            Bd_Log::warning('call stock model move location failed. ret: ' . print_r($arrRet, true));
+            throw new Nscm_Exception_Business($arrRet['errno'],$arrRet['errmsg'] );
+//            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
         }
         Bd_Log::trace('call stock model move location, ret: ' . json_encode($arrRet));
 
         return $arrRet['data'];
     }
 
-
-        CONST API_RALER_GET_REMOVABLE_STOCK = 'getRemovableSkuBatchInfo';
+    /**
+     *
+     */
+    CONST API_RALER_GET_REMOVABLE_STOCK = 'getRemovableSkuBatchInfo';
 
     /**
      * 获取仓库
@@ -390,8 +397,9 @@ class Dao_Huskar_Stock
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_GET_REMOVABLE_STOCK]) ? [] : $arrRet[self::API_RALER_GET_REMOVABLE_STOCK];
         if (empty($arrRet) || !empty($arrRet['errno'])) {
-            Bd_Log::warning('call stock model get location stock failed. ret: ' . print_r($arrRet, true));
-            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_GET_LOCATION_STOCK_FAILED);
+//            Bd_Log::warning('call stock model get location stock failed. ret: ' . print_r($arrRet, true));
+            throw new Nscm_Exception_Business($arrRet['errno'],$arrRet['errmsg'] );
+//            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_GET_LOCATION_STOCK_FAILED);
         }
         Bd_Log::trace('call stock model get location stock, ret: ' . json_encode($arrRet));
 
