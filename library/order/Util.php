@@ -245,11 +245,11 @@ public static function verifyUnixTimeSpan($intStartTime, $intEndTime, $intMaxInt
         // 返回结果默认为空
         $strResult = '';
 
-        if (empty($strStockAdjustOrderId)) {
+        if (empty($strShiftOrderId)) {
             return $strResult;
         }
 
-        $strResult = ltrim($strStockAdjustOrderId, Nscm_Define_OrderPrefix::SHO);
+        $strResult = ltrim($strShiftOrderId, Nscm_Define_OrderPrefix::SHO);
 
         return $strResult;
     }

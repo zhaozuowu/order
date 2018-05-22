@@ -1,14 +1,12 @@
 <?php
 /**
- * @name Service_Page_Adjust_CreateOrder
- * @desc 新建调整单
- * @author sunzhixin@iwaimai.baidu.com
+ * Class Service_Page_Shift_CancelOrder
  */
 
 class Service_Page_Shift_CancelOrder
 {
     /**
-     * @var Service_Data_StockAdjustOrder
+     * @var Service_Data_ShiftOrder
      */
     protected $objShiftOrder;
 
@@ -28,7 +26,6 @@ class Service_Page_Shift_CancelOrder
     public function execute($arrInput)
     {
         // 取消移位单
-        $arrOutput = $this->objShiftOrder->cancelShiftOrder($arrInput);
-        return $arrOutput;
+        return $this->objShiftOrder->cancelShiftOrder($arrInput);
     }
 }

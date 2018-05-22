@@ -14,6 +14,7 @@ class Service_Page_Shift_GetOrderDetail
      */
     protected $objShiftOrder;
     protected $objShiftOrderDetail;
+    protected $objSku;
 
     /**
      * init
@@ -22,6 +23,7 @@ class Service_Page_Shift_GetOrderDetail
     {
         $this->objShiftOrder = new Service_Data_ShiftOrder();
         $this->objShiftOrderDetail = new Service_Data_ShiftOrderDetail();
+        $this->objSku = new Dao_Ral_Sku();
     }
 
     /**
@@ -31,12 +33,6 @@ class Service_Page_Shift_GetOrderDetail
      */
     public function execute($arrInput)
     {
-        // 去掉SAO前缀
-        if(!empty($arrInput['shift_order_id'])) {
-            $arrInput['shift_order_id'] =
-                intval(Order_Util::trimShiftOrderIdPrefix($arrInput['shift_order_id']));
-        }else return [];
-
         $arrOrder = $this->objShiftOrder->getByOrderId($arrInput['shift_order_id']);
         if(empty($arrOrder)) {
             return [];
@@ -44,8 +40,10 @@ class Service_Page_Shift_GetOrderDetail
 
         $intOrderDetailCount = $this->objShiftOrderDetail->getCountWithGroup($arrInput);
         $arrOrderDetail = $this->objShiftOrderDetail->get($arrInput);
+        $skuIds = array_column($arrOrderDetail,'sku_id');
+        $skuInfos = $this->objSku->getSkuInfos($skuIds);
 
-        return $this->formatResult($arrOrder, $intOrderDetailCount, $arrOrderDetail);
+        return $this->formatResult($arrOrder, $intOrderDetailCount, $arrOrderDetail,$skuInfos);
     }
 
     /**
@@ -55,12 +53,35 @@ class Service_Page_Shift_GetOrderDetail
      * @param array $arrDetail
      * @return array
      */
-    public function formatResult($arrOrder = array(), $intCount = 0, $arrDetail = array())
+    public function formatResult($arrOrder = array(), $intCount = 0, $arrDetail = array(),$skuInfos = array())
     {
-        $arrRet = $arrOrder;
+        $row['shift_order_id']  = $arrOrder['shift_order_id'];
+        $row['warehouse_id']    = $arrOrder['warehouse_id'];
+        $row['source_location'] = $arrOrder['source_location'];
+        $row['source_roadway']  = $arrOrder['source_roadway'];
+        $row['source_area']     = $arrOrder['source_area'];
+        $row['target_location'] = $arrOrder['target_location'];
+        $row['target_roadway']  = $arrOrder['target_roadway'];
+        $row['target_area']     = $arrOrder['target_area'];
+        $row['status']          = $arrOrder['status'];
+        $row['creator_name']    = $arrOrder['creater_name'];
+        $row['sku_kinds']       = $arrOrder['sku_kinds'];
+        $row['sku_amount']      = $arrOrder['sku_amount'];
+        $row['create_time']     = date('Y-m-d',$arrOrder['create_time']);
+        foreach ($arrDetail as &$value){
+            $value['upc_unit_text'] = Nscm_Define_Sku::UPC_UNIT_MAP[$value['upc_unit']];
+            $value['sku_effect_type_text'] = Nscm_Define_Sku::SKU_EFFECT_TYPE_TEXT[$skuInfos[$value['sku_id']]['sku_effect_type']];
+            $value['is_defective_text'] = Nscm_Define_Stock::QUALITY_TEXT_MAP[$value['is_defective']];
+            if (Nscm_Define_Sku::SKU_EFFECT_FROM == $skuInfos[$value['sku_id']]['sku_effect_type']) {
+                $value['production_or_expiration_time'] = date('Y-m-d',$value['production_time']);
+            } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $skuInfos[$value['sku_id']]['sku_effect_type']) {
+                $value['production_or_expiration_time'] = date('Y-m-d',$value['expiration_time']);
+            }
+        }
+        $arrRet = $row;
+        $arrRet['total'] = $intCount;
         $arrRet['shift_order_detail'] = array();
-        $arrRet['shift_order_detail']['total'] = $intCount;
-        $arrRet['shift_order_detail']['detail'] = $arrDetail;
+        $arrRet['shift_order_detail'] = $arrDetail;
 
         return $arrRet;
     }

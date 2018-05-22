@@ -29,16 +29,13 @@ class Service_Data_ShiftOrder
     {
         $arrOrderArg       = $this->getCreateOrderArg($arrInput);
         $arrOrderDetailArg = $this->getCreateOrderDetailArg($arrInput);
-        Bd_Log::trace('insert into shift order ' . json_encode($arrOrderArg));
-        Bd_Log::trace('insert into shift order detail ' . json_encode($arrOrderDetailArg));
 
-        // 新建调整单和调整单详情
+        // 事务新建移位单
         return Model_Orm_ShiftOrder::getConnection()->transaction(function () use ($arrOrderArg, $arrOrderDetailArg) {
             Model_Orm_ShiftOrder::insert($arrOrderArg);
             Model_Orm_ShiftOrderDetail::batchInsert($arrOrderDetailArg);
             return ['shift_order_id' => $arrOrderArg['shift_order_id']];
         });
-        Bd_Log::trace('create shift order return ' . print_r($arrRet, true));
     }
 
     /**
@@ -67,12 +64,16 @@ class Service_Data_ShiftOrder
      */
     public function finishShiftOrder($arrInput)
     {
-        $ret = $this->objDaoShiftOrder->moveLocation($arrInput);
-        if (empty($ret)) {
+        $this->objDaoShiftOrder->moveLocation($arrInput);
+        $condition = ['shift_order_id' => $arrInput['shift_order_id']];
+        $ormOrderInfo = Model_Orm_ShiftOrder::findOne($condition);
+        $ormOrderInfo->status = 2;
+        $intAffectRows = $ormOrderInfo->update();
+        if (1 !== $intAffectRows) {
             Bd_Log::warning(sprintf("finish shift order failed order_id[%s] ",$arrInput['shift_order_id']));
-            return false;
+            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
         }
-        Bd_Log::trace('finish shift order return ' . print_r($ret, true));
+
         return true;
     }
 
@@ -167,7 +168,7 @@ class Service_Data_ShiftOrder
     }
 
     /**
-     * 检查、拼装新建调整单参数
+     * 检查、拼装新建移位单参数
      * @param $arrInput
      * @return array
      */
@@ -189,8 +190,7 @@ class Service_Data_ShiftOrder
         $strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
 
         if (empty($intCreator) || empty($strCreatorName)) {
-            Bd_Log::warning('get user info failed ', Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR, $arrInput);
-//            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_USER_ERROR);
+            Bd_Log::warning(sprintf('get user info failed arrInput[%s] ', $arrInput));
         }
 
         $arrOrderArg = [
@@ -204,13 +204,14 @@ class Service_Data_ShiftOrder
             'detail'            => json_encode($skuList),
             'creator'           => $intCreator,
             'creator_name'      => $strCreatorName,
+            'create_time'       => time(),
         ];
-
+        Bd_Log::trace('generate shift order ' . json_encode($arrOrderArg));
         return $arrOrderArg;
     }
 
     /**
-     * 检查、拼装新建调整单详情参数
+     * 检查、拼装新建移位单详情参数
      * @param $arrInput
      * @param $arrSkuInfos
      * @param $arrStockInfos
@@ -239,7 +240,7 @@ class Service_Data_ShiftOrder
 
             $arrOrderDetailArg[] = $arrDetailItem;
         }
-
+        Bd_Log::trace('generate shift order detail ' . json_encode($arrOrderDetailArg));
         return $arrOrderDetailArg;
     }
 
@@ -251,21 +252,17 @@ class Service_Data_ShiftOrder
      */
     public static function getByOrderId($shift_order_id)
     {
-        if(empty($stock_adjust_order_id)) {
+        if(empty($shift_order_id)) {
             Bd_Log::warning('stock shift order id invalid', Order_Error_Code::PARAMS_ERROR, $shift_order_id);
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR);
         }
-
         $arrConditions = [
             'is_delete'             => Order_Define_Const::NOT_DELETE,
-            'shift_order_id' => $shift_order_id,
+            'shift_order_id'        => $shift_order_id,
         ];
-
         // 获取所有字段
-        $arrColumns = self::getAllColumns();
-
+        $arrColumns = Model_Orm_ShiftOrder::getAllColumns();
         $arrRet = Model_Orm_ShiftOrder::findRow($arrColumns, $arrConditions);
-
         Bd_Log::debug(__METHOD__ . 'sql return: ' . json_encode($arrRet));
         return $arrRet;
     }

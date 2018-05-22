@@ -297,6 +297,7 @@ class Service_Data_PickupOrder
      * @param $intCreateEndTime
      * @param $intPageSize
      * @param int $intPageNum
+     * @param int $intPickupOrderStatus
      * @param int $intStockoutOrderId
      * @param int $intPickupOrderId
      * @param int $intPickupOrderIsPrint
@@ -310,6 +311,7 @@ class Service_Data_PickupOrder
                                        $intCreateEndTime,
                                        $intPageSize,
                                        $intPageNum = 1,
+                                       $intPickupOrderStatus = 0,
                                        $intStockoutOrderId = 0,
                                        $intPickupOrderId = 0,
                                        $intPickupOrderIsPrint = 0,
@@ -333,6 +335,14 @@ class Service_Data_PickupOrder
         // check page
         if (empty($intPageSize)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        // check pickup order status
+        $strPickupOrderStatus = strval($intPickupOrderStatus);
+        if (!empty($intPickupOrderStatus) &&
+            isset(Order_Define_PickupOrder::PICKUP_ORDER_STATUS_MAP[$strPickupOrderStatus])) {
+            $intPickupOrderStatus = intval($intPickupOrderStatus);
+        } else {
+            $intPickupOrderStatus = 0;
         }
         // check warehouses
         if(empty($strWarehouseIds)){
@@ -359,6 +369,7 @@ class Service_Data_PickupOrder
             $intCreateEndTime,
             $intPageSize,
             $intPageNum,
+            $intPickupOrderStatus,
             $arrPickupOrderIds,
             $intPickupOrderIsPrint,
             $intUpdateStartTime,

@@ -13,7 +13,9 @@ class Action_GetLocationStock extends Order_Base_Action
      */
     protected $arrInputParams = [
         'warehouse_id'      => 'int|required',
-        'source_location'   => 'str|required',
+        'location_code'     => 'str|required',
+        'page_num'          => 'int|optional|default[1]',
+        'page_size'         => 'int|optional|default[50]',
     ];
 
     /**

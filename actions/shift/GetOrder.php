@@ -12,8 +12,8 @@ class Action_GetOrder extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_ids'             => 'arr|required|arr_min[1]|type[int]',
-        'shift_order_id'            => 'regex|patern[/^(S\d{13})?$/]',
+        'warehouse_ids'             => 'arr|required',
+        'shift_order_id'            => 'regex|patern[/^(M\d{13})?$/]',
         'status'                    => 'int|optional',
         'source_location'           => 'str|optional',
         'target_location'           => 'str|optional',
@@ -32,8 +32,7 @@ class Action_GetOrder extends Order_Base_Action
     protected $intMethod = Order_Define_Const::METHOD_GET;
 
     /**
-     * page service
-     * @var Service_Page_Adjust_GetOrder
+     * @var
      */
     protected $objPage;
 

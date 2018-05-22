@@ -39,7 +39,7 @@ class Action_GetPlaceOrderDetail extends Order_Base_Action
         if (empty($data)) {
             return [];
         }
-        $data['is_defective_text'] = Order_Define_PlaceOrder::PLACE_ORDER_QUALITY_MAP[$data['is_defective']];
+        $data['is_defective_text'] = Nscm_Define_Stock::QUALITY_TEXT_MAP[$data['is_defective']];
         $data['place_order_status_text'] = Order_Define_PlaceOrder::PLACE_ORDER_STATUS_SHOW[$data['place_order_status']];
         $data['stockin_order_type_text'] = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$data['stockin_order_type']];
         $data['create_time'] = date("Y-m-d H:i:s", $data['create_time']);
