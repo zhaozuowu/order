@@ -18,6 +18,11 @@ class Service_Data_PlaceOrder
     protected $objDaoWrpcWarehouse;
 
     /**
+     * @var Dao_Ral_Sku
+     */
+    protected $objDaoRalSku;
+
+    /**
      * Service_Data_PlaceOrder constructor.
      */
     public function __construct()
@@ -36,22 +41,29 @@ class Service_Data_PlaceOrder
     {
         //根据入库单号获取入库单详情信息
         $arrStockinOrderInfo = $this->getStockinInfoByStockinOrderIds($arrStockinOrderIds);
+        Bd_Log::trace(sprintf("method[%s] stockin_order_ids[%s] stockin_order_infos[%s]",
+                        __METHOD__, json_encode($arrStockinOrderIds), json_encode($arrStockinOrderInfo)));
         if (empty($arrStockinOrderInfo)) {
             return [];
         }
         //校验是否已生成上架单
         $arrStockinPlaceOrderInfo = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
+        Bd_Log::trace(sprintf("method[%s] stockin_order_ids[%s] stockin_place_orders[%s]",
+                            __METHOD__, json_encode($arrStockinOrderIds), json_encode($arrStockinOrderInfo)));
         if (!empty($arrStockinPlaceOrderInfo)) {
             return [];
         }
         //创建上架单
         $arrSplitOrderInfo = $this->splitStockinOrderByQuality($arrStockinOrderInfo);
+        Bd_Log::trace(sprintf("method[%s] split_order_infos[%s]", __METHOD__, json_encode($arrSplitOrderInfo)));
         if (empty($arrSplitOrderInfo) || (empty($arrSplitOrderInfo['good_skus'])
             && empty($arrSplitOrderInfo['bad_skus']))) {
             return [];
         }
         list($arrOrderList, $arrSkuList, $arrMapOrderList) =
             $this->getCreateParams($arrSplitOrderInfo);
+        Bd_Log::trace(sprintf("method[%s] order_list[%s] sku_list[%s] map_order_list",
+                        json_encode($arrOrderList), json_encode($arrSkuList), json_encode($arrMapOrderList)));
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
         use ($arrOrderList, $arrSkuList, $arrMapOrderList, $arrStockinOrderIds) {
             Model_Orm_PlaceOrder::batchInsert($arrOrderList);
@@ -81,8 +93,10 @@ class Service_Data_PlaceOrder
             return [];
         }
         if (1 == count($arrStockinOrderIds)) {
-            $arrStockinInfo['vendor_id'] = $arrStockinInfoDb['vendor_id'];
-            $arrStockinInfo['vendor_name'] = $arrStockinInfoDb['vendor_name'];
+            $arrStockinSourceInfo = empty($arrStockinInfoDb['source_info']) ?
+                [] : json_decode($arrStockinInfoDb['source_info'], true);
+            $arrStockinInfo['vendor_id'] = $arrStockinSourceInfo['vendor_id'];
+            $arrStockinInfo['vendor_name'] = $arrStockinSourceInfo['vendor_name'];
             $arrStockinInfo['warehouse_id'] = $arrStockinInfoDb['warehouse_id'];
             $arrStockinInfo['warehouse_name'] = $arrStockinInfoDb['warehouse_name'];
             $arrStockinInfo['stockin_order_type'] = $arrStockinInfoDb['stockin_order_type'];
@@ -206,6 +220,37 @@ class Service_Data_PlaceOrder
     }
 
     /**
+     * 计算到效期
+     * @param $arrDbSku
+     * @return array
+     */
+    protected function calculateExpire($arrDbSku)
+    {
+        $arrStockinOrderSkuExtraInfo = json_decode($arrDbSku['stockin_order_sku_extra_info'], true);
+        $arrBatchInfo = [];
+        foreach ($arrStockinOrderSkuExtraInfo as $skuRow) {
+            if ($skuRow['amount'] > 0) {
+                if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $arrDbSku['sku_effect_type']) {
+                    $intProductionTime = intval($skuRow['expire_date']);
+                    $intExpireTime = $intProductionTime + intval($arrDbSku['sku_effect_day']) * 86400 - 1;
+                    $arrBatchInfo[] = [
+                        'expire_time' => $intExpireTime,
+                        'production_time' => $intProductionTime,
+                        'amount'      => $skuRow['amount'],
+                    ];
+                } else {
+                    $intExpireTime = intval($skuRow['expire_date']) + 86399;
+                    $arrBatchInfo[] = [
+                        'expire_time' => $intExpireTime,
+                        'amount'      => $skuRow['amount'],
+                    ];
+                }
+            }
+        }
+        return $arrBatchInfo;
+    }
+
+    /**
      * 获取关联表写入参数
      * @param $arrStockinOrderIds
      * @param $intPlaceOrderId
@@ -285,6 +330,12 @@ class Service_Data_PlaceOrder
     public function getPlaceOrderList($arrInput)
     {
         $arrCondtions = $this->getListConditions($arrInput);
+        if (false == $arrCondtions) {
+            return [
+                'total' => 0,
+                'orders' => [],
+            ];
+        }
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
         $arrRet = Model_Orm_PlaceOrder::getPlaceOrderList($arrCondtions, $intLimit, $intOffset);
@@ -317,6 +368,9 @@ class Service_Data_PlaceOrder
         if (!empty($arrInput['source_order_id'])) {
             $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::
                                     getPlaceOrdersByStockinOrderIds([$arrInput['source_order_id']]);
+            if (empty($arrPlaceOrderIds)) {
+                return false;
+            }
             $arrConditions['place_order_id'] = ['in', $arrPlaceOrderIds];
         }
         if (!empty($arrInput['place_order_id'])) {
@@ -450,9 +504,6 @@ class Service_Data_PlaceOrder
             return [];
         }
         $arrPlaceOrderSkus = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId);
-        if (empty($arrPlaceOrderSkus)) {
-
-        }
         //构造一个skuid和expire_date的map
         $arrMapSkuExpireDate = [];
         foreach ((array)$arrPlacedSkus as $arrPlacedSkusItem) {
