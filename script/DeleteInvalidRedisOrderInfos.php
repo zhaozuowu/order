@@ -62,9 +62,6 @@ class DeleteInvalidRedisOrderInfos
             Bd_Log::trace('remove from redis reserve_order_id, value:' . json_encode($arrRemovedReserveOrderIds));
         }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         // Query all stockin order info in a day
         $intStartTime = strtotime(date('Ymd', strtotime('-1 day')));
         $intEndTime = $intStartTime + Order_Define_Const::UNIX_TIME_SPAN_PER_DAY - 1;
@@ -80,6 +77,7 @@ class DeleteInvalidRedisOrderInfos
             'stockin_order_type' => Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RETURN,
             'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
         ];
+
 
         // 2: stockin_order_id
         $arrOrderIds = Model_Orm_StockinOrder::findColumn('stockin_order_id', $arrConditionStockin);
@@ -103,9 +101,5 @@ class DeleteInvalidRedisOrderInfos
             Bd_Log::warning('stockin_order_id_in_redis_found, count:' . count($arrRemovedStockinOrderIds));
             Bd_Log::trace('remove from redis stockin_order_id, value:' . json_encode($arrRemovedStockinOrderIds));
         }
-
-        // TODO: send email - TODO
-
-
     }
 }
