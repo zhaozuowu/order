@@ -67,16 +67,16 @@ class Service_Page_Shift_GetOrderDetail
         $row['creator_name']    = $arrOrder['creater_name'];
         $row['sku_kinds']       = $arrOrder['sku_kinds'];
         $row['sku_amount']      = $arrOrder['sku_amount'];
-        $row['create_time']     = date('Y-m-d',$arrOrder['create_time']);
+        $row['create_time']     = $arrOrder['create_time'];
         foreach ($arrDetail as &$value){
             $value['sku_net_text'] = $skuInfos[$value['sku_id']]['sku_net'].Nscm_Define_Sku::SKU_NET_UNIT_TEXT[$skuInfos[$value['sku_id']]['sku_net_unit']];;
             $value['upc_unit_text'] = Nscm_Define_Sku::UPC_UNIT_MAP[$value['upc_unit']];
             $value['sku_effect_type_text'] = Nscm_Define_Sku::SKU_EFFECT_TYPE_TEXT[$skuInfos[$value['sku_id']]['sku_effect_type']];
             $value['is_defective_text'] = Nscm_Define_Stock::QUALITY_TEXT_MAP[$value['is_defective']];
             if (Nscm_Define_Sku::SKU_EFFECT_FROM == $skuInfos[$value['sku_id']]['sku_effect_type']) {
-                $value['production_or_expiration_time'] = date('Y-m-d',$value['production_time']);
+                $value['production_or_expiration_time'] = strtotime(date('Y-m-d',$value['production_time']));
             } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $skuInfos[$value['sku_id']]['sku_effect_type']) {
-                $value['production_or_expiration_time'] = date('Y-m-d',$value['expiration_time']);
+                $value['production_or_expiration_time'] = strtotime(date('Y-m-d',$value['expiration_time']));
             }
         }
         $arrRet = $row;

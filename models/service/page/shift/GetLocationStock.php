@@ -47,9 +47,9 @@ class Service_Page_Shift_GetLocationStock
                $value['sku_effect_type_text'] = Nscm_Define_Sku::SKU_EFFECT_TYPE_TEXT[$skuInfos[$value['sku_id']]['sku_effect_type']];
                $value['is_defective_text'] = Nscm_Define_Stock::QUALITY_TEXT_MAP[$value['is_defective']];
                if (Nscm_Define_Sku::SKU_EFFECT_FROM == $skuInfos[$value['sku_id']]['sku_effect_type']) {
-                   $value['production_or_expiration_time'] = date('Y-m-d',$value['production_time']);
+                   $value['production_or_expiration_time'] = strtotime(date('Y-m-d',$value['production_time']));
                } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $skuInfos[$value['sku_id']]['sku_effect_type']) {
-                   $value['production_or_expiration_time'] = date('Y-m-d',$value['expiration_time']);
+                   $value['production_or_expiration_time'] = strtotime(date('Y-m-d',$value['expiration_time']));
                }
         }
         return $arrInput;
