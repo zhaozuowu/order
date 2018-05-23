@@ -275,7 +275,16 @@ class Service_Data_PickupOrder
         }
 
         $arrPickupOrderSkus = Model_Orm_PickupOrderSku::findRows(Model_Orm_PickupOrderSku::getAllColumns(), $arrConds);
+        $skuIds = array_column($arrPickupOrderSkus,'sku_id');
+        $arrSkusInfo = [];
+        if(!empty($skuIds)){
+            //获取sku基础信息判断产效期类型
+            $objRalSku = new Dao_Ral_Sku();
+            $arrSkusInfo = $objRalSku->getSkuInfos($skuIds);
+            $arrSkusInfo = array_column($arrSkusInfo,'sku_effect_type','sku_id');
+        }
         $arrPickupOrder['pickup_skus'] = $arrPickupOrderSkus;
+        $arrPickupOrder['pickup_sku_effect_type_list'] = $arrSkusInfo;
         return $arrPickupOrder;
     }
 
