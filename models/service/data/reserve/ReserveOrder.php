@@ -396,18 +396,35 @@ class Service_Data_Reserve_ReserveOrder
      */
     public function getReserveOrderInfoByReserveOrderId($strReserveOrderId)
     {
+        $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
+        if (empty($intReserveOrderId)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+
+        return Model_Orm_ReserveOrder::getReserveOrderInfoByReserveOrderId($intReserveOrderId);
+    }
+
+    /**
+     * 根据采购单或者预约单号查询预约订单详情
+     *
+     * @param $stOrderId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getReserveOrderInfoByOrderId($stOrderId)
+    {
         $arrRet = [];
 
         $strOrderId = null;
-        if (true == Order_Util::isReserveOrderId($strReserveOrderId)) {
-            $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($strReserveOrderId));
+        if (true == Order_Util::isReserveOrderId($stOrderId)) {
+            $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($stOrderId));
             if (empty($intReserveOrderId)) {
                 Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
             }
             $arrRet = Model_Orm_ReserveOrder::getReserveOrderInfoByReserveOrderId($intReserveOrderId);
             $strOrderId = Nscm_Define_OrderPrefix::ASN . $arrRet['reserve_order_id'];
-        } else if (true == Order_Util::isPurchaseOrderId($strReserveOrderId)) {
-            $intPurchaseOrderId = intval(Order_Util::trimPurchaseOrderIdPrefix($strReserveOrderId));
+        } else if (true == Order_Util::isPurchaseOrderId($stOrderId)) {
+            $intPurchaseOrderId = intval(Order_Util::trimPurchaseOrderIdPrefix($stOrderId));
             if (empty($intPurchaseOrderId)) {
                 Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
             }
