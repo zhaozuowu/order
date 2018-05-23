@@ -1,8 +1,6 @@
 <?php
 /**
- * @name Action_Createiorder
- * @desc 创建移位单
- * @author songwenkai@iwaimai.baidu.com
+ * Class Action_CancelOrder
  */
 
 class Action_CancelOrder extends Order_Base_Action

@@ -1,8 +1,6 @@
 <?php
 /**
- * @name Action_Finishorder
- * @desc 创建库存调整单-调增
- * @author sunzhixin@iwaimai.baidu.com
+ * Class Action_FinishOrder
  */
 
 class Action_FinishOrder extends Order_Base_Action

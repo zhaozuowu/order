@@ -93,8 +93,10 @@ class Service_Data_PlaceOrder
             return [];
         }
         if (1 == count($arrStockinOrderIds)) {
-            $arrStockinInfo['vendor_id'] = $arrStockinInfoDb['vendor_id'];
-            $arrStockinInfo['vendor_name'] = $arrStockinInfoDb['vendor_name'];
+            $arrStockinSourceInfo = empty($arrStockinInfoDb['source_info']) ?
+                [] : json_decode($arrStockinInfoDb['source_info'], true);
+            $arrStockinInfo['vendor_id'] = $arrStockinSourceInfo['vendor_id'];
+            $arrStockinInfo['vendor_name'] = $arrStockinSourceInfo['vendor_name'];
             $arrStockinInfo['warehouse_id'] = $arrStockinInfoDb['warehouse_id'];
             $arrStockinInfo['warehouse_name'] = $arrStockinInfoDb['warehouse_name'];
             $arrStockinInfo['stockin_order_type'] = $arrStockinInfoDb['stockin_order_type'];
@@ -328,6 +330,12 @@ class Service_Data_PlaceOrder
     public function getPlaceOrderList($arrInput)
     {
         $arrCondtions = $this->getListConditions($arrInput);
+        if (false == $arrCondtions) {
+            return [
+                'total' => 0,
+                'orders' => [],
+            ];
+        }
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
         $arrRet = Model_Orm_PlaceOrder::getPlaceOrderList($arrCondtions, $intLimit, $intOffset);
@@ -360,6 +368,9 @@ class Service_Data_PlaceOrder
         if (!empty($arrInput['source_order_id'])) {
             $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::
                                     getPlaceOrdersByStockinOrderIds([$arrInput['source_order_id']]);
+            if (empty($arrPlaceOrderIds)) {
+                return false;
+            }
             $arrConditions['place_order_id'] = ['in', $arrPlaceOrderIds];
         }
         if (!empty($arrInput['place_order_id'])) {

@@ -34,7 +34,9 @@ class Service_Page_Shift_FinishOrder
 
         $arrOrder = $this->objShiftOrder->getByOrderId($arrInput['shift_order_id']);
         $arrOrderDetail = $this->objShiftOrderDetail->get($arrInput);
-        if(empty($arrOrder) || empty($arrOrderDetail)) return false;
+        if(empty($arrOrder) || empty($arrOrderDetail)) {
+            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
+        }
         $finishInput = array();
         $finishInput['m_order_id']              = $arrInput['shift_order_id'];
         $finishInput['warehouse_id']            = $arrOrder['warehouse_id'];
@@ -53,6 +55,10 @@ class Service_Page_Shift_FinishOrder
             $finishInput['batch_detail'][] = $detailInput;
         }
         // 完成移位单
-       return $this->objShiftOrder->finishShiftOrder($finishInput);
+       $ret = $this->objShiftOrder->finishShiftOrder($finishInput);
+        if(false === $ret){
+            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
+        }
+        return true;
     }
 }

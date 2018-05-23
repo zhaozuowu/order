@@ -191,6 +191,41 @@ class Dao_Huskar_Stock
 
         return $ret['data'];
     }
+    
+    /*
+    * 查询商品库存信息
+    * @param $intWarehouseId
+    * @param $arrSkuIds
+    * @return array
+    */
+    public function getStockInfo($intWarehouseId, $arrSkuIds)
+    {
+        $ret = [];
+        if(empty($intWarehouseId) || empty($arrSkuIds)) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock failed. call huskar param is empty.');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
+            return $ret;
+        }
+
+        $strSkuIds = implode(',', $arrSkuIds);
+
+        $req[self::API_RALER_STOCK_DETAIL]['requestParams'] = [
+            'warehouse_id' => $intWarehouseId,
+            'sku_ids'      => $strSkuIds,
+        ];
+
+        Bd_Log::debug('huskar get stock sku info request params: ' . json_encode($req));
+        $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
+        $ret = $this->objApiHuskar->getData($req);
+        Bd_Log::debug('huskar get stock sku info response params: ' . json_encode($ret));
+        $ret = empty($ret[self::API_RALER_STOCK_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_DETAIL];
+        if (empty($ret) || !empty($ret['errno'])) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock failed. call huskar param is empty.' . print_r($ret, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
+        }
+
+        return $ret['data'];
+    }
 
     /***************************************************冻结单相关******************************************************/
 
@@ -363,11 +398,13 @@ class Dao_Huskar_Stock
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_MOVE_LOCATION]) ? [] : $arrRet[self::API_RALER_MOVE_LOCATION];
         if (empty($arrRet) || !empty($arrRet['errno'])) {
-//            Bd_Log::warning('call stock model move location failed. ret: ' . print_r($arrRet, true));
+            if(310000 == $arrRet['errno']){
+                Bd_Log::warning('call stock method movelocation,idempotency need, ret: ' . json_encode($arrRet));
+                return $arrRet['data'];
+            }
             throw new Nscm_Exception_Business($arrRet['errno'],$arrRet['errmsg'] );
-//            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
         }
-        Bd_Log::trace('call stock model move location, ret: ' . json_encode($arrRet));
+        Bd_Log::trace('call stock method movelocation, ret: ' . json_encode($arrRet));
 
         return $arrRet['data'];
     }
