@@ -16,7 +16,7 @@ class Action_FinishPickupOrder extends Order_Base_Action
                 'sku_id' => 'int|required',
                 'pickup_amount' => 'int|required',
                 'pick_infos' => [
-                    'validate' => 'json|required|decode',
+                    'validate' => 'arr|required|decode',
                     'type' => 'array',
                     'params' => [
                         'expiration_time' => 'int|required',
