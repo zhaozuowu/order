@@ -26,7 +26,7 @@ class Service_Data_PickupOrder
      */
     public function createPickupOrder($arrStockoutOrderIds, $pickupOrderType,$userId,$userName)
     {
-        $res = ['failStockoutOrderIds'=>[],'sucessNum'=>0];
+        $res = ['failStockoutOrderIds'=>[],'sucessNum'=>0,'pickupOrders'=>''];
         if (!array_key_exists($pickupOrderType,Order_Define_PickupOrder::PICKUP_ORDER_TYPE_MAP)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR,'参数异常');
         }
@@ -62,8 +62,10 @@ class Service_Data_PickupOrder
             Order_BusinessError::throwException(Order_Error_Code::INVALID_STOCKOUT_ORDER_WAREHOUSE_NOT_CREATE_PICKUP_ORDER);
         }
         $stockoutOrderList = array_column($stockoutOrderList,null,'stockout_order_id');
-        Model_Orm_PickupOrder::getConnection()->transaction(function () use ($stockoutOrderList,$arrStockoutOrderIds,$pickupOrderType,$userId,$userName,$arrStockoutOrderIds) {
-            $arrStockoutPickOrderData = $this->getCreateStockoutPickupOrderData($arrStockoutOrderIds,$pickupOrderType);
+        $arrStockoutPickOrderData = $this->getCreateStockoutPickupOrderData($arrStockoutOrderIds,$pickupOrderType);
+        $res['pickupOrders'] = array_column($arrStockoutPickOrderData,'pickup_order_id');
+        $res['pickupOrders'] = implode(",",$res['pickupOrders']);
+        Model_Orm_PickupOrder::getConnection()->transaction(function () use ($stockoutOrderList,$arrStockoutOrderIds,$pickupOrderType,$userId,$userName,$arrStockoutOrderIds,$arrStockoutPickOrderData) {
             Model_Orm_StockoutPickupOrder::batchInsert($arrStockoutPickOrderData, false);
             $arrPickupOrderData  = $this->getCreatePickupOrderData($arrStockoutPickOrderData,$stockoutOrderList,$pickupOrderType,$userId,$userName);
             Model_Orm_PickupOrder::batchInsert($arrPickupOrderData, false);
