@@ -181,11 +181,13 @@ class Service_Data_PlaceOrder
         $arrOrderInfo['warehouse_name'] = strval($arrInput['warehouse_name']);
         $arrOrderInfo['stockin_order_type'] = intval($arrInput['stockin_order_type']);
         $arrOrderInfo['place_order_status'] = Order_Define_PlaceOrder::STATUS_WILL_PLACE;
+        $arrOrderInfo['is_auto'] = Order_Define_PlaceOrder::PLACE_ORDER_NOT_AUTO;
         $intLocationTag = $this->getWarehouseLocationTag($arrInput['warehouse_id']);
         Bd_Log::trace(sprintf("method[%s] location_tag[%s]", __METHOD__, strval($intLocationTag)));
         if (Order_Define_Warehouse::STORAGE_LOCATION_TAG_DISABLE
             == $intLocationTag) {
             $arrOrderInfo['place_order_status'] = Order_Define_PlaceOrder::STATUS_PLACED;
+            $arrOrderInfo['is_auto'] = Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO;
         }
         //非良品订单信息
         if (!empty($arrInput['bad_skus'])) {
@@ -363,6 +365,7 @@ class Service_Data_PlaceOrder
     protected function getListConditions($arrInput)
     {
         $arrConditions = [];
+        $arrConditions['is_auto'] = Order_Define_PlaceOrder::PLACE_ORDER_NOT_AUTO;
         if (!empty($arrInput['place_order_status'])) {
             $arrConditions['place_order_status'] = intval($arrInput['place_order_status']);
         }
@@ -398,9 +401,6 @@ class Service_Data_PlaceOrder
         if (!empty($arrInput['place_time_start'])
             || !empty($arrInput['place_time_end'])) {
             $arrConditions['place_order_status'] = Order_Define_PlaceOrder::STATUS_PLACED;
-        }
-        if (!empty($arrInput['warehouse_id'])) {
-            $arrConditions['warehouse_id'] = intval($arrInput['warehouse_id']);
         }
         return $arrConditions;
     }

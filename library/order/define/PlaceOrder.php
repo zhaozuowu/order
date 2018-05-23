@@ -55,4 +55,25 @@ class Order_Define_PlaceOrder
         self::STATUS_PLACING,
         self::STATUS_PLACED,
     ];
+
+    /**
+     * 是自动生成上架单
+     * @var integer
+     */
+    const PLACE_ORDER_IS_AUTO = 1;
+
+    /**
+     * 非自动生成上架单
+     * @var integer
+     */
+    const PLACE_ORDER_NOT_AUTO = 0;
+
+    /**
+     * 是否自动上架map
+     * @var array
+     */
+    const PLACE_ORDER_AUTO_MAP = [
+        self::PLACE_ORDER_IS_AUTO => '自动生成',
+        self::PLACE_ORDER_NOT_AUTO => '非自动生成',
+    ];
 }
