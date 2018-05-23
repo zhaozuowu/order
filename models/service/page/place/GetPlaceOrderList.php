@@ -28,6 +28,7 @@ class Service_Page_Place_GetPlaceOrderList implements Order_Base_Page
     public function execute($arrInput)
     {
         $arrInput['source_order_id'] = ltrim($arrInput['source_order_id'], Nscm_Define_OrderPrefix::SIO);
+        $arrInput['warehouse_ids'] = explode(',', $arrInput['warehouse_ids']);
         $arrRet = $this->objDataPlaceOrder->getPlaceOrderList($arrInput);
         return $arrRet;
     }

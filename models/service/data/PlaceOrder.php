@@ -366,6 +366,9 @@ class Service_Data_PlaceOrder
         if (!empty($arrInput['place_order_status'])) {
             $arrConditions['place_order_status'] = intval($arrInput['place_order_status']);
         }
+        if (!empty($arrInput['warehouse_ids'])) {
+            $arrConditions['warehouse_id'] = ['in', $arrInput['warehouse_ids']];
+        }
         if (!empty($arrInput['source_order_id'])) {
             $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::
                                     getPlaceOrdersByStockinOrderIds([$arrInput['source_order_id']]);
