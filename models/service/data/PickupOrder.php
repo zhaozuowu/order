@@ -248,7 +248,8 @@ class Service_Data_PickupOrder
                 $recommendStockLocList = $this->formatRecommendStockLocList($recommendStockLocList);
                 foreach($recommendStockLocList as $stockKey=>$stockItem) {
                     if (isset($createParam[$key."_" .$stockKey])) {
-                        $createParam[$key."_" .$stockKey]['pickup_extra_info'] = json_encode($stockItem);
+                        $createInfo['create_info'] = $stockItem;
+                        $createParam[$key."_" .$stockKey]['pickup_extra_info'] = json_encode($createInfo);
                     }
                 }
             }

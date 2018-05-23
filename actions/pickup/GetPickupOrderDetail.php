@@ -52,7 +52,8 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
                     'order_amount' => $arrSku['order_amount'],
                     'distribute_amount' => $arrSku['distribute_amount'],
                     'pickup_amount' => $arrSku['pickup_amount'],
-                    'pickup_extra_info' => json_decode($arrSku['pickup_extra_info'], true),
+                    'recommend_pickup_extra_info' => $this->formatRecommendPickupExtraInfo($arrSku['pickup_extra_info']),
+                    'pickup_extra_info' => $this->formatRealityPickupExtraInfo($arrSku['pickup_extra_info']),
                 ];
             }
         }
@@ -75,5 +76,17 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
         $arrRet['pickup_skus'] = $arrSkus;
 
         return $arrRet;
+    }
+
+    private function formatRecommendPickupExtraInfo($pickupExtraInfo)
+    {
+        $pickupExtraInfo =  json_decode($pickupExtraInfo, true);
+        return empty($pickupExtraInfo['create_info']) ? []:$pickupExtraInfo['create_info'];
+    }
+
+    private function formatRealityPickupExtraInfo($pickupExtraInfo)
+    {
+        $pickupExtraInfo =  json_decode($pickupExtraInfo, true);
+        return empty($pickupExtraInfo['finish_info']) ? []:$pickupExtraInfo['finish_info'];
     }
 }
