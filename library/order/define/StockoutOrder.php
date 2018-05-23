@@ -70,6 +70,7 @@ class Order_Define_StockoutOrder
         10 => "桶",
         11 => "杯",
         12 => "根",
+        13 => "大箱",
 
     ];
 
