@@ -96,17 +96,14 @@ class Dao_Huskar_Stock
      * @param $intWarehouseId
      * @param $arrLocationCodes
      * @return array|mixed
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function getBatchStorageLocation($intWarehouseId, $arrLocationCodes)
     {
         $ret = [];
-        if (empty($intWarehouseId) || empty($arrLocationCodes)) {
-            Bd_Log::warning(__METHOD__ . ' get location info failed. call huskar param is empty.');
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_GET_LOCATION_INFO_FAIL);
-            return $ret;
-        }
-        
+
+
         $req[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION] = [
             'warehouse_id'   => $intWarehouseId,
             'location_codes' => $arrLocationCodes,
@@ -117,7 +114,7 @@ class Dao_Huskar_Stock
         $ret = $this->objApiHuskar->getData($req);
         $ret = empty($ret[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION]) ? [] : $ret[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION];
         if (empty($ret) || !empty($ret['errno'])) {
-            Bd_Log::warning(sprintf(__METHOD__ . ' location_code not exist ,intWarehouseId[%s] arrLocationCodes[%s]',json_encode($intWarehouseId) , json_encode($arrLocationCodes)));
+            Bd_Log::warning(sprintf(__METHOD__ . ' location_code not exist ,$arrLocationIds[%s]', json_encode($arrLocationCodes)));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
         }
         Bd_Log::trace('huskar call ' . self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION . ' output params ' . json_encode($ret));
@@ -129,13 +126,14 @@ class Dao_Huskar_Stock
      * @param $intWarehouseId
      * @param $arrSkuIds
      * @return array|mixed
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function getStockPeriodStock($intWarehouseId, $arrSkuIds)
     {
         $ret = [];
         if (empty($intWarehouseId) || empty($arrSkuIds)) {
-            Bd_Log::warning(__METHOD__ . ' get sku period stock failed. call huskar param is empty.');
+            Bd_Log::warning(__METHOD__ . ' get sku period stock failed. call ral param is empty.');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
             return $ret;
         }
@@ -173,7 +171,7 @@ class Dao_Huskar_Stock
     public function adjustStockout($intStockoutOrderId, $intWarehouseId, $intAdjustType, $arrDetails)
     {
         if (empty($intStockoutOrderId) || empty($intWarehouseId) || empty($intAdjustType) || empty($arrDetails)) {
-            Bd_Log::warning(__METHOD__ . ' stock adjust decrease order call huskar param invalid');
+            Bd_Log::warning(__METHOD__ . ' stock adjust decrease order call ral param invalid');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
         $req[self::API_RALER_ADJUST_STOCKOUT]['requestParams'] = [
@@ -189,6 +187,41 @@ class Dao_Huskar_Stock
         if (empty($ret) || !empty($ret['errno'])) {
             Bd_Log::warning(__METHOD__ . ' huskar call stock decrease failed' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
+        }
+
+        return $ret['data'];
+    }
+    
+    /*
+    * 查询商品库存信息
+    * @param $intWarehouseId
+    * @param $arrSkuIds
+    * @return array
+    */
+    public function getStockInfo($intWarehouseId, $arrSkuIds)
+    {
+        $ret = [];
+        if(empty($intWarehouseId) || empty($arrSkuIds)) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock failed. call huskar param is empty.');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
+            return $ret;
+        }
+
+        $strSkuIds = implode(',', $arrSkuIds);
+
+        $req[self::API_RALER_STOCK_DETAIL]['requestParams'] = [
+            'warehouse_id' => $intWarehouseId,
+            'sku_ids'      => $strSkuIds,
+        ];
+
+        Bd_Log::debug('huskar get stock sku info request params: ' . json_encode($req));
+        $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
+        $ret = $this->objApiHuskar->getData($req);
+        Bd_Log::debug('huskar get stock sku info response params: ' . json_encode($ret));
+        $ret = empty($ret[self::API_RALER_STOCK_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_DETAIL];
+        if (empty($ret) || !empty($ret['errno'])) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock failed. call huskar param is empty.' . print_r($ret, true));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
         }
 
         return $ret['data'];
@@ -345,6 +378,10 @@ class Dao_Huskar_Stock
 
     /***************************************************冻结单相关******************************************************/
 
+
+    /**
+     *
+     */
     CONST API_RALER_MOVE_LOCATION = 'movelocation';
 
     /**
@@ -361,10 +398,47 @@ class Dao_Huskar_Stock
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_MOVE_LOCATION]) ? [] : $arrRet[self::API_RALER_MOVE_LOCATION];
         if (empty($arrRet) || !empty($arrRet['errno'])) {
-            Bd_Log::warning('call stock model move location failed. ret: ' . print_r($arrRet, true));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_GET_STOCK_WAREHOUSE_FAIL);
+            if(310000 == $arrRet['errno']){
+                Bd_Log::warning('call stock method movelocation,idempotency need, ret: ' . json_encode($arrRet));
+                return $arrRet['data'];
+            }
+            throw new Nscm_Exception_Business($arrRet['errno'],$arrRet['errmsg'] );
         }
-        Bd_Log::trace('call stock model move location, ret: ' . json_encode($arrRet));
+        Bd_Log::trace('call stock method movelocation, ret: ' . json_encode($arrRet));
+
+        return $arrRet['data'];
+    }
+
+    /**
+     *
+     */
+    CONST API_RALER_GET_REMOVABLE_STOCK = 'getRemovableSkuBatchInfo';
+
+    /**
+     * 获取仓库
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function getRemovableSkuBatchInfo($arrInput)
+    {
+        $arrReq[self::API_RALER_GET_REMOVABLE_STOCK]['requestParams'] =
+            [
+                'warehouse_id'      => $arrInput['warehouse_id'],
+                'location_code'     => $arrInput['location_code'],
+                'page_num'          => $arrInput['page_num'],
+                'page_size'         => $arrInput['page_size'],
+            ];
+
+        $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
+        $arrRet = $this->objApiHuskar->getData($arrReq);
+        $arrRet = empty($arrRet[self::API_RALER_GET_REMOVABLE_STOCK]) ? [] : $arrRet[self::API_RALER_GET_REMOVABLE_STOCK];
+        if (empty($arrRet) || !empty($arrRet['errno'])) {
+//            Bd_Log::warning('call stock model get location stock failed. ret: ' . print_r($arrRet, true));
+            throw new Nscm_Exception_Business($arrRet['errno'],$arrRet['errmsg'] );
+//            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_GET_LOCATION_STOCK_FAILED);
+        }
+        Bd_Log::trace('call stock model get location stock, ret: ' . json_encode($arrRet));
 
         return $arrRet['data'];
     }

@@ -1,9 +1,9 @@
 <?php
 /**
- * Class Service_Page_Shift_GetOrderDetail
+ * Class Service_Page_Shift_GetOrderDetailBatch
  */
 
-class Service_Page_Shift_GetOrderDetail
+class Service_Page_Shift_GetOrderDetailBatch
 {
 
     /**
@@ -30,17 +30,17 @@ class Service_Page_Shift_GetOrderDetail
      */
     public function execute($arrInput)
     {
-        $arrOrder = $this->objShiftOrder->getByOrderId($arrInput['shift_order_id']);
-        if(empty($arrOrder)) {
+        $arrOrders = $this->objShiftOrder->getByOrderIds($arrInput['shift_order_ids']);
+        if(empty($arrOrders)) {
             return [];
         }
 
-        $intOrderDetailCount = $this->objShiftOrderDetail->getCountWithGroup($arrInput);
-        $arrOrderDetail = $this->objShiftOrderDetail->get($arrInput);
+        $intOrderCount = count($arrOrders);
+        $arrOrderDetail = $this->objShiftOrderDetail->getBatch($arrInput);
         $skuIds = array_column($arrOrderDetail,'sku_id');
         $skuInfos = $this->objSku->getSkuInfos($skuIds);
 
-        return $this->formatResult($arrOrder, $intOrderDetailCount, $arrOrderDetail,$skuInfos);
+        return $this->formatResult($arrOrders, $intOrderCount, $arrOrderDetail,$skuInfos);
     }
 
     /**
@@ -52,9 +52,13 @@ class Service_Page_Shift_GetOrderDetail
      */
     public function formatResult($arrOrder = array(), $intCount = 0, $arrDetail = array(),$skuInfos = array())
     {
-        unset($arrOrder['id']);
-        unset($arrOrder['version']);
-        unset($arrOrder['is_detete']);
+        $orderList = array();
+        foreach ($arrOrder as $key => $order){
+            unset($order['id']);
+            unset($order['version']);
+            unset($order['is_detete']);
+            $orderList[$order['shift_order_id']] = $order;
+        }
         foreach ($arrDetail as &$value){
             unset($value['id']);
             unset($value['version']);
@@ -68,12 +72,12 @@ class Service_Page_Shift_GetOrderDetail
             } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $skuInfos[$value['sku_id']]['sku_effect_type']) {
                 $value['production_or_expiration_time'] = strtotime(date('Y-m-d',$value['expiration_time']));
             }
+            if(isset($orderList[$value['shift_order_id']])){
+                $orderList[$value['shift_order_id']]['shift_order_detail'][] = $value;
+            }
         }
-        $arrRet = $arrOrder;
         $arrRet['total'] = $intCount;
-        $arrRet['shift_order_detail'] = array();
-        $arrRet['shift_order_detail'] = $arrDetail;
-
+        $arrRet['shift_order_list'] = array_values($orderList);
         return $arrRet;
     }
 }

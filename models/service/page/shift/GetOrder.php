@@ -36,7 +36,18 @@ class Service_Page_Shift_GetOrder
 
         $intCount = $this->objShiftOrder->getCount($arrInput);
         $arrOutput = $this->objShiftOrder->get($arrInput);
+        $arrResult = $this->formatResult($arrOutput);
+        return array('total' => $intCount, 'shift_order_list' => $arrResult);
+    }
 
-        return array('total' => $intCount, 'shift_order_list' => $arrOutput);
+    public function formatResult($arrInput){
+        $arrResult = array();
+        foreach ($arrInput as $value){
+            unset($value['id']);
+            unset($value['version']);
+            unset($value['is_delete']);
+            $arrResult[] = $value;
+        }
+        return $arrResult;
     }
 }

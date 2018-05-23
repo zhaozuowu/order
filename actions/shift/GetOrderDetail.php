@@ -1,8 +1,6 @@
 <?php
 /**
- * @name Action_GetOrderDetail
- * @desc 获取采购单详情
- * @author sunzhixin@iwaimai.baidu.com
+ * Class Action_GetOrderDetail
  */
 
 class Action_GetOrderDetail extends Order_Base_Action
@@ -12,8 +10,7 @@ class Action_GetOrderDetail extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_id'          => 'int|optional',
-        'shift_order_id'        => 'regex|patern[/^(SHO\d{13})?$/]',
+        'shift_order_id'        => 'int|required',
         'page_num'              => 'int|optional|default[1]',
         'page_size'             => 'int|optional|default[50]',
     ];
@@ -25,8 +22,7 @@ class Action_GetOrderDetail extends Order_Base_Action
     protected $intMethod = Order_Define_Const::METHOD_GET;
 
     /**
-     * page service
-     * @var Service_Page_Adjust_GetOrderDetail
+     * @var
      */
     protected $objPage;
 

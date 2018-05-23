@@ -24,6 +24,12 @@ class Order_Error_Code extends Wm_Error_Code
     const RAL_ERROR = 200000;
 
     /**
+     * husker异常
+     * @var integer
+     */
+    const HUSKER_ERROR = 200003;
+
+    /**
      * 参数异常
      * @var integer
      */
@@ -338,12 +344,6 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST = 350022;
-
-    /**
-     * 库存调整-库区编码不存在
-     * @var integer
-     */
-    const NWMS_ORDER_ADJUST_GET_LOCATION_INFO_FAIL = 350023;
 
     /**
      * 获取商品信息失败
@@ -697,8 +697,15 @@ class Order_Error_Code extends Wm_Error_Code
     const PLACE_ORDER_PLACE_FAILED = 400006;
 
     /**
-     * 入库单来自不同仓库
+     * 移位失败
      * @var integer
      */
-    const STOCKIN_ORDER_FROM_DIFFERENT_WAREHOUSE = 400007;
+    const SHIFT_ORDER_MOVE_FAILED = 500001;
+
+    /**
+     * 获取可移位库存失败
+     * @var integer
+     */
+    const SHIFT_ORDER_GET_LOCATION_STOCK_FAILED = 500002;
+
 }

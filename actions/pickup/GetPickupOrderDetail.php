@@ -52,7 +52,8 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
                     'order_amount' => $arrSku['order_amount'],
                     'distribute_amount' => $arrSku['distribute_amount'],
                     'pickup_amount' => $arrSku['pickup_amount'],
-                    'pickup_extra_info' => json_decode($arrSku['pickup_extra_info'], true),
+                    'recommend_pickup_extra_info' => $this->formatRecommendPickupExtraInfo($arrSku['pickup_extra_info'],$data['pickup_sku_effect_type_list'],$arrSku['sku_id']),
+                    'pickup_extra_info' => $this->formatRealityPickupExtraInfo($arrSku['pickup_extra_info']),
                 ];
             }
         }
@@ -75,5 +76,27 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
         $arrRet['pickup_skus'] = $arrSkus;
 
         return $arrRet;
+    }
+
+    private function formatRecommendPickupExtraInfo($pickupExtraInfo,$arrSkusInfo,$intSkuId)
+    {
+        $intSkuEffectType = isset($arrSkusInfo[$intSkuId]) ? $arrSkusInfo[$intSkuId]:0;
+        $pickupExtraInfo =  json_decode($pickupExtraInfo, true);
+        $list =  empty($pickupExtraInfo['create_info']) ? []:$pickupExtraInfo['create_info'];
+        foreach ($list as $key=>$item) {
+            $list[$key]['expire_time'] = 0;
+            if (Nscm_Define_Sku::SKU_EFFECT_FROM == $intSkuEffectType) {
+
+                $list[$key]['expire_time'] = $item['production_time'];
+            } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
+                $list[$key]['expire_time'] = $item['expiration_time'];
+            }
+        }
+        return $list;
+    }
+    private function formatRealityPickupExtraInfo($pickupExtraInfo)
+    {
+        $pickupExtraInfo =  json_decode($pickupExtraInfo, true);
+        return empty($pickupExtraInfo['finish_info']) ? []:$pickupExtraInfo['finish_info'];
     }
 }

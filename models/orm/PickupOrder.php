@@ -50,6 +50,7 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
      * @param $intCreateEndTime
      * @param $intPageSize
      * @param int $intPageNum
+     * @param int $intPickupOrderStatus
      * @param array $arrPickupOrderIds
      * @param int $intPickupOrderIsPrint
      * @param int $intUpdateStartTime
@@ -61,6 +62,7 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
                                               $intCreateEndTime,
                                               $intPageSize,
                                               $intPageNum = 1,
+                                              $intPickupOrderStatus = 0,
                                               $arrPickupOrderIds = [],
                                               $intPickupOrderIsPrint = 0,
                                               $intUpdateStartTime = 0,
@@ -82,6 +84,9 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
         }
         if (!empty($arrWarehouseIds)) {
             $arrCondition['warehouse_id'] = ['in', $arrWarehouseIds];
+        }
+        if (!empty($intPickupOrderStatus)) {
+            $arrCondition['pickup_order_status'] = intval($intPickupOrderStatus);
         }
         if (!empty($arrPickupOrderIds)) {
             $arrCondition['pickup_order_id'] = [
@@ -150,6 +155,7 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
      * @param int   $intPickupOrderId
      * @param bool  $boolFormatArr
      * @return Model_Orm_PickupOrder|array
+     * @throws Order_BusinessError
      */
     public static function getPickupOrderInfo($intPickupOrderId, $boolFormatArr = false)
     {
@@ -158,6 +164,9 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
             'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
         $objPickupOrderInfo = self::findOne($arrCondition);
+        if (empty($objPickupOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
+        }
         if ($boolFormatArr) {
             return $objPickupOrderInfo->toArray();
         }

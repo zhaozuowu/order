@@ -35,6 +35,7 @@ class Service_Page_Pickup_GetPickupOrderList
             $arrInput['create_end_time'],
             $arrInput['page_size'],
             $arrInput['page_num'],
+            $arrInput['pickup_order_status'],
             $arrInput['stockout_order_id'],
             $arrInput['pickup_order_id'],
             $arrInput['pickup_order_is_print'],
