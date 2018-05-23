@@ -182,6 +182,7 @@ class Service_Data_PlaceOrder
         $arrOrderInfo['stockin_order_type'] = intval($arrInput['stockin_order_type']);
         $arrOrderInfo['place_order_status'] = Order_Define_PlaceOrder::STATUS_WILL_PLACE;
         $intLocationTag = $this->getWarehouseLocationTag($arrInput['warehouse_id']);
+        Bd_Log::trace(sprintf("method[%s] location_tag[%s]", __METHOD__, strval($intLocationTag)));
         if (Order_Define_Warehouse::STORAGE_LOCATION_TAG_DISABLE
             == $intLocationTag) {
             $arrOrderInfo['place_order_status'] = Order_Define_PlaceOrder::STATUS_PLACED;
@@ -394,6 +395,9 @@ class Service_Data_PlaceOrder
         if (!empty($arrInput['place_time_start'])
             || !empty($arrInput['place_time_end'])) {
             $arrConditions['place_order_status'] = Order_Define_PlaceOrder::STATUS_PLACED;
+        }
+        if (!empty($arrInput['warehouse_id'])) {
+            $arrConditions['warehouse_id'] = intval($arrInput['warehouse_id']);
         }
         return $arrConditions;
     }

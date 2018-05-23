@@ -23,6 +23,7 @@ class Action_GetPlaceOrderList extends Order_Base_Action
             'place_order_id'     => 'str|len[16]|min[4]|optional',
             'source_order_id'   => 'str|len[16]|min[4]|optional',
             'vendor_id'          => 'int|min[0]|optional',
+            'warehouse_id'       => 'int|min[0]|optional',
             'create_time_start'  => 'int|min[0]|optional',
             'create_time_end'    => 'int|min[0]|optional',
             'place_time_start'   => 'int|min[0]|optional',
