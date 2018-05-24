@@ -362,8 +362,10 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             $arrCondition['stockin_order_is_print'] = $intPrintStatus;
         }
 
-        // 至少要有一个必传的时间段
-        if(1 > $intTimesCount){
+        // 非单仓库时，至少要有一个必传的时间段
+        if(
+            (1 > $intTimesCount)
+            && (1 < count($arrWarehouseId))){
             Order_BusinessError::throwException(Order_Error_Code::TIME_PARAMS_LESS_THAN_ONE);
         }
 
