@@ -67,6 +67,7 @@ class Action_GetStockinStockoutOrderDetail extends Order_Base_Action
                         : Nscm_Define_OrderPrefix::SOO . strval($arrRet['source_order_id']);
                 }
             }
+            $arrRoundResult['shipment_order_id'] = intval($arrRet['shipment_order_id']);
             $arrRoundResult['source_order_id'] = $strSourceOrderId;
             $arrRoundResult['stockin_order_id'] = empty($arrRet['stockin_order_id']) ? ''
                 : Nscm_Define_OrderPrefix::SIO . strval($arrRet['stockin_order_id']);
