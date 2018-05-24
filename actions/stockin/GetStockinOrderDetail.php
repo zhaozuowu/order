@@ -103,6 +103,7 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
             $arrRoundResult['last_operate_device'] = empty($arrRet['last_operate_device'])
                 ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                 : strval($arrRet['last_operate_device']);
+            $arrRoundResult['shipment_order_id'] = intval($arrRet['shipment_order_id']);
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult = $arrRoundResult;
         }
