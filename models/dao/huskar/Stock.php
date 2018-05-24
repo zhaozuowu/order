@@ -118,7 +118,7 @@ class Dao_Huskar_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
         }
         Bd_Log::trace('huskar call ' . self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION . ' output params ' . json_encode($ret));
-        return $ret['data'];
+        return $ret['result'];
     }
 
     /**
@@ -155,7 +155,7 @@ class Dao_Huskar_Stock
         }
 
         Bd_Log::trace('huskar call ' . self::API_RALER_STOCK_PERIOD_DETAIL . ' output params ' . json_encode($ret));
-        return $ret['data'];
+        return $ret['result'];
     }
 
     /**
@@ -189,7 +189,7 @@ class Dao_Huskar_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 
-        return $ret['data'];
+        return $ret['result'];
     }
     
     /*
@@ -224,7 +224,7 @@ class Dao_Huskar_Stock
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
         }
 
-        return $ret['data'];
+        return $ret['result'];
     }
 
     /***************************************************冻结单相关******************************************************/
@@ -250,7 +250,7 @@ class Dao_Huskar_Stock
         }
         Bd_Log::trace('call stock model frozen, ret:' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /**
@@ -274,7 +274,7 @@ class Dao_Huskar_Stock
         }
         Bd_Log::trace('call stock model unfrozen, ret:' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /**
@@ -296,7 +296,7 @@ class Dao_Huskar_Stock
         }
         Bd_Log::trace('call stock model get stock warehouse, ret: ' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /**
@@ -373,7 +373,7 @@ class Dao_Huskar_Stock
         }
         Bd_Log::trace('call stock model get stock freezable info, ret: ' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /***************************************************冻结单相关******************************************************/
@@ -400,13 +400,13 @@ class Dao_Huskar_Stock
         if (empty($arrRet) || !empty($arrRet['error_no'])) {
             if(310000 == $arrRet['error_no']){
                 Bd_Log::warning('call stock method movelocation,idempotency need, ret: ' . json_encode($arrRet));
-                return $arrRet['data'];
+                return $arrRet['result'];
             }
             throw new Nscm_Exception_Business($arrRet['error_no'],$arrRet['error_msg'] );
         }
         Bd_Log::trace('call stock method movelocation, ret: ' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /**
@@ -440,7 +440,7 @@ class Dao_Huskar_Stock
         }
         Bd_Log::trace('call stock model get location stock, ret: ' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /***************************************************移位单相关******************************************************/
