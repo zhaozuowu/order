@@ -56,7 +56,7 @@ class Action_GetStockoutOrderSkus extends Order_Base_Action
             //$arrFormatRetItem['cost_price_tax'] = empty($arrRetItem['cost_price_tax']) ? 0 : Nscm_Service_Price::convertDefaultToYuan($arrRetItem['cost_price_tax']);
             $arrFormatRetItem['sku_tax_rate'] = empty($arrRetItem['sku_tax_rate']) ? 0 : Order_Define_Sku::SKU_TAX_RATE[$arrRetItem['sku_tax_rate']];
             $arrFormatRetItem['upc_unit'] = empty($arrRetItem['upc_unit']) ? 0 : $arrRetItem['upc_unit'];
-            $arrFormatRetItem['upc_unit_text'] = empty($arrRetItem['upc_unit']) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$arrRetItem['upc_unit']];
+            $arrFormatRetItem['upc_unit_text'] = empty($arrRetItem['upc_unit']) ? '' : Nscm_Define_Sku::UPC_UNIT_MAP[$arrRetItem['upc_unit']];
             $arrFormatRetItem['upc_unit_num'] = empty($arrRetItem['upc_unit_num']) ? 0 : $arrRetItem['upc_unit_num'];
             $arrFormatRetItem['upc_unit_num_text'] = empty($arrRetItem['upc_unit_num']) ? '' : '1*'.$arrRetItem['upc_unit_num'];
             $arrFormatRetItem['sku_net'] = empty($arrRetItem['sku_net']) ? '' : $arrRetItem['sku_net'] . $strSkuNeText;

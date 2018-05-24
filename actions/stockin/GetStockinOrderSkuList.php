@@ -70,7 +70,7 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
                 : intval($arrListItem['upc_unit']);
             $arrRoundResult['upc_unit_text'] =
                 empty($arrListItem['upc_unit']) ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
-                    : Order_Define_Sku::UPC_UNIT_MAP[$arrListItem['upc_unit']]
+                    : Nscm_Define_Sku::UPC_UNIT_MAP[$arrListItem['upc_unit']]
                     ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? 0
                 : intval($arrListItem['upc_unit_num']);

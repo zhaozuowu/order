@@ -470,7 +470,7 @@ class Service_Data_Stockin_StockinOrder
             $arrRet[] = [
                 'upc' => strval($arrSku['upc_id']),
                 'real_amount' => strval($arrSku['stockin_order_sku_real_amount']),
-                'unit' => strval(Order_Define_Sku::UPC_UNIT_MAP[$arrSku['upc_unit']]),
+                'unit' => strval(Nscm_Define_Sku::UPC_UNIT_MAP[$arrSku['upc_unit']]),
             ];
         }
         return $arrRet;
