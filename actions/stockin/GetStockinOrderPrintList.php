@@ -81,7 +81,7 @@ class Action_GetStockinOrderPrintList extends Order_Base_Action
             $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ? '' : $arrSkuItem['sku_net'];
             $skuNeText = isset(Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]) ? Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]:'';
             $arrFormatSkuItem['sku_net_text'] = $arrFormatSkuItem['sku_net'].$skuNeText;
-            $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
+            $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ? '' : Nscm_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
             $arrFormatSkuItem['plan_amount'] = empty($arrSkuItem['reserve_order_sku_plan_amount']) ? 0 : $arrSkuItem['reserve_order_sku_plan_amount'];
             $arrFormatSkuItem['real_amount'] = empty($arrSkuItem['stockin_order_sku_real_amount']) ? 0 : $arrSkuItem['stockin_order_sku_real_amount'];
             $stockinOrderSkuExtraInfo = empty($arrSkuItem['stockin_order_sku_extra_info']) ? []:json_decode($arrSkuItem['stockin_order_sku_extra_info'],true);

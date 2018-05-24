@@ -106,8 +106,8 @@ class Action_GetStockinStockoutOrderInfoListApi extends Order_Base_ApiAction
                     ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                     : '1*' . intval($skuItems['upc_unit_num']);
                 $arrSkuInfo['upc_unit_text'] =
-                    isset(Order_Define_Sku::UPC_UNIT_MAP[intval($skuItems['upc_unit'])])
-                        ? Order_Define_Sku::UPC_UNIT_MAP[intval($skuItems['upc_unit'])]
+                    isset(Nscm_Define_Sku::UPC_UNIT_MAP[intval($skuItems['upc_unit'])])
+                        ? Nscm_Define_Sku::UPC_UNIT_MAP[intval($skuItems['upc_unit'])]
                         : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
                 $arrSkuInfo['sku_name'] = $skuItems['sku_name'];
                 $arrSkuInfo['stockin_reason_text'] =

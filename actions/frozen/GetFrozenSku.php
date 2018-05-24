@@ -99,7 +99,7 @@ class Action_GetFrozenSku extends Order_Base_Action
 
             $arrFormatOrder['upc_unit'] = empty($arrOrder['min_upc']['upc_unit']) ? '' : $arrOrder['min_upc']['upc_unit'];
             $arrFormatOrder['upc_unit_num'] = empty($arrOrder['min_upc']['upc_unit_num']) ? '' : $arrOrder['min_upc']['upc_unit_num'];
-            $arrFormatOrder['upc_unit_text'] = empty($arrOrder['min_upc']['upc_unit']) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$arrOrder['min_upc']['upc_unit']];
+            $arrFormatOrder['upc_unit_text'] = empty($arrOrder['min_upc']['upc_unit']) ? '' : Nscm_Define_Sku::UPC_UNIT_MAP[$arrOrder['min_upc']['upc_unit']];
 
             if(empty($arrFormatResult['list'][$intSkuId])) {
                 $arrFormatResult['list'][$intSkuId] = $arrFormatOrder;

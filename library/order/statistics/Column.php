@@ -80,7 +80,7 @@ class Order_Statistics_Column
             'upc_unit',
             'upc_unit_text' => [
                 'type' => Order_Statistics_Type::ARRAY,
-                'array' => 'Order_Define_Sku::UPC_UNIT_MAP',
+                'array' => 'Nscm_Define_Sku::UPC_UNIT_MAP',
                 'replace' => 'upc_unit',
             ],
             'sku_effect_type',
@@ -214,7 +214,7 @@ class Order_Statistics_Column
             'upc_unit',
             'upc_unit_text' => [
                 'type' => Order_Statistics_Type::ARRAY,
-                'array' => 'Order_Define_Sku::UPC_UNIT_MAP',
+                'array' => 'Nscm_Define_Sku::UPC_UNIT_MAP',
                 'replace' => 'upc_unit',
             ],
             'sku_effect_type',
@@ -347,7 +347,7 @@ class Order_Statistics_Column
             'sku_net_gram',
             'upc_unit_text' => [
                 'type' => Order_Statistics_Type::ARRAY,
-                'array' => 'Order_Define_Sku::UPC_UNIT_MAP',
+                'array' => 'Nscm_Define_Sku::UPC_UNIT_MAP',
                 'replace' => 'upc_unit',
             ],
             'sku_effect_type',

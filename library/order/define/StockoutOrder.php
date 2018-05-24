@@ -53,25 +53,6 @@ class Order_Define_StockoutOrder
         '2' => '前置仓',
         '3' => '便利店'
     ];
-    /**
-     * 包装单位
-     *@var array
-     */
-    const  UPC_UNIT = [
-        1 => "箱",
-        2 => "袋",
-        3 => "包",
-        4 => "瓶",
-        5 => "盒",
-        6 => "罐",
-        7 => "条",
-        8 => "件",
-        9 => "个",
-        10 => "桶",
-        11 => "杯",
-        12 => "根",
-
-    ];
 
     const STOCKOUT_ORDER_TYPE_ORDER = 1;
     const STOCKOUT_ORDER_TYPE_RETURN = 2;
