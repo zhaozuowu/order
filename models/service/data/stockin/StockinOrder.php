@@ -1485,10 +1485,7 @@ class Service_Data_Stockin_StockinOrder
         $arrDbStockInSkuList = $this->getStockinOrderSkuList($intStockInOrderId, 1, 0);
         $arrDbStockInSkuMap = [];
         foreach ($arrDbStockInSkuList['list'] as $arrDbStockInSkuInfo) {
-            $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = array_merge($arrDbStockInSkuInfo, [
-                'unit_price' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price']),
-                'unit_price_tax' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price_tax']),
-            ]);
+            $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = $arrDbStockInSkuInfo;
         }
         $arrWarningInfo = [];
         foreach ($arrSkuInfoListRequest as $arrSkuInfo) {
@@ -1498,8 +1495,8 @@ class Service_Data_Stockin_StockinOrder
             $arrRealSkuInfo = $arrSkuInfo['real_stockin_info'];
             $arrStockInSkuListItem = [
                 'sku_id' => $arrSkuInfo['sku_id'],
-                'unit_price' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['unit_price'],
-                'unit_price_tax' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['unit_price_tax'],
+                'unit_price' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_price'],
+                'unit_price_tax' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_price_tax'],
             ];
             $intSkuEffectType = $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_effect_type'];
             $intSkuEffectDate = intval($arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_effect_day']);
