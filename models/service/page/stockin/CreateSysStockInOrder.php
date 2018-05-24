@@ -39,7 +39,6 @@ class Service_Page_StockIn_CreateSysStockInOrder
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_NO_EXISTS);
             }
             $intStockInOrderId = Order_Util_Util::generateStockinOrderCode();
-            $this->objDataStockIn->setStockInOrderIdByStockOutId($intSourceOrderId, $intStockInOrderId);
             $arrSourceOrderInfo = $arrRet['stockout_order_info'];
             $arrSourceOrderSkuList = $arrRet['stockout_order_sku'];
             if (Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS == $arrSourceOrderInfo['stockout_order_status']) {
@@ -51,6 +50,7 @@ class Service_Page_StockIn_CreateSysStockInOrder
             $this->objDataStockIn->createSysStockInOrder($intStockInOrderId, $arrSourceOrderSkuList, $arrSourceOrderInfo,
                 $arrInput['shipment_order_id'], $arrInput['sku_info_list'], $arrInput['stockin_order_remark'],
                     $arrInput['stockin_order_source']);
+            $this->objDataStockIn->setStockInOrderIdByStockOutId($intSourceOrderId, $intStockInOrderId);
         }
 
         return [
