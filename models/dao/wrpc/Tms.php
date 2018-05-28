@@ -131,7 +131,7 @@ class Dao_Wrpc_Tms
         $arrWarehouseRequest['orderNumber'] = empty($arrInput['logistics_order_id']) ? 0 : intval($arrInput['logistics_order_id']);
         $arrWarehouseRequest['requireReceiveStartTime'] = empty($arrExpectArriveTime['start']) ? 0 : $arrExpectArriveTime['start'];
         $arrWarehouseRequest['requireReceiveEndTime'] = empty($arrExpectArriveTime['end']) ? 0 : $arrExpectArriveTime['end'];
-
+        $arrInput['skus_event'] = empty($arrInput['skus_event']) ? []: $arrInput['skus_event'];
         $arrWarehouseRequest['products'] = $this->getProducts($arrInput['skus'],$arrInput['skus_event']);
         $arrWarehouseRequest['userInfo'] = $this->getUserInfo($arrInput);
         if (!empty($arrInput['orderTime'])) {
