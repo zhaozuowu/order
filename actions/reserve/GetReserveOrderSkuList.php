@@ -70,7 +70,7 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
             $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? 0
                 : intval($arrListItem['upc_unit']);
             $arrRoundResult['upc_unit_text'] =
-                Order_Define_Sku::UPC_UNIT_MAP[intval($arrListItem['upc_unit'])]
+                Nscm_Define_Sku::UPC_UNIT_MAP[intval($arrListItem['upc_unit'])]
                 ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? 0
                 : intval($arrListItem['upc_unit_num']);

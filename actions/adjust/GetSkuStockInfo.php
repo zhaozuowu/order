@@ -115,8 +115,8 @@ class Action_GetSkuStockInfo extends Order_Base_Action
     {
         $strSkuUpcUnit = '';
 
-        if (!empty($intSkuUpcUnit)) {
-            $strSkuUpcUnit = empty(Order_Define_Sku::UPC_UNIT_MAP[$intSkuUpcUnit]) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$intSkuUpcUnit];
+        if(!empty($intSkuUpcUnit)) {
+            $strSkuUpcUnit = empty(Nscm_Define_Sku::UPC_UNIT_MAP[$intSkuUpcUnit]) ? '' : Nscm_Define_Sku::UPC_UNIT_MAP[$intSkuUpcUnit];
         }
 
         return $strSkuUpcUnit;

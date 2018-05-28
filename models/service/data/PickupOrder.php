@@ -26,7 +26,7 @@ class Service_Data_PickupOrder
      */
     public function createPickupOrder($arrStockoutOrderIds, $pickupOrderType,$userId,$userName)
     {
-        $res = ['failStockoutOrderIds'=>[],'sucessNum'=>0];
+        $res = ['failStockoutOrderIds'=>[],'sucessNum'=>0,'pickupOrders'=>''];
         if (!array_key_exists($pickupOrderType,Order_Define_PickupOrder::PICKUP_ORDER_TYPE_MAP)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAMS_ERROR,'参数异常');
         }
@@ -62,8 +62,10 @@ class Service_Data_PickupOrder
             Order_BusinessError::throwException(Order_Error_Code::INVALID_STOCKOUT_ORDER_WAREHOUSE_NOT_CREATE_PICKUP_ORDER);
         }
         $stockoutOrderList = array_column($stockoutOrderList,null,'stockout_order_id');
-        Model_Orm_PickupOrder::getConnection()->transaction(function () use ($stockoutOrderList,$arrStockoutOrderIds,$pickupOrderType,$userId,$userName,$arrStockoutOrderIds) {
-            $arrStockoutPickOrderData = $this->getCreateStockoutPickupOrderData($arrStockoutOrderIds,$pickupOrderType);
+        $arrStockoutPickOrderData = $this->getCreateStockoutPickupOrderData($arrStockoutOrderIds,$pickupOrderType);
+        $res['pickupOrders'] = array_column($arrStockoutPickOrderData,'pickup_order_id');
+        $res['pickupOrders'] = implode(",",$res['pickupOrders']);
+        Model_Orm_PickupOrder::getConnection()->transaction(function () use ($stockoutOrderList,$arrStockoutOrderIds,$pickupOrderType,$userId,$userName,$arrStockoutOrderIds,$arrStockoutPickOrderData) {
             Model_Orm_StockoutPickupOrder::batchInsert($arrStockoutPickOrderData, false);
             $arrPickupOrderData  = $this->getCreatePickupOrderData($arrStockoutPickOrderData,$stockoutOrderList,$pickupOrderType,$userId,$userName);
             Model_Orm_PickupOrder::batchInsert($arrPickupOrderData, false);
@@ -241,11 +243,14 @@ class Service_Data_PickupOrder
             }
             $pickupOrderId = $key;
             $intWarehouseId = isset($wareHouseIds[$key]) ? $wareHouseIds[$key]:0;
-            $recommendStockLocList = $this->objWrpcStock->getRecommendStockLoc($intWarehouseId,$pickupOrderId,$details);
-            $recommendStockLocList = $this->formatRecommendStockLocList($recommendStockLocList);
-            foreach($recommendStockLocList as $stockKey=>$stockItem) {
-                if (isset($createParam[$key."_" .$stockKey])) {
-                    $createParam[$key."_" .$stockKey]['pickup_extra_info'] = json_encode($stockItem);
+            if (!empty($details)) {
+                $recommendStockLocList = $this->objWrpcStock->getRecommendStockLoc($intWarehouseId,$pickupOrderId,$details);
+                $recommendStockLocList = $this->formatRecommendStockLocList($recommendStockLocList);
+                foreach($recommendStockLocList as $stockKey=>$stockItem) {
+                    if (isset($createParam[$key."_" .$stockKey])) {
+                        $createInfo['create_info'] = $stockItem;
+                        $createParam[$key."_" .$stockKey]['pickup_extra_info'] = json_encode($createInfo);
+                    }
                 }
             }
         }
@@ -270,7 +275,16 @@ class Service_Data_PickupOrder
         }
 
         $arrPickupOrderSkus = Model_Orm_PickupOrderSku::findRows(Model_Orm_PickupOrderSku::getAllColumns(), $arrConds);
+        $skuIds = array_column($arrPickupOrderSkus,'sku_id');
+        $arrSkusInfo = [];
+        if(!empty($skuIds)){
+            //获取sku基础信息判断产效期类型
+            $objRalSku = new Dao_Ral_Sku();
+            $arrSkusInfo = $objRalSku->getSkuInfos($skuIds);
+            $arrSkusInfo = array_column($arrSkusInfo,'sku_effect_type','sku_id');
+        }
         $arrPickupOrder['pickup_skus'] = $arrPickupOrderSkus;
+        $arrPickupOrder['pickup_sku_effect_type_list'] = $arrSkusInfo;
         return $arrPickupOrder;
     }
 
@@ -500,10 +514,10 @@ class Service_Data_PickupOrder
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
         $objPickupOrderInfo = Model_Orm_PickupOrder::getPickupOrderInfo($intPickupOrderId);
-        $intWarehouseId = $objPickupOrderInfo->warehouse_id;
         if (empty($objPickupOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
         }
+        $intWarehouseId = $objPickupOrderInfo->warehouse_id;
         if (Order_Define_PickupOrder::PICKUP_ORDER_STATUS_FINISHED == $objPickupOrderInfo->pickup_order_status) {
             Bd_Log::warning("pickupOrder can't modify pickup_order_status by pickupOrderId:". $intPickupOrderId);
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_IS_FINISHED);

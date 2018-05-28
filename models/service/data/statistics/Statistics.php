@@ -19,6 +19,10 @@ class Service_Data_Statistics_Statistics
         $arrDb = $this->getDbRow($intOrderId, $intType);
         if (empty($arrDb)) {
             Bd_Log::warning(sprintf('STATISTICS_INSERT_NOT_FOUND, info: order_id[%d], type[%d]', $intOrderId, $intType));
+            if (Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT == $intType) {
+                Bd_Log::warning('STATISTICS_STOCKIN_STOCKOUT_INSERT_NOT_FOUND: ' . $intOrderId);
+                return;
+            }
             Order_Error::throwException(Order_Error_Code::CONNECT_MYSQL_FAILED);
         }
         /**

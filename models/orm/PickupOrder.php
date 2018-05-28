@@ -155,6 +155,7 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
      * @param int   $intPickupOrderId
      * @param bool  $boolFormatArr
      * @return Model_Orm_PickupOrder|array
+     * @throws Order_BusinessError
      */
     public static function getPickupOrderInfo($intPickupOrderId, $boolFormatArr = false)
     {
@@ -163,6 +164,9 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
             'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
         $objPickupOrderInfo = self::findOne($arrCondition);
+        if (empty($objPickupOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
+        }
         if ($boolFormatArr) {
             return $objPickupOrderInfo->toArray();
         }

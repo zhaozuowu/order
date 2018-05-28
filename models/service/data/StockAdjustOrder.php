@@ -77,7 +77,7 @@ class Service_Data_StockAdjustOrder
      */
     protected function getSkuStocks($intWarehouseId, $arrSkuIds)
     {
-        $arrStocks = $this->objDaoStock->getStockInfo($intWarehouseId, $arrSkuIds);
+        $arrStocks = $this->objDaoHuskarStock->getStockInfo($intWarehouseId, $arrSkuIds);
         if (empty($arrStocks)) {
             Bd_Log::warning(__METHOD__ . ' get sku stock failed. call ral failed.');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);

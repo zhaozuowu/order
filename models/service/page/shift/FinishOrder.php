@@ -1,24 +1,22 @@
 <?php
 /**
- * @name Service_Page_Adjust_FinishOrder
- * @desc 新建调整单
- * @author sunzhixin@iwaimai.baidu.com
+ * Class Service_Page_Shift_FinishOrder
  */
 
 class Service_Page_Shift_FinishOrder
 {
     /**
-     * @var Service_Data_StockAdjustOrder
+     * @var Service_Data_ShiftOrder
      */
     protected $objShiftOrder;
 
     /**
-     * @var Service_Data_StockAdjustOrderDetail
+     * @var Service_Data_ShiftOrderDetail
      */
     protected $objShiftOrderDetail;
 
     /**
-     * init
+     * Service_Page_Shift_FinishOrder constructor.
      */
     public function __construct()
     {
@@ -36,7 +34,9 @@ class Service_Page_Shift_FinishOrder
 
         $arrOrder = $this->objShiftOrder->getByOrderId($arrInput['shift_order_id']);
         $arrOrderDetail = $this->objShiftOrderDetail->get($arrInput);
-        if(empty($arrOrder) || empty($arrOrderDetail)) return false;
+        if(empty($arrOrder) || empty($arrOrderDetail)) {
+            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
+        }
         $finishInput = array();
         $finishInput['m_order_id']              = $arrInput['shift_order_id'];
         $finishInput['warehouse_id']            = $arrOrder['warehouse_id'];
@@ -51,11 +51,14 @@ class Service_Page_Shift_FinishOrder
             $detailInput['sku_id']          = $value['sku_id'];
             $detailInput['expiration_time'] = $value['expiration_time'];
             $detailInput['is_defective']    = $value['is_defective'];
-            $detailInput['amount']          = $value['amount'];
+            $detailInput['amount']          = $value['shift_amount'];
             $finishInput['batch_detail'][] = $detailInput;
         }
         // 完成移位单
-        $arrOutput = $this->objShiftOrder->finishShiftOrder($finishInput);
-        return $arrOutput;
+       $ret = $this->objShiftOrder->finishShiftOrder($finishInput);
+        if(false === $ret){
+            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
+        }
+        return true;
     }
 }

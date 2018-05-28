@@ -125,6 +125,7 @@ class Dao_Ral_Sku
      */
     public function getSkuInfos($arrSkuIds)
     {
+        $arrSkuIds = array_unique($arrSkuIds);
         $intCountInput = count($arrSkuIds);
         $arrSkus = implode(',', $arrSkuIds);
         $req = [

@@ -1,26 +1,18 @@
 <?php
 /**
- * Class Action_GetOrder
+ * Class Action_GetOrderDetailBatch
  */
 
-class Action_GetOrder extends Order_Base_Action
+class Action_GetOrderDetailBatch extends Order_Base_Action
 {
     /**
      * input params
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_ids'             => 'arr|required',
-        'shift_order_id'            => 'regex|patern[/^(M\d{13})?$/]',
-        'status'                    => 'int|optional',
-        'source_location'           => 'str|optional',
-        'target_location'           => 'str|optional',
-        'sku_id'                    => 'str|optional',
-        'sku_name'                  => 'str|optional',
-        'begin_date'                => 'int|default[0]',
-        'end_date'                  => 'int|default[0]',
-        'page_num'                  => 'int|optional|default[1]',
-        'page_size'                 => 'int|optional|default[50]',
+        'shift_order_ids'        => 'arr|required',
+        'page_num'              => 'int|optional|default[1]',
+        'page_size'             => 'int|optional|default[50]',
     ];
 
     /**
@@ -39,8 +31,8 @@ class Action_GetOrder extends Order_Base_Action
      */
     public function myConstruct()
     {
-        $this->convertString2Array('warehouse_ids');
-        $this->objPage = new Service_Page_Shift_GetOrder();
+        $this->convertString2Array('shift_order_ids');
+        $this->objPage = new Service_Page_Shift_GetOrderDetailBatch();
     }
 
     /**
