@@ -49,6 +49,7 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
                     'upc_unit' => $arrSku['upc_unit'],
                     'upc_unit_text' => Nscm_Define_Sku::UPC_UNIT_MAP[$arrSku['upc_unit_text']],
                     'upc_unit_num' => $arrSku['upc_unit_num'],
+                    'upc_unit_num_text' => '1*' . $arrSku['upc_unit_num'],
                     'order_amount' => $arrSku['order_amount'],
                     'distribute_amount' => $arrSku['distribute_amount'],
                     'pickup_amount' => $arrSku['pickup_amount'],
@@ -72,6 +73,7 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
         $arrRet['create_time'] = $data['create_time'];
         $arrRet['update_operator'] = $data['update_operator'];
         $arrRet['update_time'] = $data['update_time'];
+        $arrRet['warehouse_name'] = $data['warehouse_name'];
         $arrRet['pickup_skus'] = $arrSkus;
 
         return $arrRet;
