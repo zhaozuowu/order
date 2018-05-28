@@ -57,4 +57,12 @@ class Dao_Redis_StatisticsDemotion extends Order_Base_Redis
     {
         return $this->objRedisConn->lTrim(self::STATISTICS_DEMOTION_KEY, $intLimit, self::STATISTICS_DEMOTION_KEY);
     }
+
+    /**
+     * @return array
+     */
+    public function getOnePieceAndDrop()
+    {
+        return json_decode($this->objRedisConn->lPop(self::STATISTICS_DEMOTION_KEY), true);
+    }
 }
