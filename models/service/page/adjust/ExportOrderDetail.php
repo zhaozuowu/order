@@ -106,7 +106,7 @@ class Service_Page_Adjust_ExportOrderDetail
 
                 if(!empty($arrSkuInfo['min_upc'])) {
                     $detail['upc_id'] = $arrSkuInfo['min_upc']['upc_id'];
-                    $detail['upc_unit_str'] = Order_Define_Sku::UPC_UNIT_MAP[$arrSkuInfo['min_upc']['upc_unit']];
+                    $detail['upc_unit_str'] = Nscm_Define_Sku::UPC_UNIT_MAP[$arrSkuInfo['min_upc']['upc_unit']];
                 }
             }
             if(!empty($arrWarehouse[$intWarehouseId])) {

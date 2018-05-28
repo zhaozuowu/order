@@ -69,6 +69,12 @@ class Order_Define_Cmd
     const CMD_SYNC_INBOUND_NWMS = 'nscm_purchase_order_sync';
 
     /**
+     * cmd confirm stockin order notify oms
+     * @var string
+     */
+    const CMD_NOTIFY_OMS_CONFIRM_STOCKIN_ORDER = 'notify_oms_confirm_stockin_order';
+
+    /**
      * cmd place order create
      * @var string
      */
@@ -83,4 +89,40 @@ class Order_Define_Cmd
         'Key' => '',
         'serviceName' => 'wmqproxy',
     ];
+
+    /**
+     * important topic reserve order
+     * @var string
+     */
+    const TOPIC_IMPORTANT_CREATE_RESERVE_ORDER = 'nwms_create_reserve_order';
+
+    /**
+     * important topic stockout order
+     * @var string
+     */
+    const TOPIC_IMPORTANT_CREATE_STOCKOUT_ORDER = 'nwms_create_stockout_order';
+
+    /**
+     * import cmd topic
+     * @var array
+     */
+    const IMPORTANT_CMD_TOPIC = [
+        self::CMD_CREATE_RESERVE_ORDER => self::TOPIC_IMPORTANT_CREATE_RESERVE_ORDER,
+        self::CMD_CREATE_STOCKOUT_ORDER => self::TOPIC_IMPORTANT_CREATE_STOCKOUT_ORDER,
+    ];
+
+    /**
+     * @param $strCmd
+     * @return string
+     */
+    public static function getWmqTopic($strCmd) {
+        return self::IMPORTANT_CMD_TOPIC[$strCmd] ?? self::NWMS_ORDER_TOPIC;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getDefaultWmqTopic() {
+        return self::NWMS_ORDER_TOPIC;
+    }
 }

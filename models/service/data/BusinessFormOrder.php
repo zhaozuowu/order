@@ -54,6 +54,15 @@ class Service_Data_BusinessFormOrder
             == $arrInput['business_form_order_status']) {
             list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $this->getFreezeStockParams($arrInput);
             $arrStockSkus = $this->objWrpcStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
+            $arrStockRet = $this->objDaoStock->freezeSkuStockWithErrNo($intStockoutOrderId,
+                $intWarehouseId, $arrFreezeStockDetail);
+            if (Order_Error_Code::STOCK_LOCK_CONFLICT == $arrStockRet['error_no']) {
+                Order_Exception_Collector::clearAllException();
+                Order_Exception_Collector::addException($intStockoutOrderId, 0, '',
+                    Order_Exception_Const::CONCRETE_STOCK_LOCK_CONFLICT, 0);
+                Order_BusinessError::throwException(Order_Error_Code::STOCK_FREEZE_ERROR);
+            }
+            $arrStockSkus = $arrStockRet['result'];
             $arrInput = $this->appendStockSkuInfoToOrder($arrInput, $arrStockSkus);
             $arrInput = $this->appendSkuTotalAmountToOrder($arrInput);
         }

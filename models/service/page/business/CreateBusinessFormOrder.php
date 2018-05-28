@@ -55,6 +55,7 @@ class Service_Page_Business_CreateBusinessFormOrder {
                                         $arrInput['business_form_order_id']));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR);
         }
+        $arrInput['skus_event'] = $this->objDsSku->appendSkuEventInfosToSkuParams($arrInput['skus_event']);
         $arrInput['exceptions'] = Order_Exception_Collector::getExceptionInfo(false);
         $this->objDsStockoutFormOrder->cacheStockoutInfo($arrInput);
         //异步创建出库单

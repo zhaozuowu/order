@@ -121,7 +121,6 @@ class Service_Data_StockoutOrder
     }
 
     /**
-     * @todo wait for interface document
      * assemble oms delivery order
      * @param array $arrSkuInfo
      * @return array
@@ -130,7 +129,26 @@ class Service_Data_StockoutOrder
     {
         $arrRet = [];
         foreach ($arrSkuInfo as $arrRow) {
-            // @todo
+//            $intSkuAmount = 0;
+            $arrSkuExtraList = [];
+            foreach ($arrRow['sku_extra_info'] as $arrRowSkuExtraInfo) {
+                $arrSkuExtraList[] = [
+                    'amount' => $arrRowSkuExtraInfo['good_amount'] + $arrRowSkuExtraInfo['defective_amount'],
+                    'expire_date' => intval($arrRowSkuExtraInfo['expire_time']),
+                ];
+//                $arrInfo[] = [
+//                    'product_time' => intval($arrRowSkuExtraInfo['product_time']),
+//                    'expire_time' => intval($arrRowSkuExtraInfo['expire_time']),
+//                    'good_amount' => intval($arrRowSkuExtraInfo['good_amount']),
+//                    'defective_amount' => intval($arrRowSkuExtraInfo['defective_amount']),
+//                ];
+//                $intSkuAmount += $arrRowSkuExtraInfo['good_amount'] + $arrRowSkuExtraInfo['defective_amount'];
+            }
+            $arrRet[] = [
+                'sku_id' => $arrRow['sku_id'],
+//                'sku_amount' => $intSkuAmount,
+                'distribute_info' => $arrSkuExtraList,
+            ];
         }
         return $arrRet;
     }
@@ -177,8 +195,10 @@ class Service_Data_StockoutOrder
             return;
         }
         // notify oms, next version
-        //$daoOms = new Dao_Ral_Oms();
-        //$daoOms->deliveryOrder($intStockoutOrderId, $this->assembleOmsDeliveryOrder($arrStockoutSkuInfo));
+        $daoOms = new Dao_Wrpc_Oms(Order_Define_Wrpc::OMS_NWMS_SERVICE_NAME);
+        $intLogisticOrderId = $ormStockoutOrder->logistics_order_id;
+        $intShipmentOrderId = $ormStockoutOrder->shipment_order_id;
+        $daoOms->updateStockoutOrderSkuInfo($intLogisticOrderId, $intShipmentOrderId, $this->assembleOmsDeliveryOrder($arrStockoutSkuInfo));
 
         // write to db
         $arrOrmStockoutSku = Model_Orm_StockoutOrderSku::getAllStockoutSkuByStockoutId($intStockoutOrderId);
@@ -1507,6 +1527,7 @@ class Service_Data_StockoutOrder
      * @param $strStockoutOrderId
      * @param $warehouseId
      * @return array
+     * @throws Order_BusinessError
      */
     private function notifyCancelfreezeskustock($strStockoutOrderId, $warehouseId)
     {
@@ -1515,6 +1536,7 @@ class Service_Data_StockoutOrder
         $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrStockoutParams, $strStockoutOrderId);
         if (false === $ret) {
            Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
+           Order_BusinessError::throwException(Order_Error_Code::SEND_CMD_FAILED);
        }
        return [];
     }
@@ -1684,5 +1706,28 @@ class Service_Data_StockoutOrder
                 . json_encode($ormStockOutOrderInfo->toArray()));
         }
         return [];
+    }
+
+    /**
+     * 批量根据仓库id获取仓库的地址
+     * @param $arrWarehouseIds
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    public function getWarehouseAddrByIds($arrWarehouseIds) {
+        $arrWarehouseList = $this->objWarehouseRal->getWareHouseList($arrWarehouseIds);
+        $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
+        if (empty($arrWarehouseList)) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED);
+        }
+        $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
+        $arrWarehouseAddr = [];
+        foreach ($arrWarehouseList as $warehouseInfo) {
+            $arrWarehouseAddr[$warehouseInfo['warehouse_id']] = empty($warehouseInfo['address'])
+                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : $warehouseInfo['address'];
+        }
+        return $arrWarehouseAddr;
     }
 }
