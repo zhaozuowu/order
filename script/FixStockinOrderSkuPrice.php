@@ -80,6 +80,7 @@ class FixStockinOrderSkuPrice
     private function fixStockinOrder()
     {
         $intOffset = 0;
+        Bd_Log::trace("STOCK_IN_ORDER START".time());
         foreach ($this->arrNeedFixWarehouseSkuMap as $intWarehouseId => $arrWarehouseSkusInfo) {
             $intStatus = $arrWarehouseSkusInfo['status'];
             $arrConds = [
@@ -107,6 +108,7 @@ class FixStockinOrderSkuPrice
 //                                ],
 //                        ]
 //                ];
+                Bd_Log::trace("STOCK_IN_ORDER_OFFSET". $intOffset);
                 foreach ($arrStockOrdersSkuPrice as $arrStockOrderSkuPrice) {
                     try {
                         Model_Orm_StockinOrder::getConnection()->transaction(function () use ($arrStockOrderSkuPrice) {
@@ -161,11 +163,13 @@ class FixStockinOrderSkuPrice
             $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 2;
             $this->setNeedFixWarehouseSku();
         }
+        Bd_Log::trace("STOCK_IN_ORDER END".time());
 
     }
 
     private function fixStockOutOrder()
     {
+        Bd_Log::trace("STOCK_OUT_ORDER START".time());
         $intOffset = 0;
         foreach ($this->arrNeedFixWarehouseSkuMap as $intWarehouseId => $arrWarehouseSkusInfo) {
             $intStatus = $arrWarehouseSkusInfo['status'];
@@ -176,6 +180,7 @@ class FixStockinOrderSkuPrice
             $arrConds = [
                 'is_delete' => Nscm_Define_Const::ENABLE,
                 'warehouse_id' => $intWarehouseId,
+                'create_time' => ['>', strtotime('2018-04-01')],
             ];
             if (2 == $intStatus) {
                 $arrStockOrderInfo = Model_Orm_StockoutOrder::findRows(['stockout_order_id'], $arrConds, ['id' => 'asc'], $intOffset, $this->limit);
@@ -198,6 +203,7 @@ class FixStockinOrderSkuPrice
 //                            ],
 //                    ]
 //                ];
+                Bd_Log::trace("STOCK_OUT_ORDER_OFFSET". $intOffset);
                 foreach ($arrStockOrdersSkuPrice as $arrStockOrderSkuPrice) {
                     try {
                         Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrStockOrderSkuPrice, $arrSkuBaseInfoMap) {
@@ -302,6 +308,7 @@ class FixStockinOrderSkuPrice
             $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 3;
             $this->setNeedFixWarehouseSku();
         }
+        Bd_Log::trace("STOCK_OUT_ORDER END".time());
     }
 
     /**
