@@ -54,6 +54,40 @@ class Service_Data_Sku
     }
 
     /**
+     * @param $arrBatchSkuParams
+     * @return array
+     * @throws Nscm_Exception_Error
+     */
+    public function appendSkuEventInfosToSkuParams($arrBatchSkuParams)
+    {
+        if (empty($arrBatchSkuParams)) {
+            return [];
+        }
+        $arrSkuIds = array_column($arrBatchSkuParams, 'sku_id');
+        $arrMapSkuInfos = $this->objSkuDao->getSkuInfos($arrSkuIds);
+        if (empty($arrMapSkuInfos)) {
+            return [];
+        }
+        $list = [];
+        foreach ($arrBatchSkuParams as $intKey=>$arrSkuItem) {
+            if (empty($arrMapSkuInfos[$arrSkuItem['sku_id']]) || !array_key_exists($arrSkuItem['event_type'],Order_Define_StockoutOrder::SKUS_EVENTS_IS_BACK_MAP)) {
+                continue;
+            }
+            $tmp['skuId'] = $arrSkuItem['sku_id'];
+            $tmp['name'] = $arrMapSkuInfos[$arrSkuItem['sku_id']]['sku_name'];
+            $tmp['amount'] = $arrSkuItem['order_amount'];
+            $tmp['netWeight'] = $arrMapSkuInfos[$arrSkuItem['sku_id']]['sku_net'];
+            $tmp['netWeightUnit'] = $arrMapSkuInfos[$arrSkuItem['sku_id']]['sku_net_unit'];
+            $tmp['upcUnit'] = $arrMapSkuInfos[$arrSkuItem['sku_id']]['min_upc']['upc_unit'];
+            $tmp['specifications'] = $arrMapSkuInfos[$arrSkuItem['sku_id']]['min_upc']['upc_unit_num'];
+            $tmp['back'] = Order_Define_StockoutOrder::SKUS_EVENTS_IS_BACK_MAP[$arrSkuItem['event_type']];
+            $tmp['eventType'] = $arrSkuItem['event_type'];
+            $list[] = $tmp;
+        }
+       return $list;
+
+    }
+    /**
      * 拼接sku详细信息
      * @param array $arrBatchSkuParams
      * @param integer $intOrderType

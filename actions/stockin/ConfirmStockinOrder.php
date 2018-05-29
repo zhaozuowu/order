@@ -19,15 +19,15 @@ class Action_ConfirmStockinOrder extends Order_Base_Action
             'validate' => 'json|required|decode',
             'type' => 'array',
             'params' => [
-                'sku_id' => 'int|required|min[1000000]|max[9999999]',
+                'sku_id' => 'int|min[1000000]|max[9999999]',
                 'real_stockin_info' => [
-                    'validate' => 'arr|required|decode',
+                    'validate' => 'arr|decode',
                     'type' => 'array',
                     'params' => [
-                        'amount' => 'int|required',
-                        'sku_good_amount' => 'int|required',
-                        'sku_defective_amount' => 'int|required',
-                        'expire_date' => 'int|required',
+                        'amount' => 'int',
+                        'sku_good_amount' => 'int',
+                        'sku_defective_amount' => 'int',
+                        'expire_date' => 'int',
                     ]
                 ],
             ],

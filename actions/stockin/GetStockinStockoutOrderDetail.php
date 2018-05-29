@@ -96,8 +96,7 @@ class Action_GetStockinStockoutOrderDetail extends Order_Base_Action
                     : strval($arrRet['stockin_order_creator_name']);
             $arrRoundResult['source_info'] = empty($arrRet['source_info']) ? ''
                 : strval($arrRet['source_info']);
-            $arrRoundResult['stockin_order_remark'] = empty($arrRet['stockin_order_remark']) ? ''
-                : strval($arrRet['stockin_order_remark']);
+            $arrRoundResult['stockin_order_remark'] = $this->formatStockInOrderRemark($arrRet);
 
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult = $arrRoundResult;
@@ -105,5 +104,19 @@ class Action_GetStockinStockoutOrderDetail extends Order_Base_Action
         Nscm_Service_Format_Data::filterIllegalData($arrFormatResult);
 
         return $arrFormatResult;
+    }
+
+    private function formatStockInOrderRemark($arrRet)
+    {
+        $stockInOrderRemark  =  empty($arrRet['stockin_order_remark']) ? '' : strval($arrRet['stockin_order_remark']);
+        $assetInformation = empty($arrRet['asset_information']) ? []:json_decode($arrRet['asset_information'],true);
+        if(!empty($assetInformation)) {
+            foreach ($assetInformation as $item) {
+                $stockInOrderRemark.=":".$item['device_no'].":".Order_Define_BusinessFormOrder::ORDER_DEVICE_MAP[$item['device_type']];
+
+            }
+        }
+        return $stockInOrderRemark;
+
     }
 }
