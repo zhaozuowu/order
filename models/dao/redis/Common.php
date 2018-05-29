@@ -14,8 +14,9 @@ class Dao_Redis_Common extends Order_Base_Redis
 
     public function setNeedFixWarehouseSkuList($arrWarehouseSkuList)
     {
-        Bd_Log::debug(sprintf('set redis, key[%s], data:%s', self::KEY_PREFIX, json_encode($arrWarehouseSkuList)));
-        $boolRes = $this->objRedisConn->set(self::KEY_PREFIX, $arrWarehouseSkuList);
+        $strWarehouseSku = json_encode($arrWarehouseSkuList);
+        Bd_Log::debug(sprintf('set redis, key[%s], data:%s', self::KEY_PREFIX, $strWarehouseSku));
+        $boolRes = $this->objRedisConn->set(self::KEY_PREFIX, $strWarehouseSku);
         Bd_Log::debug('set redis result: ' . json_encode($boolRes));
         if (empty($boolRes)) {
             Order_BusinessError::throwException(Order_Error_Code::CONNECT_REDIS_FAILED);
@@ -32,6 +33,6 @@ class Dao_Redis_Common extends Order_Base_Redis
         if (empty($arrRet)) {
             return [];
         }
-        return $arrRet;
+        return json_decode($arrRet, true);
     }
 }
