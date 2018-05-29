@@ -504,6 +504,44 @@ class Service_Data_PlaceOrder
     }
 
     /**
+     * 预约入库是否生成上架单
+     * @param $intStockinOrderId
+     * @return bool
+     */
+    protected function isPlacedOrderForReserve($intStockinOrderId) {
+        $arrStockinOrderIds = [
+            'stockin_order_id' => $intStockinOrderId,
+        ];
+        $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
+        $intPlaceOrderId = $arrPlaceOrderIds[0];
+        $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
+        if (Order_Define_PlaceOrder::STATUS_PLACED != $arrPlaceOrderInfo['place_order_status']) {
+            return Order_Define_StockinOrder::STOCKIN_NOT_PLACED;
+        }
+        if (Order_Define_PlaceOrder::STATUS_PLACED == $arrPlaceOrderInfo['place_order_status']
+            && Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO == $arrPlaceOrderInfo['is_auto']) {
+            return Order_Define_StockinOrder::STOCKIN_NOT_PLACED;
+        }
+        return Order_Define_StockinOrder::STOCKIN_IS_PLACED;
+    }
+
+    /**
+     * 预约入库单加入is_placed_order字段
+     * @param $arrStockinOrderList
+     * @return mixed
+     */
+    public function appendIsPlacedOrderToStockinOrderList($arrStockinOrderList) {
+        if (empty($arrStockinOrderList)) {
+            return $arrStockinOrderList;
+        }
+        foreach ((array)$arrStockinOrderList as $intKey => $arrStockinOrderInfo) {
+            $intStockinOrderId = $arrStockinOrderInfo['stockin_order_id'];
+            $arrStockinOrderList[$intKey]['is_placed_order'] = $this->isPlacedOrderForReserve($intStockinOrderId);
+        }
+        return $arrStockinOrderList;
+    }
+
+    /**
      * 在确认上架单sku列表中增加sku信息
      * @param $arrPlacedSkus
      * @param $intPlaceOrderId

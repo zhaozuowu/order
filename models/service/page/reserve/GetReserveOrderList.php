@@ -16,6 +16,11 @@ class Service_Page_Reserve_GetReserveOrderList implements Order_Base_Page
     private $objServiceData;
 
     /**
+     * @var Service_Data_PlaceOrder
+     */
+    private $objDsPlaceOrder;
+
+    /**
      * Service_Page_Reserve_GetReserveOrderList constructor.
      */
     public function __construct()
@@ -52,7 +57,7 @@ class Service_Page_Reserve_GetReserveOrderList implements Order_Base_Page
         $intPageNum = $arrInput['page_num'];
         $intPageSize = $arrInput['page_size'];
 
-        return $this->objServiceData->getReserveOrderList(
+        $arrRet = $this->objServiceData->getReserveOrderList(
             $strReserveOrderStatus,
             $strWarehouseId,
             $strReserveOrderId,
@@ -62,5 +67,7 @@ class Service_Page_Reserve_GetReserveOrderList implements Order_Base_Page
             $arrStockinTime,
             $intPageNum,
             $intPageSize);
+        $arrRet['list'] = $this->objDsPlaceOrder->appendIsPlacedOrderToStockinOrderList($arrRet['list']);
+        return $arrRet;
     }
 }
