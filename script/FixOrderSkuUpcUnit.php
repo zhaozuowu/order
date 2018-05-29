@@ -84,5 +84,6 @@ class FixOrderSkuUpcUnit
             $i++;
             
         }
+        Bd_Log::trace('run complete');
     }
 }
