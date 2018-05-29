@@ -81,6 +81,7 @@ class FixStockinOrderSkuPrice
                 'is_delete' => Nscm_Define_Const::ENABLE,
                 'warehouse_id' => $intWarehouseId,
                 'data_source' => Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_FROM_SYSTEM,
+                'create_time' => ['>' , strtotime('2018-04-01')],
             ];
             if (1 == $intStatus) {
                 $arrStockOrderInfo = Model_Orm_StockinOrder::findRows(['stockin_order_id'], $arrConds, ['id' => 'asc'], $intOffset, $this->limit);
@@ -183,10 +184,12 @@ class FixStockinOrderSkuPrice
                     [
                         "order_id" => $arrStockOrderIds[0],
                         "sku_list" => [
-                            "sku_id" => 1000025,
-                            "sku_price" => 123123,
-                            "sku_price_tax" => 123234,
-                        ],
+                                [
+                                    "sku_id" => 1000025,
+                                    "sku_price" => 123123,
+                                    "sku_price_tax" => 123234,
+                                ]
+                            ],
                     ]
                 ];
                 foreach ($arrStockOrdersSkuPrice as $arrStockOrderSkuPrice) {
@@ -216,18 +219,11 @@ class FixStockinOrderSkuPrice
                                     'cost_price_tax' => $arrSkuList['sku_price_tax'],
                                 ];
 
-                                //更新业态订单sku价格
                                 $arrBusinessSkuConditions = [
                                     'business_form_order_id' => $intBusinessOrderId,
                                     'sku_id' => $arrSkuList['sku_id'],
                                 ];
                                 $objBusinessOrderSkuInfo = Model_Orm_BusinessFormOrderSku::findOne($arrBusinessSkuConditions);
-                                if (!empty($objBusinessOrderSkuInfo)) {
-                                    $objBusinessOrderSkuInfo->update($arrUpdateInfo);
-                                } else {
-                                    Bd_Log::trace(sprintf("business order sku not existed order_id[%d],sku_id[%d]", $stockOutOrderId, $arrSkuList['sku_id']));
-                                }
-
                                 //计算配送价
                                 $arrSendPriceInfo = $this->getSendPriceInfo($arrSkuBaseInfoMap[$arrSkuList['sku_id']]['sku_business_form_detail'], $objBusinessOrderSkuInfo->business_form_order_type);
                                 if (Order_Define_Sku::SKU_PRICE_TYPE_BENEFIT
@@ -263,6 +259,18 @@ class FixStockinOrderSkuPrice
                                     $objSkuInfo->update($arrUpdateInfo);
                                 } else {
                                     Bd_Log::trace(sprintf("stockout ourder sku not existed order_id[%d],sku_id[%d]", $stockOutOrderId, $arrSkuList['sku_id']));
+                                }
+
+                                //更新业态订单sku价格
+
+                                if (!empty($objBusinessOrderSkuInfo)) {
+                                    unset($arrUpdateInfo['send_price_tax']);
+                                    unset($arrUpdateInfo['cost_price_tax']);
+                                    unset($arrUpdateInfo['send_total_price_tax']);
+                                    unset($arrUpdateInfo['cost_total_price_tax']);
+                                    $objBusinessOrderSkuInfo->update($arrUpdateInfo);
+                                } else {
+                                    Bd_Log::trace(sprintf("business order sku not existed order_id[%d],sku_id[%d]", $stockOutOrderId, $arrSkuList['sku_id']));
                                 }
                             }
                             //更新实际总价
