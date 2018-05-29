@@ -87,6 +87,9 @@ class Model_Orm_PickupOrderSku extends Order_Base_Orm
             if (!empty($objPickupOrderSkuInfo)) {
                 $objPickupOrderSkuInfo->pickup_amount = $arrSkuUpdateField['pickup_amount'];
                 $objPickupOrderSkuInfo->pickup_extra_info = json_encode($arrPickupExt);
+                $objPickupOrderSkuInfo->update();
+            } else {
+                Bd_Log::warning(sprintf("finish pickup order sku error conditions[%s]", json_encode($arrSkuUpdateCondition[$key])));
             }
         }
     }
