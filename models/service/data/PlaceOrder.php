@@ -451,6 +451,7 @@ class Service_Data_PlaceOrder
      * @param $arrPlacedSkus
      * @param $strUserName
      * @param $intUserId
+     * @return array
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
@@ -468,6 +469,7 @@ class Service_Data_PlaceOrder
         $arrPlaceOrderSkus = $this->appendPlaceOrderSkuInfo($arrPlacedSkus, $intPlaceOrderId);
         $this->objDaoWprcStock->confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrPlaceOrderSkus);
         $this->updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus, $strUserName, $intUserId);
+        return [];
     }
 
     /**
@@ -515,11 +517,10 @@ class Service_Data_PlaceOrder
         $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
         $intPlaceOrderId = $arrPlaceOrderIds[0];
         $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
-        if (Order_Define_PlaceOrder::STATUS_PLACED != $arrPlaceOrderInfo['place_order_status']) {
+        if (empty($arrPlaceOrderInfo)) {
             return Order_Define_StockinOrder::STOCKIN_NOT_PLACED;
         }
-        if (Order_Define_PlaceOrder::STATUS_PLACED == $arrPlaceOrderInfo['place_order_status']
-            && Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO == $arrPlaceOrderInfo['is_auto']) {
+        if (!empty($arrPlaceOrderInfo) && Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO == $arrPlaceOrderInfo['is_auto']) {
             return Order_Define_StockinOrder::STOCKIN_NOT_PLACED;
         }
         return Order_Define_StockinOrder::STOCKIN_IS_PLACED;
