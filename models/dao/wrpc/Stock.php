@@ -20,7 +20,7 @@ class Dao_Wrpc_Stock
     /**
      * 冻结sku
      */
-    const API_RALER_FREEZE_SKU_STOCK = 'freezeskustock';
+    const API_RALER_RESERVE_STOCK = 'reserveStock';
 
     /**
      * init
@@ -238,7 +238,7 @@ class Dao_Wrpc_Stock
         $arrRequestParams['stockout_order_id'] = $intStockoutOrderId;
         $arrRequestParams['warehouse_id'] = $intWarehouseId;
         $arrRequestParams['freeze_details'] = $arrFreezeStockDetail;
-        $arrReq[self::API_RALER_FREEZE_SKU_STOCK]['requestParams'] = $arrRequestParams;
+        $arrReq[self::API_RALER_RESERVE_STOCK]['requestParams'] = $arrRequestParams;
 
         $arrRet = $objApiRaler->getData($arrReq);
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
