@@ -7,9 +7,9 @@
 class Service_Data_BusinessFormOrder
 {
     /**
-     * @var Dao_Wrpc_Stock
+     * @var Dao_Huskar_Stock
      */
-    protected $objWrpcStock;
+    protected $objHuskarStock;
 
     /**
      * @var Dao_Ral_Stock
@@ -31,7 +31,7 @@ class Service_Data_BusinessFormOrder
      */
     public function __construct() {
         $this->objDaoStock = new Dao_Ral_Stock();
-        $this->objWrpcStock = new Dao_Wrpc_Stock();
+        $this->objHuskarStock = new Dao_Huskar_Stock();
         $this->objDaoSku = new Dao_Ral_Sku();
         $this->objWarehouseRal = new Dao_Ral_Order_Warehouse();
     }
@@ -53,7 +53,7 @@ class Service_Data_BusinessFormOrder
         if (Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_SUCCESS
             == $arrInput['business_form_order_status']) {
             list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $this->getFreezeStockParams($arrInput);
-            $arrStockRet = $this->objWrpcStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
+            $arrStockRet = $this->objHuskarStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
             if (Order_Error_Code::STOCK_LOCK_CONFLICT == $arrStockRet['error_no']) {
                 Order_Exception_Collector::clearAllException();
                 Order_Exception_Collector::addException($intStockoutOrderId, 0, '',

@@ -84,6 +84,11 @@ class Dao_Huskar_Stock
     const  API_HUSKAR_GET_BATCH_STORAGE_LOCATION = 'getbatchstoragelocation';
 
     /**
+     * 出库单预占sku
+     */
+    const API_RALER_RESERVE_STOCK = 'reserveStock';
+
+    /**
      * init
      */
     public function __construct()
@@ -444,4 +449,33 @@ class Dao_Huskar_Stock
     }
 
     /***************************************************移位单相关******************************************************/
+
+    /**
+     * 冻结库存
+     * @param $intStockoutOrderId
+     * @param $intWarehouseId
+     * @param $arrFreezeStockDetail
+     * @return mixed
+     * @throws Order_BusinessError
+     * @throws Nscm_Exception_Error
+     */
+    public function freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail)
+    {
+        $objApiRaler = new Nscm_Lib_ApiHuskar();
+        $objApiRaler->setFormat(new Order_Util_HuskarFormat());
+        $arrRequestParams['stockout_order_id'] = $intStockoutOrderId;
+        $arrRequestParams['warehouse_id'] = $intWarehouseId;
+        $arrRequestParams['freeze_details'] = $arrFreezeStockDetail;
+        $arrReq[self::API_RALER_RESERVE_STOCK]['requestParams'] = $arrRequestParams;
+
+        $arrRet = $objApiRaler->getData($arrReq);
+        Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
+            __METHOD__, json_encode($arrReq), json_encode($arrRet)));
+        if (0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("reserve sku stock failed params[%s] ret[%s]",
+                json_encode($arrReq), json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
+        }
+        return $arrRet;
+    }
 }

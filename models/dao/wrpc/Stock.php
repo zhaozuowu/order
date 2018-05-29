@@ -233,7 +233,7 @@ class Dao_Wrpc_Stock
      */
     public function freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail)
     {
-        $objApiRaler = new Nscm_lib_ApiRaler();
+        $objApiRaler = new Nscm_Lib_ApiHuskar();
         $objApiRaler->setFormat(new Order_Util_HuskarFormat());
         $arrRequestParams['stockout_order_id'] = $intStockoutOrderId;
         $arrRequestParams['warehouse_id'] = $intWarehouseId;

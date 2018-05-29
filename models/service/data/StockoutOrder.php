@@ -50,6 +50,12 @@ class Service_Data_StockoutOrder
     protected $objWrpcStock;
 
     /**
+     * dao ral stock
+     * @var Dao_Huskar_Stock
+     */
+    protected $objHuskarStock;
+
+    /**
      * dao ral sku
      * @var Dao_Ral_Sku
      */
@@ -465,7 +471,8 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR);
         }
         list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $dataBussniessObj->getFreezeStockParams($arrInput);
-        $arrStockRet = $this->objWrpcStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
+        $this->objHuskarStock = new Dao_Huskar_Stock();
+        $arrStockRet = $this->objHuskarStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
         $arrStockSkus = $arrStockRet['result'];
         if(empty($arrStockSkus) || empty($arrInput)) {
             Bd_Log::warning(sprintf("checkSkuStock failed stockoutOrderId[%s]",
