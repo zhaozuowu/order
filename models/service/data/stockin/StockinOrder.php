@@ -1297,6 +1297,11 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH == $arrStockInOrderInfo['stockin_order_status']) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_STATUS_FINISHED);
         }
+        //只有撤点的订单允许sku数量为0
+        if (Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REMOVE_SITE != $arrStockInOrderInfo['stockin_order_reason']
+            && empty($arrSkuInfoList)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
         $intWarehouseId = $arrStockInOrderInfo['warehouse_id'];
         if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH != $arrStockInOrderInfo['stockin_order_status']) {
             $intStockInTime = time();
@@ -1321,7 +1326,10 @@ class Service_Data_Stockin_StockinOrder
             });
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
             $intType = Order_Statistics_Type::ACTION_CREATE;
-            Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
+            //数量不为0才同步报表
+            if (!empty($intStockInOrderRealAmount)) {
+                Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
+            }
             if (!empty($arrStockInOrderInfo['shipment_order_id'])) {
                 $this->sendConfirmStockinOrderInfoToOms($intStockInOrderId, $arrStockInOrderInfo['shipment_order_id'], $arrStockInOrderInfo['stockin_order_source'], $arrSkuInfoList);
             }
