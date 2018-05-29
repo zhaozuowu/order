@@ -26,6 +26,7 @@ class Service_Page_Reserve_GetReserveOrderList implements Order_Base_Page
     public function __construct()
     {
         $this->objServiceData = new Service_Data_Reserve_ReserveOrder();
+        $this->objDsPlaceOrder = new Service_Data_PlaceOrder();
     }
 
     /**
