@@ -71,7 +71,7 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
      * @param $intUserId
      * @return bool
      */
-    public static function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus, $strUserName, $intUserId)
+    public static function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus)
     {
         if (empty($intPlaceOrderId)) {
             return false;
@@ -95,8 +95,6 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
                 return false;
             }
             $objPlaceOrder->actual_info = json_encode($arrPlacedSkuItem);
-            $objPlaceOrder->confirm_user_id = $intUserId;
-            $objPlaceOrder->confirm_user_name = $strUserName;
             $objPlaceOrder->update();
         }
         return true;
