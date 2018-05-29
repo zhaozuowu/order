@@ -80,11 +80,13 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
     }
 
     /**
-     * 上架单上架
+     * 确认上架单
      * @param $intPlaceOrderId
+     * @param $strUserName
+     * @param $intUserId
      * @return bool
      */
-    public static function placeOrder($intPlaceOrderId)
+    public static function placeOrder($intPlaceOrderId, $strUserName, $intUserId)
     {
         if (empty($intPlaceOrderId)) {
             return false;
@@ -95,6 +97,8 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
         ];
         $objPlaceOrderInfo = self::findOne($arrConditions);
         $objPlaceOrderInfo->place_order_status = Order_Define_PlaceOrder::STATUS_PLACED;
+        $objPlaceOrderInfo->confirm_user_id = $intUserId;
+        $objPlaceOrderInfo->confirm_user_name = $strUserName;
         $objPlaceOrderInfo->update();
         return true;
     }

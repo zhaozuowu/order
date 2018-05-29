@@ -492,11 +492,11 @@ class Service_Data_PlaceOrder
         }
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
         use ($intPlaceOrderId, $arrMapPlacedSkus, $strUserName, $intUserId) {
-            $boolFlag = Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrMapPlacedSkus, $strUserName, $intUserId);
+            $boolFlag = Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrMapPlacedSkus);
             if (!$boolFlag) {
                 Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
             }
-            $boolFlag = Model_Orm_PlaceOrder::placeOrder($intPlaceOrderId);
+            $boolFlag = Model_Orm_PlaceOrder::placeOrder($intPlaceOrderId, $strUserName, $intUserId);
             if (!$boolFlag) {
                 Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
             }
