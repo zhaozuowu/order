@@ -64,12 +64,14 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
     }
 
     /**
-     * 更新实际上架信息
+     * 确认上架单
      * @param $intPlaceOrderId
      * @param $arrPlacedSkus
+     * @param $strUserName
+     * @param $intUserId
      * @return bool
      */
-    public static function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus)
+    public static function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus, $strUserName, $intUserId)
     {
         if (empty($intPlaceOrderId)) {
             return false;
@@ -93,6 +95,8 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
                 return false;
             }
             $objPlaceOrder->actual_info = json_encode($arrPlacedSkuItem);
+            $objPlaceOrder->confirm_user_id = $intUserId;
+            $objPlaceOrder->confirm_user_name = $strUserName;
             $objPlaceOrder->update();
         }
         return true;

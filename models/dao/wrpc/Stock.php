@@ -127,7 +127,9 @@ class Dao_Wrpc_Stock
      * 确认上架单
      * @param $intPlaceOrderId
      * @param $intWarehouseId
+     * @param $intIsDefective
      * @param $arrSkusPlace
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrSkusPlace)
@@ -233,7 +235,7 @@ class Dao_Wrpc_Stock
      */
     public function freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail)
     {
-        $objApiRaler = new Nscm_lib_ApiRaler();
+        $objApiRaler = new Nscm_Lib_ApiHuskar();
         $objApiRaler->setFormat(new Order_Util_HuskarFormat());
         $arrRequestParams['stockout_order_id'] = $intStockoutOrderId;
         $arrRequestParams['warehouse_id'] = $intWarehouseId;
