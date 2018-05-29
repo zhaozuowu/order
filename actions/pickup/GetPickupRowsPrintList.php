@@ -90,7 +90,7 @@ class Action_GetPickupRowsPrintList extends Order_Base_Action
             $skuNeText = isset(Order_Define_Sku::SKU_NET_MAP[$arrItem['sku_net_unit']]) ? Order_Define_Sku::SKU_NET_MAP[$arrItem['sku_net_unit']]:'';
             $arrFormatItem['sku_net'] = $arrItem['sku_net'].$skuNeText;
             $arrFormatItem['upc_unit_num'] = empty($arrItem['upc_unit_num']) ? '' : '1*' . $arrItem['upc_unit_num'];
-            $arrFormatItem['upc_unit'] = isset(Order_Define_StockoutOrder::UPC_UNIT[$arrItem['upc_unit']]) ? Order_Define_StockoutOrder::UPC_UNIT[$arrItem['upc_unit']]:'';
+            $arrFormatItem['upc_unit'] = isset(Nscm_Define_Sku::UPC_UNIT_MAP[$arrItem['upc_unit']]) ? Nscm_Define_Sku::UPC_UNIT_MAP[$arrItem['upc_unit']]:'';
             $arrFormatItem['order_amount'] = empty($arrItem['order_amount']) ? 0 : $arrItem['order_amount'];
             $arrFormatItem['distribute_amount'] = empty($arrItem['distribute_amount']) ? 0 : $arrItem['distribute_amount'];
             $arrFormatItem['pickup_amount'] = empty($arrItem['pickup_amount']) ? 0 : $arrItem['pickup_amount'];
