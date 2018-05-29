@@ -219,13 +219,18 @@ class FixStockinOrderSkuPrice
                                     'cost_price_tax' => $arrSkuList['sku_price_tax'],
                                 ];
 
+                                $arrBusinessOrderConditions = [
+                                    'business_form_order_id' => $intBusinessOrderId,
+                                    'is_delete' => Nscm_Define_Const::ENABLE,
+                                ];
+                                $objBusinessOrderInfo = Model_Orm_BusinessFormOrder::findOne($arrBusinessOrderConditions);
                                 $arrBusinessSkuConditions = [
                                     'business_form_order_id' => $intBusinessOrderId,
                                     'sku_id' => $arrSkuList['sku_id'],
                                 ];
                                 $objBusinessOrderSkuInfo = Model_Orm_BusinessFormOrderSku::findOne($arrBusinessSkuConditions);
                                 //计算配送价
-                                $arrSendPriceInfo = $this->getSendPriceInfo($arrSkuBaseInfoMap[$arrSkuList['sku_id']]['sku_business_form_detail'], $objBusinessOrderSkuInfo->business_form_order_type);
+                                $arrSendPriceInfo = $this->getSendPriceInfo($arrSkuBaseInfoMap[$arrSkuList['sku_id']]['sku_business_form_detail'], $objBusinessOrderInfo->business_form_order_type);
                                 if (Order_Define_Sku::SKU_PRICE_TYPE_BENEFIT
                                     == $arrSendPriceInfo['sku_price_type']) {
                                     $arrUpdateInfo['send_price'] = $arrSkuList['sku_price']
