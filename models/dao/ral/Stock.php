@@ -93,6 +93,11 @@ class Dao_Ral_Stock
      * @var string
      */
     const  API_RALER_STOCK_IN = 'stockin';
+    /**
+     * 库存调整-出库
+     * @var string
+     */
+    const  API_RALER_GET_SKU_PRICE = 'getskupricebyorderid';
 
     /**
      * freeze sku stock
@@ -564,6 +569,23 @@ class Dao_Ral_Stock
         ];
         $ret = Nscm_Service_Stock::stockin($req);
         Bd_Log::debug("stockin res:".json_encode($ret).",request data:".json_encode($req));
+        return $ret;
+    }
+
+    public function getBatchSkuPrice($arrStockOrderIds, $intOrderType)
+    {
+        $ret = [];
+        if (empty($arrStockOrderIds) || empty($intOrderType)) {
+            return $ret;
+        }
+        $req[self::API_RALER_GET_SKU_PRICE]['order_type'] = $intOrderType;
+        $req[self::API_RALER_GET_SKU_PRICE]['order_ids'] = implode(',', $arrStockOrderIds);
+        $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug("getSkuPrice res:".json_encode($ret).",request data:".json_encode($req));
+        $ret = empty($ret[self::API_RALER_GET_SKU_PRICE]) ? [] : $ret[self::API_RALER_GET_SKU_PRICE];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
+        }
         return $ret;
     }
 
