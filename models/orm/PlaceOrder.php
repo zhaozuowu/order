@@ -99,6 +99,7 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
         $objPlaceOrderInfo->place_order_status = Order_Define_PlaceOrder::STATUS_PLACED;
         $objPlaceOrderInfo->confirm_user_id = $intUserId;
         $objPlaceOrderInfo->confirm_user_name = $strUserName;
+        $objPlaceOrderInfo->confirm_time = time();
         $objPlaceOrderInfo->update();
         return true;
     }
