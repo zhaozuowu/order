@@ -86,7 +86,7 @@ class Action_GetReserveOrderList extends Order_Base_Action
             $arrRoundResult['reserve_order_remark'] = empty($arrListItem['reserve_order_remark']) ? ''
                 : strval($arrListItem['reserve_order_remark']);
             $arrRoundResult['is_placed_order'] = intval($arrListItem['is_placed_order']);
-            $arrRoundResult['is_placed_order_text'] = empty($arrListItem['is_placed_order']) ? '---'
+            $arrRoundResult['is_placed_order_text'] = (Order_Define_StockinOrder::STOCKIN_NOT_PLACED == $arrListItem['is_placed_order']) ? '---'
                 : Order_Define_StockinOrder::STOCKIN_IS_PLACED_MAP[$arrListItem['is_placed_order']];
 
             $arrFormatResult['list'][] = $arrRoundResult;
