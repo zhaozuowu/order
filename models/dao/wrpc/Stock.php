@@ -122,7 +122,9 @@ class Dao_Wrpc_Stock
      * 确认上架单
      * @param $intPlaceOrderId
      * @param $intWarehouseId
+     * @param $intIsDefective
      * @param $arrSkusPlace
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrSkusPlace)

@@ -446,13 +446,15 @@ class Service_Data_PlaceOrder
     }
 
     /**
-     * 确认上架单
+     * confirm place order
      * @param $intPlaceOrderId
      * @param $arrPlacedSkus
-     * @return array
+     * @param $strUserName
+     * @param $intUserId
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function confirmPlaceOrder($intPlaceOrderId, $arrPlacedSkus)
+    public function confirmPlaceOrder($intPlaceOrderId, $arrPlacedSkus, $strUserName, $intUserId)
     {
         if (empty($intPlaceOrderId) || empty($arrPlacedSkus)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
@@ -465,7 +467,7 @@ class Service_Data_PlaceOrder
         $intIsDefective = $arrPlaceOrderInfo['is_defective'];
         $arrPlaceOrderSkus = $this->appendPlaceOrderSkuInfo($arrPlacedSkus, $intPlaceOrderId);
         $this->objDaoWprcStock->confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrPlaceOrderSkus);
-        $this->updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus);
+        $this->updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus, $strUserName, $intUserId);
     }
 
     /**
@@ -474,7 +476,7 @@ class Service_Data_PlaceOrder
      * @param $arrPlacedSkus
      * @return array
      */
-    protected function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus)
+    protected function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus, $strUserName, $intUserId)
     {
         if (empty($intPlaceOrderId) || empty($arrPlacedSkus)) {
             return [];
@@ -488,8 +490,9 @@ class Service_Data_PlaceOrder
             }
             $arrMapPlacedSkus[$intSkuId . '#' . $intExpireDate][] = $arrPlacedSkuItem;
         }
-        Model_Orm_PlaceOrder::getConnection()->transaction(function () use ($intPlaceOrderId, $arrMapPlacedSkus) {
-            $boolFlag = Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrMapPlacedSkus);
+        Model_Orm_PlaceOrder::getConnection()->transaction(function ()
+        use ($intPlaceOrderId, $arrMapPlacedSkus, $strUserName, $intUserId) {
+            $boolFlag = Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrMapPlacedSkus, $strUserName, $intUserId);
             if (!$boolFlag) {
                 Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
             }
