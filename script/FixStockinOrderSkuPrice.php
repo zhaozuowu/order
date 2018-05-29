@@ -96,17 +96,17 @@ class FixStockinOrderSkuPrice
                 $arrStockOrderIds = array_column($arrStockOrderInfo, 'stockin_order_id');
                 $intOrderType = Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN;
                 //通过单号获取价格
-//                $arrStockOrdersSkuPrice = $this->daoStock->getBatchSkuPrice($arrStockOrderIds, $intOrderType);
-                $arrStockOrdersSkuPrice = [
-                        [
-                                "order_id" => $arrStockOrderIds[0],
-                                "sku_list" => [
-                                        "sku_id" => 1000025,
-                                        "sku_price" => 123123,
-                                        "sku_price_tax" => 123234,
-                                ],
-                        ]
-                ];
+                $arrStockOrdersSkuPrice = $this->daoStock->getBatchSkuPrice($arrStockOrderIds, $intOrderType);
+//                $arrStockOrdersSkuPrice = [
+//                        [
+//                                "order_id" => $arrStockOrderIds[0],
+//                                "sku_list" => [
+//                                        "sku_id" => 1000025,
+//                                        "sku_price" => 123123,
+//                                        "sku_price_tax" => 123234,
+//                                ],
+//                        ]
+//                ];
                 foreach ($arrStockOrdersSkuPrice as $arrStockOrderSkuPrice) {
                     try {
                         Model_Orm_StockinOrder::getConnection()->transaction(function () use ($arrStockOrderSkuPrice) {
@@ -185,19 +185,19 @@ class FixStockinOrderSkuPrice
                 $arrStockOrderIds = array_column($arrStockOrderInfo, 'stockout_order_id');
                 $intOrderType = Nscm_Define_Stock::STOCK_OUT_TYPE_SALE;
                 //通过单号获取价格
-//                $arrStockOrdersSkuPrice = $this->daoStock->getBatchSkuPrice($arrStockOrderIds, $intOrderType);
-                $arrStockOrdersSkuPrice = [
-                    [
-                        "order_id" => $arrStockOrderIds[0],
-                        "sku_list" => [
-                                [
-                                    "sku_id" => 1000025,
-                                    "sku_price" => 123123,
-                                    "sku_price_tax" => 123234,
-                                ]
-                            ],
-                    ]
-                ];
+                $arrStockOrdersSkuPrice = $this->daoStock->getBatchSkuPrice($arrStockOrderIds, $intOrderType);
+//                $arrStockOrdersSkuPrice = [
+//                    [
+//                        "order_id" => $arrStockOrderIds[0],
+//                        "sku_list" => [
+//                                [
+//                                    "sku_id" => 1000025,
+//                                    "sku_price" => 123123,
+//                                    "sku_price_tax" => 123234,
+//                                ]
+//                            ],
+//                    ]
+//                ];
                 foreach ($arrStockOrdersSkuPrice as $arrStockOrderSkuPrice) {
                     try {
                         Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrStockOrderSkuPrice, $arrSkuBaseInfoMap) {
