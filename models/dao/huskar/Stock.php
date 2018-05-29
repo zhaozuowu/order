@@ -476,6 +476,6 @@ class Dao_Huskar_Stock
                 json_encode($arrReq), json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
         }
-        return $arrRet;
+        return $arrRet[self::API_RALER_RESERVE_STOCK];
     }
 }
