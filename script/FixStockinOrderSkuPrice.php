@@ -37,6 +37,10 @@ class FixStockinOrderSkuPrice
      */
     private $objRedis;
     /**
+     * @var Dao_Redis_StatisticsDemotion
+     */
+    private $daoRedis;
+    /**
      * @var Dao_Ral_Stock
      */
     private $daoStock;
@@ -57,6 +61,7 @@ class FixStockinOrderSkuPrice
         $this->objRedis = new Dao_Redis_Common();
         $this->daoStock = new Dao_Ral_Stock();
         $this->daoSku = new Dao_Ral_Sku();
+        $this->daoRedis = new Dao_Redis_StatisticsDemotion();
         $this->getNeedFixWarehouseSku();
         $this->fixStockinOrder();
         $this->fixStockOutOrder();
@@ -91,8 +96,7 @@ class FixStockinOrderSkuPrice
                 $arrStockOrderIds = array_column($arrStockOrderInfo, 'stockin_order_id');
                 $intOrderType = Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN;
                 //通过单号获取价格
-//                $daoStock = new Dao_Ral_Stock();
-//                $arrStockOrdersSkuPrice = $daoStock->getBatchSkuPrice($arrStockOrderIds, $intOrderType);
+//                $arrStockOrdersSkuPrice = $this->daoStock->getBatchSkuPrice($arrStockOrderIds, $intOrderType);
                 $arrStockOrdersSkuPrice = [
                         [
                                 "order_id" => $arrStockOrderIds[0],
@@ -146,6 +150,8 @@ class FixStockinOrderSkuPrice
                                 }
                             }
                         });
+                        //通知报表
+                        $this->daoRedis->addStatisticsOrder($arrStockOrderSkuPrice['order_id'], Order_Statistics_Type::ACTION_UPDATE, Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT);
                     } catch (Exception $e) {
                         Bd_Log::trace(sprintf("update failed order_info[%s]", json_encode($arrStockOrderSkuPrice)));
                     }
@@ -171,7 +177,7 @@ class FixStockinOrderSkuPrice
                 'is_delete' => Nscm_Define_Const::ENABLE,
                 'warehouse_id' => $intWarehouseId,
             ];
-            if (1 == $intStatus) {
+            if (2 == $intStatus) {
                 $arrStockOrderInfo = Model_Orm_StockoutOrder::findRows(['stockout_order_id'], $arrConds, ['id' => 'asc'], $intOffset, $this->limit);
                 if (0 == count($arrStockOrderInfo)) {
                     continue;
@@ -285,6 +291,8 @@ class FixStockinOrderSkuPrice
                                 ]);
                             }
                         });
+                        //通知报表
+                        $this->daoRedis->addStatisticsOrder($arrStockOrderSkuPrice['order_id'], Order_Statistics_Type::ACTION_UPDATE, Order_Statistics_Type::TABLE_STOCKOUT_ORDER);
                     } catch (Exception $e) {
                         Bd_Log::trace(sprintf("update failed order_info[%s]", json_encode($arrStockOrderSkuPrice)));
                     }
