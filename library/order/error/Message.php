@@ -104,6 +104,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL => '调用库存模块解冻库存失败',
         Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR => '获取仓库商品冻结数据参数有误',
         Order_Error_code::NWMS_UNFROZEN_DETAIL_PARAM_EMPTY => '获取仓库商品冻结数据参数有误',
+        Order_Error_code::STOCK_SKU_PRICE_GET_FAILED => '获取库存商品价格失败',
     ];
 
 }

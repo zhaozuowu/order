@@ -610,4 +610,9 @@ class Order_Error_Code extends Wm_Error_Code
      * stock lock
      */
     const STOCK_LOCK_CONFLICT = 310001;
+
+    /**
+     * stock sku price get failed
+     */
+    const STOCK_SKU_PRICE_GET_FAILED = 311001;
 }
