@@ -1641,4 +1641,24 @@ class Service_Data_Stockin_StockinOrder
         }
         return $arrRetStockinOrderSkus;
     }
+
+    /**
+     * 获取入库单sku信息
+     * @param $intStockinOrderId
+     * @param $intSkuId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockinOrderSkuInfo($intStockinOrderId, $intSkuId)
+    {
+        if (empty($intStockinOrderId) || empty($intSkuId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+
+        $objSkuInfo = Model_Orm_StockinOrderSku::getStockinOrderSkuInfo($intStockinOrderId, $intSkuId);
+        if (empty($objSkuInfo)) {
+            return [];
+        }
+        $objSkuInfo->toArray();
+    }
 }
