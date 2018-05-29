@@ -83,6 +83,7 @@ class Service_Data_Reserve_ReserveOrder
                 'reserve_order_sku_total_price' => $row['reserve_order_sku_total_price'],
                 'reserve_order_sku_total_price_tax' => $row['reserve_order_sku_total_price_tax'],
                 'reserve_order_sku_plan_amount' => $row['reserve_order_sku_plan_amount'],
+                'upc_min_unit' => intval($arrSkuInfo[$row['sku_id']]['min_upc']['upc_unit']),
             ];
         }
         return $arrRes;
