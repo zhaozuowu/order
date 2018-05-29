@@ -64,6 +64,7 @@ class Service_Data_PickupOrder
         $stockoutOrderList = array_column($stockoutOrderList,null,'stockout_order_id');
         $arrStockoutPickOrderData = $this->getCreateStockoutPickupOrderData($arrStockoutOrderIds,$pickupOrderType);
         $res['pickupOrders'] = array_column($arrStockoutPickOrderData,'pickup_order_id');
+        $res['pickupOrders'] = array_unique($res['pickupOrders']);
         $res['pickupOrders'] = implode(",",$res['pickupOrders']);
         Model_Orm_PickupOrder::getConnection()->transaction(function () use ($stockoutOrderList,$arrStockoutOrderIds,$pickupOrderType,$userId,$userName,$arrStockoutOrderIds,$arrStockoutPickOrderData) {
             Model_Orm_StockoutPickupOrder::batchInsert($arrStockoutPickOrderData, false);
@@ -158,7 +159,7 @@ class Service_Data_PickupOrder
             $tmp['pickup_order_status'] = Order_Define_PickupOrder::PICKUP_ORDER_STATUS_INIT;
             $tmp['pickup_order_type'] = $pickupOrderType;
             $result = $this->calculatePickupOrderStatisticsInfo($item, $stockoutOrderList);
-            $tmp['stockout_order_amount'] = !empty($result['stockout_order_amount']) ? $result['stockout_order_amount']:0;
+            $tmp['stockout_order_amount'] = count($item);
             $tmp['sku_distribute_amount'] = !empty($result['sku_distribute_amount']) ? $result['sku_distribute_amount']:0;
             $tmp['sku_pickup_amount'] = !empty($result['sku_pickup_amount']) ? $result['sku_pickup_amount']:0;
             $tmp['creator'] = $userName;
@@ -174,7 +175,6 @@ class Service_Data_PickupOrder
     private function calculatePickupOrderStatisticsInfo($stockoutOrderIds, $stockoutOrderList)
     {
         $list = [
-            'stockout_order_amount'=>0,
             'sku_distribute_amount'=>0,
             'sku_pickup_amount'=>0,
             'sku_kind_amount'=>0,
@@ -188,7 +188,7 @@ class Service_Data_PickupOrder
         $skuIds = array_unique($skuIds);
         $list['sku_kind_amount'] = count($skuIds);
         foreach($stockoutOrderIds as $stockoutOrderId) {
-            $list['stockout_order_amount']+= $stockoutOrderList[$stockoutOrderId]['stockout_order_amount'];
+            //$list['stockout_order_amount']+= $stockoutOrderList[$stockoutOrderId]['stockout_order_amount'];
             $list['sku_distribute_amount']+= $stockoutOrderList[$stockoutOrderId]['stockout_order_distribute_amount'];
             $list['sku_pickup_amount']+= $stockoutOrderList[$stockoutOrderId]['stockout_order_pickup_amount'];
 
