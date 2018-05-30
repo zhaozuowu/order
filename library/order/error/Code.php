@@ -275,7 +275,7 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      *
      */
-    const STOCKOUT_ORDER_IN_PICKING= 340013;
+    const STOCKOUT_ORDER_IN_PICKING= 311001;
 
     /**
      * 创建业态订单参数错误
@@ -372,7 +372,7 @@ class Order_Error_Code extends Wm_Error_Code
      * 获取仓储信息失败
      * @var integer
      */
-    const NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED = 311001;
+    const NWMS_ORDER_STOCKOUT_GET_WAREHOUSE_INFO_FAILED = 340013;
 
     /**
      * 客户区域编号错误
