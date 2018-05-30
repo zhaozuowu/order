@@ -1682,6 +1682,12 @@ class Service_Data_Stockin_StockinOrder
         $objSkuInfo->toArray();
     }
 
+    /**
+     * 构建计算入库单的真实入库总金额
+     * @param array $arrSkuInfoList
+     * @param array $arrSkuPriceList
+     * @return array [$intRealPriceAmount, $intRealPriceTaxAmount]
+     */
     private function assembleStockInOrderRealPrice($arrSkuInfoList, $arrSkuPriceList)
     {
         $intRealPriceAmount = 0;
