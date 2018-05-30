@@ -156,7 +156,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param string $strSourceSupplierId 客户id
      * @return int
      */
-    public function createRemoveSiteStockInOrder(
+    public static function createRemoveSiteStockInOrder(
         $intStockInOrderId,
         $intStockInOrderType,
         $intStockInOrderDataSourceType,
