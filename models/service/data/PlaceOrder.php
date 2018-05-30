@@ -66,6 +66,9 @@ class Service_Data_PlaceOrder
                         json_encode($arrOrderList), json_encode($arrSkuList), json_encode($arrMapOrderList)));
         //自动创建的上架单进行自动上架
         foreach ((array)$arrOrderList as $arrOrderItem) {
+            $intPlaceOrderId = $arrOrderItem['place_order_id'];
+            $arrSkus = $arrOrderItem['skus'];
+            $this->confirmPlaceOrder($intPlaceOrderId,$arrSkus, '', 0);
         }
         //创建上架单
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
