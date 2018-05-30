@@ -57,7 +57,9 @@ class Service_Page_Shift_GetOrderDetailBatch
             unset($order['id']);
             unset($order['version']);
             unset($order['is_detete']);
-            $orderList[$order['shift_order_id']] = $order;
+            $orderId = $order['shift_order_id'];
+            $order['shift_order_id'] = Nscm_Define_OrderPrefix::SHO . intval($order['shift_order_id']);
+            $orderList[$orderId] = $order;
         }
         foreach ($arrDetail as &$value){
             unset($value['id']);

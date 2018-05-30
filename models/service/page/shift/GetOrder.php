@@ -46,6 +46,7 @@ class Service_Page_Shift_GetOrder
             unset($value['id']);
             unset($value['version']);
             unset($value['is_delete']);
+            $value['shift_order_id'] = Nscm_Define_OrderPrefix::SHO . intval($value['shift_order_id']);
             $arrResult[] = $value;
         }
         return $arrResult;

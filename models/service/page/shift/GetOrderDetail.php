@@ -68,6 +68,7 @@ class Service_Page_Shift_GetOrderDetail
             } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $skuInfos[$value['sku_id']]['sku_effect_type']) {
                 $value['production_or_expiration_time'] = strtotime(date('Y-m-d',$value['expiration_time']));
             }
+            $value['shift_order_id'] = Nscm_Define_OrderPrefix::SHO . intval($value['shift_order_id']);
         }
         $arrRet = $arrOrder;
         $arrRet['total'] = $intCount;
