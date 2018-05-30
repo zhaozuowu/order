@@ -79,9 +79,9 @@ class FixStockinOrderSkuPrice
 
     private function fixStockinOrder()
     {
-        $intOffset = 0;
         Bd_Log::trace("STOCK_IN_ORDER START".time());
         foreach ($this->arrNeedFixWarehouseSkuMap as $intWarehouseId => $arrWarehouseSkusInfo) {
+            $intOffset = 0;
             $intStatus = $arrWarehouseSkusInfo['status'];
             $arrConds = [
                 'is_delete' => Nscm_Define_Const::ENABLE,
@@ -90,14 +90,15 @@ class FixStockinOrderSkuPrice
                 'create_time' => ['>' , strtotime('2018-04-01')],
             ];
             if (1 == $intStatus) {
-                $arrStockOrderInfo = Model_Orm_StockinOrder::findRows(['stockin_order_id'], $arrConds, ['id' => 'asc'], $intOffset, $this->limit);
-                if (0 == count($arrStockOrderInfo)) {
-                    continue;
-                }
-                $arrStockOrderIds = array_column($arrStockOrderInfo, 'stockin_order_id');
-                $intOrderType = Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN;
-                //通过单号获取价格
-                $arrStockOrdersSkuPrice = $this->daoStock->getBatchSkuPrice($arrStockOrderIds, $intOrderType);
+                do {
+                    $arrStockOrderInfo = Model_Orm_StockinOrder::findRows(['stockin_order_id'], $arrConds, ['id' => 'asc'], $intOffset, $this->limit);
+                   /* if (0 == count($arrStockOrderInfo)) {
+                        continue;
+                    }*/
+                    $arrStockOrderIds = array_column($arrStockOrderInfo, 'stockin_order_id');
+                    $intOrderType = Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN;
+                    //通过单号获取价格
+                    $arrStockOrdersSkuPrice = $this->daoStock->getBatchSkuPrice($arrStockOrderIds, $intOrderType);
 //                $arrStockOrdersSkuPrice = [
 //                        [
 //                                "order_id" => $arrStockOrderIds[0],
@@ -108,59 +109,61 @@ class FixStockinOrderSkuPrice
 //                                ],
 //                        ]
 //                ];
-                Bd_Log::trace("STOCK_IN_ORDER_OFFSET". $intOffset);
-                foreach ($arrStockOrdersSkuPrice as $arrStockOrderSkuPrice) {
-                    try {
-                        Model_Orm_StockinOrder::getConnection()->transaction(function () use ($arrStockOrderSkuPrice) {
-                            $stockInOrderId = $arrStockOrderSkuPrice['order_id'];
-                            $intStockInOrderSkuPriceAmount = 0;
-                            $intStockInOrderSkuPriceTaxAmount = 0;
-                            foreach ($arrStockOrderSkuPrice['sku_list'] as $arrSkuList) {
-                                $intSkuPriceAmount = 0;
-                                $intSkuPriceTaxAmount = 0;
-                                $arrSkuConditons = [
-                                    'stockin_order_id' => $stockInOrderId,
-                                    'sku_id' => $arrSkuList['sku_id'],
-                                ];
-                                $arrUpdateInfo = [
-                                    'sku_price' => $arrSkuList['sku_price'],
-                                    'sku_price_tax' => $arrSkuList['sku_price_tax'],
-                                ];
-                                $objSkuInfo = Model_Orm_StockinOrderSku::findOne($arrSkuConditons);
-                                if (!empty($objSkuInfo)) {
-                                    $intStockInOrderSkuPriceAmount += $objSkuInfo->stockin_order_sku_real_amount * $arrSkuList['sku_price'];
-                                    $intStockInOrderSkuPriceTaxAmount += $objSkuInfo->stockin_order_sku_real_amount * $arrSkuList['sku_price_tax'];
-                                    $intSkuPriceAmount += $objSkuInfo->stockin_order_sku_real_amount * $arrSkuList['sku_price'];
-                                    $intSkuPriceTaxAmount += $objSkuInfo->stockin_order_sku_real_amount * $arrSkuList['sku_price_tax'];
-                                    $arrUpdateInfo['stockin_order_sku_total_price'] = $intSkuPriceAmount;
-                                    $arrUpdateInfo['stockin_order_sku_total_price_tax'] = $intSkuPriceTaxAmount;
-                                    $objSkuInfo->update($arrUpdateInfo);
-                                } else {
-                                    Bd_Log::trace(sprintf("sku not existed order_id[%d],sku_id[%d]", $stockInOrderId, $arrSkuList['sku_id']));
+                    Bd_Log::trace("STOCK_IN_ORDER_OFFSET". $intOffset);
+                    foreach ($arrStockOrdersSkuPrice as $arrStockOrderSkuPrice) {
+                        try {
+                            Model_Orm_StockinOrder::getConnection()->transaction(function () use ($arrStockOrderSkuPrice) {
+                                $stockInOrderId = $arrStockOrderSkuPrice['order_id'];
+                                $intStockInOrderSkuPriceAmount = 0;
+                                $intStockInOrderSkuPriceTaxAmount = 0;
+                                foreach ($arrStockOrderSkuPrice['sku_list'] as $arrSkuList) {
+                                    $intSkuPriceAmount = 0;
+                                    $intSkuPriceTaxAmount = 0;
+                                    $arrSkuConditons = [
+                                        'stockin_order_id' => $stockInOrderId,
+                                        'sku_id' => $arrSkuList['sku_id'],
+                                    ];
+                                    $arrUpdateInfo = [
+                                        'sku_price' => $arrSkuList['sku_price'],
+                                        'sku_price_tax' => $arrSkuList['sku_price_tax'],
+                                    ];
+                                    $objSkuInfo = Model_Orm_StockinOrderSku::findOne($arrSkuConditons);
+                                    if (!empty($objSkuInfo)) {
+                                        $intStockInOrderSkuPriceAmount += $objSkuInfo->stockin_order_sku_real_amount * $arrSkuList['sku_price'];
+                                        $intStockInOrderSkuPriceTaxAmount += $objSkuInfo->stockin_order_sku_real_amount * $arrSkuList['sku_price_tax'];
+                                        $intSkuPriceAmount += $objSkuInfo->stockin_order_sku_real_amount * $arrSkuList['sku_price'];
+                                        $intSkuPriceTaxAmount += $objSkuInfo->stockin_order_sku_real_amount * $arrSkuList['sku_price_tax'];
+                                        $arrUpdateInfo['stockin_order_sku_total_price'] = $intSkuPriceAmount;
+                                        $arrUpdateInfo['stockin_order_sku_total_price_tax'] = $intSkuPriceTaxAmount;
+                                        $objSkuInfo->update($arrUpdateInfo);
+                                    } else {
+                                        Bd_Log::trace(sprintf("sku not existed order_id[%d],sku_id[%d]", $stockInOrderId, $arrSkuList['sku_id']));
+                                    }
+                                    $arrOrderConds = [
+                                        'stockin_order_id' => $stockInOrderId,
+                                        'is_delete' => Nscm_Define_Const::ENABLE,
+                                    ];
+                                    //更新实际总价
+                                    $objOrderInfo = Model_Orm_StockinOrder::findOne($arrOrderConds);
+                                    if (!empty($objOrderInfo)) {
+                                        $objOrderInfo->update([
+                                            'stockin_order_total_price' => $intStockInOrderSkuPriceAmount,
+                                            'stockin_order_total_price_tax' => $intStockInOrderSkuPriceTaxAmount,
+                                        ]);
+                                    }
                                 }
-                                $arrOrderConds = [
-                                    'stockin_order_id' => $stockInOrderId,
-                                    'is_delete' => Nscm_Define_Const::ENABLE,
-                                ];
-                                //更新实际总价
-                                $objOrderInfo = Model_Orm_StockinOrder::findOne($arrOrderConds);
-                                if (!empty($objOrderInfo)) {
-                                    $objOrderInfo->update([
-                                        'stockin_order_total_price' => $intStockInOrderSkuPriceAmount,
-                                        'stockin_order_total_price_tax' => $intStockInOrderSkuPriceTaxAmount,
-                                    ]);
-                                }
-                            }
-                        });
-                        //通知报表
-                        $this->daoRedis->addStatisticsOrder($arrStockOrderSkuPrice['order_id'], Order_Statistics_Type::ACTION_UPDATE, Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT);
-                        echo "[SUCCESS]STOCK_IN_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
-                    } catch (Exception $e) {
-                        echo "[FAILED]STOCK_IN_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
+                            });
+                            //通知报表
+                            $this->daoRedis->addStatisticsOrder($arrStockOrderSkuPrice['order_id'], Order_Statistics_Type::ACTION_UPDATE, Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT);
+                            echo "[SUCCESS]STOCK_IN_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
+                        } catch (Exception $e) {
+                            echo "[FAILED]STOCK_IN_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
 
-                        Bd_Log::trace(sprintf("update failed order_info[%s]", json_encode($arrStockOrderSkuPrice)));
+                            Bd_Log::trace(sprintf("update failed order_info[%s]", json_encode($arrStockOrderSkuPrice)));
+                        }
+                        $intOffset += $this->limit;
                     }
-                }
+                } while ($this->limit == count($arrStockOrderInfo));
             }
             //设置warehouse已处理
             $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 2;
@@ -173,8 +176,8 @@ class FixStockinOrderSkuPrice
     private function fixStockOutOrder()
     {
         Bd_Log::trace("STOCK_OUT_ORDER START".time());
-        $intOffset = 0;
         foreach ($this->arrNeedFixWarehouseSkuMap as $intWarehouseId => $arrWarehouseSkusInfo) {
+            $intOffset = 0;
             $intStatus = $arrWarehouseSkusInfo['status'];
             $arrSkuIds = $arrWarehouseSkusInfo['sku_id_list'];
             //获取商品基础信息用于计算配送价
@@ -186,14 +189,15 @@ class FixStockinOrderSkuPrice
                 'create_time' => ['>', strtotime('2018-04-01')],
             ];
             if (2 == $intStatus) {
-                $arrStockOrderInfo = Model_Orm_StockoutOrder::findRows(['stockout_order_id'], $arrConds, ['id' => 'asc'], $intOffset, $this->limit);
-                if (0 == count($arrStockOrderInfo)) {
-                    continue;
-                }
-                $arrStockOrderIds = array_column($arrStockOrderInfo, 'stockout_order_id');
-                $intOrderType = Nscm_Define_Stock::STOCK_OUT_TYPE_SALE;
-                //通过单号获取价格
-                $arrStockOrdersSkuPrice = $this->daoStock->getBatchSkuPrice($arrStockOrderIds, $intOrderType);
+                do {
+                    $arrStockOrderInfo = Model_Orm_StockoutOrder::findRows(['stockout_order_id'], $arrConds, ['id' => 'asc'], $intOffset, $this->limit);
+                    if (0 == count($arrStockOrderInfo)) {
+                        continue;
+                    }
+                    $arrStockOrderIds = array_column($arrStockOrderInfo, 'stockout_order_id');
+                    $intOrderType = Nscm_Define_Stock::STOCK_OUT_TYPE_SALE;
+                    //通过单号获取价格
+                    $arrStockOrdersSkuPrice = $this->daoStock->getBatchSkuPrice($arrStockOrderIds, $intOrderType);
 //                $arrStockOrdersSkuPrice = [
 //                    [
 //                        "order_id" => $arrStockOrderIds[0],
@@ -206,108 +210,109 @@ class FixStockinOrderSkuPrice
 //                            ],
 //                    ]
 //                ];
-                Bd_Log::trace("STOCK_OUT_ORDER_OFFSET". $intOffset);
-                foreach ($arrStockOrdersSkuPrice as $arrStockOrderSkuPrice) {
-                    try {
-                        Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrStockOrderSkuPrice, $arrSkuBaseInfoMap) {
-                            $stockOutOrderId = $arrStockOrderSkuPrice['order_id'];
-                            $intStockInOrderSkuPriceAmount = 0;
-                            $intStockInOrderSkuPriceTaxAmount = 0;
-                            $arrOrderConds = [
-                                'stockout_order_id' => $stockOutOrderId,
-                                'is_delete' => Nscm_Define_Const::ENABLE,
-                            ];
-                            $objOrderInfo = Model_Orm_StockoutOrder::findOne($arrOrderConds);
-                            if (empty($objOrderInfo)) {
-                                Bd_Log::trace(sprintf("stock out order not existed,order_id[%d]", $stockOutOrderId));
-                            }
-                            $intBusinessOrderId = $objOrderInfo->business_form_order_id;
-                            foreach ($arrStockOrderSkuPrice['sku_list'] as $arrSkuList) {
-                                $intSkuPriceAmount = 0;
-                                $intSkuPriceTaxAmount = 0;
-                                $arrSkuConditions = [
+                    Bd_Log::trace("STOCK_OUT_ORDER_OFFSET". $intOffset);
+                    foreach ($arrStockOrdersSkuPrice as $arrStockOrderSkuPrice) {
+                        try {
+                            Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrStockOrderSkuPrice, $arrSkuBaseInfoMap) {
+                                $stockOutOrderId = $arrStockOrderSkuPrice['order_id'];
+                                $intStockInOrderSkuPriceAmount = 0;
+                                $intStockInOrderSkuPriceTaxAmount = 0;
+                                $arrOrderConds = [
                                     'stockout_order_id' => $stockOutOrderId,
-                                    'sku_id' => $arrSkuList['sku_id'],
-                                ];
-                                $arrUpdateInfo = [
-                                    'cost_price' => $arrSkuList['sku_price'],
-                                    'cost_price_tax' => $arrSkuList['sku_price_tax'],
-                                ];
-
-                                $arrBusinessOrderConditions = [
-                                    'business_form_order_id' => $intBusinessOrderId,
                                     'is_delete' => Nscm_Define_Const::ENABLE,
                                 ];
-                                $objBusinessOrderInfo = Model_Orm_BusinessFormOrder::findOne($arrBusinessOrderConditions);
-                                $arrBusinessSkuConditions = [
-                                    'business_form_order_id' => $intBusinessOrderId,
-                                    'sku_id' => $arrSkuList['sku_id'],
-                                ];
-                                $objBusinessOrderSkuInfo = Model_Orm_BusinessFormOrderSku::findOne($arrBusinessSkuConditions);
-                                //计算配送价
-                                $arrSendPriceInfo = $this->getSendPriceInfo($arrSkuBaseInfoMap[$arrSkuList['sku_id']]['sku_business_form_detail'], $objBusinessOrderInfo->business_form_order_type);
-                                if (Order_Define_Sku::SKU_PRICE_TYPE_BENEFIT
-                                    == $arrSendPriceInfo['sku_price_type']) {
-                                    $arrUpdateInfo['send_price'] = $arrSkuList['sku_price']
-                                        * (1 + $arrSendPriceInfo['sku_price_value']/100);
-                                    $arrUpdateInfo['send_price_tax'] = $arrSkuList['sku_price_tax']
-                                        * (1 + $arrSendPriceInfo['sku_price_value']/100.0);
+                                $objOrderInfo = Model_Orm_StockoutOrder::findOne($arrOrderConds);
+                                if (empty($objOrderInfo)) {
+                                    Bd_Log::trace(sprintf("stock out order not existed,order_id[%d]", $stockOutOrderId));
                                 }
-                                if (Order_Define_Sku::SKU_PRICE_TYPE_COST
-                                    == $arrSendPriceInfo['sku_price_type']) {
-                                    $arrUpdateInfo['send_price'] = $arrSkuList['sku_price'];
-                                    $arrUpdateInfo['send_price_tax'] = $arrSkuList['sku_price_tax'];
-                                }
-                                if (Order_Define_Sku::SKU_PRICE_TYPE_STABLE
-                                    == $arrSendPriceInfo['sku_price_type']) {
-                                    $arrUpdateInfo['send_price_tax'] = intval($arrSendPriceInfo['sku_price_value']);
-                                    $intTaxRate = $arrSkuBaseInfoMap[$arrSkuList['sku_id']]['sku_tax_rate'];
-                                    $arrUpdateInfo['send_price'] = intval($arrSendPriceInfo['sku_price_value'])
-                                        / (1 + Order_Define_Sku::SKU_TAX_NUM[$intTaxRate] / 100.0);
-                                }
+                                $intBusinessOrderId = $objOrderInfo->business_form_order_id;
+                                foreach ($arrStockOrderSkuPrice['sku_list'] as $arrSkuList) {
+                                    $intSkuPriceAmount = 0;
+                                    $intSkuPriceTaxAmount = 0;
+                                    $arrSkuConditions = [
+                                        'stockout_order_id' => $stockOutOrderId,
+                                        'sku_id' => $arrSkuList['sku_id'],
+                                    ];
+                                    $arrUpdateInfo = [
+                                        'cost_price' => $arrSkuList['sku_price'],
+                                        'cost_price_tax' => $arrSkuList['sku_price_tax'],
+                                    ];
+
+                                    $arrBusinessOrderConditions = [
+                                        'business_form_order_id' => $intBusinessOrderId,
+                                        'is_delete' => Nscm_Define_Const::ENABLE,
+                                    ];
+                                    $objBusinessOrderInfo = Model_Orm_BusinessFormOrder::findOne($arrBusinessOrderConditions);
+                                    $arrBusinessSkuConditions = [
+                                        'business_form_order_id' => $intBusinessOrderId,
+                                        'sku_id' => $arrSkuList['sku_id'],
+                                    ];
+                                    $objBusinessOrderSkuInfo = Model_Orm_BusinessFormOrderSku::findOne($arrBusinessSkuConditions);
+                                    //计算配送价
+                                    $arrSendPriceInfo = $this->getSendPriceInfo($arrSkuBaseInfoMap[$arrSkuList['sku_id']]['sku_business_form_detail'], $objBusinessOrderInfo->business_form_order_type);
+                                    if (Order_Define_Sku::SKU_PRICE_TYPE_BENEFIT
+                                        == $arrSendPriceInfo['sku_price_type']) {
+                                        $arrUpdateInfo['send_price'] = $arrSkuList['sku_price']
+                                            * (1 + $arrSendPriceInfo['sku_price_value']/100);
+                                        $arrUpdateInfo['send_price_tax'] = $arrSkuList['sku_price_tax']
+                                            * (1 + $arrSendPriceInfo['sku_price_value']/100.0);
+                                    }
+                                    if (Order_Define_Sku::SKU_PRICE_TYPE_COST
+                                        == $arrSendPriceInfo['sku_price_type']) {
+                                        $arrUpdateInfo['send_price'] = $arrSkuList['sku_price'];
+                                        $arrUpdateInfo['send_price_tax'] = $arrSkuList['sku_price_tax'];
+                                    }
+                                    if (Order_Define_Sku::SKU_PRICE_TYPE_STABLE
+                                        == $arrSendPriceInfo['sku_price_type']) {
+                                        $arrUpdateInfo['send_price_tax'] = intval($arrSendPriceInfo['sku_price_value']);
+                                        $intTaxRate = $arrSkuBaseInfoMap[$arrSkuList['sku_id']]['sku_tax_rate'];
+                                        $arrUpdateInfo['send_price'] = intval($arrSendPriceInfo['sku_price_value'])
+                                            / (1 + Order_Define_Sku::SKU_TAX_NUM[$intTaxRate] / 100.0);
+                                    }
 
                                     $objSkuInfo = Model_Orm_StockoutOrderSku::findOne($arrSkuConditions);
-                                if (!empty($objSkuInfo)) {
-                                    $intStockInOrderSkuPriceAmount += $objSkuInfo->distribute_amount * $arrSkuList['sku_price'];
-                                    $intStockInOrderSkuPriceTaxAmount += $objSkuInfo->distribute_amount * $arrSkuList['sku_price_tax'];
-                                    $intSkuPriceAmount += $objSkuInfo->distribute_amount * $arrSkuList['sku_price'];
-                                    $intSkuPriceTaxAmount += $objSkuInfo->distribute_amount * $arrSkuList['sku_price_tax'];
-                                    $arrUpdateInfo['cost_total_price'] = $intSkuPriceAmount;
-                                    $arrUpdateInfo['cost_total_price_tax'] = $intSkuPriceTaxAmount;
-                                    $arrUpdateInfo['send_total_price'] = $objSkuInfo->distribute_amount * $arrUpdateInfo['send_price'];
-                                    $arrUpdateInfo['send_total_price_tax'] = $objSkuInfo->distribute_amount * $arrUpdateInfo['send_price_tax'];
-                                    $objSkuInfo->update($arrUpdateInfo);
-                                } else {
-                                    Bd_Log::trace(sprintf("stockout ourder sku not existed order_id[%d],sku_id[%d]", $stockOutOrderId, $arrSkuList['sku_id']));
-                                }
+                                    if (!empty($objSkuInfo)) {
+                                        $intStockInOrderSkuPriceAmount += $objSkuInfo->distribute_amount * $arrSkuList['sku_price'];
+                                        $intStockInOrderSkuPriceTaxAmount += $objSkuInfo->distribute_amount * $arrSkuList['sku_price_tax'];
+                                        $intSkuPriceAmount += $objSkuInfo->distribute_amount * $arrSkuList['sku_price'];
+                                        $intSkuPriceTaxAmount += $objSkuInfo->distribute_amount * $arrSkuList['sku_price_tax'];
+                                        $arrUpdateInfo['cost_total_price'] = $intSkuPriceAmount;
+                                        $arrUpdateInfo['cost_total_price_tax'] = $intSkuPriceTaxAmount;
+                                        $arrUpdateInfo['send_total_price'] = $objSkuInfo->distribute_amount * $arrUpdateInfo['send_price'];
+                                        $arrUpdateInfo['send_total_price_tax'] = $objSkuInfo->distribute_amount * $arrUpdateInfo['send_price_tax'];
+                                        $objSkuInfo->update($arrUpdateInfo);
+                                    } else {
+                                        Bd_Log::trace(sprintf("stockout ourder sku not existed order_id[%d],sku_id[%d]", $stockOutOrderId, $arrSkuList['sku_id']));
+                                    }
 
-                                //更新业态订单sku价格
+                                    //更新业态订单sku价格
 
-                                if (!empty($objBusinessOrderSkuInfo)) {
-                                    unset($arrUpdateInfo['send_price_tax']);
-                                    unset($arrUpdateInfo['cost_price_tax']);
-                                    unset($arrUpdateInfo['send_total_price_tax']);
-                                    unset($arrUpdateInfo['cost_total_price_tax']);
-                                    $objBusinessOrderSkuInfo->update($arrUpdateInfo);
-                                } else {
-                                    Bd_Log::trace(sprintf("business order sku not existed order_id[%d],sku_id[%d]", $stockOutOrderId, $arrSkuList['sku_id']));
+                                    if (!empty($objBusinessOrderSkuInfo)) {
+                                        unset($arrUpdateInfo['send_price_tax']);
+                                        unset($arrUpdateInfo['cost_price_tax']);
+                                        unset($arrUpdateInfo['send_total_price_tax']);
+                                        unset($arrUpdateInfo['cost_total_price_tax']);
+                                        $objBusinessOrderSkuInfo->update($arrUpdateInfo);
+                                    } else {
+                                        Bd_Log::trace(sprintf("business order sku not existed order_id[%d],sku_id[%d]", $stockOutOrderId, $arrSkuList['sku_id']));
+                                    }
                                 }
-                            }
-                            //更新实际总价
-                            if (!empty($objOrderInfo)) {
-                                $objOrderInfo->update([
-                                    'stockout_order_total_price' => $intStockInOrderSkuPriceAmount,
-                                ]);
-                            }
-                        });
-                        //通知报表
-                        $this->daoRedis->addStatisticsOrder($arrStockOrderSkuPrice['order_id'], Order_Statistics_Type::ACTION_UPDATE, Order_Statistics_Type::TABLE_STOCKOUT_ORDER);
-                        echo "[SUCCESS]STOCK_OUT_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
-                    } catch (Exception $e) {
-                        Bd_Log::trace(sprintf("update failed order_info[%s]", json_encode($arrStockOrderSkuPrice)));
-                        echo "[FAILED]STOCK_OUT_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
+                                //更新实际总价
+                                if (!empty($objOrderInfo)) {
+                                    $objOrderInfo->update([
+                                        'stockout_order_total_price' => $intStockInOrderSkuPriceAmount,
+                                    ]);
+                                }
+                            });
+                            //通知报表
+                            $this->daoRedis->addStatisticsOrder($arrStockOrderSkuPrice['order_id'], Order_Statistics_Type::ACTION_UPDATE, Order_Statistics_Type::TABLE_STOCKOUT_ORDER);
+                            echo "[SUCCESS]STOCK_OUT_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
+                        } catch (Exception $e) {
+                            Bd_Log::trace(sprintf("update failed order_info[%s]", json_encode($arrStockOrderSkuPrice)));
+                            echo "[FAILED]STOCK_OUT_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
+                        }
                     }
-                }
+                } while ($this->limit == count($arrStockOrderInfo));
             }
             //设置warehouse已处理
             $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 3;
