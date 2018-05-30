@@ -51,13 +51,13 @@ class Action_GetStockinSkuByOrderSku extends Order_Base_Action
                 ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
                 : strval($arrRet['sku_name']);
             $arrRoundResult['upc_unit_text'] =
-                isset(Order_Define_Sku::UPC_UNIT_MAP[intval($arrRet['upc_unit'])])
-                    ? Order_Define_Sku::UPC_UNIT_MAP[intval($arrRet['upc_unit'])]
+                isset(Nscm_Define_Sku::UPC_UNIT_MAP[intval($arrRet['upc_unit'])])
+                    ? Nscm_Define_Sku::UPC_UNIT_MAP[intval($arrRet['upc_unit'])]
                     : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['upc_min_unit'] = intval($arrRet['upc_min_unit']);
             $arrRoundResult['upc_min_unit_text'] =
-                isset(Order_Define_Sku::UPC_UNIT_MAP[intval($arrRet['upc_min_unit'])])
-                    ? Order_Define_Sku::UPC_UNIT_MAP[intval($arrRet['upc_min_unit'])]
+                isset(Nscm_Define_Sku::UPC_UNIT_MAP[intval($arrRet['upc_min_unit'])])
+                    ? Nscm_Define_Sku::UPC_UNIT_MAP[intval($arrRet['upc_min_unit'])]
                     : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['upc_unit_num'] = empty($arrRet['upc_unit_num'])
                 ? 0 : intval($arrRet['upc_unit_num']);
