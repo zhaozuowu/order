@@ -69,7 +69,7 @@ class FixStockinOrderSkuPrice
         echo "入库单处理成功,处理时长[".$endTime - $startTime."]";
         $this->fixStockOutOrder();
         $endOutTime = time();
-        echo "入库单处理成功,处理时长[".$endOutTime - $endTime."]";
+        echo "出库单处理成功,处理时长[".$endOutTime - $endTime."]";
     }
 
     private function getNeedFixWarehouseSku()
@@ -177,7 +177,7 @@ class FixStockinOrderSkuPrice
                 } while ($this->limit == count($arrStockOrderInfo));
                 $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 2;
                 $endTime = time();
-                echo "仓库处理成功[$intWarehouseId],处理时长[". $endTime - $startTime."]";
+                echo "入库单仓库处理成功[$intWarehouseId],处理时长[". $endTime - $startTime."]";
             }
             //设置warehouse已处理
             $this->setNeedFixWarehouseSku();
@@ -335,7 +335,7 @@ class FixStockinOrderSkuPrice
                 } while ($this->limit == count($arrStockOrderInfo));
                 $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 3;
                 $endTime = time();
-                echo "仓库处理成功[$intWarehouseId],处理时长[". $endTime - $startTime."]";
+                echo "出库单仓库处理成功[$intWarehouseId],处理时长[". $endTime - $startTime."]";
             }
             //设置warehouse已处理
             $this->setNeedFixWarehouseSku();
