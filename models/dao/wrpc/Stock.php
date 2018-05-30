@@ -142,7 +142,7 @@ class Dao_Wrpc_Stock
         $arrRet = $this->objWrpcService->confirmLocation($arrParams);
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
                 __METHOD__, json_encode($arrParams), json_encode($arrRet)));
-        if (0 != $arrRet['errno']) {
+        if (0 != $arrRet['errno'] && Order_Error_Code::STOCK_REPETITIVE_OPRATION != $arrRet['errno']) {
             Bd_Log::warning(sprintf("confirm place order failed params[%s] ret[%s]",
                             json_encode($arrParams), json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NOTIFY_STOCK_PLACE_ORDER_CONFIRM_FAILE);
