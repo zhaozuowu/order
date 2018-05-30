@@ -29,12 +29,15 @@ class Service_Page_Place_CreatePlaceOrderByManual implements Order_Base_Page
      */
     public function execute($arrInput)
     {
-        $this->objDsPlaceOrder->checkPlaceOrderExisted($arrInput['stockin_order_ids']);
+        if (empty($arrInput['stockin_order_ids'])) {
+            Order_BusinessError::throwException(Order_Error_Code::CREATE_PLACE_ORDER_PARAMS_ERROR);
+        }
         $arrStockinOrderIds = explode(',', $arrInput['stockin_order_ids']);
         foreach ((array)$arrStockinOrderIds as $intKey => $strStockinOrderId) {
             $arrStockinOrderIds[$intKey] = ltrim($strStockinOrderId, Nscm_Define_OrderPrefix::SIO);
         }
         $arrInput['stockin_order_ids'] = implode(',', $arrStockinOrderIds);
+        $this->objDsPlaceOrder->checkPlaceOrderExisted($arrInput['stockin_order_ids']);
         $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrInput);
         if (false == $ret) {
             Bd_Log::warning(sprintf("method[%s] send cmd[%s] params[%s] failed",

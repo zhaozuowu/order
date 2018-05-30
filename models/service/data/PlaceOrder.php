@@ -64,6 +64,10 @@ class Service_Data_PlaceOrder
             $this->getCreateParams($arrSplitOrderInfo);
         Bd_Log::trace(sprintf("method[%s] order_list[%s] sku_list[%s] map_order_list",
                         json_encode($arrOrderList), json_encode($arrSkuList), json_encode($arrMapOrderList)));
+        //自动创建的上架单进行自动上架
+        foreach ((array)$arrOrderList as $arrOrderItem) {
+        }
+        //创建上架单
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
         use ($arrOrderList, $arrSkuList, $arrMapOrderList, $arrStockinOrderIds) {
             Model_Orm_PlaceOrder::batchInsert($arrOrderList);

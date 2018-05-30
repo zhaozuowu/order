@@ -76,7 +76,7 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
     public static function getPlaceOrderList($arrConditions, $intLimit, $intOffset)
     {
         $arrCols = self::getAllColumns();
-        return self::findRows($arrCols, $arrConditions, ['id' => 'asc'], $intOffset, $intLimit);
+        return self::findRows($arrCols, $arrConditions, ['id' => 'desc'], $intOffset, $intLimit);
     }
 
     /**
