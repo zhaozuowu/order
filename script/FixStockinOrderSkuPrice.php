@@ -163,10 +163,11 @@ class FixStockinOrderSkuPrice
                         }
                         $intOffset += $this->limit;
                     }
+                    $intOffset += $this->limit;
                 } while ($this->limit == count($arrStockOrderInfo));
+                $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 2;
             }
             //设置warehouse已处理
-            $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 2;
             $this->setNeedFixWarehouseSku();
         }
         Bd_Log::trace("STOCK_IN_ORDER END".time());
@@ -180,15 +181,16 @@ class FixStockinOrderSkuPrice
             $intOffset = 0;
             $intStatus = $arrWarehouseSkusInfo['status'];
             $arrSkuIds = $arrWarehouseSkusInfo['sku_id_list'];
-            //获取商品基础信息用于计算配送价
-            $arrSkuBaseInfoMap = $this->daoSku->getSkuInfos($arrSkuIds);
 
-            $arrConds = [
-                'is_delete' => Nscm_Define_Const::ENABLE,
-                'warehouse_id' => $intWarehouseId,
-                'create_time' => ['>', strtotime('2018-04-01')],
-            ];
             if (2 == $intStatus) {
+                //获取商品基础信息用于计算配送价
+                $arrSkuBaseInfoMap = $this->daoSku->getSkuInfos($arrSkuIds);
+
+                $arrConds = [
+                    'is_delete' => Nscm_Define_Const::ENABLE,
+                    'warehouse_id' => $intWarehouseId,
+                    'create_time' => ['>', strtotime('2018-04-01')],
+                ];
                 do {
                     $arrStockOrderInfo = Model_Orm_StockoutOrder::findRows(['stockout_order_id'], $arrConds, ['id' => 'asc'], $intOffset, $this->limit);
                     if (0 == count($arrStockOrderInfo)) {
@@ -312,10 +314,11 @@ class FixStockinOrderSkuPrice
                             echo "[FAILED]STOCK_OUT_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
                         }
                     }
+                    $intOffset += $this->limit;
                 } while ($this->limit == count($arrStockOrderInfo));
+                $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 3;
             }
             //设置warehouse已处理
-            $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 3;
             $this->setNeedFixWarehouseSku();
         }
         Bd_Log::trace("STOCK_OUT_ORDER END".time());
