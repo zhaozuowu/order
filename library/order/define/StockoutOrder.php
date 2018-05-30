@@ -84,7 +84,12 @@ class Order_Define_StockoutOrder
     const STOCKOUT_ORDER_NOT_CANCEL = 2;
 
     const  APP_NWMS_ORDER_APP_ID = 6;//日志app_id
-    const  APP_NWMS_ORDER_LOG_TYPE = 6;//业务类型
+    const  APP_NWMS_ORDER_LOG_TYPE = 6;//业务类型 默认类型
+    const  APP_NWMS_ORDER_LOG_TYPE_CREATE = 1;//业务类型 创建出库单
+    const  APP_NWMS_ORDER_LOG_TYPE_DELIVERY = 2;//业务类型 完成揽收
+    const  APP_NWMS_ORDER_LOG_TYPE_SIGNUP = 3;//业务类型 完成签收
+    const  APP_NWMS_ORDER_LOG_TYPE_PICKUP = 4;//业务类型 完成拣货
+    const  APP_NWMS_ORDER_LOG_TYPE_CANCLE = 5;//业务类型 作废出库单
 
     /**
      * 允许入库的状态

@@ -279,7 +279,8 @@ class Service_Data_StockoutOrder
             $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
             $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
             $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
-            $this->addLog($userId, $userName, '完成揽收:'.$strStockoutOrderId,$operationType, $strStockoutOrderId);
+            $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE_DELIVERY;
+             $this->addLog($userId, $userName, '完成揽收:'.$strStockoutOrderId,$operationType, $strStockoutOrderId, $logType);
         });
          Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
             Order_Statistics_Type::ACTION_UPDATE,
@@ -367,7 +368,8 @@ class Service_Data_StockoutOrder
             $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_INSERT_SUCCESS;
             $userName = empty($arrInput['_session']['user_name']) ? Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME:$arrInput['_session']['user_name'];
             $operatorId =empty($arrInput['_session']['user_id']) ? Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID :intval($arrInput['_session']['user_id']);
-            $this->addLog($operatorId, $userName, '创建出库单', $operationType, $arrInput['stockout_order_id']);
+            $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE_CREATE;
+            $this->addLog($operatorId, $userName, '创建出库单', $operationType, $arrInput['stockout_order_id'],$logType);
             if (Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_OMS == $arrInput['data_source']) {
                 $intShipmentOrderId = intval($arrInput['shipment_order_id']);
                 $intStockoutOrderId = intval($arrInput['stockout_order_id']);
@@ -719,7 +721,8 @@ class Service_Data_StockoutOrder
             $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
             $userId = Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
             $userName = Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
-            $this->addLog($userId, $userName, '完成签收:'.$strStockoutOrderId,$operationType, $strStockoutOrderId);
+            $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE_SIGNUP;
+            $this->addLog($userId, $userName, '完成签收:'.$strStockoutOrderId,$operationType, $strStockoutOrderId, $logType);
             $res = [];
             if (empty($arrSignupSkus) && ($intSignupStatus != Order_Define_StockoutOrder::STOCKOUT_SIGINUP_REJECT_ALL) &&
                 $stockoutOrderInfo['stockout_order_source'] == Order_Define_BusinessFormOrder::BUSINESS_FORM_ORDER_TYPE_SHELF ) {
@@ -930,7 +933,8 @@ class Service_Data_StockoutOrder
             $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
             $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
             $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
-            $this->addLog($userId, $userName, '完成拣货:'.$strStockoutOrderId.",拣货数量:".$stockoutOrderPickupAmount, $operationType, $strStockoutOrderId);
+            $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE_PICKUP;
+            $this->addLog($userId, $userName, '完成拣货:'.$strStockoutOrderId.",拣货数量:".$stockoutOrderPickupAmount, $operationType, $strStockoutOrderId, $logType);
             $this->notifyTmsFnishPick($strStockoutOrderId,$pickupSkus);
 
         });
@@ -1011,7 +1015,8 @@ class Service_Data_StockoutOrder
             if ($stockoutOrderInfo['stockout_order_status'] >= Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS) {
                 return [];
             }
-            $this->addLog($userId, $userName, $mark, $operationType, $strStockoutOrderId);
+            $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE_CANCLE;
+            $this->addLog($userId, $userName, $mark, $operationType, $strStockoutOrderId, $logType);
             $this->notifyCancelfreezeskustock($strStockoutOrderId,$stockoutOrderInfo['warehouse_id']);
         });
         Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
@@ -1264,7 +1269,8 @@ class Service_Data_StockoutOrder
             $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
             $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
             $mark = '作废出库单:'.$mark;
-            $this->addLog($userId, $userName, $mark, $operationType, $strStockoutOrderId);
+            $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE_CANCLE;
+            $this->addLog($userId, $userName, $mark, $operationType, $strStockoutOrderId, $logType);
             //释放库存(已出库不释放库存)
             if ($stockoutOrderInfo['stockout_order_status'] >= Order_Define_StockoutOrder::STOCKOUTED_STOCKOUT_ORDER_STATUS) {
                 return [];
@@ -1327,7 +1333,7 @@ class Service_Data_StockoutOrder
         $appId = Order_Define_StockoutOrder::APP_NWMS_ORDER_APP_ID;
         $condtion = [
             'app_id' => $appId,
-            'log_type' => Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE, 'quota_idx_int_1' => $strStockoutOrderId,
+            'quota_idx_int_1' => $strStockoutOrderId,
             'page_size' => 100
         ];
         $list = Nscm_Service_OperationLog::getLogList($condtion);
@@ -1547,9 +1553,8 @@ class Service_Data_StockoutOrder
      * @param $quotaIdxInt1
      * @param $content
      */
-    private function addLog($operatorId, $userName, $content, $operationType, $quotaIdxInt1)
+    private function addLog($operatorId, $userName, $content, $operationType, $quotaIdxInt1,$logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE)
     {
-        $logType = Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE;
         $this->objRalLog->addLog($logType,$quotaIdxInt1,$operationType,$userName,$operatorId,$content);
     }
 
