@@ -584,7 +584,8 @@ class Dao_Ral_Stock
         Bd_Log::debug("getSkuPrice res:".json_encode($ret).",request data:".json_encode($req));
         $ret = empty($ret[self::API_RALER_GET_SKU_PRICE]) ? [] : $ret[self::API_RALER_GET_SKU_PRICE];
         if (empty($ret) || !empty($ret['error_no'])) {
-            Order_BusinessError::throwException(Order_Error_Code::STOCK_SKU_PRICE_GET_FAILED);
+            Bd_Log::warning(sprintf("getSkuPrice res:[%s].getSkuPrice response:[%s]",json_encode($req),json_encode($ret)));
+//            Order_BusinessError::throwException(Order_Error_Code::STOCK_SKU_PRICE_GET_FAILED);
         }
         return $ret;
     }
