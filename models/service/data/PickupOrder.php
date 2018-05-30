@@ -434,9 +434,13 @@ class Service_Data_PickupOrder
         }, $arrWarehouseIds);
         $arrInputWarehouseIds = array_unique($arrInputWarehouseIds);
         Bd_Log::debug('input warehouse id: ' . json_encode($arrInputWarehouseIds));
-        $intCount = Model_Orm_PickupOrder::getCountByWarehouseIdStatusType($arrInputWarehouseIds,
-            [Order_Define_PickupOrder::PICKUP_ORDER_STATUS_INIT]);
-        return $intCount;
+
+        $arrCond = [
+            'warehouse_id' => ['in', $arrInputWarehouseIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $list = Model_Orm_PickupOrder::find($arrCond)->groupby(['pickup_order_status'])->select(['pickup_order_status','count(pickup_order_id) as pickupOrderNum'])->rows();
+        return $list;
     }
 
     /**
