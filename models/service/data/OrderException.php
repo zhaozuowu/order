@@ -17,6 +17,9 @@ class Service_Data_OrderException
     public function writeException($arrExceptions)
     {
         $arrDb = [];
+        if (empty($arrExceptions)) {
+            return;
+        }
         foreach ($arrExceptions as $arrException) {
             $arrDb[] = [
                 'exception_id' => Nscm_Lib_IdGenerator::sequenceDateNumber(),

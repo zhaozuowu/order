@@ -23,13 +23,17 @@ class Service_Page_Place_ConfirmPlaceOrder implements Order_Base_Page
     /**
      * execute
      * @param array $arrInput
-     * @return array
+     * @return array|void
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
      */
     public function execute($arrInput)
     {
         $intPlaceOrderId = $arrInput['place_order_id'];
         $arrSkus = $arrInput['skus'];
+        $strUserName = strval($arrInput['_session']['user_name']);
+        $intUserId = intval($arrInput['_session']['user_id']);
         Bd_Log::trace(sprintf("method[%s] arrInput[%s]", __METHOD__, json_encode($arrInput)));
-        return $this->objDsPlaceOrder->confirmPlaceOrder($intPlaceOrderId, $arrSkus);
+        return $this->objDsPlaceOrder->confirmPlaceOrder($intPlaceOrderId, $arrSkus, $strUserName, $intUserId);
     }
 }

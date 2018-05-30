@@ -82,9 +82,14 @@ class Model_Orm_PickupOrderSku extends Order_Base_Orm
     {
         foreach ($arrSkuUpdateFields as $key => $arrSkuUpdateField) {
             $objPickupOrderSkuInfo = self::findOne($arrSkuUpdateCondition[$key]);
+            $arrPickupExt = json_decode($objPickupOrderSkuInfo->pickup_extra_info, true);
+            $arrPickupExt['finish_info'] = $arrSkuUpdateField['pickup_extra_info'];
             if (!empty($objPickupOrderSkuInfo)) {
                 $objPickupOrderSkuInfo->pickup_amount = $arrSkuUpdateField['pickup_amount'];
-                $objPickupOrderSkuInfo->pickup_extra_info = $arrSkuUpdateField['pickup_extra_info'];
+                $objPickupOrderSkuInfo->pickup_extra_info = json_encode($arrPickupExt);
+                $objPickupOrderSkuInfo->update();
+            } else {
+                Bd_Log::warning(sprintf("finish pickup order sku error conditions[%s]", json_encode($arrSkuUpdateCondition[$key])));
             }
         }
     }

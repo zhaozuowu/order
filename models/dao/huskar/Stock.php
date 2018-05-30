@@ -84,6 +84,11 @@ class Dao_Huskar_Stock
     const  API_HUSKAR_GET_BATCH_STORAGE_LOCATION = 'getbatchstoragelocation';
 
     /**
+     * 出库单预占sku
+     */
+    const API_RALER_RESERVE_STOCK = 'reserveStock';
+
+    /**
      * init
      */
     public function __construct()
@@ -113,12 +118,12 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $ret = $this->objApiHuskar->getData($req);
         $ret = empty($ret[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION]) ? [] : $ret[self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION];
-        if (empty($ret) || !empty($ret['errno'])) {
+        if (empty($ret) || !empty($ret['error_no'])) {
             Bd_Log::warning(sprintf(__METHOD__ . ' location_code not exist ,$arrLocationIds[%s]', json_encode($arrLocationCodes)));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST);
         }
         Bd_Log::trace('huskar call ' . self::API_HUSKAR_GET_BATCH_STORAGE_LOCATION . ' output params ' . json_encode($ret));
-        return $ret['data'];
+        return $ret['result'];
     }
 
     /**
@@ -149,13 +154,13 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $ret = $this->objApiHuskar->getData($req);
         $ret = empty($ret[self::API_RALER_STOCK_PERIOD_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_PERIOD_DETAIL];
-        if (empty($ret) || !empty($ret['errno'])) {
+        if (empty($ret) || !empty($ret['error_no'])) {
             Bd_Log::warning(__METHOD__ . ' get sku period stock failed. ret is .' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
         }
 
         Bd_Log::trace('huskar call ' . self::API_RALER_STOCK_PERIOD_DETAIL . ' output params ' . json_encode($ret));
-        return $ret['data'];
+        return $ret['result'];
     }
 
     /**
@@ -184,12 +189,12 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $ret = $this->objApiHuskar->getData($req);
         $ret = empty($ret[self::API_RALER_ADJUST_STOCKOUT]) ? [] : $ret[self::API_RALER_ADJUST_STOCKOUT];
-        if (empty($ret) || !empty($ret['errno'])) {
+        if (empty($ret) || !empty($ret['error_no'])) {
             Bd_Log::warning(__METHOD__ . ' huskar call stock decrease failed' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_STOCKOUT_FAIL);
         }
 
-        return $ret['data'];
+        return $ret['result'];
     }
     
     /*
@@ -219,12 +224,12 @@ class Dao_Huskar_Stock
         $ret = $this->objApiHuskar->getData($req);
         Bd_Log::debug('huskar get stock sku info response params: ' . json_encode($ret));
         $ret = empty($ret[self::API_RALER_STOCK_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_DETAIL];
-        if (empty($ret) || !empty($ret['errno'])) {
+        if (empty($ret) || !empty($ret['error_no'])) {
             Bd_Log::warning(__METHOD__ . ' get sku stock failed. call huskar param is empty.' . print_r($ret, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_GET_STOCK_INTO_FAIL);
         }
 
-        return $ret['data'];
+        return $ret['result'];
     }
 
     /***************************************************冻结单相关******************************************************/
@@ -244,13 +249,13 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_FROZEN_STOCK]) ? [] : $arrRet[self::API_RALER_FROZEN_STOCK];
-        if (empty($arrRet) || !empty($arrRet['errno'])) {
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
             Bd_Log::warning('call stock model frozen failed. ret: ' . json_encode($arrRet, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_FROZEN_SKU_STOCK_FAIL);
         }
         Bd_Log::trace('call stock model frozen, ret:' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /**
@@ -268,13 +273,13 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_UNFROZEN_STOCK]) ? [] : $arrRet[self::API_RALER_UNFROZEN_STOCK];
-        if (empty($arrRet) || !empty($arrRet['errno'])) {
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
             Bd_Log::warning('call stock model unfrozen failed. ret:' . print_r($arrRet, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_UNFROZEN_SKU_STOCK_FAIL);
         }
         Bd_Log::trace('call stock model unfrozen, ret:' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /**
@@ -290,13 +295,13 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_GET_STOCK_WAREHOUSE]) ? [] : $arrRet[self::API_RALER_GET_STOCK_WAREHOUSE];
-        if (empty($arrRet) || !empty($arrRet['errno'])) {
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
             Bd_Log::warning('call stock model get stock warehouse failed. ret: ' . print_r($arrRet, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_GET_STOCK_WAREHOUSE_FAIL);
         }
         Bd_Log::trace('call stock model get stock warehouse, ret: ' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /**
@@ -367,13 +372,13 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_STOCK_FROZEN_INFO]) ? [] : $arrRet[self::API_RALER_STOCK_FROZEN_INFO];
-        if (empty($arrRet) || !empty($arrRet['errno'])) {
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
             Bd_Log::warning('call stock model get stock freezable info failed. ret: ' . print_r($arrRet, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_INTO_FAIL);
         }
         Bd_Log::trace('call stock model get stock freezable info, ret: ' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /***************************************************冻结单相关******************************************************/
@@ -397,16 +402,16 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_MOVE_LOCATION]) ? [] : $arrRet[self::API_RALER_MOVE_LOCATION];
-        if (empty($arrRet) || !empty($arrRet['errno'])) {
-            if(310000 == $arrRet['errno']){
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
+            if(310000 == $arrRet['error_no']){
                 Bd_Log::warning('call stock method movelocation,idempotency need, ret: ' . json_encode($arrRet));
-                return $arrRet['data'];
+                return $arrRet['result'];
             }
-            throw new Nscm_Exception_Business($arrRet['errno'],$arrRet['errmsg'] );
+            throw new Nscm_Exception_Business($arrRet['error_no'],$arrRet['error_msg'] );
         }
         Bd_Log::trace('call stock method movelocation, ret: ' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /**
@@ -433,15 +438,44 @@ class Dao_Huskar_Stock
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_GET_REMOVABLE_STOCK]) ? [] : $arrRet[self::API_RALER_GET_REMOVABLE_STOCK];
-        if (empty($arrRet) || !empty($arrRet['errno'])) {
+        if (empty($arrRet) || !empty($arrRet['error_no'])) {
 //            Bd_Log::warning('call stock model get location stock failed. ret: ' . print_r($arrRet, true));
-            throw new Nscm_Exception_Business($arrRet['errno'],$arrRet['errmsg'] );
+            throw new Nscm_Exception_Business($arrRet['error_no'],$arrRet['error_msg'] );
 //            Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_GET_LOCATION_STOCK_FAILED);
         }
         Bd_Log::trace('call stock model get location stock, ret: ' . json_encode($arrRet));
 
-        return $arrRet['data'];
+        return $arrRet['result'];
     }
 
     /***************************************************移位单相关******************************************************/
+
+    /**
+     * 冻结库存
+     * @param $intStockoutOrderId
+     * @param $intWarehouseId
+     * @param $arrFreezeStockDetail
+     * @return mixed
+     * @throws Order_BusinessError
+     * @throws Nscm_Exception_Error
+     */
+    public function freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail)
+    {
+        $objApiRaler = new Nscm_Lib_ApiHuskar();
+        $objApiRaler->setFormat(new Order_Util_HuskarFormat());
+        $arrRequestParams['stockout_order_id'] = $intStockoutOrderId;
+        $arrRequestParams['warehouse_id'] = $intWarehouseId;
+        $arrRequestParams['freeze_details'] = $arrFreezeStockDetail;
+        $arrReq[self::API_RALER_RESERVE_STOCK]['requestParams'] = $arrRequestParams;
+
+        $arrRet = $objApiRaler->getData($arrReq);
+        Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
+            __METHOD__, json_encode($arrReq), json_encode($arrRet)));
+        if (0 != $arrRet['errno']) {
+            Bd_Log::warning(sprintf("reserve sku stock failed params[%s] ret[%s]",
+                json_encode($arrReq), json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
+        }
+        return $arrRet[self::API_RALER_RESERVE_STOCK];
+    }
 }

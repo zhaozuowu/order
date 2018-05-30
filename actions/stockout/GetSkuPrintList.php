@@ -62,7 +62,7 @@ class Action_GetSkuPrintList extends Order_Base_Action
             $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ?
                                             '' : ($arrSkuItem['sku_net'] . Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]);
             $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ?
-                                                    0 : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
+                                                    0 : Nscm_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
             $arrFormatSkuItem['pickup_amount'] = empty($arrSkuItem['pickup_amount']) ? 0 : $arrSkuItem['pickup_amount'];
             $arrFormatSkus[] = $arrFormatSkuItem;
         }

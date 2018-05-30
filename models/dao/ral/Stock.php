@@ -131,8 +131,99 @@ class Dao_Ral_Stock
     }
 
     /**
+     * @param $intStockoutOrderId
+     * @param $intWarehouseId
+     * @param $arrFreezeDetail
+     * @return array
+     * @throws Nscm_Exception_Error
+     */
+    public function freezeSkuStockWithErrNo($intStockoutOrderId, $intWarehouseId, $arrFreezeDetail) {
+        $ret = [];
+        if (empty($intStockoutOrderId) ||empty($intWarehouseId) || empty($arrFreezeDetail)) {
+            return $ret;
+        }
+        if (!empty($intStockoutOrderId)) {
+            $req[self::API_RALER_FREEZE_SKU_STOCK]['stockout_order_id'] = $intStockoutOrderId;
+        }
+        if (!empty($intWarehouseId)) {
+            $req[self::API_RALER_FREEZE_SKU_STOCK]['warehouse_id'] = $intWarehouseId;
+        }
+        if (!empty($arrFreezeDetail)) {
+            $req[self::API_RALER_FREEZE_SKU_STOCK]['freeze_details'] = $arrFreezeDetail;
+        }
+        $objApiRal = new Order_ApiRaler();
+        $objApiRal->setFormat(new Order_Util_Format());
+        Bd_Log::debug(sprintf("method[%s] req[%s]", __METHOD__, json_encode($req)));
+        $ret = $objApiRal->getData($req);
+        $ret = empty($ret[self::API_RALER_FREEZE_SKU_STOCK]) ? [] : $ret[self::API_RALER_FREEZE_SKU_STOCK];
+        Bd_Log::trace(sprintf("method[%s] ret[%s]", __METHOD__, json_encode($ret)));
+        return $ret;
+    }
+
+    /**
+     * @param Order_Struct_FreezeInfo[] $arrFreezeInfo
+     * @return array
+     * @throws Exception
+     */
+    public function batchFreezeSkuStock($arrFreezeInfo)
+    {
+        $arrRet = [];
+        $arrFrozen = [];
+        // waiting for stock support
+        // current use foreach
+        foreach ($arrFreezeInfo as $objFreezeInfo) {
+            try {
+                $arrFreezeDetail = $objFreezeInfo->freeze_detail;
+                if (!empty($arrFreezeDetail)) {
+                    $arrFreezeData = [];
+                    $arrFreezeRet = $this->freezeSkuStockWithErrNo($objFreezeInfo->stockout_order_id,
+                        $objFreezeInfo->warehouse_id, $objFreezeInfo->freeze_detail);
+                    if (!empty($arrFreezeRet['error_no'])) {
+                        switch (intval($arrFreezeRet['error_no'])) {
+                            case Order_Error_Code::STOCK_ORDER_STATUS_INVALID:
+                            case Order_Error_Code::STOCK_STOCKOUT_NO_ENOUGH_STOCKS:
+                            case Order_Error_Code::STOCK_REPETITIVE_OPRATION:
+                                Bd_Log::trace('call stock freeze not success: ' . json_encode($arrFreezeRet));
+                                $arrFreezeData = [];
+                                break;
+                            default:
+                                Bd_Log::warning('call_stock_freeze_fail: ' . json_encode($arrFreezeRet));
+                                Order_BusinessError::throwException($arrFreezeRet['error_no'], $arrFreezeRet['error_msg']);
+                        }
+                    } else {
+                        $arrFreezeData = $arrFreezeRet['result'];
+                    }
+                    $arrHashFreezeResult = array_combine(array_column($arrFreezeData, 'sku_id'), $arrFreezeData);
+                    $arrRet[$objFreezeInfo->stockout_order_id] = $arrHashFreezeResult;
+                    $arrFrozen[] = [
+                        'stockout_order_id' => $objFreezeInfo->stockout_order_id,
+                        'warehouse_id' => $objFreezeInfo->warehouse_id,
+                    ];
+                } else {
+                    $arrRet[$objFreezeInfo->stockout_order_id] = [];
+                }
+            } catch (Exception $e) {
+                // rollback
+                foreach ($arrFrozen as $item) {
+                    try {
+                        $this->cancelfreezeskustock($item['stockout_order_id'], $item['warehouse_id']);
+                    } catch (Exception $ex) {
+                        Bd_Log::warning(sprintf(__METHOD__ . 'error! error code[%d], error msg[%s]', $ex->getCode(),
+                            $e->getMessage()));
+                        Bd_Log::fatal(sprintf('freeze_and_cancel_freeze_all_failed, current freeze info[%s],' .
+                            'current unfreeze info[%s], now must manual cancel freeze!',
+                            json_encode($objFreezeInfo->toArray()), json_encode($item)));
+                    }
+                }
+                throw $e;
+            }
+        }
+        return $arrRet;
+    }
+
+    /**
      * unfreeze sku stock
-     * @param array $intStockoutOrderId
+     * @param  int  $intStockoutOrderId
      * @param array $intWarehouseId
      * @param array $arrStockoutDetail
      * @return array

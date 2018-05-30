@@ -45,6 +45,16 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
 				'order_amount' => 'int|required|min[1]',
 			],
 		],
+        'skus_event' => [
+            'validate' => 'json|decode',
+            'type' => 'array',
+            'params' => [
+                'sku_id' => 'int',
+                'order_amount' => 'int',
+                'event_type'   => 'int'
+            ],
+
+        ],
 	];
 
 	/**
@@ -75,6 +85,8 @@ class Action_CreateBusinessFormOrder extends Order_Base_ApiAction {
                 case Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_CREATE_ERROR:
                     Bd_Log::trace('nwms business form order create error');
                     break;
+                case Order_Error_Code::STOCK_FREEZE_ERROR:
+                    Bd_Log::warning('nwms stock freeze error');
                 default:
                     break;
             }

@@ -64,6 +64,13 @@ class Service_Data_PlaceOrder
             $this->getCreateParams($arrSplitOrderInfo);
         Bd_Log::trace(sprintf("method[%s] order_list[%s] sku_list[%s] map_order_list",
                         json_encode($arrOrderList), json_encode($arrSkuList), json_encode($arrMapOrderList)));
+        //自动创建的上架单进行自动上架
+        foreach ((array)$arrOrderList as $arrOrderItem) {
+            $intPlaceOrderId = $arrOrderItem['place_order_id'];
+            $arrSkus = $arrOrderItem['skus'];
+            $this->confirmPlaceOrder($intPlaceOrderId,$arrSkus, '', 0);
+        }
+        //创建上架单
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
         use ($arrOrderList, $arrSkuList, $arrMapOrderList, $arrStockinOrderIds) {
             Model_Orm_PlaceOrder::batchInsert($arrOrderList);
@@ -95,8 +102,8 @@ class Service_Data_PlaceOrder
         if (1 == count($arrStockinOrderIds)) {
             $arrStockinSourceInfo = empty($arrStockinInfoDb['source_info']) ?
                 [] : json_decode($arrStockinInfoDb['source_info'], true);
-            $arrStockinInfo['vendor_id'] = $arrStockinSourceInfo['vendor_id'];
-            $arrStockinInfo['vendor_name'] = $arrStockinSourceInfo['vendor_name'];
+            $arrStockinInfo['vendor_id'] = intval($arrStockinSourceInfo['vendor_id']);
+            $arrStockinInfo['vendor_name'] = strval($arrStockinSourceInfo['vendor_name']);
             $arrStockinInfo['warehouse_id'] = $arrStockinInfoDb['warehouse_id'];
             $arrStockinInfo['warehouse_name'] = $arrStockinInfoDb['warehouse_name'];
             $arrStockinInfo['stockin_order_type'] = $arrStockinInfoDb['stockin_order_type'];
@@ -181,10 +188,13 @@ class Service_Data_PlaceOrder
         $arrOrderInfo['warehouse_name'] = strval($arrInput['warehouse_name']);
         $arrOrderInfo['stockin_order_type'] = intval($arrInput['stockin_order_type']);
         $arrOrderInfo['place_order_status'] = Order_Define_PlaceOrder::STATUS_WILL_PLACE;
+        $arrOrderInfo['is_auto'] = Order_Define_PlaceOrder::PLACE_ORDER_NOT_AUTO;
         $intLocationTag = $this->getWarehouseLocationTag($arrInput['warehouse_id']);
+        Bd_Log::trace(sprintf("method[%s] location_tag[%s]", __METHOD__, strval($intLocationTag)));
         if (Order_Define_Warehouse::STORAGE_LOCATION_TAG_DISABLE
             == $intLocationTag) {
             $arrOrderInfo['place_order_status'] = Order_Define_PlaceOrder::STATUS_PLACED;
+            $arrOrderInfo['is_auto'] = Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO;
         }
         //非良品订单信息
         if (!empty($arrInput['bad_skus'])) {
@@ -362,8 +372,12 @@ class Service_Data_PlaceOrder
     protected function getListConditions($arrInput)
     {
         $arrConditions = [];
+        $arrConditions['is_auto'] = Order_Define_PlaceOrder::PLACE_ORDER_NOT_AUTO;
         if (!empty($arrInput['place_order_status'])) {
             $arrConditions['place_order_status'] = intval($arrInput['place_order_status']);
+        }
+        if (!empty($arrInput['warehouse_ids'])) {
+            $arrConditions['warehouse_id'] = ['in', $arrInput['warehouse_ids']];
         }
         if (!empty($arrInput['source_order_id'])) {
             $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::
@@ -439,13 +453,16 @@ class Service_Data_PlaceOrder
     }
 
     /**
-     * 确认上架单
+     * confirm place order
      * @param $intPlaceOrderId
      * @param $arrPlacedSkus
+     * @param $strUserName
+     * @param $intUserId
      * @return array
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function confirmPlaceOrder($intPlaceOrderId, $arrPlacedSkus)
+    public function confirmPlaceOrder($intPlaceOrderId, $arrPlacedSkus, $strUserName, $intUserId)
     {
         if (empty($intPlaceOrderId) || empty($arrPlacedSkus)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
@@ -458,7 +475,8 @@ class Service_Data_PlaceOrder
         $intIsDefective = $arrPlaceOrderInfo['is_defective'];
         $arrPlaceOrderSkus = $this->appendPlaceOrderSkuInfo($arrPlacedSkus, $intPlaceOrderId);
         $this->objDaoWprcStock->confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrPlaceOrderSkus);
-        $this->updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus);
+        $this->updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus, $strUserName, $intUserId);
+        return [];
     }
 
     /**
@@ -467,7 +485,7 @@ class Service_Data_PlaceOrder
      * @param $arrPlacedSkus
      * @return array
      */
-    protected function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus)
+    protected function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus, $strUserName, $intUserId)
     {
         if (empty($intPlaceOrderId) || empty($arrPlacedSkus)) {
             return [];
@@ -481,16 +499,54 @@ class Service_Data_PlaceOrder
             }
             $arrMapPlacedSkus[$intSkuId . '#' . $intExpireDate][] = $arrPlacedSkuItem;
         }
-        Model_Orm_PlaceOrder::getConnection()->transaction(function () use ($intPlaceOrderId, $arrMapPlacedSkus) {
+        Model_Orm_PlaceOrder::getConnection()->transaction(function ()
+        use ($intPlaceOrderId, $arrMapPlacedSkus, $strUserName, $intUserId) {
             $boolFlag = Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrMapPlacedSkus);
             if (!$boolFlag) {
                 Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
             }
-            $boolFlag = Model_Orm_PlaceOrder::placeOrder($intPlaceOrderId);
+            $boolFlag = Model_Orm_PlaceOrder::placeOrder($intPlaceOrderId, $strUserName, $intUserId);
             if (!$boolFlag) {
                 Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
             }
         });
+    }
+
+    /**
+     * 预约入库是否生成上架单
+     * @param $intStockinOrderId
+     * @return bool
+     */
+    protected function isPlacedOrderForReserve($intStockinOrderId) {
+        $arrStockinOrderIds = [
+            'stockin_order_id' => $intStockinOrderId,
+        ];
+        $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
+        $intPlaceOrderId = $arrPlaceOrderIds[0];
+        $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
+        if (empty($arrPlaceOrderInfo)) {
+            return Order_Define_StockinOrder::STOCKIN_NOT_PLACED;
+        }
+        if (!empty($arrPlaceOrderInfo) && Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO == $arrPlaceOrderInfo['is_auto']) {
+            return Order_Define_StockinOrder::STOCKIN_NOT_PLACED;
+        }
+        return Order_Define_StockinOrder::STOCKIN_IS_PLACED;
+    }
+
+    /**
+     * 预约入库单加入is_placed_order字段
+     * @param $arrStockinOrderList
+     * @return mixed
+     */
+    public function appendIsPlacedOrderToStockinOrderList($arrStockinOrderList) {
+        if (empty($arrStockinOrderList)) {
+            return $arrStockinOrderList;
+        }
+        foreach ((array)$arrStockinOrderList as $intKey => $arrStockinOrderInfo) {
+            $intStockinOrderId = $arrStockinOrderInfo['stockin_order_id'];
+            $arrStockinOrderList[$intKey]['is_placed_order'] = $this->isPlacedOrderForReserve($intStockinOrderId);
+        }
+        return $arrStockinOrderList;
     }
 
     /**

@@ -36,7 +36,7 @@ class Service_Page_Pickup_GetPickupOrderList
             $arrInput['page_size'],
             $arrInput['page_num'],
             $arrInput['pickup_order_status'],
-            $arrInput['stockout_order_id'],
+            Order_Util::trimStockoutOrderIdPrefix($arrInput['stockout_order_id']),
             $arrInput['pickup_order_id'],
             $arrInput['pickup_order_is_print'],
             $arrInput['update_start_time'],

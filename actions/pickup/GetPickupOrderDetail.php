@@ -47,17 +47,20 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
                     'sku_net_unit' => $arrSku['sku_net_unit'],
                     'sku_net_unit_text' => Nscm_Define_Sku::SKU_NET_UNIT_TEXT[$arrSku['sku_net_unit']],
                     'upc_unit' => $arrSku['upc_unit'],
-                    'upc_unit_text' => Nscm_Define_Sku::UPC_UNIT_MAP[$arrSku['upc_unit_text']],
+                    'upc_unit_text' => Nscm_Define_Sku::UPC_UNIT_MAP[$arrSku['upc_unit']],
                     'upc_unit_num' => $arrSku['upc_unit_num'],
+                    'upc_unit_num_text' => '1*' . $arrSku['upc_unit_num'],
                     'order_amount' => $arrSku['order_amount'],
                     'distribute_amount' => $arrSku['distribute_amount'],
                     'pickup_amount' => $arrSku['pickup_amount'],
-                    'pickup_extra_info' => json_decode($arrSku['pickup_extra_info'], true),
+                    'recommend_pickup_extra_info' => $this->formatRecommendPickupExtraInfo($arrSku['pickup_extra_info'],$data['pickup_sku_effect_type_list'],$arrSku['sku_id']),
+                    'pickup_extra_info' => $this->formatRealityPickupExtraInfo($arrSku['pickup_extra_info']),
                 ];
             }
         }
 
         $arrRet['pickup_order_id'] = $data['pickup_order_id'];
+        $arrRet['remark'] = $data['remark'];
         $arrRet['pickup_order_type'] = $data['pickup_order_type'];
         $arrRet['pickup_order_type_text'] = Order_Define_PickupOrder::PICKUP_ORDER_TYPE_MAP[$data['pickup_order_type']];
         $arrRet['pickup_order_status'] = $data['pickup_order_status'];
@@ -72,8 +75,31 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
         $arrRet['create_time'] = $data['create_time'];
         $arrRet['update_operator'] = $data['update_operator'];
         $arrRet['update_time'] = $data['update_time'];
+        $arrRet['warehouse_name'] = $data['warehouse_name'];
         $arrRet['pickup_skus'] = $arrSkus;
 
         return $arrRet;
+    }
+
+    private function formatRecommendPickupExtraInfo($pickupExtraInfo,$arrSkusInfo,$intSkuId)
+    {
+        $intSkuEffectType = isset($arrSkusInfo[$intSkuId]) ? $arrSkusInfo[$intSkuId]:0;
+        $pickupExtraInfo =  json_decode($pickupExtraInfo, true);
+        $list =  empty($pickupExtraInfo['create_info']) ? []:$pickupExtraInfo['create_info'];
+        foreach ($list as $key=>$item) {
+            $list[$key]['expire_time'] = 0;
+            if (Nscm_Define_Sku::SKU_EFFECT_FROM == $intSkuEffectType) {
+
+                $list[$key]['expire_time'] = $item['production_time'];
+            } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
+                $list[$key]['expire_time'] = $item['expiration_time'];
+            }
+        }
+        return $list;
+    }
+    private function formatRealityPickupExtraInfo($pickupExtraInfo)
+    {
+        $pickupExtraInfo =  json_decode($pickupExtraInfo, true);
+        return empty($pickupExtraInfo['finish_info']) ? []:$pickupExtraInfo['finish_info'];
     }
 }

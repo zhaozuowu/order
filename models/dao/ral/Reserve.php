@@ -22,7 +22,7 @@ class Dao_Ral_Reserve
         ];
         Bd_Log::trace('send wmq cmd, req: ' . json_encode($arrInput));
         $boolRet = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_CREATE_RESERVE_ORDER, $arrInput,
-            strval($intPurchaseOrderId), Order_Define_Cmd::NWMS_ORDER_TOPIC);
+            strval($intPurchaseOrderId));
         if (false == $boolRet) {
             Bd_Log::warning('write wmq failed!');
             Order_BusinessError::throwException(Order_Error_Code::RESERVE_STOCKIN_SEND_WMQ_FAIL);

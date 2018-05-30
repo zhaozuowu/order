@@ -62,6 +62,7 @@ class Action_GetPickupOrderList extends Order_Base_Action
                 'pickup_order_status' => $item['pickup_order_status'],
                 'stockout_order_amount' => $item['stockout_order_amount'],
                 'sku_kind_amount' => $item['sku_kind_amount'],
+                'warehouse_name' => $item['warehouse_name'],
                 'sku_pickup_amount' => $item['sku_pickup_amount'],
                 'sku_distribute_amount' => $item['sku_distribute_amount'],
                 'creator' => $item['creator'],

@@ -70,7 +70,7 @@ class Action_GetStockinStockoutOrderSkuList extends Order_Base_Action
                 : intval($arrListItem['upc_unit']);
             $arrRoundResult['upc_unit_text'] =
                 empty($arrListItem['upc_unit']) ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
-                    : Order_Define_Sku::UPC_UNIT_MAP[$arrListItem['upc_unit']]
+                    : Nscm_Define_Sku::UPC_UNIT_MAP[$arrListItem['upc_unit']]
                     ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? 0
                 : intval($arrListItem['upc_unit_num']);
@@ -89,8 +89,7 @@ class Action_GetStockinStockoutOrderSkuList extends Order_Base_Action
             $arrRoundResult['stockout_order_sku_amount'] = empty($arrListItem['stockout_order_sku_amount']) ? 0
                 : intval($arrListItem['stockout_order_sku_amount']);
             // 数据库存放的stockin_order_sku_extra_info是json编码的Unix时间戳，转为文本形式时间给FE
-            $arrSkuExtInf = empty($arrListItem['stockin_order_sku_extra_info']) ? ''
-                : json_decode($arrListItem['stockin_order_sku_extra_info'], true);
+            $arrSkuExtInf = json_decode($arrListItem['stockin_order_sku_extra_info'], true) ?? [];
 
             $arrSkuExtInfRet = [];
             foreach ($arrSkuExtInf as $item => $value) {

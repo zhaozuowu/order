@@ -42,6 +42,7 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
         $arrConditions = [
             'place_order_id' => $intPlaceOrderId,
             'is_delete' => Order_Define_Const::NOT_DELETE,
+            'is_auto' => Order_Define_PlaceOrder::PLACE_ORDER_NOT_AUTO,
         ];
         $arrCols = self::getAllColumns();
         return self::findRow($arrCols, $arrConditions);
@@ -75,15 +76,17 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
     public static function getPlaceOrderList($arrConditions, $intLimit, $intOffset)
     {
         $arrCols = self::getAllColumns();
-        return self::findRows($arrCols, $arrConditions, ['id' => 'asc'], $intOffset, $intLimit);
+        return self::findRows($arrCols, $arrConditions, ['id' => 'desc'], $intOffset, $intLimit);
     }
 
     /**
-     * 上架单上架
+     * 确认上架单
      * @param $intPlaceOrderId
+     * @param $strUserName
+     * @param $intUserId
      * @return bool
      */
-    public static function placeOrder($intPlaceOrderId)
+    public static function placeOrder($intPlaceOrderId, $strUserName, $intUserId)
     {
         if (empty($intPlaceOrderId)) {
             return false;
@@ -94,6 +97,9 @@ class Model_Orm_PlaceOrder extends Order_Base_Orm
         ];
         $objPlaceOrderInfo = self::findOne($arrConditions);
         $objPlaceOrderInfo->place_order_status = Order_Define_PlaceOrder::STATUS_PLACED;
+        $objPlaceOrderInfo->confirm_user_id = $intUserId;
+        $objPlaceOrderInfo->confirm_user_name = $strUserName;
+        $objPlaceOrderInfo->confirm_time = time();
         $objPlaceOrderInfo->update();
         return true;
     }

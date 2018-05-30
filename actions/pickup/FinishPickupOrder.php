@@ -15,7 +15,16 @@ class Action_FinishPickupOrder extends Order_Base_Action
             'params' => [
                 'sku_id' => 'int|required',
                 'pickup_amount' => 'int|required',
-                'pick_infos' => 'arr',
+                'pick_infos' => [
+                    'validate' => 'arr|required|decode',
+                    'type' => 'array',
+                    'params' => [
+                        'expiration_time' => 'int|required',
+                        'pick_amount' => 'int|required',
+                        'sug_location_code' => 'str',
+                        'location_code' => 'str',
+                    ],
+                ],
             ],
         ],
     ];

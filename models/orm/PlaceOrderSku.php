@@ -64,9 +64,11 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
     }
 
     /**
-     * 更新实际上架信息
+     * 确认上架单
      * @param $intPlaceOrderId
      * @param $arrPlacedSkus
+     * @param $strUserName
+     * @param $intUserId
      * @return bool
      */
     public static function updatePlaceOrderActualInfo($intPlaceOrderId, $arrPlacedSkus)
@@ -81,12 +83,14 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
         foreach ((array)$arrPlacedSkus as $strKey => $arrPlacedSkuItem) {
             $arrKey = explode('#', $strKey);
             $intSkuId = $arrKey[0];
+            $intExpireDate = $arrKey[1];
             if (empty($intSkuId)) {
                 continue;
             }
             $arrConditions = [
                 'place_order_id' => $intPlaceOrderId,
                 'sku_id' => $intSkuId,
+                'expire_date' => $intExpireDate,
             ];
             $objPlaceOrder = self::findOne($arrConditions);
             if (empty($objPlaceOrder)) {

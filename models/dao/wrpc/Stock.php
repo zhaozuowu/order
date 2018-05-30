@@ -18,6 +18,11 @@ class Dao_Wrpc_Stock
     protected $objDaoRal;
 
     /**
+     * 冻结sku
+     */
+    const API_RALER_RESERVE_STOCK = 'reserveStock';
+
+    /**
      * init
      * @param string $strServiceName 请求服务的service
      */
@@ -122,7 +127,9 @@ class Dao_Wrpc_Stock
      * 确认上架单
      * @param $intPlaceOrderId
      * @param $intWarehouseId
+     * @param $intIsDefective
      * @param $arrSkusPlace
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function confirmLocation($intPlaceOrderId, $intWarehouseId, $intIsDefective, $arrSkusPlace)
@@ -135,7 +142,7 @@ class Dao_Wrpc_Stock
         $arrRet = $this->objWrpcService->confirmLocation($arrParams);
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
                 __METHOD__, json_encode($arrParams), json_encode($arrRet)));
-        if (0 != $arrRet['errno']) {
+        if (0 != $arrRet['errno'] && Order_Error_Code::STOCK_REPETITIVE_OPRATION != $arrRet['errno']) {
             Bd_Log::warning(sprintf("confirm place order failed params[%s] ret[%s]",
                             json_encode($arrParams), json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NOTIFY_STOCK_PLACE_ORDER_CONFIRM_FAILE);
@@ -224,22 +231,26 @@ class Dao_Wrpc_Stock
      * @param $arrFreezeStockDetail
      * @return mixed
      * @throws Order_BusinessError
+     * @throws Nscm_Exception_Error
      */
     public function freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail)
     {
+        $objApiRaler = new Nscm_Lib_ApiHuskar();
+        $objApiRaler->setFormat(new Order_Util_HuskarFormat());
         $arrRequestParams['stockout_order_id'] = $intStockoutOrderId;
         $arrRequestParams['warehouse_id'] = $intWarehouseId;
         $arrRequestParams['freeze_details'] = $arrFreezeStockDetail;
-        $arrParams['requestParams'] = $arrRequestParams;
-        $arrRet = $this->objWrpcService->reserveStock($arrParams);
+        $arrReq[self::API_RALER_RESERVE_STOCK]['requestParams'] = $arrRequestParams;
+
+        $arrRet = $objApiRaler->getData($arrReq);
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
-            __METHOD__, json_encode($arrParams), json_encode($arrRet)));
+            __METHOD__, json_encode($arrReq), json_encode($arrRet)));
         if (0 != $arrRet['errno']) {
             Bd_Log::warning(sprintf("reserve sku stock failed params[%s] ret[%s]",
-                json_encode($arrParams), json_encode($arrRet)));
+                json_encode($arrReq), json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
         }
-        return $arrRet['data'];
+        return $arrRet;
     }
 
     /**
@@ -289,7 +300,7 @@ class Dao_Wrpc_Stock
         if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s]",
                 __METHOD__, json_encode($arrRet)));
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_GET_RECOMEND_STOCKLOC_FAIL);
+           return [];
         }
         return $arrRet['data'];
     }
