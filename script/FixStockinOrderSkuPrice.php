@@ -154,7 +154,10 @@ class FixStockinOrderSkuPrice
                         });
                         //通知报表
                         $this->daoRedis->addStatisticsOrder($arrStockOrderSkuPrice['order_id'], Order_Statistics_Type::ACTION_UPDATE, Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT);
+                        echo "[SUCCESS]STOCK_IN_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
                     } catch (Exception $e) {
+                        echo "[FAILED]STOCK_IN_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
+
                         Bd_Log::trace(sprintf("update failed order_info[%s]", json_encode($arrStockOrderSkuPrice)));
                     }
                 }
@@ -299,8 +302,10 @@ class FixStockinOrderSkuPrice
                         });
                         //通知报表
                         $this->daoRedis->addStatisticsOrder($arrStockOrderSkuPrice['order_id'], Order_Statistics_Type::ACTION_UPDATE, Order_Statistics_Type::TABLE_STOCKOUT_ORDER);
+                        echo "[SUCCESS]STOCK_OUT_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
                     } catch (Exception $e) {
                         Bd_Log::trace(sprintf("update failed order_info[%s]", json_encode($arrStockOrderSkuPrice)));
+                        echo "[FAILED]STOCK_OUT_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
                     }
                 }
             }
