@@ -63,8 +63,13 @@ class FixStockinOrderSkuPrice
         $this->daoSku = new Dao_Ral_Sku();
         $this->daoRedis = new Dao_Redis_StatisticsDemotion();
         $this->getNeedFixWarehouseSku();
+        $startTime = time();
         $this->fixStockinOrder();
+        $endTime = time();
+        echo "入库单处理成功,处理时长[".$endTime - $startTime."]";
         $this->fixStockOutOrder();
+        $endOutTime = time();
+        echo "入库单处理成功,处理时长[".$endOutTime - $endTime."]";
     }
 
     private function getNeedFixWarehouseSku()
@@ -90,6 +95,7 @@ class FixStockinOrderSkuPrice
                 'create_time' => ['>' , strtotime('2018-04-01')],
             ];
             if (1 == $intStatus) {
+                $startTime = time();
                 do {
                     $arrStockOrderInfo = Model_Orm_StockinOrder::findRows(['stockin_order_id'], $arrConds, ['id' => 'asc'], $intOffset, $this->limit);
                    /* if (0 == count($arrStockOrderInfo)) {
@@ -170,6 +176,8 @@ class FixStockinOrderSkuPrice
                     $intOffset += $this->limit;
                 } while ($this->limit == count($arrStockOrderInfo));
                 $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 2;
+                $endTime = time();
+                echo "仓库处理成功[$intWarehouseId],处理时长[". $endTime - $startTime."]";
             }
             //设置warehouse已处理
             $this->setNeedFixWarehouseSku();
@@ -187,6 +195,7 @@ class FixStockinOrderSkuPrice
             $arrSkuIds = $arrWarehouseSkusInfo['sku_id_list'];
 
             if (2 == $intStatus) {
+                $startTime = time();
                 //获取商品基础信息用于计算配送价
                 $arrSkuBaseInfoMap = $this->daoSku->getSkuInfos($arrSkuIds);
 
@@ -325,6 +334,8 @@ class FixStockinOrderSkuPrice
                     $intOffset += $this->limit;
                 } while ($this->limit == count($arrStockOrderInfo));
                 $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 3;
+                $endTime = time();
+                echo "仓库处理成功[$intWarehouseId],处理时长[". $endTime - $startTime."]";
             }
             //设置warehouse已处理
             $this->setNeedFixWarehouseSku();
