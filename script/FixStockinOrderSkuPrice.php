@@ -99,6 +99,10 @@ class FixStockinOrderSkuPrice
                     $intOrderType = Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN;
                     //通过单号获取价格
                     $arrStockOrdersSkuPrice = $this->daoStock->getBatchSkuPrice($arrStockOrderIds, $intOrderType);
+                    //diff
+                    $arrStockOrdersSkuPriceSkuIds = array_column($arrStockOrdersSkuPrice, 'order_id');
+                    $arrSkuIdsDiff = array_diff($arrStockOrderIds, $arrStockOrdersSkuPriceSkuIds);
+                    echo "[DIFF]STOCK_IN_ORDER_IDS:".implode(',', $arrSkuIdsDiff) . PHP_EOL;
 //                $arrStockOrdersSkuPrice = [
 //                        [
 //                                "order_id" => $arrStockOrderIds[0],
@@ -213,6 +217,10 @@ class FixStockinOrderSkuPrice
 //                    ]
 //                ];
                     Bd_Log::trace("STOCK_OUT_ORDER_OFFSET". $intOffset);
+                    //diff
+                    $arrStockOrdersSkuPriceSkuIds = array_column($arrStockOrdersSkuPrice, 'order_id');
+                    $arrSkuIdsDiff = array_diff($arrStockOrderIds, $arrStockOrdersSkuPriceSkuIds);
+                    echo "[DIFF]STOCK_OUT_ORDER_IDS:".implode(',', $arrSkuIdsDiff) . PHP_EOL;
                     foreach ($arrStockOrdersSkuPrice as $arrStockOrderSkuPrice) {
                         try {
                             Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($arrStockOrderSkuPrice, $arrSkuBaseInfoMap) {
