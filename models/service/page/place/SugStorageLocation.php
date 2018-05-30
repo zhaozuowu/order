@@ -28,9 +28,8 @@ class Service_Page_Place_SugStorageLocation implements Order_Base_Page
     public function execute($arrInput)
     {
         $intWarehouseId = $arrInput['warehouse_id'];
-        $intIsDefault = $arrInput['is_default'];
         $strLocationCode = $arrInput['location_code'];
-        $intIsDefaultTemporary = $arrInput['is_default_temporary'];
-        return $this->objDsPlaceOrder->sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefault, $intIsDefaultTemporary);
+        $intIsDefaultStore = $arrInput['is_default_store'];
+        return $this->objDsPlaceOrder->sugStorageLocation($intWarehouseId, $strLocationCode, $intIsDefaultStore);
     }
 }
