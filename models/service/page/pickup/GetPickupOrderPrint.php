@@ -29,7 +29,8 @@ class Service_Page_Pickup_GetPickupOrderPrint
      */
     public function execute($arrInput)
     {
-        $ret = $this->objPickupOrder->getPickupOrderByPickupOrderId($arrInput['pickup_order_id']);
+        $ret = $this->objPickupOrder->getPickupOrderPrintByPickupOrderIds($arrInput['pickup_order_id']);
+        //$ret = $this->objPickupOrder->getPickupOrderByPickupOrderId($arrInput['pickup_order_id']);
         return $ret;
     }
 }

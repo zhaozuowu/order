@@ -13,7 +13,7 @@ class Action_GetPickupOrderPrint extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'pickup_order_id' => 'int|required',
+        'pickup_order_id' => 'str|required',
     ];
 
     /**
@@ -38,6 +38,7 @@ class Action_GetPickupOrderPrint extends Order_Base_Action
      */
     public function format($data)
     {
+        return $data;
         $arrRet = [];
         if (empty($data)) {
             return $arrRet;
