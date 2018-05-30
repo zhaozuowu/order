@@ -91,7 +91,7 @@ class FixStockinOrderSkuPrice
             $arrConds = [
                 'is_delete' => Nscm_Define_Const::ENABLE,
                 'warehouse_id' => $intWarehouseId,
-                'data_source' => Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_FROM_SYSTEM,
+//                'data_source' => Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_FROM_SYSTEM,
                 'create_time' => ['>' , strtotime('2018-04-01')],
             ];
             if (1 == $intStatus) {
