@@ -1679,7 +1679,7 @@ class Service_Data_Stockin_StockinOrder
         if (empty($objSkuInfo)) {
             return [];
         }
-        $objSkuInfo->toArray();
+        return $objSkuInfo->toArray();
     }
 
     /**
