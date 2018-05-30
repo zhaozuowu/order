@@ -486,7 +486,8 @@ class Service_Data_Reserve_ReserveOrder
         $intSkuFromCountry = intval($arrOrderSkuInfo['sku_from_country']);
         $arrRet = $arrOrderSkuInfo;
         $arrRet['abandon_time'] = Nscm_Service_Stock::calculateProhibitStockinDate($intSkuEffectDay, $intSkuFromCountry);
-        $arrRet['product_expire_time'] = Nscm_Service_Stock::calculateShelfLifeTime($intSkuEffectType, $intSkuEffectDay);
+        $arrRet['product_expire_time'] =
+            Nscm_Service_Stock::calculateProductionTimeByNowEffectDay($intSkuEffectType, $intSkuEffectDay);
 
         return $arrRet;
     }
