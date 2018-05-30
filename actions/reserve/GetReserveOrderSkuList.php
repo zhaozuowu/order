@@ -70,7 +70,7 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
             $arrRoundResult['upc_unit'] = empty($arrListItem['upc_unit']) ? 0
                 : intval($arrListItem['upc_unit']);
             $arrRoundResult['upc_unit_text'] =
-                Order_Define_Sku::UPC_UNIT_MAP[intval($arrListItem['upc_unit'])]
+                Nscm_Define_Sku::UPC_UNIT_MAP[intval($arrListItem['upc_unit'])]
                 ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult['upc_unit_num'] = empty($arrListItem['upc_unit_num']) ? 0
                 : intval($arrListItem['upc_unit_num']);
@@ -100,14 +100,10 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
             $arrRoundResult['sku_main_image'] = empty($arrListItem['sku_main_image'])
                 ? Order_Define_Sku::SKU_IMAGE_DEFAULT_URL
                 : strval($arrListItem['sku_main_image']);
-            $arrRoundResult['upc_min_unit'] = empty($arrListItem['upc_min_unit']) ? 0
-                : intval($arrListItem['upc_min_unit']);
-            $arrRoundResult['upc_min_unit_text'] = empty($arrListItem['upc_min_unit'])
-                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
-                : (isset(Order_Define_Sku::UPC_UNIT_MAP[intval($arrListItem['upc_min_unit'])])
-                    ? Order_Define_Sku::UPC_UNIT_MAP[intval($arrListItem['upc_min_unit'])]
-                    : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR);
-
+            $arrRoundResult['upc_min_unit'] = intval($arrListItem['upc_min_unit']);
+            $arrRoundResult['upc_min_unit_text'] =
+                Nscm_Define_Sku::UPC_UNIT_MAP[$arrListItem['upc_min_unit']]
+                ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult['list'][] = $arrRoundResult;
         }

@@ -83,8 +83,8 @@ class Action_GetOrderPrintList extends Order_Base_Action
             $arrFormatSkuItem['distribute_amount'] = empty($arrSkuItem['distribute_amount']) ? 0 : $arrSkuItem['distribute_amount'];
             $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ?
                                             '' : ($arrSkuItem['sku_net'] . Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]);
-            $arrFormatSkuItem['upc_unit_text'] = empty(Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']]) ?
-                                                    0 : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
+            $arrFormatSkuItem['upc_unit_text'] = empty(Nscm_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']]) ?
+                                                    0 : Nscm_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
             if ($intStatus >= Order_Define_StockoutOrder::STAY_RECEIVED_STOCKOUT_ORDER_STATUS) {
                 $arrFormatSkuItem['pickup_amount'] = empty($arrSkuItem['pickup_amount']) ? 0 : $arrSkuItem['pickup_amount'];
             } else {

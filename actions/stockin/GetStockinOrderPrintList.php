@@ -47,6 +47,9 @@ class Action_GetStockinOrderPrintList extends Order_Base_Action
             $arrFormatRetItem['vendor_id'] = empty($arrRetItem['vendor_id']) ? 0 : $arrRetItem['vendor_id'];
             $arrFormatRetItem['vendor_name'] = empty($arrRetItem['vendor_name']) ? '' : $arrRetItem['vendor_name'];
             $arrFormatRetItem['customer_id'] = isset($arrRetItem['customer_id']) ? $arrRetItem['customer_id']:0;
+            $arrFormatRetItem['customer_contactor'] = isset($arrRetItem['customer_contactor']) ? $arrRetItem['customer_contactor']:'';
+            $arrFormatRetItem['customer_contact'] = isset($arrRetItem['customer_contact']) ? $arrRetItem['customer_contact']:'';
+            $arrFormatRetItem['customer_address'] = isset($arrRetItem['customer_address']) ? $arrRetItem['customer_address']:'';
             $arrFormatRetItem['customer_name'] = isset($arrRetItem['customer_name']) ? $arrRetItem['customer_name']:'';
             $arrFormatRetItem['warehouse_name'] = empty($arrRetItem['warehouse_name']) ? '' : $arrRetItem['warehouse_name'];
             $arrFormatRetItem['warehouse_contact'] = empty($arrRetItem['warehouse_contact']) ? '' : $arrRetItem['warehouse_contact'];
@@ -78,7 +81,7 @@ class Action_GetStockinOrderPrintList extends Order_Base_Action
             $arrFormatSkuItem['sku_net'] = empty($arrSkuItem['sku_net']) ? '' : $arrSkuItem['sku_net'];
             $skuNeText = isset(Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]) ? Order_Define_Sku::SKU_NET_MAP[$arrSkuItem['sku_net_unit']]:'';
             $arrFormatSkuItem['sku_net_text'] = $arrFormatSkuItem['sku_net'].$skuNeText;
-            $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ? '' : Order_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
+            $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ? '' : Nscm_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
             $arrFormatSkuItem['plan_amount'] = empty($arrSkuItem['reserve_order_sku_plan_amount']) ? 0 : $arrSkuItem['reserve_order_sku_plan_amount'];
             $arrFormatSkuItem['real_amount'] = empty($arrSkuItem['stockin_order_sku_real_amount']) ? 0 : $arrSkuItem['stockin_order_sku_real_amount'];
             $stockinOrderSkuExtraInfo = empty($arrSkuItem['stockin_order_sku_extra_info']) ? []:json_decode($arrSkuItem['stockin_order_sku_extra_info'],true);

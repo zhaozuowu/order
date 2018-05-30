@@ -527,7 +527,7 @@ class Service_Data_Stockin_StockinOrder
             $arrRet[] = [
                 'upc' => strval($arrSku['upc_id']),
                 'real_amount' => strval($arrSku['stockin_order_sku_real_amount']),
-                'unit' => strval(Order_Define_Sku::UPC_UNIT_MAP[$arrSku['upc_unit']]),
+                'unit' => strval(Nscm_Define_Sku::UPC_UNIT_MAP[$arrSku['upc_unit']]),
             ];
         }
         return $arrRet;
@@ -904,6 +904,9 @@ class Service_Data_Stockin_StockinOrder
             $arrRetList[$key]['vendor_id'] = isset($arrSourceInfo['vendor_id']) ? $arrSourceInfo['vendor_id']:0;
             $arrRetList[$key]['vendor_name'] = isset($arrSourceInfo['vendor_name']) ? $arrSourceInfo['vendor_name']:'';
             $arrRetList[$key]['customer_id'] = isset($arrSourceInfo['customer_id']) ? $arrSourceInfo['customer_id']:0;
+            $arrRetList[$key]['customer_contactor'] = isset($arrSourceInfo['customer_contactor']) ? $arrSourceInfo['customer_contactor']:'';
+            $arrRetList[$key]['customer_contact'] = isset($arrSourceInfo['customer_contact']) ? $arrSourceInfo['customer_contact']:'';
+            $arrRetList[$key]['customer_address'] = isset($arrSourceInfo['customer_address']) ? $arrSourceInfo['customer_address']:'';
             $arrRetList[$key]['customer_name'] = isset($arrSourceInfo['customer_name']) ? $arrSourceInfo['customer_name']:'';
             $arrRetList[$key]['warehouse_name'] = empty($item['warehouse_name']) ?(isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['warehouse_name']:''):$item['warehouse_name'];
             $arrRetList[$key]['warehouse_contact'] = isset($arrWarehouseList[$item['warehouse_id']]) ? $arrWarehouseList[$item['warehouse_id']]['contact']:'';
@@ -970,6 +973,101 @@ class Service_Data_Stockin_StockinOrder
         return $arrKeyValue;
     }
 
+    /**
+     *创建系统销退入库单（货架撤点）
+     * @param $arrInput
+     * @return int
+     * @throws Nscm_Exception_Error
+     * @throws Order_Error
+     */
+    public function createWithdrawStockInOrder($arrInput)
+    {
+        $intShipmentOrderId = $arrInput['shipment_order_id'];
+        $intStockInOrderSource = $arrInput['stockin_order_source'];
+        $intWarehouseId = $arrInput['warehouse_id'];
+        $arrRequestSkuInfoList = $arrInput['sku_info_list'];
+        $intStockInOrderId = $arrInput['intStockInOrderId'];
+        $assetInformation = $arrInput['asset_information'];
+        $arrSkuIds = array_column($arrRequestSkuInfoList, 'sku_id');
+        $arrRequestSkuInfoMap = [];
+        foreach ($arrRequestSkuInfoList as $arrRequestSkuInfo) {
+            $arrRequestSkuInfoMap[$arrRequestSkuInfo['sku_id']] = $arrRequestSkuInfo['sku_amount'];
+        }
+        $arrSkuInfoList  = [];
+        $arrSkuPriceList = [];
+        $arrDbSkuInfoList = [];
+        if (!empty($arrRequestSkuInfoList)) {
+            $arrSkuInfoList = $this->getSkuInfoList($arrSkuIds);
+            $arrSkuPriceList = $this->getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList);
+            $arrDbSkuInfoList = $this->assembleWithdrawDbSkuList($arrRequestSkuInfoMap, $arrSkuInfoList,
+                $arrSkuPriceList);
+        }
+        $intOrderReturnReason = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REMOVE_SITE;
+        $strOrderReturnReasonText = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_MAP[$intOrderReturnReason];
+        $intStockinOrderPlanAmount = $this->calculateTotalSkuPlanAmount($arrDbSkuInfoList);
+        $intStockinOrderTotalPrice = $this->calculateTotalPrice($arrDbSkuInfoList);
+        $intStockinOrderTotalPriceTax = $this->calculateTotalPriceTax($arrDbSkuInfoList);
+        $arrSourceInfo = $arrInput['customer_info'];
+        $strSourceSupplierId = $strCustomerId = $arrSourceInfo['id'];
+        $strCustomerName = $arrSourceInfo['name'];
+        $arrSourceInfo['customer_id'] = $arrSourceInfo['id'];
+        $arrSourceInfo['customer_name'] = $arrSourceInfo['name'];
+        $arrSourceInfo['customer_contactor'] = $arrSourceInfo['contactor'];
+        $arrSourceInfo['customer_contact'] = $arrSourceInfo['contact'];
+        $arrSourceInfo['customer_address'] = $arrSourceInfo['address'];
+        unset($arrSourceInfo['id']);
+        unset($arrSourceInfo['name']);
+        unset($arrSourceInfo['contactor']);
+        unset($arrSourceInfo['contact']);
+        unset($arrSourceInfo['address']);
+        $strSourceInfo = json_encode($arrSourceInfo);
+        $intStockinOrderStatus = Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_WAITING;
+        $arrWarehouseInfo = $this->getWarehouseInfoById($intWarehouseId);
+        if (empty($arrWarehouseInfo)) {
+            Order_Error::throwException(Order_Error_Code::RAL_ERROR);
+        }
+        $strWarehouseName = $arrWarehouseInfo['warehouse_name'];
+        $intCityId = $arrWarehouseInfo['city']['id'];
+        $strCityName = $arrWarehouseInfo['city']['name'];
+        $intStockInOrderCreatorId = 0;
+        $strStockInOrderCreatorName = 'System';
+        $intStockInOrderType = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT;
+        $intStockInOrderDataSourceType = Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_FROM_SYSTEM;
+        $strStockInOrderRemark = empty($arrInput['stockin_order_remark']) ? '':strval($arrInput['stockin_order_remark']);
+        $assetInformation = json_encode($assetInformation);
+        Model_Orm_StockinOrder::getConnection()->transaction(function() use($intStockInOrderId,$intStockInOrderType,
+            $strSourceInfo, $intStockinOrderStatus, $intWarehouseId, $intOrderReturnReason, $intStockInOrderDataSourceType,
+            $strWarehouseName, $intCityId, $strCityName,$intShipmentOrderId, $strCustomerName, $strCustomerId, $intStockInOrderSource,
+            $intStockinOrderPlanAmount, $intStockInOrderCreatorId, $strStockInOrderCreatorName, $strOrderReturnReasonText,
+            $strSourceSupplierId, $strStockInOrderRemark, $arrDbSkuInfoList, $intStockinOrderTotalPrice, $intStockinOrderTotalPriceTax,$assetInformation) {
+            Model_Orm_StockinOrder::createRemoveSiteStockInOrder(
+                $intStockInOrderId,
+                $intStockInOrderType,
+                $intStockInOrderDataSourceType,
+                $intStockInOrderSource,
+                $intOrderReturnReason,
+                $strOrderReturnReasonText,
+                $strSourceInfo,
+                $intStockinOrderStatus,
+                $intCityId,
+                $strCityName,
+                $intWarehouseId,
+                $strWarehouseName,
+                $intStockinOrderPlanAmount,
+                $intStockInOrderCreatorId,
+                $strStockInOrderCreatorName,
+                $strStockInOrderRemark,
+                $intStockinOrderTotalPrice,
+                $intStockinOrderTotalPriceTax,
+                $intShipmentOrderId,
+                $strCustomerId,
+                $strCustomerName,
+                $strSourceSupplierId,$assetInformation);
+            Model_Orm_StockinOrderSku::batchCreateStockinOrderSku($arrDbSkuInfoList, $intStockInOrderId);
+        });
+        return $intStockInOrderId;
+
+    }
     /**
      * 创建系统销退入库单
      * @
@@ -1138,6 +1236,47 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
+     *
+     * @param $arrRequestSkuInfoList
+     * @param $arrSkuInfoList
+     * @param $arrSkuPriceList
+     * @return array
+     */
+    private function assembleWithdrawDbSkuList($arrRequestSkuInfoList, $arrSkuInfoList, $arrSkuPriceList)
+    {
+        $arrSourceOrderSkuMap = [];
+        $arrDbSkuList = [];
+        foreach ($arrSkuPriceList as $intSkuId => $arrSkuPriceInfo) {
+            if (0 >= $arrRequestSkuInfoList[$intSkuId]) {
+                continue;
+            }
+            $arrSkuInfo = $arrSkuInfoList[$intSkuId];
+            $arrDbSku = [
+                'sku_id' => $intSkuId,
+                'upc_id' => $arrSkuInfo['min_upc']['upc_id'],
+                'upc_unit' => $arrSkuInfo['min_upc']['upc_unit'],
+                'upc_unit_num' => $arrSkuInfo['min_upc']['upc_unit_num'],
+                'sku_name' => $arrSkuInfo['sku_name'],
+                'sku_net' => $arrSkuInfo['sku_net'],
+                'sku_net_unit' => $arrSkuInfo['sku_net_unit'],
+                'sku_net_gram' => $arrSkuInfo['sku_weight'],
+                'sku_price' => $arrSkuPriceInfo['sku_price'],
+                'sku_price_tax' => $arrSkuPriceInfo['sku_price_tax'],
+                'sku_tax_rate' => $arrSkuInfo['sku_tax_rate'],
+                'sku_effect_type' => $arrSkuInfo['sku_effect_type'],
+                'sku_effect_day' => $arrSkuInfo['sku_effect_day'],
+                'reserve_order_sku_plan_amount' => $arrRequestSkuInfoList[$intSkuId],
+                'stockout_order_sku_amount' => 0,
+            ];
+            $arrDbSku['stockin_order_sku_total_price'] = bcmul($arrRequestSkuInfoList[$intSkuId], $arrSkuPriceInfo['sku_price']);
+            $arrDbSku['stockin_order_sku_total_price_tax'] = bcmul($arrRequestSkuInfoList[$intSkuId], $arrSkuPriceInfo['sku_price_tax']);
+            $arrDbSku['stockin_reason'] = Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REMOVE_SITE;
+            $arrDbSkuList[] = $arrDbSku;
+        }
+        return $arrDbSkuList;
+
+    }
+    /**
      * @param  array $arrSourceOrderSkuList
      * @param  array $arrRequestSkuInfoList
      * @param  array $arrSkuInfoList
@@ -1231,9 +1370,9 @@ class Service_Data_Stockin_StockinOrder
         if (empty($strStockInOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
-        if (empty($arrSkuInfoList)) {
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
-        }
+//        if (empty($arrSkuInfoList)) {
+//            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+//        }
         $intStockInOrderId = Order_Util::trimStockinOrderIdPrefix($strStockInOrderId);
         $arrStockInOrderInfo = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intStockInOrderId);
         if (empty($arrStockInOrderInfo)) {
@@ -1245,6 +1384,11 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH == $arrStockInOrderInfo['stockin_order_status']) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_STATUS_FINISHED);
         }
+        //只有撤点的订单允许sku数量为0
+        if (Order_Define_StockinOrder::STOCKIN_STOCKOUT_REASON_REMOVE_SITE != $arrStockInOrderInfo['stockin_order_reason']
+            && empty($arrSkuInfoList)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
         $intWarehouseId = $arrStockInOrderInfo['warehouse_id'];
         if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH != $arrStockInOrderInfo['stockin_order_status']) {
             $intStockInTime = time();
@@ -1254,18 +1398,28 @@ class Service_Data_Stockin_StockinOrder
             Model_Orm_StockinOrder::getConnection()->transaction(function () use (
                 $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList, $strRemark,
                 $intWarehouseId, $arrStockInSkuList) {
-                $objRalStock = new Dao_Ral_Stock();
-                $arrStock = $objRalStock->stockIn($intStockInOrderId,
-                    Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN,
-                    $intWarehouseId,
-                    $arrStockInSkuList);
+                $intBatchId = 0;
+                if (!empty($arrStockInSkuList)) {
+                    $objRalStock = new Dao_Ral_Stock();
+                    $arrStock = $objRalStock->stockIn($intStockInOrderId,
+                        Nscm_Define_Stock::STOCK_IN_TYPE_SALE_RETURN,
+                        $intWarehouseId,
+                        $arrStockInSkuList);
+                    $intBatchId = $arrStock['stockin_batch_id'];
+                }
                 Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime,
-                    $intStockInOrderRealAmount, $strRemark, $arrStock['stockin_batch_id']);
+                    $intStockInOrderRealAmount, $strRemark, $intBatchId);
                 Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
             });
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
             $intType = Order_Statistics_Type::ACTION_CREATE;
-            Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
+            //数量不为0才同步报表
+            if (!empty($intStockInOrderRealAmount)) {
+                Dao_Ral_Statistics::syncStatistics($intTable, $intType, $intStockInOrderId);
+            }
+            if (!empty($arrStockInOrderInfo['shipment_order_id'])) {
+                $this->sendConfirmStockinOrderInfoToOms($intStockInOrderId, $arrStockInOrderInfo['shipment_order_id'], $arrStockInOrderInfo['stockin_order_source'], $arrSkuInfoList);
+            }
         }
         try {
             $daoRedis = new Dao_Redis_StockInOrder();
@@ -1320,7 +1474,7 @@ class Service_Data_Stockin_StockinOrder
         return $arrDbSkuInfoList;
     }
 
-    /*
+    /**
      * @desc 更新一个或多个入库单为已打印
      * @name updateStockinOrderIsPrint
      * @param array $arrStockinOrderIds
@@ -1432,10 +1586,7 @@ class Service_Data_Stockin_StockinOrder
         $arrDbStockInSkuList = $this->getStockinOrderSkuList($intStockInOrderId, 1, 0);
         $arrDbStockInSkuMap = [];
         foreach ($arrDbStockInSkuList['list'] as $arrDbStockInSkuInfo) {
-            $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = array_merge($arrDbStockInSkuInfo, [
-                'unit_price' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price']),
-                'unit_price_tax' => Nscm_Service_Price::convertDefaultToFen($arrDbStockInSkuInfo['sku_price_tax']),
-            ]);
+            $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = $arrDbStockInSkuInfo;
         }
         $arrWarningInfo = [];
         foreach ($arrSkuInfoListRequest as $arrSkuInfo) {
@@ -1445,8 +1596,8 @@ class Service_Data_Stockin_StockinOrder
             $arrRealSkuInfo = $arrSkuInfo['real_stockin_info'];
             $arrStockInSkuListItem = [
                 'sku_id' => $arrSkuInfo['sku_id'],
-                'unit_price' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['unit_price'],
-                'unit_price_tax' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['unit_price_tax'],
+                'unit_price' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_price'],
+                'unit_price_tax' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_price_tax'],
             ];
             $intSkuEffectType = $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_effect_type'];
             $intSkuEffectDate = intval($arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_effect_day']);
@@ -1520,7 +1671,7 @@ class Service_Data_Stockin_StockinOrder
                     Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
                 }
                 if (Order_Define_ReserveOrder::STATUS_STOCKING != $arrReserveOrderInfo['reserve_order_status']) {
-                    Bd_Log::warning('reserve order status invalid: '. $arrReserveOrderInfo['reserve_order_status']);
+                    Bd_Log::warning('reserve order status invalid: ' . $arrReserveOrderInfo['reserve_order_status']);
                     Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_STATUS_NOT_ALLOW_STOCKIN);
                 }
             } else {
@@ -1531,7 +1682,7 @@ class Service_Data_Stockin_StockinOrder
                 }
                 if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_WAITING
                     != $arrStockinOrderInfo['stockin_order_status']) {
-                    Bd_Log::warning('stockin order status invalid: '. $arrStockinOrderInfo['stockin_order_status']);
+                    Bd_Log::warning('stockin order status invalid: ' . $arrStockinOrderInfo['stockin_order_status']);
                     Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_STATUS_INVALID);
                 }
             }
@@ -1542,5 +1693,105 @@ class Service_Data_Stockin_StockinOrder
         $boolResult = $daoRedis->addOperateRecord($strOrderId, $strOperateName, $strOperateDevice, $intOperateTime,
             $intUserId);
         return $boolResult;
+    }
+
+    /**
+     * 销退入库单确认结果发送wmq
+     * @param $intStockInOrderId
+     * @param $arrSkuInfoList
+     * @param $strRemark
+     */
+    public function sendConfirmStockinOrderInfoToOms($intStockInOrderId, $intShipmentOrderId, $intBizType, $arrSkuInfoList)
+    {
+        //$arrSkuIds = array_column($arrSkuInfoList, 'sku_id');
+        //$arrConds = [
+        //    'stockin_order_id' => $intStockInOrderId,
+        //    'is_delete'        => Order_Define_Const::NOT_DELETE,
+        //];
+        //$arrFields = ['stockin_order_id', 'sku_id', 'sku_net', 'upc_unit', 'sku_name'];
+        //$arrSku = Model_Orm_StockinOrderSku::findRows($arrFields, $arrConds);
+        //$arrSkuDict = Order_Util_Util::arrayToKeyValue($arrSku, 'sku_id');
+        $strCmd = Order_Define_Cmd::CMD_NOTIFY_OMS_CONFIRM_STOCKIN_ORDER;
+        $arrSkuInfoNew = [];
+        foreach ((array)$arrSkuInfoList as $arrSkuInfo){
+            $arrSkuInfoNew[] = [
+                'sku_id' => $arrSkuInfo['sku_id'],
+                'sku_amount' => array_sum(array_column($arrSkuInfo['real_stockin_info'], 'amount')),
+            ];
+        }
+        $arrParam = [
+            'stockin_order_id' => $intStockInOrderId,
+            'shipment_order_id' => $intShipmentOrderId,
+            'biz_type'          => $intBizType,
+            'sku_info_list'    => json_encode($arrSkuInfoNew),
+        ];
+        $ret = Order_Wmq_Commit::sendWmqCmd($strCmd, $arrParam, strval($intStockInOrderId));
+        if (false == $ret) {
+            Bd_Log::warning(sprintf("method[%s] cmd[%s] error", __METHOD__, $strCmd));
+        }
+        return true;
+    }
+
+    /**
+     * 异步通知OMS销退入库单确认结果
+     * @param $arrInput
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function asynchronousNotifyOmsConfirmStockinResult($arrInput)
+    {
+        $objWrpcOms = new Dao_Wrpc_Oms();
+        return $objWrpcOms->confirmStockinOrderToOms($arrInput);
+    }
+
+    /**
+     * 批量查询入库单详情
+     * @param $arrStockinOrderIds
+     * @return mixed
+     * @throws Order_BusinessError
+     */
+    public function getStockinOrderInfoByStockinOrderIds($arrStockinOrderIds)
+    {
+        if (empty($arrStockinOrderIds)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+
+        return Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderIds($arrStockinOrderIds);
+    }
+
+    /**
+     * 批量查询入库单商品列表（不分页）
+     * @param $arrStockinOrderIds
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getBatchStockinOrderSkus($arrStockinOrderIds)
+    {
+        $arrRetStockinOrderSkus = [
+            'total' => 0,
+            'list' => [],
+        ];
+
+        if (empty($arrStockinOrderIds)) {
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $arrStockinOrderSkus = Model_Orm_StockinOrderSku::getBatchStockinOrderSkus($arrStockinOrderIds);
+
+        // 将查询的商品按照入库单维度进行封装
+        if (!empty($arrStockinOrderSkus)) {
+            $arrRetStockinOrderSkus['total'] = $arrStockinOrderSkus['total'];
+            $arrStockinOrderSkusList = $arrStockinOrderSkus['list'];
+            $arrOrderSkusInfoList = [];
+            if (!empty($arrStockinOrderSkusList)) {
+                foreach ($arrStockinOrderSkusList as $skuInfo) {
+                    if (!empty($skuInfo['stockin_order_id'])) {
+                        $arrOrderSkusInfoList[$skuInfo['stockin_order_id']][] = $skuInfo;
+                    }
+                }
+            }
+
+            $arrRetStockinOrderSkus['list'] = $arrOrderSkusInfoList;
+        }
+        return $arrRetStockinOrderSkus;
     }
 }

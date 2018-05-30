@@ -122,6 +122,7 @@ class Dao_Wrpc_Tms
         $arrShelfInfo['devices'] = (object)$arrShelfInfo['devices'];
         $arrExpectArriveTime = $arrInput['expect_arrive_time'];
         $arrWarehouseRequest['warehouseId'] = empty($arrInput['warehouse_id']) ? '' : intval($arrInput['warehouse_id']);
+        $arrWarehouseRequest['backType'] = empty($arrInput['backType']) ? false  : $arrInput['backType'];
         $arrWarehouseRequest['businessType'] = empty($arrInput['business_form_order_type']) ? 0 : strval($arrInput['business_form_order_type']);
         $arrWarehouseRequest['businessSubType'] = empty($arrShelfInfo['supply_type']) ? 0 : $arrShelfInfo['supply_type'];
         $arrWarehouseRequest['businessJson'] = json_encode($arrShelfInfo);
@@ -130,7 +131,8 @@ class Dao_Wrpc_Tms
         $arrWarehouseRequest['orderNumber'] = empty($arrInput['logistics_order_id']) ? 0 : intval($arrInput['logistics_order_id']);
         $arrWarehouseRequest['requireReceiveStartTime'] = empty($arrExpectArriveTime['start']) ? 0 : $arrExpectArriveTime['start'];
         $arrWarehouseRequest['requireReceiveEndTime'] = empty($arrExpectArriveTime['end']) ? 0 : $arrExpectArriveTime['end'];
-        $arrWarehouseRequest['products'] = $this->getProducts($arrInput['skus']);
+
+        $arrWarehouseRequest['products'] = $this->getProducts($arrInput['skus'],$arrInput['skus_event']);
         $arrWarehouseRequest['userInfo'] = $this->getUserInfo($arrInput);
         if (!empty($arrInput['orderTime'])) {
             $arrWarehouseRequest['orderTime'] = $arrInput['orderTime'];
@@ -143,7 +145,7 @@ class Dao_Wrpc_Tms
      * @param array $arrSkus
      * @return array
      */
-    protected function getProducts($arrSkus) {
+    protected function getProducts($arrSkus,$skusEvent) {
         $arrProduts = [];
         if (empty($arrSkus)) {
             return $arrProduts;
@@ -157,8 +159,11 @@ class Dao_Wrpc_Tms
             $arrProdutItem['netWeightUnit'] = empty($arrSkuItem['sku_net_unit']) ? 0 : intval($arrSkuItem['sku_net_unit']);
             $arrProdutItem['upcUnit'] = empty($arrSkuItem['upc_unit']) ? 0 : intval($arrSkuItem['upc_unit']);
             $arrProdutItem['specifications'] = empty($arrSkuItem['upc_unit_num']) ? 0 : intval($arrSkuItem['upc_unit_num']);
+            $arrProdutItem['back'] = empty($arrSkuItem['back']) ? false : $arrSkuItem['back'];
+            $arrProdutItem['eventType'] = empty($arrSkuItem['eventype']) ? 0 : $arrSkuItem['eventype'];
             $arrProduts[] = $arrProdutItem;
         }
+        $arrProduts = array_merge($arrProduts,$skusEvent);
         return $arrProduts;
     }
 
