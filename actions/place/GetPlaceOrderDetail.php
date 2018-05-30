@@ -50,8 +50,10 @@ class Action_GetPlaceOrderDetail extends Order_Base_Action
             $dataItem['actual_info'] = empty($dataItem['actual_info']) ?
                                                     '' : json_decode($dataItem['actual_info'], true);
             foreach ((array)$dataItem['actual_info'] as $intActualKey => $actualInfoItem) {
-                $data['skus'][$intKey]['place_infos'][$intActualKey]['location_id'] = $actualInfoItem['location_code'];
-                $data['skus'][$intKey]['place_infos'][$intActualKey]['place_amount'] = intval($actualInfoItem['place_amount']);
+                $data['skus'][$intKey]['place_infos'][$intActualKey]['location_id'] = empty($actualInfoItem['location_code']) ?
+                                                                                        '' : $actualInfoItem['location_code'];
+                $data['skus'][$intKey]['place_infos'][$intActualKey]['place_amount'] = empty($actualInfoItem['place_amount']) ?
+                                                                                        0 : intval($actualInfoItem['place_amount']);
             }
         }
         return $data;
