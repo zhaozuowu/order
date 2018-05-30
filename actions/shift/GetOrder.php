@@ -17,8 +17,8 @@ class Action_GetOrder extends Order_Base_Action
         'target_location'           => 'str|optional',
         'sku_id'                    => 'str|optional',
         'sku_name'                  => 'str|optional',
-        'begin_date'                => 'int|default[0]',
-        'end_date'                  => 'int|default[0]',
+        'beginning_date'            => 'int|default[0]',
+        'ending_date'               => 'int|default[0]',
         'page_num'                  => 'int|optional|default[1]',
         'page_size'                 => 'int|optional|default[50]',
     ];
