@@ -40,7 +40,7 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
     public function format($arrRet)
     {
         // 如果无仓库权限，则抛出异常
-        if(false == boolval(!Nscm_Service_Auth::checkWarehouse([$arrRet['warehouse_id']]))) {
+        if(!Nscm_Service_Auth::checkWarehouse([$arrRet['warehouse_id']])) {
             Order_BusinessError::throwException(Order_Error_Code::USER_NO_WAREHOUSE_RIGHT);
         }
 
