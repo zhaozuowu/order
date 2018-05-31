@@ -18,6 +18,7 @@ class Action_CreateStockinStockoutOrder extends Order_Base_Action
         // 'stockin_order_type' => 'int|max[2]|min[2]',
         'stockin_order_remark' => 'strutf8',
         'ignore_check_date' => 'int|default[0]',
+        'stockin_device' => 'int|default[0]',
         'sku_info_list' => [
             'validate' => 'json|required|decode',
             'type' => 'array',
