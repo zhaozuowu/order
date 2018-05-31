@@ -171,9 +171,8 @@ class FixStockinOrderSkuPrice
 
                             Bd_Log::trace(sprintf("update failed order_info[%s]", json_encode($arrStockOrderSkuPrice)));
                         }
-                        usleep(1000);
-                        $intOffset += $this->limit;
                     }
+                    usleep(100000);
                     $intOffset += $this->limit;
                 } while ($this->limit == count($arrStockOrderInfo));
                 $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 2;
@@ -332,7 +331,7 @@ class FixStockinOrderSkuPrice
                             echo "[FAILED]STOCK_OUT_ORDER_ID:". $arrStockOrderSkuPrice['order_id'] .PHP_EOL;
                         }
                     }
-                    usleep(1000);
+                    usleep(100000);
                     $intOffset += $this->limit;
                 } while ($this->limit == count($arrStockOrderInfo));
                 $this->arrNeedFixWarehouseSkuMap[$intWarehouseId]['status'] = 3;
