@@ -185,11 +185,18 @@ class Order_Define_StockinOrder
     const STOCKIN_NOT_PLACED = 1;
 
     /**
+     * 自动上架
+     * @var integer
+     */
+    const STOCKIN_AUTO_PLACED = 3;
+
+    /**
      * 是否生成上架单map
      * @var array
      */
     const STOCKIN_IS_PLACED_MAP = [
         self::STOCKIN_IS_PLACED => '已生成',
         self::STOCKIN_NOT_PLACED => '未生成',
+        self::STOCKIN_AUTO_PLACED => '---',
     ];
 }
