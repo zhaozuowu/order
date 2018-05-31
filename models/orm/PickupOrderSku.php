@@ -77,6 +77,7 @@ class Model_Orm_PickupOrderSku extends Order_Base_Orm
      * 更新拣货单sku信息
      * @param $arrSkuUpdateFields
      * @param $arrSkuUpdateCondition
+     * @throws Order_BusinessError
      */
     public static function updatePickupInfo($arrSkuUpdateFields, $arrSkuUpdateCondition)
     {
@@ -84,6 +85,9 @@ class Model_Orm_PickupOrderSku extends Order_Base_Orm
             $objPickupOrderSkuInfo = self::findOne($arrSkuUpdateCondition[$key]);
             $arrPickupExt = json_decode($objPickupOrderSkuInfo->pickup_extra_info, true);
             $arrPickupExt['finish_info'] = $arrSkuUpdateField['pickup_extra_info'];
+            if ($arrSkuUpdateField['pickup_amount'] > $objPickupOrderSkuInfo->distribute_amount) {
+                Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_AMOUNT_OVER_DISTRIBUTE);
+            }
             if (!empty($objPickupOrderSkuInfo)) {
                 $objPickupOrderSkuInfo->pickup_amount = $arrSkuUpdateField['pickup_amount'];
                 $objPickupOrderSkuInfo->pickup_extra_info = json_encode($arrPickupExt);

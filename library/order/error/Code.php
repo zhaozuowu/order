@@ -672,6 +672,11 @@ class Order_Error_Code extends Wm_Error_Code
     const NWMS_ORDER_STOCKOUT_ORDER_IS_PICKUP_ORDERED = 390033;
 
     /**
+     * 实拣数量大于分配数量
+     */
+    const PICKUP_ORDER_AMOUNT_OVER_DISTRIBUTE = 390034;
+
+    /**
      * 库位推荐获取失败
      */
     const NWMS_ORDER_STOCKOUT_ORDER_GET_RECOMEND_STOCKLOC_FAIL = 390034;
