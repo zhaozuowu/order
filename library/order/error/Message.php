@@ -176,6 +176,7 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::SHIFT_ORDER_MOVE_FAILED => '移位单移位失败',
         Order_Error_Code::SHIFT_ORDER_GET_LOCATION_STOCK_FAILED => '获取库位库存失败',
         Order_Error_code::STOCK_SKU_PRICE_GET_FAILED => '获取库存商品价格失败',
+        Order_Error_code::PICKUP_ORDER_AMOUNT_OVER_DISTRIBUTE => '实拣数量大于分配数量',
 
     ];
 
