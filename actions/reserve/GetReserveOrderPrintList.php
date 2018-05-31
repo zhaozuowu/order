@@ -95,7 +95,7 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
         }
         foreach ($extrInfo as $itemInfo)
         {
-            $list[] = empty($itemInfo['expire_date']) ? 0:$itemInfo['expire_date'];
+            $list[] = empty($itemInfo['expire_date']) ? '' : date('Y-m-d',$itemInfo['expire_date']);
         }
         return $list;
     }
