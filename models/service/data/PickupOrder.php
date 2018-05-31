@@ -585,6 +585,9 @@ class Service_Data_PickupOrder
                 $intPickupOrderSkuKindCount ++;
             }
         }
+        if ($intPickupOrderSkuAmount > $objPickupOrderInfo->sku_distribute_amount) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_AMOUNT_OVER_DISTRIBUTE);
+        }
         //拼装更新sku数据
         list($arrSkuUpdateFields, $arrSkuUpdateCondition) = $this->assemblePickupOrderSkuList($arrPickupSkus, $intPickupOrderId);
         //开启事务写入数据
