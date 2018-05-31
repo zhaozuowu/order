@@ -66,6 +66,10 @@ class Service_Data_PlaceOrder
                         json_encode($arrOrderList), json_encode($arrSkuList), json_encode($arrMapOrderList)));
         //自动创建的上架单进行自动上架
         foreach ((array)$arrOrderList as $arrOrderItem) {
+            $intIsAuto = $arrOrderItem['is_auto'];
+            if ($intIsAuto != Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO) {
+                continue;
+            }
             $intPlaceOrderId = $arrOrderItem['place_order_id'];
             $arrSkus = $arrOrderItem['skus'];
             $this->confirmPlaceOrder($intPlaceOrderId,$arrSkus, '', 0);
@@ -518,12 +522,11 @@ class Service_Data_PlaceOrder
      * @return bool
      */
     protected function isPlacedOrderForReserve($intStockinOrderId) {
-        $arrStockinOrderIds = [
-            'stockin_order_id' => $intStockinOrderId,
-        ];
-        $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
-        $intPlaceOrderId = $arrPlaceOrderIds[0];
-        $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
+        if (empty($intStockinOrderId)) {
+            return [];
+        }
+        $arrStockinOrderInfo = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intStockinOrderId);
+
         if (empty($arrPlaceOrderInfo)) {
             return Order_Define_StockinOrder::STOCKIN_NOT_PLACED;
         }
@@ -547,6 +550,42 @@ class Service_Data_PlaceOrder
             $arrStockinOrderList[$intKey]['is_placed_order'] = $this->isPlacedOrderForReserve($intStockinOrderId);
         }
         return $arrStockinOrderList;
+    }
+
+    /**
+     * 入库单列表加入是否自动上架标识
+     * @param $arrStockinOrderList
+     * @return mixed
+     */
+    public function checkIsAutoPlacedToStockinOrderList($arrStockinOrderList) {
+        if (empty($arrStockinOrderList)) {
+            return $arrStockinOrderList;
+        }
+        foreach ((array)$arrStockinOrderList as $intKey => $arrStockinOrderInfo) {
+            $intStockinOrderId = $arrStockinOrderInfo['stockin_order_id'];
+            $intIsAuto = $this->IsAutoPlacedOrder($intStockinOrderId);
+            if (false === $intIsAuto) {
+                $arrStockinOrderList[$intKey]['is_placed_order'] = Order_Define_StockinOrder::STOCKIN_NOT_PLACED;
+            }
+            
+        }
+        return $arrStockinOrderList;
+    }
+
+    /**
+     * 判断入库单是否自动生成上架单
+     * @param $intStockinOrderId
+     * @return bool
+     */
+    public function IsAutoPlacedOrder($intStockinOrderId) {
+        $arrStockinOrderIds[] = $intStockinOrderId;
+        $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
+        if (empty($arrPlaceOrderIds)) {
+            return false;
+        }
+        $intPlaceOrderId = $arrPlaceOrderIds[0];
+        $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
+        return $arrPlaceOrderInfo['is_auto'];
     }
 
     /**
