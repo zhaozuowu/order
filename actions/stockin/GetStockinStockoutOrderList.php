@@ -134,10 +134,9 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
                 isset(Order_Define_StockinOrder::STOCKIN_PRINT_STATUS[intval($arrListItem['stockin_order_is_print'])])
                 ? Order_Define_StockinOrder::STOCKIN_PRINT_STATUS[intval($arrListItem['stockin_order_is_print'])]
                 : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
-            $arrRoundResult['is_placed_order'] = empty($arrListItem['is_placed_order']) ? 0
-                : intval($arrListItem['is_placed_order']);
-            $arrRoundResult['is_placed_order_text'] =
-                (Order_Define_StockinOrder::STOCKIN_IS_PLACED == $arrListItem['is_placed_order']) ? '已生成' : '未生成';
+            $arrRoundResult['is_placed_order'] = intval($arrListItem['is_placed_order']);
+            $arrRoundResult['is_placed_order_text'] = empty($arrRoundResult['is_placed_order']) ? ''
+                : Order_Define_StockinOrder::STOCKIN_IS_PLACED_MAP[$arrListItem['is_placed_order']];
 
             $arrFormatResult['list'][] = $arrRoundResult;
         }

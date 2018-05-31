@@ -87,7 +87,7 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
             $intIsPlacedOrder,
             $intPageNum,
             $intPageSize);
-        $arrRet['list'] = $this->objDsPlaceOrder->appendIsPlacedOrderToStockinOrderList($arrRet['list']);
+        $arrRet['list'] = $this->objDsPlaceOrder->checkIsAutoPlacedToStockinOrderList($arrRet['list']);
         return $arrRet;
     }
 }
