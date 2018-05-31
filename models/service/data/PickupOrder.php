@@ -537,11 +537,12 @@ class Service_Data_PickupOrder
      * @param array $arrPickupSkus  拣货单中sku
      * @param int   $userId 操作人id
      * @param string $userName 操作人name
+     * @param string $strRemark
      * @return int
      * @throws Order_BusinessError
      * @throws Exception
      */
-    public function finishPickupOrder($intPickupOrderId, $arrPickupSkus, $userId, $userName)
+    public function finishPickupOrder($intPickupOrderId, $arrPickupSkus, $userId, $userName, $strRemark)
     {
         if (empty($intPickupOrderId)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
@@ -593,11 +594,12 @@ class Service_Data_PickupOrder
         //开启事务写入数据
         Model_Orm_PickupOrder::getConnection()->transaction(function () use ($arrSkuUpdateFields, $arrSkuUpdateCondition,
                 $intPickupOrderId, $userName, $userId, $intPickupOrderSkuAmount, $intPickupOrderSkuKindCount,
-                $intWarehouseId, $arrPickupSkus){
+                $intWarehouseId, $arrPickupSkus, $strRemark){
             $arrOrderUpdateFields = [
                 'sku_pickup_amount' => $intPickupOrderSkuAmount,
                 'sku_kind_amount' => $intPickupOrderSkuKindCount,
                 'update_operator' => $userName,
+                'remark' => $strRemark,
                 'pickup_order_status' => Order_Define_PickupOrder::PICKUP_ORDER_STATUS_FINISHED,
             ];
             //更新订单数据

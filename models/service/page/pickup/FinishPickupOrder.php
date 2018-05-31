@@ -31,11 +31,12 @@ class Service_Page_Pickup_FinishPickupOrder
     public function execute($arrInput)
     {
         $intPickupOrderId = intval($arrInput['pickup_order_id']);
+        $strRemark = $arrInput['remark'];
         $arrPickupSkus = is_array($arrInput['pickup_skus']) ? $arrInput['pickup_skus'] : json_decode($arrInput['pickup_skus'], true);
         $userId = !empty($arrInput['_session']['user_id']) ? $arrInput['_session']['user_id']:0;
         $userName = !empty($arrInput['_session']['user_name']) ? $arrInput['_session']['user_name']:'' ;
         Bd_Log::debug("finishPickupOrder execute userinfo:".json_encode($arrInput));
-        $ret = $this->objPickupOrder->finishPickupOrder($intPickupOrderId, $arrPickupSkus, $userId, $userName);
+        $ret = $this->objPickupOrder->finishPickupOrder($intPickupOrderId, $arrPickupSkus, $userId, $userName, $strRemark);
         return $ret;
     }
 }

@@ -9,6 +9,7 @@ class Action_FinishPickupOrder extends Order_Base_Action
 {
     protected $arrInputParams = [
         'pickup_order_id' => 'int|required',
+        'remark' => 'str',
         'pickup_skus' => [
             'validate' => 'json|required|decode',
             'type' => 'array',
