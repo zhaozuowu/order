@@ -55,6 +55,11 @@ class Action_GetPlaceOrderList extends Order_Base_Action
                 = Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_MAP[$arrItem['stockin_order_type']];
             $arrData['orders'][$intKey]['is_defective_text']
                 = Nscm_Define_Stock::QUALITY_TEXT_MAP[$arrItem['is_defective']];
+            if (Order_Define_PlaceOrder::STATUS_PLACED
+                == $arrItem['place_order_status']) {
+                $arrData['orders'][$intKey]['place_time']
+                    = date("Y-m-d H:i:s", $arrItem['update_time']);
+            }
         }
         return $arrData;
         //$arrFormatRet
