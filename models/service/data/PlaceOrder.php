@@ -60,6 +60,7 @@ class Service_Data_PlaceOrder
             && empty($arrSplitOrderInfo['bad_skus']))) {
             return [];
         }
+        $this->autoPlaceOrder($arrOrderList, $arrSkuList);
         list($arrOrderList, $arrSkuList, $arrMapOrderList) =
             $this->getCreateParams($arrSplitOrderInfo);
         Bd_Log::trace(sprintf("method[%s] order_list[%s] sku_list[%s] map_order_list",
@@ -75,6 +76,43 @@ class Service_Data_PlaceOrder
                 Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_CREATE_FAILED);
             }
         });
+    }
+
+    /**
+     * 自动上架单自动上级
+     * @param $arrOrderList
+     * @param $arrSkuList
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    protected function autoPlaceOrder($arrOrderList, $arrSkuList) {
+        if (empty($arrOrderList)) {
+            return [];
+        }
+        $arrMapOrderSkus = Order_Util_Util::arrayToKeyValues($arrSkuList, 'place_order_id');
+        foreach ((array)$arrOrderList as $arrOrderItem) {
+            $intIsAuto = $arrOrderItem['is_auto'];
+            if ($intIsAuto != Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO) {
+                continue;
+            }
+            $intPlaceOrderId = $arrOrderItem['place_order_id'];
+            if (empty($intPlaceOrderId)) {
+                continue;
+            }
+            $arrSkus = [];
+            $arrOrderSkus = $arrMapOrderSkus[$intPlaceOrderId];
+            foreach ((array)$arrOrderSkus as $arrOrderSkuItem) {
+                $arrSkuItem['sku_id'] = $arrOrderSkuItem['sku_id'];
+                $arrSkuItem['place_amount'] = $arrOrderSkuItem['plan_amount'];
+                $arrSkuItem['expire_date'] = $arrOrderSkuItem['expire_date'];
+                $arrSkuItem['location_code'] = Nscm_Define_Warehouse::VIRTURE_LOCATION_CODE_DEFAULT_STORE;
+                $arrSkuItem['area_code'] = Nscm_Define_Warehouse::VIRTURE_AREA_CODE_DEFAULT_STORE;
+                $arrSkuItem['roadway_code'] = Nscm_Define_Warehouse::VIRTURE_ROADWAY_CODE_DEFAULT_STORE;
+                $arrSkus[] = $arrSkuItem;
+            }
+            $this->confirmPlaceOrder($intPlaceOrderId, $arrSkus, '', 0);
+        }
     }
 
     /**
