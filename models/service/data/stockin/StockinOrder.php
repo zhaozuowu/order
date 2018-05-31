@@ -141,7 +141,7 @@ class Service_Data_Stockin_StockinOrder
      * @return array
      * @throws Order_BusinessError
      */
-    public function getStockinOrderSkuInfo($strStockinOrderId, $strSkuUpcId)
+    public function getStockinOrderSkuInfoBySkuUpcId($strStockinOrderId, $strSkuUpcId)
     {
         $strStockinOrderId = Order_Util::trimStockinOrderIdPrefix($strStockinOrderId);
 
@@ -1369,13 +1369,12 @@ class Service_Data_Stockin_StockinOrder
      * @param  string $strStockInOrderId 入库单id
      * @param  array $arrSkuInfoList 入库sku信息
      * @param  string $strRemark 入库备注
-     * @param $boolIgnoreCheckDate
+     * @param  bool $boolIgnoreCheckDate
      * @param  int $intDeviceType device type
      * @param $intUserId
      * @param $strUserName
      * @throws Exception
      * @throws Order_BusinessError
-     * @throws Order_Error
      */
     public function confirmStockInOrder($strStockInOrderId, $arrSkuInfoList, $strRemark, $boolIgnoreCheckDate,
                                         $intDeviceType, $intUserId, $strUserName)
@@ -1407,11 +1406,22 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH != $arrStockInOrderInfo['stockin_order_status']) {
             $intStockInTime = time();
             $intStockInOrderRealAmount = $this->calculateStockInOrderRealAmount($arrSkuInfoList);
-            $arrDbSkuInfoList = $this->assembleDbSkuInfoList($arrSkuInfoList, $intStockInOrderId);
-            $arrStockInSkuList = $this->getStockInSkuList($intStockInOrderId, $arrSkuInfoList, $boolIgnoreCheckDate);
+            //重新获取成本价
+            $arrDbStockInSkuList = $this->getStockinOrderSkuList($intStockInOrderId, 1, 0);
+            $arrDbStockInSkuMap = [];
+            foreach ($arrDbStockInSkuList['list'] as $arrDbStockInSkuInfo) {
+                $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = $arrDbStockInSkuInfo;
+            }
+            $arrSkuIds = array_keys($arrDbStockInSkuMap);
+            $arrSkuInfoList = $this->getSkuInfoList($arrSkuIds);
+            $arrSkuPriceList = $this->getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList);
+
+            $arrStockInSkuList = $this->getStockInSkuList($arrDbStockInSkuMap, $arrSkuInfoList, $boolIgnoreCheckDate, $arrSkuPriceList);
+            $arrDbSkuInfoList = $this->assembleDbSkuInfoList($arrSkuInfoList, $intStockInOrderId, $arrSkuPriceList);
+            list($intRealPriceAmount, $intRealPriceTaxAmount) = $this->assembleStockInOrderRealPrice($arrSkuInfoList, $arrSkuPriceList);
             Model_Orm_StockinOrder::getConnection()->transaction(function () use (
                 $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList, $strRemark,
-                $intWarehouseId, $arrStockInSkuList, $intDeviceType) {
+                $intWarehouseId, $arrStockInSkuList, $intDeviceType, $intRealPriceAmount, $intRealPriceTaxAmount) {
                 $intBatchId = 0;
                 if (!empty($arrStockInSkuList)) {
                     $objRalStock = new Dao_Ral_Stock();
@@ -1422,7 +1432,8 @@ class Service_Data_Stockin_StockinOrder
                     $intBatchId = $arrStock['stockin_batch_id'];
                 }
                 Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime,
-                    $intStockInOrderRealAmount, $strRemark, $intBatchId, $intDeviceType);
+                    $intStockInOrderRealAmount, $strRemark, $intBatchId, $intDeviceType,
+                $intRealPriceAmount, $intRealPriceTaxAmount);
                 Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
             });
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
@@ -1479,15 +1490,27 @@ class Service_Data_Stockin_StockinOrder
         return $intRealAmount;
     }
 
-    private function assembleDbSkuInfoList($arrSkuInfoList, $intStockInOrderId)
+    /**
+     * 构建更新入库单sku信息
+     * @param $arrSkuInfoList
+     * @param $intStockInOrderId
+     * @param $arrSkuPriceList
+     * @return array
+     */
+    private function assembleDbSkuInfoList($arrSkuInfoList, $intStockInOrderId, $arrSkuPriceList)
     {
         $arrDbSkuInfoList = [];
         foreach ($arrSkuInfoList as $arrSkuInfo) {
             $arrSkuRealInfoList = $arrSkuInfo['real_stockin_info'];
+            $intStockInSkuRealAmount = array_sum(array_column($arrSkuRealInfoList, 'amount'));
             $arrDbSkuInfo = [
                 'stockin_order_id' => $intStockInOrderId,
                 'sku_id' => $arrSkuInfo['sku_id'],
-                'stockin_order_sku_real_amount' => array_sum(array_column($arrSkuRealInfoList, 'amount')),
+                'sku_price' => $arrSkuPriceList[$arrSkuInfo['sku_id']]['sku_price'],
+                'stockin_order_sku_total_price' => $intStockInSkuRealAmount * $arrSkuPriceList[$arrSkuInfo['sku_id']]['sku_price'],
+                'sku_price_tax' => $arrSkuPriceList[$arrSkuInfo['sku_id']]['sku_price_tax'],
+                'stockin_order_sku_total_price_tax' => $intStockInSkuRealAmount * $arrSkuPriceList[$arrSkuInfo['sku_id']]['sku_price_tax'],
+                'stockin_order_sku_real_amount' => $intStockInSkuRealAmount,
                 'stockin_order_sku_extra_info' => json_encode($arrSkuRealInfoList),
             ];
             $arrDbSkuInfoList[] = $arrDbSkuInfo;
@@ -1594,21 +1617,17 @@ class Service_Data_Stockin_StockinOrder
 
     /**
      * 拼接入库库存时sku信息
-     * @param  int  $intStockInOrderId
+     * @param  array  $arrDbStockInSkuMap
      * @param  array $arrSkuInfoListRequest
      * @param bool $boolIgnoreCheckDate
+     * @param array $arrSkuPriceList
      * @return array
      * @throws Order_BusinessError
      * @throws Order_Error
      */
-    private function getStockInSkuList($intStockInOrderId, $arrSkuInfoListRequest, $boolIgnoreCheckDate)
+    private function getStockInSkuList($arrDbStockInSkuMap, $arrSkuInfoListRequest, $boolIgnoreCheckDate, $arrSkuPriceList)
     {
         $arrStockInSkuList = [];
-        $arrDbStockInSkuList = $this->getStockinOrderSkuList($intStockInOrderId, 1, 0);
-        $arrDbStockInSkuMap = [];
-        foreach ($arrDbStockInSkuList['list'] as $arrDbStockInSkuInfo) {
-            $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = $arrDbStockInSkuInfo;
-        }
         $arrWarningInfo = [];
         foreach ($arrSkuInfoListRequest as $arrSkuInfo) {
             if (!isset($arrDbStockInSkuMap[$arrSkuInfo['sku_id']])) {
@@ -1617,8 +1636,8 @@ class Service_Data_Stockin_StockinOrder
             $arrRealSkuInfo = $arrSkuInfo['real_stockin_info'];
             $arrStockInSkuListItem = [
                 'sku_id' => $arrSkuInfo['sku_id'],
-                'unit_price' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_price'],
-                'unit_price_tax' => $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_price_tax'],
+                'unit_price' => $arrSkuPriceList[$arrSkuInfo['sku_id']]['sku_price'],
+                'unit_price_tax' => $arrSkuPriceList[$arrSkuInfo['sku_id']]['sku_price_tax'],
             ];
             $intSkuEffectType = $arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_effect_type'];
             $intSkuEffectDate = intval($arrDbStockInSkuMap[$arrSkuInfo['sku_id']]['sku_effect_day']);
@@ -1845,5 +1864,47 @@ class Service_Data_Stockin_StockinOrder
             $arrRetStockinOrderSkus['list'] = $arrOrderSkusInfoList;
         }
         return $arrRetStockinOrderSkus;
+    }
+
+    /**
+     * 获取入库单sku信息
+     * @param $intStockinOrderId
+     * @param $intSkuId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getStockinOrderSkuInfo($intStockinOrderId, $intSkuId)
+    {
+        if (empty($intStockinOrderId) || empty($intSkuId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+
+        $objSkuInfo = Model_Orm_StockinOrderSku::getStockinOrderSkuInfoObject($intStockinOrderId, $intSkuId);
+        if (empty($objSkuInfo)) {
+            return [];
+        }
+        return $objSkuInfo->toArray();
+    }
+
+    /**
+     * 构建计算入库单的真实入库总金额
+     * @param array $arrSkuInfoList
+     * @param array $arrSkuPriceList
+     * @return array [$intRealPriceAmount, $intRealPriceTaxAmount]
+     */
+    private function assembleStockInOrderRealPrice($arrSkuInfoList, $arrSkuPriceList)
+    {
+        $intRealPriceAmount = 0;
+        $intRealPriceTaxAmount = 0;
+        foreach ($arrSkuInfoList as $arrSkuInfo) {
+            $arrSkuRealInfoList = $arrSkuInfo['real_stockin_info'];
+            $intStockInSkuRealAmount = array_sum(array_column($arrSkuRealInfoList, 'amount'));
+            $intRealPriceAmount += $intStockInSkuRealAmount * $arrSkuPriceList[$arrSkuInfo['sku_id']]['sku_price'];
+            $intRealPriceTaxAmount += $intStockInSkuRealAmount * $arrSkuPriceList[$arrSkuInfo['sku_id']]['sku_price_tax'];
+        }
+        return [
+            $intRealPriceAmount,
+            $intRealPriceTaxAmount,
+        ];
     }
 }

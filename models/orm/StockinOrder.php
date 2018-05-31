@@ -543,15 +543,18 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
     /**
      * 系统销退入库单确认入库
-     * @param int    $intStockInOrderId
-     * @param int    $intStockInTime
-     * @param int    $intStockInOrderRealAmount
-     * @param int    $intStockinBatchId
-     * @param int    $intDeviceType
+     * @param int $intStockInOrderId
+     * @param int $intStockInTime
+     * @param int $intStockInOrderRealAmount
      * @param string $strRemark
+     * @param int $intStockinBatchId
+     * @param int $intDeviceType
+     * @param $intRealPriceAmount
+     * @param $intRealPriceTaxAmount
      */
     public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount,
-                                               $strRemark, $intStockinBatchId, $intDeviceType)
+                                               $strRemark, $intStockinBatchId, $intDeviceType, $intRealPriceAmount,
+                                               $intRealPriceTaxAmount)
     {
         $arrCondition = [
             'stockin_order_id' => $intStockInOrderId,
@@ -560,6 +563,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_time' => $intStockInTime,
             'stockin_order_remark' => $strRemark,
             'stockin_order_real_amount' => $intStockInOrderRealAmount,
+            'stockin_order_total_price' => $intRealPriceAmount,
+            'stockin_order_total_price_tax' => $intRealPriceTaxAmount,
             'stockin_batch_id' => $intStockinBatchId,
             'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
             'stockin_device' => $intDeviceType,

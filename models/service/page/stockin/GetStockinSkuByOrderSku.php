@@ -32,7 +32,7 @@ class Service_Page_Stockin_GetStockinSkuByOrderSku implements Order_Base_Page
     {
         $strStockinOrderId = strval($arrInput['stockin_order_id']);
         $strSkuUpcId = strval($arrInput['sku_upc_id']);
-        $ret = $this->objServiceData->getStockinOrderSkuInfo($strStockinOrderId, $strSkuUpcId);
+        $ret = $this->objServiceData->getStockinOrderSkuInfoBySkuUpcId($strStockinOrderId, $strSkuUpcId);
 
         return $ret;
     }
