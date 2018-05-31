@@ -556,6 +556,7 @@ class Service_Data_PickupOrder
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
         }
         $intWarehouseId = $objPickupOrderInfo->warehouse_id;
+        $arrPickupSkus = $this->checkAndAssemblePickupSkusDetailInfo($arrPickupSkus, $intWarehouseId);
         if (Order_Define_PickupOrder::PICKUP_ORDER_STATUS_FINISHED == $objPickupOrderInfo->pickup_order_status) {
             Bd_Log::warning("pickupOrder can't modify pickup_order_status by pickupOrderId:". $intPickupOrderId);
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_IS_FINISHED);
@@ -1067,5 +1068,39 @@ class Service_Data_PickupOrder
 
         }
         return $list;
+    }
+
+    /**
+     * 判断参数&无开启库区库位时添加库区库位
+     * @param array $arrPickupSkus
+     * @param int   $intWarehouseId
+     * @return  array
+     * @throws Order_BusinessError
+     */
+    public function checkAndAssemblePickupSkusDetailInfo($arrPickupSkus, $intWarehouseId)
+    {
+        //是否开启库区库位
+        $daoWarehouse = new Dao_Wrpc_Warehouse();
+        $arrWarehouseInfo = $daoWarehouse->getWarehouseInfoByWarehouseId($intWarehouseId);
+        $boolWarehouseLocationTag = $arrWarehouseInfo['storage_location_tag'];
+        if (Order_Define_Warehouse::STORAGE_LOCATION_TAG_ENABLED == $boolWarehouseLocationTag) {
+            foreach ($arrPickupSkus as $arrPickupSku) {
+                foreach ($arrPickupSku['pick_infos'] as $arrPickupInfo) {
+                    if (empty($arrPickupInfo['location_code'])) {
+                        Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+                    }
+                }
+            }
+        } else {
+            foreach ($arrPickupSkus as $intKey => $arrPickupSku) {
+                foreach ($arrPickupSku['pick_infos'] as $intPickInfosKey => $arrPickupInfo) {
+                    if (empty($arrPickupInfo['location_code'])) {
+                        $arrPickupSkus[$intKey]['pick_infos'][$intPickInfosKey]['location_code'] = Nscm_Define_Warehouse::VIRTURE_LOCATION_CODE_DEFAULT_STORE;
+                    }
+                }
+            }
+        }
+
+        return $arrPickupSkus;
     }
 }
