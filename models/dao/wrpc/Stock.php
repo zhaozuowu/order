@@ -90,7 +90,7 @@ class Dao_Wrpc_Stock
         Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_ret[%s]",
             __METHOD__, json_encode($arrRet)));
         if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
-            Bd_Log::warning(sprintf("method[%s] arrRet[%s] ret[%s]",
+            Bd_Log::warning(sprintf("method[%s] arrRet[%s]",
                 __METHOD__, json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL);
         }

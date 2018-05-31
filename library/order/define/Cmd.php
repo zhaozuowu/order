@@ -37,6 +37,11 @@ class Order_Define_Cmd
     const CMD_FINISH_PRICKUP_ORDER  = 'stockout_order_finish_pickup';
 
     /**
+     * 拣货完成出库单
+     */
+    const CMD_FINISH_STOCKOUT_ORDER  = 'pickup_order_finish_stockout';
+
+    /**
      * 作废出库单命令
      * @var string
      */
