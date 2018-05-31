@@ -97,7 +97,8 @@ class Action_GetReserveOrderSkuList extends Order_Base_Action
             $arrRoundResult['stockin_order_sku_extra_info'] =
                 empty($arrListItem['stockin_order_sku_extra_info']) ? ''
                     : strval($arrListItem['stockin_order_sku_extra_info']);
-
+            $arrRoundResult['upc_min_unit'] = intval($arrListItem['upc_min_unit']);
+            $arrRoundResult['upc_min_unit_text'] = Nscm_Define_Sku::UPC_UNIT_MAP[$arrListItem['upc_min_unit']] ?? '';
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult['list'][] = $arrRoundResult;
         }

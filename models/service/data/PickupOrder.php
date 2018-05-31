@@ -15,6 +15,7 @@ class Service_Data_PickupOrder
         $this->objOrmSku = new Model_Orm_StockoutOrderSku();
         $this->objWrpcTms = new Dao_Wrpc_Tms();
         $this->objWrpcStock = new Dao_Wrpc_Stock(Order_Define_Wrpc::NWMS_STOCK_SERVICE_NAME);
+        $this->objDaoWrpcWarehouse = new Dao_Wrpc_Warehouse();
     }
 
     /**
@@ -243,7 +244,10 @@ class Service_Data_PickupOrder
             }
             $pickupOrderId = $key;
             $intWarehouseId = isset($wareHouseIds[$key]) ? $wareHouseIds[$key]:0;
-            if (!empty($details)) {
+            $arrWarehouseInfo = $this->objDaoWrpcWarehouse->getWarehouseInfoByWarehouseId($intWarehouseId);
+            $intLocationTag = $arrWarehouseInfo['storage_location_tag'];
+            if (!empty($details) && (Order_Define_Warehouse::STORAGE_LOCATION_TAG_ENABLED
+                == $intLocationTag)) {
                 $recommendStockLocList = $this->objWrpcStock->getRecommendStockLoc($intWarehouseId,$pickupOrderId,$details);
                 $recommendStockLocList = $this->formatRecommendStockLocList($recommendStockLocList);
                 foreach($recommendStockLocList as $stockKey=>$stockItem) {

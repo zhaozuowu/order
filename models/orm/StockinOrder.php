@@ -156,7 +156,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param string $strSourceSupplierId 客户id
      * @return int
      */
-    public function createRemoveSiteStockInOrder(
+    public static function createRemoveSiteStockInOrder(
         $intStockInOrderId,
         $intStockInOrderType,
         $intStockInOrderDataSourceType,
@@ -520,9 +520,11 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param int    $intStockInTime
      * @param int    $intStockInOrderRealAmount
      * @param int    $intStockinBatchId
+     * @param int    $intRealPriceAmount
+     * @param int    $intRealPriceTaxAmount
      * @param string $strRemark
      */
-    public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $strRemark, $intStockinBatchId)
+    public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $strRemark, $intStockinBatchId, $intRealPriceAmount, $intRealPriceTaxAmount)
     {
         $arrCondition = [
             'stockin_order_id' => $intStockInOrderId,
@@ -531,6 +533,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_time' => $intStockInTime,
             'stockin_order_remark' => $strRemark,
             'stockin_order_real_amount' => $intStockInOrderRealAmount,
+            'stockin_order_total_price' => $intRealPriceAmount,
+            'stockin_order_total_price_tax' => $intRealPriceTaxAmount,
             'stockin_batch_id' => $intStockinBatchId,
             'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
         ];

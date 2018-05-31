@@ -20,5 +20,6 @@ class Controller_Api extends Ap_Controller_Abstract {
         'getautostockoutstockinwaitingskusapi' => 'actions/api/GetAutoStockoutStockinWaitingSkuApi.php', #查询指定仓库在途商品信息api#@skipped#
         'createstockinorderapi' => 'actions/api/CreateStockInOrderApi.php', #创建自动销退入库单#@skipped#
         'createremovesitestockinorderapi' => 'actions/api/CreateRemoveSiteStockInOrderApi.php', #创建自动销退入库单(货架撤点)#@skipped#
+        'getstockinorderskuprice' => 'actions/api/GetStockinOrderSkuPrice.php', #获取入库单商品成本价(货架撤点)#@skipped#
     );
 }
