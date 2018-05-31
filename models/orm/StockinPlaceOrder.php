@@ -30,6 +30,24 @@ class Model_Orm_StockinPlaceOrder extends Order_Base_Orm
     }
 
     /**
+     * get place order ids by fuzzy stockin order id
+     * @param $intFuzzyStockinOrderId
+     * @return array
+     */
+    public static function getPlaceOrderIdsByFuzzyStockinOrderId($intFuzzyStockinOrderId)
+    {
+        if (empty($intFuzzyStockinOrderId)) {
+            return [];
+        }
+        $arrConditions = [
+            'stockin_order_id%10000' => $intFuzzyStockinOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrRet = self::findRows(['place_order_id'], $arrConditions);
+        return array_column($arrRet, 'place_order_id');
+    }
+
+    /**
      * get stockin order ids by place order id
      * @param $intPlaceOrderId
      * @return array

@@ -416,15 +416,24 @@ class Service_Data_PlaceOrder
             $arrConditions['warehouse_id'] = ['in', $arrInput['warehouse_ids']];
         }
         if (!empty($arrInput['source_order_id'])) {
-            $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::
-                                    getPlaceOrdersByStockinOrderIds([$arrInput['source_order_id']]);
+            if (strlen(strval($arrInput['source_order_id'])) == 4) {
+                $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::
+                                        getPlaceOrderIdsByFuzzyStockinOrderId($arrInput['source_order_id']);
+            } else {
+                $arrPlaceOrderIds = Model_Orm_StockinPlaceOrder::
+                                        getPlaceOrdersByStockinOrderIds([$arrInput['source_order_id']]);
+            }
             if (empty($arrPlaceOrderIds)) {
                 return false;
             }
             $arrConditions['place_order_id'] = ['in', $arrPlaceOrderIds];
         }
         if (!empty($arrInput['place_order_id'])) {
-            $arrConditions['place_order_id'] = ['like', '%'.$arrInput['place_order_id'].'%'];
+            if (strlen(strval($arrInput['place_order_id'])) == 4) {
+                $arrConditions['place_order_id%10000'] = $arrInput['place_order_id'];
+            } else {
+                $arrConditions['place_order_id'] = $arrInput['place_order_id'];
+            }
         }
         if (!empty($arrInput['vendor_id'])) {
             $arrConditions['vendor_id'] = intval($arrInput['vendor_id']);
