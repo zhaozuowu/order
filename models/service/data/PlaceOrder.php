@@ -420,7 +420,7 @@ class Service_Data_PlaceOrder
             $arrConditions['place_order_id'] = ['in', $arrPlaceOrderIds];
         }
         if (!empty($arrInput['place_order_id'])) {
-            $arrConditions['place_order_id'] = intval($arrInput['place_order_id']);
+            $arrConditions['place_order_id'] = ['like', '%'.$arrInput['place_order_id'].'%'];
         }
         if (!empty($arrInput['vendor_id'])) {
             $arrConditions['vendor_id'] = intval($arrInput['vendor_id']);
