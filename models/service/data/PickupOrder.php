@@ -654,7 +654,7 @@ class Service_Data_PickupOrder
         foreach ($arrPickupSkus as $arrSkuInfo) {
             $arrUpdateFields[] = [
                 'pickup_amount' => $arrSkuInfo['pickup_amount'],
-                'pickup_extra_info' => json_encode($arrSkuInfo['pickup_extra_info']),
+                'pickup_extra_info' => json_encode($arrSkuInfo['pick_infos']),
             ];
             $arrUpdateCondition[] = [
                 'pickup_order_id' => $intPickupOrderId,
