@@ -59,6 +59,8 @@ class Action_GetPlaceOrderList extends Order_Base_Action
                 == $arrItem['place_order_status']) {
                 $arrData['orders'][$intKey]['place_time']
                     = date("Y-m-d H:i:s", $arrItem['update_time']);
+            } else {
+                $arrData['orders'][$intKey]['place_time'] = '---';
             }
         }
         return $arrData;
