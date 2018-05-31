@@ -550,18 +550,8 @@ class Service_Data_PlaceOrder
      * @return bool
      */
     protected function isPlacedOrderForReserve($intStockinOrderId) {
-        if (empty($intStockinOrderId)) {
-            return [];
-        }
         $arrStockinOrderInfo = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intStockinOrderId);
-
-        if (empty($arrPlaceOrderInfo)) {
-            return Order_Define_StockinOrder::STOCKIN_NOT_PLACED;
-        }
-        if (!empty($arrPlaceOrderInfo) && Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO == $arrPlaceOrderInfo['is_auto']) {
-            return Order_Define_StockinOrder::STOCKIN_NOT_PLACED;
-        }
-        return Order_Define_StockinOrder::STOCKIN_IS_PLACED;
+        return $arrStockinOrderInfo['is_placed_order'];
     }
 
     /**
@@ -576,6 +566,10 @@ class Service_Data_PlaceOrder
         foreach ((array)$arrStockinOrderList as $intKey => $arrStockinOrderInfo) {
             $intStockinOrderId = $arrStockinOrderInfo['stockin_order_id'];
             $arrStockinOrderList[$intKey]['is_placed_order'] = $this->isPlacedOrderForReserve($intStockinOrderId);
+            $intIsAuto = $this->IsAutoPlacedOrder($intStockinOrderId);
+            if ($intIsAuto == Order_Define_StockinOrder::STOCKIN_AUTO_PLACED) {
+                $arrStockinOrderList[$intKey]['is_placed_order'] = Order_Define_StockinOrder::STOCKIN_AUTO_PLACED;
+            }
         }
         return $arrStockinOrderList;
     }
@@ -592,10 +586,9 @@ class Service_Data_PlaceOrder
         foreach ((array)$arrStockinOrderList as $intKey => $arrStockinOrderInfo) {
             $intStockinOrderId = $arrStockinOrderInfo['stockin_order_id'];
             $intIsAuto = $this->IsAutoPlacedOrder($intStockinOrderId);
-            if (false === $intIsAuto) {
-                $arrStockinOrderList[$intKey]['is_placed_order'] = Order_Define_StockinOrder::STOCKIN_NOT_PLACED;
+            if ($intIsAuto == Order_Define_StockinOrder::STOCKIN_AUTO_PLACED) {
+                $arrStockinOrderList[$intKey]['is_placed_order'] = Order_Define_StockinOrder::STOCKIN_AUTO_PLACED;
             }
-            
         }
         return $arrStockinOrderList;
     }
