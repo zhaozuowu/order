@@ -1779,7 +1779,7 @@ class Service_Data_StockoutOrder
                 $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
                 $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
                 $this->addLog($userId, $userName, '完成揽收:'.$intStockoutOrderId,$operationType, $intStockoutOrderId);
-                $this->notifyTmsFnishPick($intStockoutOrderId, $arrPickupStockOrderSkus);
+                $this->notifyTmsFnishPick(strval($intStockoutOrderId), $arrPickupStockOrderSkus);
             });
            //更新报表
             Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
