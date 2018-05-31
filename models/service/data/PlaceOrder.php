@@ -60,11 +60,11 @@ class Service_Data_PlaceOrder
             && empty($arrSplitOrderInfo['bad_skus']))) {
             return [];
         }
-        $this->autoPlaceOrder($arrOrderList, $arrSkuList);
         list($arrOrderList, $arrSkuList, $arrMapOrderList) =
             $this->getCreateParams($arrSplitOrderInfo);
         Bd_Log::trace(sprintf("method[%s] order_list[%s] sku_list[%s] map_order_list",
                         json_encode($arrOrderList), json_encode($arrSkuList), json_encode($arrMapOrderList)));
+        $this->autoPlaceOrder($arrOrderList, $arrSkuList);
         //创建上架单
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
         use ($arrOrderList, $arrSkuList, $arrMapOrderList, $arrStockinOrderIds) {
