@@ -64,16 +64,6 @@ class Service_Data_PlaceOrder
             $this->getCreateParams($arrSplitOrderInfo);
         Bd_Log::trace(sprintf("method[%s] order_list[%s] sku_list[%s] map_order_list",
                         json_encode($arrOrderList), json_encode($arrSkuList), json_encode($arrMapOrderList)));
-        //自动创建的上架单进行自动上架
-        foreach ((array)$arrOrderList as $arrOrderItem) {
-            $intIsAuto = $arrOrderItem['is_auto'];
-            if ($intIsAuto != Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO) {
-                continue;
-            }
-            $intPlaceOrderId = $arrOrderItem['place_order_id'];
-            $arrSkus = $arrOrderItem['skus'];
-            $this->confirmPlaceOrder($intPlaceOrderId,$arrSkus, '', 0);
-        }
         //创建上架单
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
         use ($arrOrderList, $arrSkuList, $arrMapOrderList, $arrStockinOrderIds) {
