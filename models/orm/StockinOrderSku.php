@@ -257,4 +257,21 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
         $arrResult['list'] = $arrRowsAndTotal['rows'];
         return $arrResult;
     }
+
+    /**
+     * 获取入库单商品信息
+     * @param $intStockinOrderId
+     * @param $intSkuId
+     * @return Model_Orm_StockinOrderSku
+     */
+    public static function getStockinOrderSkuInfo($intStockinOrderId, $intSkuId)
+    {
+        $arrContionds = [
+            'stockin_order_id' => $intStockinOrderId,
+            'sku_id' => $intSkuId,
+            'is_delete' => Nscm_Define_Const::ENABLE,
+        ];
+
+        return self::findOne($arrContionds);
+    }
 }
