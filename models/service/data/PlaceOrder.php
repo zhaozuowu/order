@@ -405,6 +405,10 @@ class Service_Data_PlaceOrder
     {
         $arrConditions = [];
         $arrConditions['is_auto'] = Order_Define_PlaceOrder::PLACE_ORDER_NOT_AUTO;
+        if (!empty($arrInput['place_order_status']) && !empty($arrInput['place_time_start'])
+            && !empty($arrInput['place_time_end'])) {
+            return false;
+        }
         if (!empty($arrInput['place_order_status'])) {
             $arrConditions['place_order_status'] = intval($arrInput['place_order_status']);
         }
