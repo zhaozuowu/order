@@ -1746,6 +1746,7 @@ class Service_Data_StockoutOrder
      * @param int    $userId
      * @param string $userName
      * @throws Order_BusinessError
+     * @throws Exception
      */
     public function batchFinishOrder($intPickupOrderId, $arrPickupSkus, $userId, $userName)
     {
@@ -1761,24 +1762,26 @@ class Service_Data_StockoutOrder
                 'stockout_order_pickup_amount' => $stockoutOrderPickupAmount,
                 'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
             ];
-            $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($intStockoutOrderId, $updateData);
-            if (empty($result)) {
-                Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
-            }
-            foreach ($arrPickupStockOrderSkus as $item) {
-                $condition = [
-                    'stockout_order_id' => $intStockoutOrderId,
-                    'sku_id' => $item['sku_id'],
-                ];
-                $skuUpdateData = ['pickup_amount' => $item['pickup_amount']];
-                $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdateData);
-            }
-            $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
-            $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
-            $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
-            $this->addLog($userId, $userName, '完成揽收:'.$intStockoutOrderId,$operationType, $intStockoutOrderId);
-            $this->notifyTmsFnishPick($intStockoutOrderId, $arrPickupStockOrderSkus);
-            //更新报表
+            Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($intStockoutOrderId, $updateData, $arrPickupStockOrderSkus){
+                $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($intStockoutOrderId, $updateData);
+                if (empty($result)) {
+                    Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+                }
+                foreach ($arrPickupStockOrderSkus as $item) {
+                    $condition = [
+                        'stockout_order_id' => $intStockoutOrderId,
+                        'sku_id' => $item['sku_id'],
+                    ];
+                    $skuUpdateData = ['pickup_amount' => $item['pickup_amount']];
+                    $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdateData);
+                }
+                $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
+                $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
+                $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
+                $this->addLog($userId, $userName, '完成揽收:'.$intStockoutOrderId,$operationType, $intStockoutOrderId);
+                $this->notifyTmsFnishPick($intStockoutOrderId, $arrPickupStockOrderSkus);
+            });
+           //更新报表
             Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
                 Order_Statistics_Type::ACTION_UPDATE,
                 $intStockoutOrderId);
