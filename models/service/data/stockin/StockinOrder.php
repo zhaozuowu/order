@@ -518,7 +518,7 @@ class Service_Data_Stockin_StockinOrder
         }
         $strOperateDevice = Order_Define_Const::DEVICE_MAP[$intStockinDevice];
         $intOperateType = Dao_Ral_Log::LOG_OPERATION_TYPE_UPDATE;
-        $this->addLog($intLogType, $strOrderId, $strOperateDevice, $strContent, $intCreatorId, $strCustomerName,
+        $this->addLog($intLogType, $strOrderId, $strOperateDevice, $strContent, $intCreatorId, $strCreatorName,
             $intOperateType);
         return $intStockinOrderId;
     }
