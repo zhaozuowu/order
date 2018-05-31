@@ -37,8 +37,22 @@ class Action_GetPickupOrderCountByWaiting extends Order_Base_Action
      */
     public function format($data)
     {
-        return [
-            'count' => $data,
+        $list = [
+            'for_picking_amount'=>0,
+            'finish_picking_amount'=>0,
+            'cancel_picking_amount'=>0,
         ];
+       foreach ($data as $arrPickOrder)
+       {
+           if($arrPickOrder['pickup_order_status'] == Order_Define_PickupOrder::PICKUP_ORDER_STATUS_INIT){
+            $list['for_picking_amount'] = $arrPickOrder['pickupOrderNum'];
+           }elseif($arrPickOrder['pickup_order_status'] == Order_Define_PickupOrder::PICKUP_ORDER_STATUS_FINISHED){
+               $list['finish_picking_amount'] = $arrPickOrder['pickupOrderNum'];
+           }elseif($arrPickOrder['pickup_order_status'] == Order_Define_PickupOrder::PICKUP_ORDER_STATUS_CANCEL){
+               $list['cancel_picking_amount'] = $arrPickOrder['pickupOrderNum'];
+           }
+
+       }
+       return $list;
     }
 }

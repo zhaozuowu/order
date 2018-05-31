@@ -153,17 +153,17 @@ class Service_Data_ShiftOrder
             $arrFormatInput['target_location'] = $arrInput['target_location'];
         }
         if (!empty($arrInput['sku_id'])) {
-            $arrFormatInput['sku_id'][] = ['like ',$arrInput['sku_id']];
+            $arrFormatInput['detail'] = ['like',"%".$arrInput['sku_id']."%"];
         }
         if (!empty($arrInput['sku_name'])) {
-            $arrFormatInput['sku_name'][] = ['like ',$arrInput['sku_name']];
+            $arrFormatInput['detail'] = ['like',"%".$arrInput['sku_name']."%"];
         }
-        if (!empty($arrInput['begin_date'])) {
-            $arrFormatInput['create_time'][] = ['>=', $arrInput['begin_date']];
+        if (!empty($arrInput['beginning_date'])) {
+            $arrFormatInput['create_time'][] = ['>=', $arrInput['beginning_date']];
         }
 
-        if (!empty($arrInput['end_date'])) {
-            $arrFormatInput['create_time'][] = ['<=', $arrInput['end_date']];
+        if (!empty($arrInput['ending_date'])) {
+            $arrFormatInput['create_time'][] = ['<=', $arrInput['ending_date']];
         }
 
         return $arrFormatInput;

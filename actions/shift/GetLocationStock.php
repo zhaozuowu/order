@@ -5,6 +5,8 @@
 
 class Action_GetLocationStock extends Order_Base_Action
 {
+    protected $boolCheckWarehouse = false;
+    protected $boolCheckAuth = false;
     /**
      * input params
      * @var array

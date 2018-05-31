@@ -10,7 +10,7 @@ class Action_CancelOrder extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'shift_order_id' => 'str|required|min[1]|len[64]',
+        'shift_order_id' => 'regex|patern[/^(M\d{13})?$/]',
     ];
 
     /**

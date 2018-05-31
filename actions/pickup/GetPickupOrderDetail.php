@@ -88,11 +88,16 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
         $list =  empty($pickupExtraInfo['create_info']) ? []:$pickupExtraInfo['create_info'];
         foreach ($list as $key=>$item) {
             $list[$key]['expire_time'] = 0;
+            $list[$key]['time'] = 0;
             if (Nscm_Define_Sku::SKU_EFFECT_FROM == $intSkuEffectType) {
 
                 $list[$key]['expire_time'] = $item['production_time'];
+                $list[$key]['time'] = strtotime(date('Y-m-d',
+                    $item['production_time']));
             } else if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
                 $list[$key]['expire_time'] = $item['expiration_time'];
+                $list[$key]['time'] = strtotime(date('Y-m-d',
+                    $item['expiration_time']));
             }
         }
         return $list;

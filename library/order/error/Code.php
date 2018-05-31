@@ -275,7 +275,7 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      *
      */
-    const STOCKOUT_ORDER_IN_PICKING= 340012;
+    const STOCKOUT_ORDER_IN_PICKING= 311001;
 
     /**
      * 创建业态订单参数错误
