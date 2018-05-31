@@ -438,9 +438,41 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const TIME_PARAMS_LESS_THAN_ONE = 340028;
 
+    /**
+     * 多仓库查询需要预约入库时间范围
+     */
+    const MULTI_WAREHOUSE_QUERY_PLAN_TIME_REQUIRED = 340029;
 
     /**
-     * 查询返回结果为空
+     * 输入商品id或条码id长度异常
+     */
+    const SKU_UPC_OR_SKU_ID_LENGTH_EXCEPTION = 340030;
+
+    /**
+     * 该商品不在该单据中
+     */
+    const RESERVE_ORDER_SKU_NOT_FOUND = 340031;
+
+    /**
+     * 该条码不存在，请联系采购人员
+     */
+    const RESERVE_ORDER_UPC_ID_NOT_EXIST = 340032;
+
+    /**
+     * 查询商品条码失败
+     */
+    const RESERVE_ORDER_UPC_QUERY_FAIL = 340033;
+
+    /**
+     * 该单据不在该仓库中
+     */
+    const ORDER_NOT_IN_GIVEN_WAREHOUSE = 340034;
+
+
+
+
+    /**
+     * 未找到结果
      * @var integer
      */
     const NWMS_ORDER_QUERY_RESULT_EMPTY = 360001;
@@ -449,6 +481,11 @@ class Order_Error_Code extends Wm_Error_Code
      * 该预约单不存在，请确认后输入
      */
     const NWMS_ORDER_RESERVE_ORDER_NOT_EXIST = 360002;
+
+    /**
+     * 该采购单不存在，请确认后输入
+     */
+    const NWMS_ORDER_PURCHASE_ORDER_NOT_EXIST = 360003;
 
     /**
      * 出库单已打印，无法取消

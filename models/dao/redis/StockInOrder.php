@@ -45,4 +45,72 @@ class Dao_Redis_StockInOrder extends Order_Base_Redis
         Bd_Log::debug(sprintf('get from redis, result: `%s`', $intStockInOrderId));
         return $intStockInOrderId;
     }
+
+    /**
+     * get operate record
+     * @param $strOrderId
+     * @return array
+     */
+    public function getOperateRecord($strOrderId)
+    {
+        $strRedisKey = Nscm_Define_RedisPrefix::NWMS_STOCKIN_OPERATE_RECORD . $strOrderId;
+        Bd_Log::debug(sprintf('get from redis, key[%s]', $strRedisKey));
+        $strOrderInfo = $this->objRedisConn->get($strRedisKey);
+        Bd_Log::debug(sprintf('get from redis, result: `%s`', json_encode($strOrderInfo)));
+        $arrRet = [];
+        if (empty($strOrderInfo)) {
+            Bd_Log::trace('redis empty, return []');
+        } else {
+            $arrRet = Nscm_Lib_Util::jsonDecode($strOrderInfo, true);
+        }
+        return $arrRet;
+    }
+
+    /**
+     * @param $strOrderId
+     * @param $strOperateUserName
+     * @param $strOperateDevice
+     * @param $intOperateTime
+     * @param $intOperateUserId
+     * @return bool
+     * @throws Order_BusinessError
+     */
+    public function addOperateRecord($strOrderId, $strOperateUserName, $strOperateDevice, $intOperateTime,
+                                     $intOperateUserId)
+    {
+        $strRedisKey = Nscm_Define_RedisPrefix::NWMS_STOCKIN_OPERATE_RECORD . $strOrderId;
+        $arrAllRecords = $this->getOperateRecord($strOrderId);
+        $arrNewRecord = [
+            'operate_time' => intval($intOperateTime),
+            'operate_user_name' => strval($strOperateUserName),
+            'operate_device' => strval($strOperateDevice),
+            'operate_user_id' => intval($intOperateUserId)
+        ];
+        $arrAllRecords[] = $arrNewRecord;
+        $strContent = json_encode($arrAllRecords);
+        Bd_Log::debug(sprintf('set redis, key[%s], data:%s', $strRedisKey, $strContent));
+        $boolRes = $this->objRedisConn->set($strRedisKey, $strContent);
+        Bd_Log::debug('set redis result: ' . json_encode($boolRes));
+        if (false === $boolRes) {
+            Bd_Log::warning('set redis fail');
+            Order_BusinessError::throwException(Order_Error_Code::RAL_ERROR);
+        }
+        return $boolRes;
+
+    }
+
+    /**
+     * @param $strOrderId
+     * @return int
+     */
+    public function dropOperateRecord($strOrderId) {
+        $strRedisKey = Nscm_Define_RedisPrefix::NWMS_STOCKIN_OPERATE_RECORD . $strOrderId;
+        Bd_Log::debug(sprintf('drop redis, key[%s]', $strRedisKey));
+        $boolRes = $this->objRedisConn->delete($strRedisKey);
+        Bd_Log::debug('drop redis result: ' . json_encode($boolRes));
+        if (false == $boolRes) {
+            Bd_Log::warning('drop redis key fail: ' . $strRedisKey);
+        }
+        return $boolRes;
+    }
 }

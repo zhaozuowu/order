@@ -82,6 +82,8 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
                 'stockout_order_sku_amount' => intval($arrRow['stockout_order_sku_amount']),
                 'stockin_order_sku_real_amount' => intval($arrRow['stockin_order_sku_real_amount']),
                 'stockin_order_sku_extra_info' => strval($arrRow['stockin_order_sku_extra_info']),
+                'sku_main_image' => strval($arrRow['sku_main_image']),
+                'upc_min_unit' => intval($arrRow['upc_min_unit']),
             ];
         }
         return self::batchInsert($arrDb);
@@ -153,6 +155,23 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
         ];
         $arrOrderBy = ['id' => 'asc'];
         return self::findRows(self::getAllColumns(), $arrCondition, $arrOrderBy);
+    }
+
+    /**
+     * 获取指定入库单的sku_id商品信息
+     * @param $strStockinOrderId
+     * @param $strSkuId
+     * @return array
+     */
+    public static function getStockinOrderSkuInfo($strStockinOrderId, $strSkuId)
+    {
+        $arrConds = [
+            'stockin_order_id' => $strStockinOrderId,
+            'sku_id' => $strSkuId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrResult = self::findRow(self::getAllColumns(), $arrConds);
+        return $arrResult;
     }
 
     /**
@@ -264,7 +283,7 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
      * @param $intSkuId
      * @return Model_Orm_StockinOrderSku
      */
-    public static function getStockinOrderSkuInfo($intStockinOrderId, $intSkuId)
+    public static function getStockinOrderSkuInfoObject($intStockinOrderId, $intSkuId)
     {
         $arrContionds = [
             'stockin_order_id' => $intStockinOrderId,
