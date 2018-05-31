@@ -76,6 +76,7 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
         $arrRet['update_operator'] = $data['update_operator'];
         $arrRet['update_time'] = $data['update_time'];
         $arrRet['warehouse_name'] = $data['warehouse_name'];
+        $arrRet['warehouse_id'] = $data['warehouse_id'];
         $arrRet['pickup_skus'] = $arrSkus;
 
         return $arrRet;
