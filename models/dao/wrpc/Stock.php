@@ -137,6 +137,7 @@ class Dao_Wrpc_Stock
         $arrParams = [];
         $arrRequestParams['p_order_id'] = $intPlaceOrderId;
         $arrRequestParams['warehouse_id'] = $intWarehouseId;
+        $arrSkusPlace = $this->uniqueSkusPlaceBySkuExpireDate($arrSkusPlace);
         $arrRequestParams['details'] = $this->getLocationDetails($arrSkusPlace, $intIsDefective);
         $arrParams['requestParams'] = $arrRequestParams;
         $arrRet = $this->objWrpcService->confirmLocation($arrParams);
@@ -147,6 +148,27 @@ class Dao_Wrpc_Stock
                             json_encode($arrParams), json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NOTIFY_STOCK_PLACE_ORDER_CONFIRM_FAILE);
         }
+    }
+
+    /**
+     * 按照skuid和效期过滤重复
+     * @param $arrSkusPlace
+     * @return array
+     */
+    protected function uniqueSkusPlaceBySkuExpireDate($arrSkusPlace) {
+        if (empty($arrSkusPlace)) {
+            return [];
+        }
+        $arrMapSkuExpireDate = [];
+        foreach ((array)$arrSkusPlace as $arrSkusPlaceItem) {
+            $intSkuId = $arrSkusPlaceItem['sku_id'];
+            $intExpireDate = $arrSkusPlaceItem['expire_date'];
+            if (empty($intSkuId) || empty($intExpireDate)) {
+                continue;
+            }
+            $arrMapSkuExpireDate[$intSkuId.'#'.$intExpireDate] = $arrSkusPlaceItem;
+        }
+        return array_values($arrMapSkuExpireDate);
     }
 
     /**
