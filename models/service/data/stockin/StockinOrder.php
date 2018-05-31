@@ -1681,6 +1681,7 @@ class Service_Data_Stockin_StockinOrder
         $strOrderId = strval($strOrderId);
         $intUserId = intval($intUserId);
         $intLogType = 0;
+        $intOrderId = 0;
         // check order status
         if (preg_match('/(SIO|ASN)(\d{13})/', $strOrderId, $arrMatches)) {
             $strOrderPrefix = $arrMatches[1];
@@ -1718,7 +1719,7 @@ class Service_Data_Stockin_StockinOrder
         if (empty($arrOperateRecord)) {
             $strContent = Order_Define_Text::START_OPERATE_STOCKIN_ORDER;
             $intOperateType = Dao_Ral_Log::LOG_OPERATION_TYPE_CREATE;
-            $this->addLog($intLogType, $strOrderId, $strOperateDevice, $strContent, $intUserId, $strOperateName,
+            $this->addLog($intLogType, $intOrderId, $strOperateDevice, $strContent, $intUserId, $strOperateName,
                 $intOperateType);
         }
         $boolResult = $daoRedis->addOperateRecord($strOrderId, $strOperateName, $strOperateDevice, $intOperateTime,
