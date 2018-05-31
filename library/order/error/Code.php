@@ -463,6 +463,13 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const RESERVE_ORDER_UPC_QUERY_FAIL = 340033;
 
+    /**
+     * 该单据不在该仓库中
+     */
+    const ORDER_NOT_IN_GIVEN_WAREHOUSE = 340034;
+
+
+
 
     /**
      * 未找到结果

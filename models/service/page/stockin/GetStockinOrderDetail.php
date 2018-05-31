@@ -47,6 +47,14 @@ class Service_Page_Stockin_GetStockinOrderDetail implements Order_Base_Page
             $ret['last_operate_device'] = $arrRetLastRecord['operate_device'];
         }
 
+        // 如果传入了warehouse_id字段，则进行字段校验该单仓库是不是给定的仓库
+        $strWarehouseId = $arrInput['warehouse_id'];
+        if (!empty($strWarehouseId)) {
+            if ($strWarehouseId != $ret['warehouse_id']) {
+                Order_BusinessError::throwException(Order_Error_Code::ORDER_NOT_IN_GIVEN_WAREHOUSE);
+            }
+        }
+
         return $ret;
     }
 }

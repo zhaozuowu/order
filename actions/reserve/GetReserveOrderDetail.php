@@ -13,6 +13,7 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
      */
     protected $arrInputParams = [
         'reserve_order_id' => 'regex|patern[/^(ASN|PUR)\d{13}$/]',
+        'warehouse_id' => 'str',
     ];
 
     /**
