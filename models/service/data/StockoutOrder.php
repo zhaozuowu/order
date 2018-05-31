@@ -1762,7 +1762,8 @@ class Service_Data_StockoutOrder
                 'stockout_order_pickup_amount' => $stockoutOrderPickupAmount,
                 'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
             ];
-            Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($intStockoutOrderId, $updateData, $arrPickupStockOrderSkus){
+            Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($intStockoutOrderId, $updateData,
+                $arrPickupStockOrderSkus, $userId, $userName){
                 $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($intStockoutOrderId, $updateData);
                 if (empty($result)) {
                     Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
@@ -1812,35 +1813,36 @@ class Service_Data_StockoutOrder
         }
         $objOrmSku = new Model_Orm_StockoutOrderSku();
 
-        $arrStockouOrderSkuPickupMap = [];
-        $arrStockouOrderSkuPickupList = [];
-        $arrStockouOrderSkuList = $objOrmSku->getStockoutOrderSkusByOrderIds($arrStockouOrderIds);
-        foreach ($arrStockouOrderSkuList as $arrStockoutOrderSku) {
+        $arrStockoutOrderSkuPickupMap = [];
+        $arrStockoutOrderSkuPickupList = [];
+        $arrStockoutOrderSkuList = $objOrmSku->getStockoutOrderSkusByOrderIds($arrStockouOrderIds);
+        foreach ($arrStockoutOrderSkuList as $arrStockoutOrderSku) {
             $intStockoutOrderId = $arrStockoutOrderSku['stockout_order_id'];
             $intSkuId = $arrStockoutOrderSku['sku_id'];
             $intSkuDistributeAmount = $arrStockoutOrderSku['distribute_amount'];
             if (empty($arrPickupSkusMap[$intSkuId])) {
+                $arrStockoutOrderSkuPickupMap[$intStockoutOrderId][$intSkuId] = $arrPickupSkusMap[$intSkuId];
                 continue;
             }
             if (0 > $arrPickupSkusMap[$intSkuId] - $intSkuDistributeAmount) {
-                $arrStockouOrderSkuPickupMap[$intStockoutOrderId][$intSkuId] = $arrPickupSkusMap[$intSkuId];
+                $arrStockoutOrderSkuPickupMap[$intStockoutOrderId][$intSkuId] = $arrPickupSkusMap[$intSkuId];
                 $arrPickupSkusMap[$intSkuId] = 0;
             } else {
-                $arrStockouOrderSkuPickupMap[$intStockoutOrderId][$intSkuId] = $intSkuDistributeAmount;
+                $arrStockoutOrderSkuPickupMap[$intStockoutOrderId][$intSkuId] = $intSkuDistributeAmount;
             }
         }
 
-        foreach ($arrStockouOrderSkuPickupMap as $intStockoutOrderId => $arrStockouOrderSkuPickupInfo) {
+        foreach ($arrStockoutOrderSkuPickupMap as $intStockoutOrderId => $arrStockoutOrderSkuPickupInfo) {
             $arrStockouOrderSkuPickupItem['stockout_order_id'] = $intStockoutOrderId;
-            foreach ($arrStockouOrderSkuPickupInfo as $intSkuId => $intSkuPickupAmount) {
+            foreach ($arrStockoutOrderSkuPickupInfo as $intSkuId => $intSkuPickupAmount) {
                 $arrStockouOrderSkuPickupItem['pickup_skus'][] = [
                     'sku_id' => $intSkuId,
                     'pickup_amount' => $intSkuPickupAmount,
                 ];
             }
-            $arrStockouOrderSkuPickupList[] = $arrStockouOrderSkuPickupItem;
+            $arrStockoutOrderSkuPickupList[] = $arrStockouOrderSkuPickupItem;
         }
-        return $arrStockouOrderSkuPickupList;
+        return $arrStockoutOrderSkuPickupList;
     }
 
 }
