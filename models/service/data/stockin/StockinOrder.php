@@ -380,7 +380,7 @@ class Service_Data_Stockin_StockinOrder
                                        $arrSkuInfoList, $intCreatorId, $strCreatorName, $intType, $boolIgnoreCheckDate,
                                         $intStockinDevice)
     {
-
+        $strContent = '';
         if (!isset(Order_Define_StockinOrder::STOCKIN_ORDER_TYPES[$intType])) {
             // order type error
             Order_Error::throwException(Order_Error_Code::SOURCE_ORDER_TYPE_ERROR);
@@ -410,6 +410,9 @@ class Service_Data_Stockin_StockinOrder
             $intStockinOrderPlanAmount = $arrSourceOrderInfo['reserve_order_plan_amount'];
             $strSourceSupplierId = strval($arrSourceOrderInfo['vendor_id']);
             $intReserveOrderPlanTime = $arrSourceOrderInfo['reserve_order_plan_time'];
+            $intLogType = Order_Define_Const::APP_NWMS_ORDER_LOG_STOCKIN_RESERVE_TYPE;
+            $strOrderId = strval($intSourceOrderId);
+            $strContent = Order_Define_Text::SUBMIT_STOCKIN_RESERVE_ORDER;
         } else {
             // 销退入库业态类型等于出库单业态类型
             $intStockinOrderSource = intval($arrSourceOrderInfo['stockout_order_source']);
@@ -420,6 +423,9 @@ class Service_Data_Stockin_StockinOrder
             $intCustomerId = $arrSourceOrderInfo['customer_id'];
             $strCustomerName = $arrSourceOrderInfo['customer_name'];
             $intReserveOrderPlanTime = 0;
+            $intLogType = Order_Define_Const::APP_NWMS_ORDER_LOG_STOCKIN_STOCKOUT_TYPE;
+            $strOrderId = strval($intStockinOrderId);
+            $strContent = Order_Define_Text::SUBMIT_STOCKIN_STOCKOUT_ORDER;
         }
         $arrSourceInfo = $this->getSourceInfo($arrSourceOrderInfo, $intType);
         $strSourceInfo = json_encode($arrSourceInfo);
@@ -510,7 +516,10 @@ class Service_Data_Stockin_StockinOrder
                 Bd_Log::warning('drop_redis_key_error: ' . $e->getMessage());
             }
         }
-        // @todo log
+        $strOperateDevice = Order_Define_Const::DEVICE_MAP[$intStockinDevice];
+        $intOperateType = Dao_Ral_Log::LOG_OPERATION_TYPE_UPDATE;
+        $this->addLog($intLogType, $strOrderId, $strOperateDevice, $strContent, $intCreatorId, $strCustomerName,
+            $intOperateType);
         return $intStockinOrderId;
     }
 
@@ -1358,13 +1367,18 @@ class Service_Data_Stockin_StockinOrder
 
     /**
      * @param  string $strStockInOrderId 入库单id
-     * @param  array  $arrSkuInfoList 入库sku信息
+     * @param  array $arrSkuInfoList 入库sku信息
      * @param  string $strRemark 入库备注
+     * @param $boolIgnoreCheckDate
+     * @param  int $intDeviceType device type
+     * @param $intUserId
+     * @param $strUserName
      * @throws Exception
      * @throws Order_BusinessError
      * @throws Order_Error
      */
-    public function confirmStockInOrder($strStockInOrderId, $arrSkuInfoList, $strRemark, $boolIgnoreCheckDate)
+    public function confirmStockInOrder($strStockInOrderId, $arrSkuInfoList, $strRemark, $boolIgnoreCheckDate,
+                                        $intDeviceType, $intUserId, $strUserName)
     {
         $boolIgnoreCheckDate = boolval($boolIgnoreCheckDate);
         if (empty($strStockInOrderId)) {
@@ -1397,7 +1411,7 @@ class Service_Data_Stockin_StockinOrder
             $arrStockInSkuList = $this->getStockInSkuList($intStockInOrderId, $arrSkuInfoList, $boolIgnoreCheckDate);
             Model_Orm_StockinOrder::getConnection()->transaction(function () use (
                 $intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $arrDbSkuInfoList, $strRemark,
-                $intWarehouseId, $arrStockInSkuList) {
+                $intWarehouseId, $arrStockInSkuList, $intDeviceType) {
                 $intBatchId = 0;
                 if (!empty($arrStockInSkuList)) {
                     $objRalStock = new Dao_Ral_Stock();
@@ -1408,7 +1422,7 @@ class Service_Data_Stockin_StockinOrder
                     $intBatchId = $arrStock['stockin_batch_id'];
                 }
                 Model_Orm_StockinOrder::confirmStockInOrder($intStockInOrderId, $intStockInTime,
-                    $intStockInOrderRealAmount, $strRemark, $intBatchId);
+                    $intStockInOrderRealAmount, $strRemark, $intBatchId, $intDeviceType);
                 Model_Orm_StockinOrderSku::confirmStockInOrderSkuList($arrDbSkuInfoList);
             });
             $intTable = Order_Statistics_Type::TABLE_STOCKIN_STOCKOUT;
@@ -1427,6 +1441,13 @@ class Service_Data_Stockin_StockinOrder
         } catch (Exception $e) {
             Bd_Log::warning('drop_redis_key_error: ' . $e->getMessage());
         }
+        $intLogType = Order_Define_Const::APP_NWMS_ORDER_LOG_STOCKIN_STOCKOUT_TYPE;
+        $strOrderId = strval($intStockInOrderId);
+        $strOperateDevice = Order_Define_Const::DEVICE_MAP[$intDeviceType];
+        $strContent = Order_Define_Text::SUBMIT_STOCKIN_STOCKOUT_ORDER;
+        $intOperateType = Dao_Ral_Log::LOG_OPERATION_TYPE_UPDATE;
+        $this->addLog($intLogType, $strOrderId, $strOperateDevice, $strContent, $intUserId, $strUserName,
+            $intOperateType);
     }
 
     /**
@@ -1659,6 +1680,7 @@ class Service_Data_Stockin_StockinOrder
         $strOperateDevice = strval($strOperateDevice);
         $strOrderId = strval($strOrderId);
         $intUserId = intval($intUserId);
+        $intLogType = 0;
         // check order status
         if (preg_match('/(SIO|ASN)(\d{13})/', $strOrderId, $arrMatches)) {
             $strOrderPrefix = $arrMatches[1];
@@ -1674,6 +1696,7 @@ class Service_Data_Stockin_StockinOrder
                     Bd_Log::warning('reserve order status invalid: ' . $arrReserveOrderInfo['reserve_order_status']);
                     Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_STATUS_NOT_ALLOW_STOCKIN);
                 }
+                $intLogType = Order_Define_Const::APP_NWMS_ORDER_LOG_STOCKIN_RESERVE_TYPE;
             } else {
                 $arrStockinOrderInfo = Model_Orm_StockinOrder::getStockinOrderInfoByStockinOrderId($intOrderId);
                 if (empty($arrStockinOrderInfo)) {
@@ -1685,14 +1708,42 @@ class Service_Data_Stockin_StockinOrder
                     Bd_Log::warning('stockin order status invalid: ' . $arrStockinOrderInfo['stockin_order_status']);
                     Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_STATUS_INVALID);
                 }
+                $intLogType = Order_Define_Const::APP_NWMS_ORDER_LOG_STOCKIN_STOCKOUT_TYPE;
             }
         } else {
             Bd_Log::trace('order rules not allow: ' . $strOrderId);
             Order_BusinessError::throwException(Order_Error_Code::SOURCE_ORDER_ID_NOT_EXIST);
         }
+        $arrOperateRecord = $daoRedis->getOperateRecord($strOrderId);
+        if (empty($arrOperateRecord)) {
+            $strContent = Order_Define_Text::START_OPERATE_STOCKIN_ORDER;
+            $intOperateType = Dao_Ral_Log::LOG_OPERATION_TYPE_CREATE;
+            $this->addLog($intLogType, $strOrderId, $strOperateDevice, $strContent, $intUserId, $strOperateName,
+                $intOperateType);
+        }
         $boolResult = $daoRedis->addOperateRecord($strOrderId, $strOperateName, $strOperateDevice, $intOperateTime,
             $intUserId);
         return $boolResult;
+    }
+
+    /**
+     * @param $intLogType
+     * @param $intOrderId
+     * @param $strDevice
+     * @param $strContent
+     * @param $intUserId
+     * @param $strUserName
+     * @param $intOperateType
+     */
+    public function addLog($intLogType, $intOrderId, $strDevice, $strContent, $intUserId, $strUserName, $intOperateType)
+    {
+        $daoLog = new Dao_Ral_Log();
+        $arrLog = [
+            'content' => $strContent,
+            'device' => $strDevice,
+        ];
+        $strLog = json_encode($arrLog, JSON_UNESCAPED_UNICODE);
+        $daoLog->addLog($intLogType, $intOrderId, $intOperateType, $strUserName, $intUserId, $strLog);
     }
 
     /**

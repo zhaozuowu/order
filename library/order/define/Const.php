@@ -81,4 +81,32 @@ class  Order_Define_Const
      * 60s === 3600 / 60
      */
     const UNIX_TIME_SPAN_PER_MINUTE = 60;
+
+    /**
+     * stockin reserve order type
+     */
+    const APP_NWMS_ORDER_LOG_STOCKIN_RESERVE_TYPE = 7;
+
+    /**
+     * stockin stockout log type
+     */
+    const APP_NWMS_ORDER_LOG_STOCKIN_STOCKOUT_TYPE = 8;
+
+    /**
+     * device default
+     */
+    const DEVICE_DEFAULT = 0;
+
+    /**
+     * device RF
+     */
+    const DEVICE_RF = 1;
+
+    /**
+     * device map
+     */
+    const DEVICE_MAP = [
+        self::DEVICE_DEFAULT => '默认设备',
+        self::DEVICE_RF => 'RF',
+    ];
 }
