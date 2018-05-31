@@ -1743,7 +1743,7 @@ class Service_Data_Stockin_StockinOrder
             'device' => $strDevice,
         ];
         $strLog = json_encode($arrLog, JSON_UNESCAPED_UNICODE);
-        $daoLog->addLog($intLogType, $intOrderId, $intOperateType, $strUserName, $intUserId, $strLog);
+        $daoLog->addLog($intLogType, intval($intOrderId), $intOperateType, $strUserName, $intUserId, $strLog);
     }
 
     /**
