@@ -35,15 +35,9 @@ class Action_GetReserveOrderDetail extends Order_Base_Action
      * @param array $arrRet
      * @return array
      * @throws Nscm_Exception_System
-     * @throws Order_BusinessError
      */
     public function format($arrRet)
     {
-        // 如果无仓库权限，则抛出异常
-        if(!Nscm_Service_Auth::checkWarehouse([$arrRet['warehouse_id']])) {
-            Order_BusinessError::throwException(Order_Error_Code::USER_NO_WAREHOUSE_RIGHT);
-        }
-
         $arrFormatResult = [];
         if (!empty($arrRet)) {
             $arrRoundResult = [];

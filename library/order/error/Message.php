@@ -57,7 +57,6 @@ class Order_Error_Message extends Wm_Error_Message
         Order_Error_Code::RESERVE_ORDER_SKU_NOT_FOUND => '该商品不在该单据中',
         Order_Error_Code::RESERVE_ORDER_UPC_ID_NOT_EXIST => '该条码不存在，请联系采购人员',
         Order_Error_Code::RESERVE_ORDER_UPC_QUERY_FAIL => '查询商品条码失败',
-        Order_Error_Code::USER_NO_WAREHOUSE_RIGHT => '用户无此仓库权限',
         Order_Error_Code::NWMS_ORDER_QUERY_RESULT_EMPTY => '未找到结果',
         Order_Error_Code::NWMS_ORDER_RESERVE_ORDER_NOT_EXIST => '该预约单不存在，请确认后输入',
         Order_Error_Code::NWMS_ORDER_PURCHASE_ORDER_NOT_EXIST => '该采购单不存在，请确认后输入',

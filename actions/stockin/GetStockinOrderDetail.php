@@ -44,15 +44,9 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
      * @param array $arrRet
      * @return array
      * @throws Nscm_Exception_System
-     * @throws Order_BusinessError
      */
     public function format($arrRet)
     {
-        // 如果无仓库权限，则抛出异常
-        if (!Nscm_Service_Auth::checkWarehouse([$arrRet['warehouse_id']])) {
-            Order_BusinessError::throwException(Order_Error_Code::USER_NO_WAREHOUSE_RIGHT);
-        }
-
         // 格式化数据结果
         $arrFormatResult = [];
         if (!empty($arrRet)) {
@@ -74,6 +68,8 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
                 : Nscm_Define_OrderPrefix::SIO . strval($arrRet['stockin_order_id']);
             $arrRoundResult['warehouse_name'] = empty($arrRet['warehouse_name']) ? ''
                 : strval($arrRet['warehouse_name']);
+            $arrRoundResult['warehouse_session_privilege'] =
+                boolval(!Nscm_Service_Auth::checkWarehouse([$arrRet['warehouse_id']]));
             $arrRoundResult['city_id'] = empty($arrRet['city_id']) ? 0
                 : intval($arrRet['city_id']);
             $arrRoundResult['city_name'] = empty($arrRet['city_name']) ? ''
