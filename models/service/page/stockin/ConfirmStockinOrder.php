@@ -29,7 +29,8 @@ class Service_Page_Stockin_ConfirmStockinOrder implements Order_Base_Page
     public function execute($arrInput)
     {
         $this->objDataStockin->confirmStockInOrder($arrInput['stockin_order_id'], $arrInput['sku_info_list'],
-            $arrInput['stockin_order_remark'], $arrInput['ignore_check_date']);
+            $arrInput['stockin_order_remark'], $arrInput['ignore_check_date'], $arrInput['stockin_device'],
+            $arrInput['_session']['user_id'], $arrInput['_session']['user_name']);
         return [];
     }
 }

@@ -903,6 +903,9 @@ class Service_Data_PickupOrder
         }
         $skus = $this->getPickupOrderSkuPrintList($pickupOrder['pickup_order_id']);
         $list['pickup_skus'] = $skus;
+        $arrWarehouseInfo = $this->objDaoWrpcWarehouse->getWarehouseInfoByWarehouseId($pickupOrder['warehouse_id']);
+        $intLocationTag = $arrWarehouseInfo['storage_location_tag'];
+        $list['is_recommend'] = ($intLocationTag == Order_Define_Warehouse::STORAGE_LOCATION_TAG_ENABLED)?1:0;
         return $list;
     }
 
@@ -916,6 +919,8 @@ class Service_Data_PickupOrder
         if (empty($pickupOrder)) {
             return [];
         }
+        $arrWarehouseInfo = $this->objDaoWrpcWarehouse->getWarehouseInfoByWarehouseId($pickupOrder['warehouse_id']);
+        $intLocationTag = $arrWarehouseInfo['storage_location_tag'];
         $arrConds = [
             'pickup_order_id' => $pickupOrder['pickup_order_id'],
             'is_delete'       => Order_Define_Const::NOT_DELETE,
@@ -926,6 +931,7 @@ class Service_Data_PickupOrder
           'pickup_order_type'=>$pickupOrder['pickup_order_type'],
           'pickup_order_id'=>$pickupOrder['pickup_order_id'],
         ];
+        $list['is_recommend'] = ($intLocationTag == Order_Define_Warehouse::STORAGE_LOCATION_TAG_ENABLED)?1:0;
 
         $skus = $this->getPickupOrderSkuPrintList($pickupOrder['pickup_order_id']);
         $list['pickup_skus'] = $skus;

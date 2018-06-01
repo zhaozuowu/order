@@ -86,7 +86,15 @@ class Action_GetStockinOrderSkuList extends Order_Base_Action
                 : intval($arrListItem['reserve_order_sku_plan_amount']);
             $arrRoundResult['stockin_order_sku_real_amount'] = empty($arrListItem['stockin_order_sku_real_amount']) ? 0
                 : intval($arrListItem['stockin_order_sku_real_amount']);
-
+            $arrRoundResult['upc_min_unit'] = empty($arrListItem['upc_min_unit']) ? 0
+                : intval($arrListItem['upc_min_unit']);
+            $arrRoundResult['upc_min_unit_text'] =
+                empty($arrListItem['upc_min_unit']) ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                    : (Nscm_Define_Sku::UPC_UNIT_MAP[$arrListItem['upc_min_unit']]
+                    ?? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR);
+            $arrRoundResult['sku_main_image'] = empty($arrListItem['sku_main_image'])
+                ? Order_Define_Sku::SKU_IMAGE_DEFAULT_URL
+                : strval($arrListItem['sku_main_image']);
             // 数据库存放的stockin_order_sku_extra_info是json编码的Unix时间戳，转为文本形式时间给FE
             $arrSkuExtInf = json_decode($arrListItem['stockin_order_sku_extra_info'], true) ?? [];
             foreach ($arrSkuExtInf as $item => $value) {

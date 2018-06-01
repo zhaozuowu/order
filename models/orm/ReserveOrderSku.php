@@ -80,6 +80,7 @@ class Model_Orm_ReserveOrderSku extends Order_Base_Orm
                 'reserve_order_sku_plan_amount' => $arrInputRow['reserve_order_sku_plan_amount'],
                 'stockin_order_sku_real_amount' => 0,
                 'stockin_order_sku_extra_info' => '',
+                'sku_main_image' => $arrInputRow['sku_main_image'],
                 'upc_min_unit' => $arrInputRow['upc_min_unit'],
             ];
             $arrDbReserveOrderSkus[] = $arrRow;
@@ -106,6 +107,24 @@ class Model_Orm_ReserveOrderSku extends Order_Base_Orm
         $offset = ($intPageNum - 1) * $intPageSize;
         $limit = empty($intPageSize) ? null : $intPageSize;
         $arrResult = self::findRowsAndTotalCount(self::getAllColumns(), $arrConds, $arrOrderBy, $offset, $limit);
+        return $arrResult;
+    }
+
+
+    /**
+     * 获取指定预约单的sku_id商品信息
+     * @param $strReserveOrderId
+     * @param $strSkuId
+     * @return array
+     */
+    public static function getReserveOrderSkuInfo($strReserveOrderId, $strSkuId)
+    {
+        $arrConds = [
+            'reserve_order_id' => $strReserveOrderId,
+            'sku_id' => $strSkuId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrResult = self::findRow(self::getAllColumns(), $arrConds);
         return $arrResult;
     }
 
