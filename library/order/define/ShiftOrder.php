@@ -26,4 +26,8 @@ class Order_Define_ShiftOrder
         SELF::SHIFT_ORDER_STATUS_CANCEL => '已取消',
     ];
 
+    /**
+     * 库位停用
+     */
+    const LOCATION_STOP_USE = 2;
 }

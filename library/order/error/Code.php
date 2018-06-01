@@ -767,6 +767,18 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const SHIFT_ORDER_GET_LOCATION_STOCK_FAILED = 500002;
 
+    /**
+     * 获取库位信息失败
+     * @var integer
+     */
+    const SHIFT_ORDER_GET_LOCATION_INFO_FAILED = 500003;
+
+    /**
+     * 获取库位信息失败
+     * @var integer
+     */
+    const SHIFT_ORDER_LOCATION_STOP_USE = 500004;
+
 
     /**
      * 确认销退入库单通知OMS失败

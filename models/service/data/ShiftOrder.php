@@ -7,6 +7,7 @@
 
 class Service_Data_ShiftOrder
 {
+
     /**
      * @var Dao_Ral_Stock
      */
@@ -297,8 +298,54 @@ class Service_Data_ShiftOrder
         return $arrRet;
     }
 
+    /**
+     * 根据仓库和库位id获取库位信息
+     * @param $intWarehouseId
+     * @param $arrLocationCodes
+     * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     */
+    protected function getLocationInfoByIds($intWarehouseId, $arrLocationCodes)
+    {
+        if (empty($intWarehouseId) || empty($arrLocationCodes)) {
+            return [];
+        }
 
+        $data = $this->objDaoShiftOrder->getBatchStorageLocation($intWarehouseId,$arrLocationCodes);
 
+        $arrData = [];
+        foreach ($data as $item){
+            $arrData[$item['location_code']] = $item;
+        }
 
+        return $arrData;
+    }
+
+    /**
+     * 校验库位
+     * @param $arrOrder
+     * @throws Nscm_Exception_Error
+     * @throws Nscm_Exception_System
+     * @throws Order_BusinessError
+     */
+    public function checkLocationInfo($arrOrder)
+    {
+        $arrLocationRes = $this->getLocationInfoByIds($arrOrder['warehouse_id'], [$arrOrder['source_location'], $arrOrder['target_location']]);
+        Bd_Log::trace('shift order get location info:'. json_encode($arrLocationRes));
+
+        if (2 != $arrLocationRes['total']) {
+            Bd_Log::warning('shift order get location info fail, order info' . json_encode($arrOrder));
+            throw new Nscm_Exception_System(Order_Error_Code::SHIFT_ORDER_GET_LOCATION_INFO_FAILED, '库位信息获取失败');
+        }
+
+        foreach ($arrLocationRes as $strLocationCode => $arrLocationInfo) {
+            if (Order_Define_ShiftOrder::LOCATION_STOP_USE == $arrLocationInfo['status']) {
+                Bd_Log::warning('shift order location stop use, location info' . json_encode($arrLocationInfo));
+                throw new Nscm_Exception_System(Order_Error_Code::SHIFT_ORDER_LOCATION_STOP_USE, '库位已停用');
+            }
+        }
+
+    }
 
 }
