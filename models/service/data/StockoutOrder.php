@@ -1138,7 +1138,7 @@ class Service_Data_StockoutOrder
         $arrColumns = Model_Orm_StockoutOrder::getAllColumns();
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
-        $arrRetList = Model_Orm_StockoutOrder::findRows($arrColumns, $arrListConditions, ['update_time' => 'desc'], $intOffset, $intLimit);
+            $arrRetList = Model_Orm_StockoutOrder::findRows($arrColumns, $arrListConditions, ['create_time' => 'desc'], $intOffset, $intLimit);
         return $arrRetList;
     }
 
