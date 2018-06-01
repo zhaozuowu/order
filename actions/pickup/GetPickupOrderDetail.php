@@ -106,6 +106,6 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
     private function formatRealityPickupExtraInfo($pickupExtraInfo)
     {
         $pickupExtraInfo =  json_decode($pickupExtraInfo, true);
-        return empty($pickupExtraInfo['finish_info']) ? []:$pickupExtraInfo['finish_info'];
+        return empty($pickupExtraInfo['finish_info']) ? []:json_decode($pickupExtraInfo['finish_info'],true);
     }
 }
