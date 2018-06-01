@@ -68,7 +68,7 @@ class Action_GetStockinSkuByOrderSku extends Order_Base_Action
                 : strval($arrRet['sku_main_image']);
             $arrRoundResult['critical_time'] = intval($arrRet['critical_time']);
             $arrRoundResult['product_expire_time'] = intval($arrRet['product_expire_time']);
-
+            $arrRoundResult['sku_effect_type'] = intval($arrRet['sku_effect_type']);
             $arrFormatResult = $arrRoundResult;
         }
 
