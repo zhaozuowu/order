@@ -1413,8 +1413,8 @@ class Service_Data_Stockin_StockinOrder
                 $arrDbStockInSkuMap[$arrDbStockInSkuInfo['sku_id']] = $arrDbStockInSkuInfo;
             }
             $arrSkuIds = array_keys($arrDbStockInSkuMap);
-            $arrSkuInfoList = $this->getSkuInfoList($arrSkuIds);
-            $arrSkuPriceList = $this->getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList);
+            $arrSkuBaseInfoList = $this->getSkuInfoList($arrSkuIds);
+            $arrSkuPriceList = $this->getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuBaseInfoList);
 
             $arrStockInSkuList = $this->getStockInSkuList($arrDbStockInSkuMap, $arrSkuInfoList, $boolIgnoreCheckDate, $arrSkuPriceList);
             $arrDbSkuInfoList = $this->assembleDbSkuInfoList($arrSkuInfoList, $intStockInOrderId, $arrSkuPriceList);
