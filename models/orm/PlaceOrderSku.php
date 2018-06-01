@@ -76,7 +76,7 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
         if (empty($intPlaceOrderId)) {
             return false;
         }
-        $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
+        $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getAllPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
         if (empty($arrPlaceOrderInfo)) {
             return false;
         }
