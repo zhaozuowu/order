@@ -546,18 +546,12 @@ class Service_Data_PlaceOrder
         }
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
         use ($intPlaceOrderId, $arrMapPlacedSkus, $strUserName, $intUserId) {
-            $boolFlag = Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrMapPlacedSkus);
-            if (!$boolFlag) {
-                Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
-            }
-            $boolFlag = Model_Orm_PlaceOrder::placeOrder($intPlaceOrderId, $strUserName, $intUserId);
+            Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrMapPlacedSkus);
+            Model_Orm_PlaceOrder::placeOrder($intPlaceOrderId, $strUserName, $intUserId);
             $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getAllPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
             if ($arrPlaceOrderInfo['is_auto'] == Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO) {
                 $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
                 Model_Orm_StockinOrder::placeStockinOrder($arrStockinOrderIds, Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO);
-            }
-            if (!$boolFlag) {
-                Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
             }
         });
     }
