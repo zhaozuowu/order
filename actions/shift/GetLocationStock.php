@@ -12,10 +12,14 @@ class Action_GetLocationStock extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'warehouse_id'      => 'int|required',
-        'location_code'     => 'str|required',
-        'page_num'          => 'int|optional|default[1]',
-        'page_size'         => 'int|optional|default[50]',
+        'warehouse_id'                  => 'int|required',
+        'location_code'                 => 'str|required',
+        'sku_id'                        => 'int|min[1]',
+        'is_defective'                  => 'int|min[1]|max[2]',
+        'sku_effect_type'               => 'int|min[1]|max[2]',
+        'production_or_expiration_time' => 'int|min[1]',
+        'page_num'                      => 'int|optional|default[1]',
+        'page_size'                     => 'int|optional|default[50]',
     ];
 
     /**
