@@ -64,7 +64,6 @@ class Service_Data_PlaceOrder
             $this->getCreateParams($arrSplitOrderInfo);
         Bd_Log::trace(sprintf("method[%s] order_list[%s] sku_list[%s] map_order_list",
                         json_encode($arrOrderList), json_encode($arrSkuList), json_encode($arrMapOrderList)));
-        $this->autoPlaceOrder($arrOrderList, $arrSkuList);
         //创建上架单
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
         use ($arrOrderList, $arrSkuList, $arrMapOrderList, $arrStockinOrderIds) {
@@ -75,6 +74,7 @@ class Service_Data_PlaceOrder
             if (!$boolFlag) {
                 Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_CREATE_FAILED);
             }
+            $this->autoPlaceOrder($arrOrderList, $arrSkuList);
         });
     }
 
