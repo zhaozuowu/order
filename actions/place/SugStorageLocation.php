@@ -22,6 +22,7 @@ class Action_SugStorageLocation extends Order_Base_Action
      */
     protected $intMethod = Order_Define_Const::METHOD_GET;
 
+    //sug库位接口不用检验权限
     protected $boolCheckAuth = false;
 
     /**
