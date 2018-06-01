@@ -1756,6 +1756,11 @@ class Service_Data_StockoutOrder
             $arrPickupStockOrderSkus = $arrStockoutOrderPickupInfo['pickup_skus'];
             $stockoutOrderPickupAmount = array_sum(array_column($arrPickupStockOrderSkus, 'pickup_amount'));
             $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($intStockoutOrderId);//获取出库订单信息
+            if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_CANCEL != $stockoutOrderInfo['stockout_order_status']) {
+                Bd_Log::warning(sprintf("stockout_order pickup failed,stockout_order_id[%d],stockout_order_status[%s]",
+                    $intStockoutOrderId, $stockoutOrderInfo['stockout_order_status']));
+                continue;
+            }
             $nextStockoutStatus = $this->getNextStockoutOrderStatus($stockoutOrderInfo['stockout_order_status']);
             $updateData = [
                 'stockout_order_status' => $nextStockoutStatus,
@@ -1833,6 +1838,7 @@ class Service_Data_StockoutOrder
         }
 
         foreach ($arrStockoutOrderSkuPickupMap as $intStockoutOrderId => $arrStockoutOrderSkuPickupInfo) {
+            $arrStockouOrderSkuPickupItem = [];
             $arrStockouOrderSkuPickupItem['stockout_order_id'] = $intStockoutOrderId;
             foreach ($arrStockoutOrderSkuPickupInfo as $intSkuId => $intSkuPickupAmount) {
                 $arrStockouOrderSkuPickupItem['pickup_skus'][] = [
