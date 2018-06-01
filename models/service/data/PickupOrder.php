@@ -873,7 +873,7 @@ class Service_Data_PickupOrder
             'customer_address'=>'',
             'order_supply_type'=>'',
             'devices'=>'',
-            'remark'=>$pickupOrder['remark'],
+            'remark'=> '',
         ];
         $stockoutPickup = Model_Orm_StockoutPickupOrder::findRow(Model_Orm_StockoutPickupOrder::getAllColumns(),$arrConds);
         if(!empty($stockoutPickup))
@@ -896,7 +896,7 @@ class Service_Data_PickupOrder
                 $arrShelfInfo = json_decode($stockoutOrderList['shelf_info'], true);
                 $list['order_supply_type'] = isset(Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']])?Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']]:'';
                 $list['devices']  = Order_Define_Format::formatDevices($arrShelfInfo['devices']);
-//                $list['remark']  = $stockoutOrderList['stockout_order_remark'];
+                $list['remark']  = $stockoutOrderList['stockout_order_remark'];
 
             }
 
