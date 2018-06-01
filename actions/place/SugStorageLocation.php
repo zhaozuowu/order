@@ -4,7 +4,7 @@
  * @desc Action_SugStorageLocation
  * @author huabang.xue@ele.me
  */
-class Action_SugStorageLocation extends Order_Base_Action
+class Action_SugStorageLocation extends Order_Base_ApiAction
 {
     /**
      * 参数数组
