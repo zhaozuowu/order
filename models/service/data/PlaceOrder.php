@@ -44,7 +44,7 @@ class Service_Data_PlaceOrder
         Bd_Log::trace(sprintf("method[%s] stockin_order_ids[%s] stockin_order_infos[%s]",
                         __METHOD__, json_encode($arrStockinOrderIds), json_encode($arrStockinOrderInfo)));
         if (empty($arrStockinOrderInfo)) {
-            return [];
+            Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_NOT_EXISTED);
         }
         //校验是否已生成上架单
         $arrStockinPlaceOrderInfo = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
