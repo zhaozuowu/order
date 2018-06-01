@@ -26,8 +26,11 @@ class Service_Page_Shift_FinishOrder
 
     /**
      * execute
-     * @param  array $arrInput 参数
-     * @return array
+     * @param $arrInput
+     * @return bool
+     * @throws Nscm_Exception_Error
+     * @throws Nscm_Exception_System
+     * @throws Order_BusinessError
      */
     public function execute($arrInput)
     {
@@ -42,6 +45,7 @@ class Service_Page_Shift_FinishOrder
         if(empty($arrOrder) || empty($arrOrderDetail)) {
             Order_BusinessError::throwException(Order_Error_Code::SHIFT_ORDER_MOVE_FAILED);
         }
+        $this->objShiftOrder->checkLocationInfo($arrOrder);
         $finishInput = array();
         $finishInput['m_order_id']              = $arrInput['shift_order_id'];
         $finishInput['warehouse_id']            = $arrOrder['warehouse_id'];

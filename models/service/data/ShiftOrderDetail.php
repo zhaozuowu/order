@@ -7,6 +7,7 @@
 
 class Service_Data_ShiftOrderDetail
 {
+
     /**
      * 查询移位详情
      * @param $arrInput
@@ -99,4 +100,5 @@ class Service_Data_ShiftOrderDetail
         }
         return $arrFormatInput;
     }
+
 }
