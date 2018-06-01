@@ -50,7 +50,7 @@ class Action_CreatePickupOrder extends Order_Base_Action
     public function addCheckParam()
     {
         return [
-          'pickup_order_type' =>$this->arrFilterResult['pickup_order_type'],
+          'pickup_order_type' =>$this->arrReqPost['pickup_order_type'],
         ];
     }
 
