@@ -99,7 +99,7 @@ class Model_Orm_PickupOrder extends Order_Base_Orm
             $arrCondition['pickup_order_is_print'] = $intPickupOrderIsPrint;
         }
         $arrCondition['is_delete'] = Order_Define_Const::NOT_DELETE;
-        $arrOrderBy= ['id' => 'desc'];
+        $arrOrderBy= ['update_time' => 'desc'];
         $intOffset = (intval($intPageNum) - 1) * intval($intPageSize);
         $intLimit = empty($intPageSize) ? null : intval($intPageSize);
 
