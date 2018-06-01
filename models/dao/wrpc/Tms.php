@@ -35,7 +35,7 @@ class Dao_Wrpc_Tms
         $arrRet = $this->objWrpcService->processWarehouseRequest($arrParams);
         Bd_Log::trace(sprintf("method[%s] processWarehouseRequest[%s]",
                                 __METHOD__, json_encode($arrRet)));
-        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+        if (false === $arrRet || empty($arrRet['data']) || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
                                         __METHOD__, json_encode($arrRet), $strRoutingKey));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_CREATE_SHIPMENTORDER_ERROR);
@@ -57,7 +57,7 @@ class Dao_Wrpc_Tms
         $arrParams = $this->getPickingAmountParams($intShipmentOrderId, $arrPickupSkus);
         $arrRet = $this->objWrpcService->pickingAmount($arrParams);
         Bd_Log::trace(sprintf("method[%s] pickingAmount[%s]", __METHOD__, json_encode($arrRet)));
-        if (0 != $arrRet['errno']) {
+        if (false === $arrRet || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
                                     __METHOD__, json_encode($arrRet), $strRoutingKey));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_NOTIFY_FINISHPICKUP_ERROR);
@@ -220,7 +220,7 @@ class Dao_Wrpc_Tms
         $arrParams = ['shipmentIds'=>$arrShipmentOrderIds];
         $arrRet = $this->objWrpcService->queryRouteIds($arrShipmentOrderIds);
         Bd_Log::trace(sprintf("method[%s] queryRouteIds[%s]", __METHOD__, json_encode($arrRet)));
-        if (0 != $arrRet['errno']) {
+        if (false === $arrRet || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
                 __METHOD__, json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL);
