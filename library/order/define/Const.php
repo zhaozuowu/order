@@ -53,6 +53,33 @@ class  Order_Define_Const
     const HALF_AN_HOUR_FORMAT_SECONDS = 1800;
 
     /**
+     * 默认库位编码
+     */
+    const DEFAULT_LOCATION_CODE = '';
+    /**
+     * 默认巷道编码
+     */
+    const DEFAULT_ROADWAY_CODE = '';
+    /**
+     * 默认库区编码
+     */
+    const DEFAULT_AREA_CODE = '';
+
+    /**
+     * 更新成功
+     */
+    const UPDATE_SUCCESS = 1;
+    /**
+     * 更新失败
+     */
+    const UPDATE_FAILURE = 2;
+
+
+    const STOCK_INFO_SERVICE = 'StockInfoService';
+
+    const STOCK_CONTROL_SERVICE = 'StockControlService';
+
+    /**
      * Unix时间戳长度 - 30天(24h * 30)，based on second
      * 2592000s === 86400 * 30;
      */

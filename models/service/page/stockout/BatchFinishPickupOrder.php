@@ -30,6 +30,7 @@ class Service_Page_Stockout_BatchFinishPickupOrder
      */
     public function execute($arrInput)
     {
+        Order_Error::throwException(Order_Error_Code::INTERFACE_HAS_BEEN_DISCARDED);
         $strStockoutOrderIds = $arrInput['stockout_order_ids'];
         $arrStockoutOrderIds = explode(',',$strStockoutOrderIds);
         $userId = !empty($arrInput['_session']['user_id']) ? $arrInput['_session']['user_id']:0;

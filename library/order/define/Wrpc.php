@@ -24,6 +24,53 @@ class Order_Define_Wrpc
      * @var string
      */
     const TMS_SERVICE_NAME = 'WmsReferService';
+    /**
+     * nwms app id
+     * @var string
+     */
+    const NWMS_APP_ID = 'bdwaimai_earthnet.nwms';
+
+    /**
+     * nwms_stock_namespace
+     * @var string
+     */
+    const NWMS_STOCK_NAMESPACE = 'stock';
+
+    /**
+     * nwms warehouse namespace
+     * @var string
+     */
+    const NWMS_WAREHOUSE_NAMESPACE = 'warehouse';
+
+    /**
+     * nwms stock service name
+     * @var string
+     */
+    const NWMS_STOCK_SERVICE_NAME = 'StockOutService';
+
+    /**
+     * nwms stock service name
+     * @var string
+     */
+    const STOCK_INFO_SERVICE = 'StockInfoService';
+
+    /**
+     * nwms stock control service
+     * @var string
+     */
+    const NWMS_STOCK_CONTROL_SERVICE_NAME = 'StockControlService';
+
+    /**
+     * nwms warehouse service name
+     * @var string
+     */
+    const NWMS_WAREHOUSE_SERVICE_NAME = 'WarehouseInfoService';
+
+    /**
+     * nwms warehouse service name
+     * @var string
+     */
+    const NWMS_WAREHOUSE_STORAGE_SERVICE_NAME = 'StorageService';
 
     /**
      * oms app id

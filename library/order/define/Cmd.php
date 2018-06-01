@@ -37,6 +37,11 @@ class Order_Define_Cmd
     const CMD_FINISH_PRICKUP_ORDER  = 'stockout_order_finish_pickup';
 
     /**
+     * 拣货完成出库单
+     */
+    const CMD_FINISH_STOCKOUT_ORDER  = 'pickup_order_finish_stockout';
+
+    /**
      * 作废出库单命令
      * @var string
      */
@@ -73,6 +78,12 @@ class Order_Define_Cmd
      * @var string
      */
     const CMD_NOTIFY_OMS_CONFIRM_STOCKIN_ORDER = 'notify_oms_confirm_stockin_order';
+
+    /**
+     * cmd place order create
+     * @var string
+     */
+    const CMD_PLACE_ORDER_CREATE = 'place_order_create';
 
     /**
      * wmq使用的默认配置

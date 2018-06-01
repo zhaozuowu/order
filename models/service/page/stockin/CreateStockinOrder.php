@@ -85,8 +85,17 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
         $strCreatorName = $arrInput['_session']['user_name'];
         $boolIgnoreCheckDate = $arrInput['ignore_check_date'];
         $intStockinDevice = $arrInput['stockin_device'];
-        $this->objDataStockin->createStockinOrder($arrSourceOrderInfo, $arrSourceOrderSkus, $intWarehouseId,
+        $intStockinOrderId = $this->objDataStockin->createStockinOrder($arrSourceOrderInfo, $arrSourceOrderSkus, $intWarehouseId,
             $strStockinOrderRemark, $arrSkuInfoList, $intCreatorId, $strCreatorName, $intType, $boolIgnoreCheckDate,
             $intStockinDevice);
+        $arrCmdInput['stockin_order_ids'] = strval($intStockinOrderId);
+        if ($intType == Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT) {
+            return ;
+        }
+        $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrCmdInput);
+        if (false == $ret) {
+            Bd_Log::warning("send wmq failed arrInput[%s] cmd[%s]",
+                json_encode($arrInput), Order_Define_Cmd::CMD_PLACE_ORDER_CREATE);
+        }
     }
 }

@@ -7,6 +7,7 @@
 
 class Action_GetCustomernameSug extends Order_Base_Action
 {
+    protected  $boolCheckAuth = false;
     /**
      * input params
      * @var array

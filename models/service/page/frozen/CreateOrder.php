@@ -32,6 +32,8 @@ class Service_Page_Frozen_CreateOrder
         $arrInput['stock_frozen_order_id'] = Order_Util_Util::generateStockFrozenOrderId();
         Bd_Log::trace('generate stock frozen order id: ' . $arrInput['stock_frozen_order_id']);
 
+        //TODO:check location code
+
         // 创建冻结单
         $arrOutput = $this->objStockFrozenOrder->createFrozenOrder($arrInput);
         return $arrOutput;

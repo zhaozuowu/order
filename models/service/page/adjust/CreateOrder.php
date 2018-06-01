@@ -23,7 +23,7 @@ class Service_Page_Adjust_CreateOrder
     public function __construct()
     {
         $this->objStockAdjustOrder = new Service_Data_StockAdjustOrder();
-        $this->objStock = new Service_Data_Stock();
+        $this->objStock            = new Service_Data_Stock();
     }
 
     /**
@@ -33,6 +33,9 @@ class Service_Page_Adjust_CreateOrder
      */
     public function execute($arrInput)
     {
+        //校验传入参数 库位是否有效
+        $arrInput = $this->objStockAdjustOrder->checkCreateInputByLocation($arrInput);
+
         // 生成一个调整单号
         $arrInput['stock_adjust_order_id'] = Order_Util_Util::generateStockAdjustOrderId();
         Bd_Log::trace('generate stock adjust order id: ' . $arrInput['stock_adjust_order_id']);

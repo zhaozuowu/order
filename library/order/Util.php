@@ -235,6 +235,26 @@ class Order_Util
     }
 
     /**
+     * 去除移位单开头的S前缀
+     *
+     * @param $strStockAdjustOrderId
+     * @return string
+     */
+    public static function trimShiftOrderIdPrefix($strShiftOrderId)
+    {
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strShiftOrderId)) {
+            return $strResult;
+        }
+
+        $strResult = ltrim($strShiftOrderId, Nscm_Define_OrderPrefix::SHO);
+
+        return $strResult;
+    }
+
+    /**
      * 判断是否是采购单号（校验前缀PUR+13位数字）
      * 为空则返回false
      * @param $strOrderId

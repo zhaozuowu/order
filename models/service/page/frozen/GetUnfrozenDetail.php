@@ -23,8 +23,10 @@ class Service_Page_Frozen_GetUnfrozenDetail
 
     /**
      * execute
-     * @param  array $arrInput 参数
+     * @param $arrInput
      * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
      */
     public function execute($arrInput)
     {

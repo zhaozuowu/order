@@ -107,6 +107,9 @@ class Action_GetStockinOrderList extends Order_Base_Action
                 Order_Util::getFormatDateTime($arrListItem['create_time']);
             $arrRoundResult['stockin_order_creator_name'] = empty($arrListItem['stockin_order_creator_name']) ? ''
                 : strval($arrListItem['stockin_order_creator_name']);
+            $arrRoundResult['is_placed_order'] = intval($arrListItem['is_placed_order']);
+            $arrRoundResult['is_placed_order_text'] = empty($arrRoundResult['is_placed_order']) ? ''
+                : Order_Define_StockinOrder::STOCKIN_IS_PLACED_MAP[$arrListItem['is_placed_order']];
 
             $arrFormatResult['list'][] = $arrRoundResult;
         }

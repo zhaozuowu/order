@@ -82,7 +82,7 @@ class Action_GetFrozenSku extends Order_Base_Action
             $arrFormatOrder['stock_frozen_order_id'] =
                 empty($arrOrder['stock_frozen_order_id']) ? '' : Nscm_Define_OrderPrefix::F . strval($arrOrder['stock_frozen_order_id']);
             $arrFormatOrder['sku_id'] = empty($arrOrder['sku_id']) ? '' : strval($arrOrder['sku_id']);
-            $arrFormatOrderSku['storage_location_id'] = empty($arrOrder['storage_location_id']) ? '' : strval($arrOrder['storage_location_id']);
+            $arrFormatOrderSku['location_code'] = empty($arrOrder['location_code']) ? '' : strval($arrOrder['location_code']);
             $arrFormatOrderSku['origin_frozen_amount'] = empty($arrOrder['origin_frozen_amount']) ? '' : strval($arrOrder['origin_frozen_amount']);
             $arrFormatOrderSku['current_frozen_amount'] = empty($arrOrder['current_frozen_amount']) ? '' : strval($arrOrder['current_frozen_amount']);
             $arrFormatOrderSku['is_defective'] = empty($arrOrder['is_defective']) ? '' : $arrOrder['is_defective'];

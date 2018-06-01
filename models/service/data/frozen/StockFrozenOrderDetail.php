@@ -15,7 +15,8 @@ class Service_Data_Frozen_StockFrozenOrderDetail
     /**
      * init
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->objDaoSku = new Dao_Ral_Sku();
     }
 
@@ -26,14 +27,13 @@ class Service_Data_Frozen_StockFrozenOrderDetail
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    protected function getSkuInfos($arrSkuIds) {
+    protected function getSkuInfos($arrSkuIds)
+    {
         if(empty($arrSkuIds)) {
             return [];
         }
         $arrSkuIds = array_unique($arrSkuIds);
-
         $arrSkuInfos = $this->objDaoSku->getSkuInfos($arrSkuIds);
-
         if(empty($arrSkuInfos)) {
             Bd_Log::warning(__METHOD__ . ' get sku info failed. call ral failed.');
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_ADJUST_GET_SKU_FAILED);
@@ -47,7 +47,8 @@ class Service_Data_Frozen_StockFrozenOrderDetail
      * @param $arrInput
      * @return int
      */
-    public function getOrderListCountGroupBySku($arrInput) {
+    public function getOrderListCountGroupBySku($arrInput)
+    {
         Bd_Log::trace(__METHOD__ . '  param ', 0, $arrInput);
 
         $arrSql = $this->buildGetOrderDetailListSql($arrInput);
@@ -62,7 +63,8 @@ class Service_Data_Frozen_StockFrozenOrderDetail
      * @param $arrInput
      * @return array
      */
-    protected function getSkuIdsByOrderId($arrInput) {
+    protected function getSkuIdsByOrderId($arrInput)
+    {
         Bd_Log::trace(__METHOD__ . '  param ', 0, $arrInput);
 
         $arrSql = $this->buildGetOrderDetailListSql($arrInput);
@@ -74,6 +76,7 @@ class Service_Data_Frozen_StockFrozenOrderDetail
         if(!empty($arrRet)) {
             return array_values(array_column($arrRet, 'sku_id'));
         }
+
         return [];
     }
 
@@ -81,8 +84,11 @@ class Service_Data_Frozen_StockFrozenOrderDetail
      * 按照SKU聚合，查询冻结单明细详情
      * @param $arrInput
      * @return array
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
      */
-    public function getOrderListGroupBySku($arrInput) {
+    public function getOrderListGroupBySku($arrInput)
+    {
         $arrSkuIds = $this->getSkuIdsByOrderId($arrInput);
         if(empty($arrSkuIds)) {
             Bd_Log::warning('frozen order id: ' . $arrInput['stock_frozen_order_id'] . ' detail is empty.');
@@ -103,23 +109,29 @@ class Service_Data_Frozen_StockFrozenOrderDetail
      * @param $arrSkuIds
      * @return array
      */
-    public function getOrderDetailBySku($intFrozenOrderId, $arrSkuIds) {
+    public function getOrderDetailBySku($intFrozenOrderId, $arrSkuIds)
+    {
         $arrSql = $this->buildGetOrderListGroupBySkuSql($intFrozenOrderId, $arrSkuIds);
 
         $arrRet = Model_Orm_StockFrozenOrderDetail::findRows($arrSql['columns'], $arrSql['where'],
             $arrSql['order_by']);
-        //Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
+
         return $arrRet;
     }
 
-    protected function buildGetOrderListGroupBySkuSql($intOrderId, $arrSkuIds) {
+    /**
+     * @param $intOrderId
+     * @param $arrSkuIds
+     * @return array
+     */
+    protected function buildGetOrderListGroupBySkuSql($intOrderId, $arrSkuIds)
+    {
         $arrSql = [];
 
         $arrWhere = [
             'is_delete'             => Order_Define_Const::NOT_DELETE,
             'current_frozen_amount' => ['>', 0],
         ];
-
         if(!empty($intOrderId)) {
             $arrWhere['stock_frozen_order_id'] = $intOrderId;
         }
@@ -130,6 +142,7 @@ class Service_Data_Frozen_StockFrozenOrderDetail
         $arrSql['columns'] = Model_Orm_StockFrozenOrderDetail::getAllColumns();
         $arrSql['order_by'] = ['sku_id'=>'asc', 'sku_valid_time' => 'asc', 'id' => 'desc'];
         $arrSql['where'] = $arrWhere;
+
         return $arrSql;
     }
 
@@ -138,12 +151,12 @@ class Service_Data_Frozen_StockFrozenOrderDetail
      * @param $arrInput
      * @return array
      */
-    protected function buildGetOrderDetailListSql($arrInput) {
+    protected function buildGetOrderDetailListSql($arrInput)
+    {
         $arrSql = [];
 
         $intOffset = 0;
         $intLimit = null;
-
         if(!empty($arrInput['page_size'])) {
             if(empty($arrInput['page_num'])) {
                 $arrInput['page_num'] = 1;
@@ -168,6 +181,7 @@ class Service_Data_Frozen_StockFrozenOrderDetail
         $arrSql['limit'] = $intLimit;
         $arrSql['offset'] = $intOffset;
         $arrSql['where'] = $arrWhere;
+
         return $arrSql;
     }
 
