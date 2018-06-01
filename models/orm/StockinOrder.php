@@ -596,14 +596,18 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     /**
      * 批量上架入库单
      * @param $arrStockinOrderIds
+     * @param int $intIsAuto
      * @return bool
      */
-    public static function placeStockinOrder($arrStockinOrderIds)
+    public static function placeStockinOrder($arrStockinOrderIds, $intIsAuto=Order_Define_PlaceOrder::PLACE_ORDER_NOT_AUTO)
     {
         if (empty($arrStockinOrderIds)) {
             return false;
         }
         $arrCols = ['is_placed_order' => Order_Define_StockinOrder::STOCKIN_IS_PLACED];
+        if ($intIsAuto == Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO) {
+            $arrCols = ['is_placed_order' => Order_Define_StockinOrder::STOCKIN_AUTO_PLACED];
+        }
         $arrConditions = [
             'stockin_order_id' => ['in', $arrStockinOrderIds],
         ];
