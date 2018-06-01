@@ -28,6 +28,7 @@ class Action_GetStockoutOrderList extends Order_Base_Action
         'start_time' => 'int|required',
         'end_time' => 'int|required',
         'data_source' => 'int',
+        'is_pickup_ordered' => 'int|default[0]',
     ];
 
     /**
@@ -68,6 +69,9 @@ class Action_GetStockoutOrderList extends Order_Base_Action
             $arrFormatRetItem['is_print'] = empty($arrRetItem['stockout_order_is_print']) ? 0 : $arrRetItem['stockout_order_is_print'];
             $arrFormatRetItem['is_print_text'] = empty($arrRetItem['stockout_order_is_print']) ?
                 '' : Order_Define_StockoutOrder::STOCKOUT_PRINT_STATUS[$arrRetItem['stockout_order_is_print']];
+            $arrFormatRetItem['is_pickup_ordered'] = empty($arrRetItem['is_pickup_ordered']) ? 0 : $arrRetItem['is_pickup_ordered'];
+            $arrFormatRetItem['is_pickup_ordered_text'] = empty($arrRetItem['is_pickup_ordered']) ?
+                '' : Order_Define_StockoutOrder::PICKUP_ORDER_TYPE_MAP[$arrRetItem['is_pickup_ordered']];
             $arrFormatRetItem['warehouse_name'] = empty($arrRetItem['warehouse_name']) ? '' : $arrRetItem['warehouse_name'];
             $arrFormatRetItem['signup_status'] = empty($arrRetItem['signup_status']) ? '' : Order_Define_StockoutOrder::STOCKOUT_SIGINUP_STATUS_LIST[$arrRetItem['signup_status']];
             $arrFormatRetItem['customer_id'] = empty($arrRetItem['customer_id']) ? '' : $arrRetItem['customer_id'];

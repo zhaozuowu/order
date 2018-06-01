@@ -215,6 +215,24 @@ class Model_Orm_StockinOrderSku extends Order_Base_Orm
     }
 
     /**
+     * 通过入库单号数组获取入库单商品
+     * @param $arrStockinOrderIds
+     * @return array
+     */
+    public static function getStockinOrderSkusByStockinOrderIds($arrStockinOrderIds)
+    {
+        if (empty($arrStockinOrderIds)) {
+            return [];
+        }
+        $arrConditions = [
+            'stockin_order_id' => ['in', $arrStockinOrderIds],
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+        $arrCols = self::getAllColumns();
+        return self::findRows($arrCols, $arrConditions);
+    }
+
+    /**
      * 确认销退入库单sku修改信息
      * @param  array $arrDbSkuInfoList
      */

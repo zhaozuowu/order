@@ -44,6 +44,18 @@ class Service_Data_StockoutOrder
     protected $objRalStock;
 
     /**
+     * dao ral stock
+     * @var Dao_Wrpc_Stock
+     */
+    protected $objWrpcStock;
+
+    /**
+     * dao ral stock
+     * @var Dao_Huskar_Stock
+     */
+    protected $objHuskarStock;
+
+    /**
      * dao ral sku
      * @var Dao_Ral_Sku
      */
@@ -75,6 +87,7 @@ class Service_Data_StockoutOrder
         $this->objWrpcTms = new Dao_Wrpc_Tms();
         $this->objRalSKu  = new Dao_Ral_Sku();
         $this->daoOms = new Dao_Ral_Oms();
+        $this->objWrpcStock = new Dao_Wrpc_Stock();
     }
 
     /**
@@ -237,6 +250,7 @@ class Service_Data_StockoutOrder
      * @param $strStockoutOrderId 出库单号
      * @return array
      * @throws Order_BusinessError
+     * @throws Exception
      */
     public function deliveryOrder($strStockoutOrderId,$userId,$userName)
     {
@@ -272,7 +286,8 @@ class Service_Data_StockoutOrder
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_SKU_NO_EXISTS);
             }
             $arrStockoutDetail = $this->formatUnfreezeSkuStock($arrStockoutDetail);
-            $rs = $this->objRalStock->unfreezeSkuStock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id'], $arrStockoutDetail);
+            $rs = $this->objWrpcStock->unfreezeSkuStock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id'], $arrStockoutDetail);
+//            $rs = $this->objRalStock->unfreezeSkuStock($strStockoutOrderId, $stockoutOrderInfo['warehouse_id'], $arrStockoutDetail);
             if (empty($rs)) {
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
             }
@@ -456,7 +471,9 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::NWMS_BUSINESS_FORM_ORDER_TYPE_ERROR);
         }
         list($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail) = $dataBussniessObj->getFreezeStockParams($arrInput);
-        $arrStockSkus = $this->objRalStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
+        $this->objHuskarStock = new Dao_Huskar_Stock();
+        $arrStockRet = $this->objHuskarStock->freezeSkuStock($intStockoutOrderId, $intWarehouseId, $arrFreezeStockDetail);
+        $arrStockSkus = $arrStockRet['result'];
         if(empty($arrStockSkus) || empty($arrInput)) {
             Bd_Log::warning(sprintf("checkSkuStock failed stockoutOrderId[%s]",
                 $intStockoutOrderId));
@@ -818,6 +835,9 @@ class Service_Data_StockoutOrder
                 $arrListConditions['data_source']= ['in', [Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_SYSTEM_ORDER,Order_Define_StockoutOrder::STOCKOUT_DATA_SOURCE_OMS]];
             }
         }
+        if (isset(Order_Define_StockoutOrder::PICKUP_ORDER_TYPE_MAP[$arrInput['is_pickup_ordered']])){
+            $arrListConditions['is_pickup_ordered'] = intval($arrInput['is_pickup_ordered']);
+        }
         return $arrListConditions;
     }
 
@@ -993,6 +1013,10 @@ class Service_Data_StockoutOrder
         if($stockoutOrderInfo['stockout_order_pre_cancel'] != Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRE_CANCEL) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_ORDER_PRE_CANCEL_ERROR);
         }
+
+        if($stockoutOrderInfo['is_pickup_ordered'] == Order_Define_StockoutOrder::PICKUP_ORDERE_IS_CREATED) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PICKUP_ORDERED);
+        }
         $updateData = [
             'stockout_order_status' => Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS,
             'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
@@ -1114,7 +1138,7 @@ class Service_Data_StockoutOrder
         $arrColumns = Model_Orm_StockoutOrder::getAllColumns();
         $intLimit = intval($arrInput['page_size']);
         $intOffset = (intval($arrInput['page_num']) - 1) * $intLimit;
-        $arrRetList = Model_Orm_StockoutOrder::findRows($arrColumns, $arrListConditions, ['update_time' => 'desc'], $intOffset, $intLimit);
+            $arrRetList = Model_Orm_StockoutOrder::findRows($arrColumns, $arrListConditions, ['create_time' => 'desc'], $intOffset, $intLimit);
         return $arrRetList;
     }
 
@@ -1248,6 +1272,9 @@ class Service_Data_StockoutOrder
         ];
         if (!in_array($stockoutOrderInfo['stockout_order_status'], $allowOrderStatus)) {
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_NOT_ALLOW_UPDATE);
+        }
+        if (Order_Define_StockoutOrder::PICKUP_ORDERE_IS_CREATED == $stockoutOrderInfo['is_pickup_ordered']) {
+            Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_IN_PICKING);
         }
         $updateData = [
             'stockout_order_status' => Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS,
@@ -1526,12 +1553,12 @@ class Service_Data_StockoutOrder
      * 订单商品库存-作废-上游
      * @param $strStockoutOrderId
      * @param $warehouseId
-     * @throws Nscm_Exception_Error
+     * @return bool
      * @throws Order_BusinessError
      */
     public function cancelStockoutOrder($strStockoutOrderId, $warehouseId)
     {
-        $rs = $this->objRalStock->cancelfreezeskustock($strStockoutOrderId, $warehouseId);
+        $rs = $this->objWrpcStock->cancelFreezeSkuStock($strStockoutOrderId, $warehouseId);
         if (empty($rs)) {
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
         }
@@ -1643,11 +1670,12 @@ class Service_Data_StockoutOrder
         }
         $intStockOutOrderStatus = $objStockOutOrderInfo->stockout_order_status;
         $intStockOutOrderIsPrint = $objStockOutOrderInfo->stockout_order_is_print;
+        $intPickupOrderd = $objStockOutOrderInfo->is_pickup_ordered;
         $intStockOutOrderPreCancel = $objStockOutOrderInfo->stockout_order_pre_cancel;
         $intStockOutOrderCancelType = $objStockOutOrderInfo->stockout_order_cancel_type;
-        if (Order_Define_StockoutOrder::STOCKOUT_ORDER_IS_PRINT == $intStockOutOrderIsPrint
+        if (Order_Define_StockoutOrder::PICKUP_ORDERE_IS_CREATED == $intPickupOrderd
             && Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS != $intStockOutOrderStatus) {
-            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PRINT);
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_ORDER_IS_PICKUP_ORDERED);
         }
         if ($intStockOutOrderCancelType == Order_Define_StockoutOrder::STOCKOUT_ORDER_CANCEL_TYPE_DEFAULT
             && $intStockOutOrderPreCancel == Order_Define_StockoutOrder::STOCKOUT_ORDER_DEFAULT_PRE_CANCEL
@@ -1710,4 +1738,117 @@ class Service_Data_StockoutOrder
         }
         return $arrWarehouseAddr;
     }
+
+    /**
+     * 批量完成拣货单出库单的完成
+     * @param int    $intPickupOrderId 拣货单id
+     * @param array  $arrPickupSkus
+     * @param int    $userId
+     * @param string $userName
+     * @throws Order_BusinessError
+     * @throws Exception
+     */
+    public function batchFinishOrder($intPickupOrderId, $arrPickupSkus, $userId, $userName)
+    {
+        $arrStockoutOrderPickupList = $this->assembleStockoutOrderSkuList($intPickupOrderId, $arrPickupSkus);
+        foreach ($arrStockoutOrderPickupList as $arrStockoutOrderPickupInfo) {
+            $intStockoutOrderId = $arrStockoutOrderPickupInfo['stockout_order_id'];
+            $arrPickupStockOrderSkus = $arrStockoutOrderPickupInfo['pickup_skus'];
+            $stockoutOrderPickupAmount = array_sum(array_column($arrPickupStockOrderSkus, 'pickup_amount'));
+            $stockoutOrderInfo = $this->objOrmStockoutOrder->getStockoutOrderInfoById($intStockoutOrderId);//获取出库订单信息
+            if (Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_CANCEL != $stockoutOrderInfo['stockout_order_status']) {
+                Bd_Log::warning(sprintf("stockout_order pickup failed,stockout_order_id[%d],stockout_order_status[%s]",
+                    $intStockoutOrderId, $stockoutOrderInfo['stockout_order_status']));
+                continue;
+            }
+            $nextStockoutStatus = $this->getNextStockoutOrderStatus($stockoutOrderInfo['stockout_order_status']);
+            $updateData = [
+                'stockout_order_status' => $nextStockoutStatus,
+                'stockout_order_pickup_amount' => $stockoutOrderPickupAmount,
+                'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
+            ];
+            Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($intStockoutOrderId, $updateData,
+                $arrPickupStockOrderSkus, $userId, $userName){
+                $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($intStockoutOrderId, $updateData);
+                if (empty($result)) {
+                    Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
+                }
+                foreach ($arrPickupStockOrderSkus as $item) {
+                    $condition = [
+                        'stockout_order_id' => $intStockoutOrderId,
+                        'sku_id' => $item['sku_id'],
+                    ];
+                    $skuUpdateData = ['pickup_amount' => $item['pickup_amount']];
+                    $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdateData);
+                }
+                $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
+                $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
+                $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
+                $this->addLog($userId, $userName, '完成揽收:'.$intStockoutOrderId,$operationType, $intStockoutOrderId);
+                $this->notifyTmsFnishPick(strval($intStockoutOrderId), $arrPickupStockOrderSkus);
+            });
+           //更新报表
+            Dao_Ral_Statistics::syncStatistics(Order_Statistics_Type::TABLE_STOCKOUT_ORDER,
+                Order_Statistics_Type::ACTION_UPDATE,
+                $intStockoutOrderId);
+        }
+
+    }
+
+    /**
+     * 拼装出库单拣货所需参数
+     * @param $intPickupOrderId
+     * @param $arrPickupSkus
+     * @return array
+     * @throws Order_BusinessError
+     */
+    private function assembleStockoutOrderSkuList($intPickupOrderId, $arrPickupSkus)
+    {
+        $arrPickupSkusMap = [];
+        foreach ($arrPickupSkus as $arrPickupSku) {
+            if (isset($arrPickupSkusMap[$arrPickupSku['sku_id']])) {
+                $arrPickupSkusMap[$arrPickupSku['sku_id']] += $arrPickupSku['pickup_amount'];
+                continue;
+            }
+            $arrPickupSkusMap[$arrPickupSku['sku_id']] = $arrPickupSku['pickup_amount'];
+        }
+        $arrStockouOrderIds = Model_Orm_StockoutPickupOrder::getStockoutOrderIdsByPickupOrderId($intPickupOrderId);
+        if (empty($arrStockouOrderIds)) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_SKUS_NOT_EXISTED);
+        }
+        $objOrmSku = new Model_Orm_StockoutOrderSku();
+
+        $arrStockoutOrderSkuPickupMap = [];
+        $arrStockoutOrderSkuPickupList = [];
+        $arrStockoutOrderSkuList = $objOrmSku->getStockoutOrderSkusByOrderIds($arrStockouOrderIds);
+        foreach ($arrStockoutOrderSkuList as $arrStockoutOrderSku) {
+            $intStockoutOrderId = $arrStockoutOrderSku['stockout_order_id'];
+            $intSkuId = $arrStockoutOrderSku['sku_id'];
+            $intSkuDistributeAmount = $arrStockoutOrderSku['distribute_amount'];
+            if (empty($arrPickupSkusMap[$intSkuId])) {
+                $arrStockoutOrderSkuPickupMap[$intStockoutOrderId][$intSkuId] = $arrPickupSkusMap[$intSkuId];
+                continue;
+            }
+            if (0 > $arrPickupSkusMap[$intSkuId] - $intSkuDistributeAmount) {
+                $arrStockoutOrderSkuPickupMap[$intStockoutOrderId][$intSkuId] = $arrPickupSkusMap[$intSkuId];
+                $arrPickupSkusMap[$intSkuId] = 0;
+            } else {
+                $arrStockoutOrderSkuPickupMap[$intStockoutOrderId][$intSkuId] = $intSkuDistributeAmount;
+            }
+        }
+
+        foreach ($arrStockoutOrderSkuPickupMap as $intStockoutOrderId => $arrStockoutOrderSkuPickupInfo) {
+            $arrStockouOrderSkuPickupItem = [];
+            $arrStockouOrderSkuPickupItem['stockout_order_id'] = $intStockoutOrderId;
+            foreach ($arrStockoutOrderSkuPickupInfo as $intSkuId => $intSkuPickupAmount) {
+                $arrStockouOrderSkuPickupItem['pickup_skus'][] = [
+                    'sku_id' => $intSkuId,
+                    'pickup_amount' => $intSkuPickupAmount,
+                ];
+            }
+            $arrStockoutOrderSkuPickupList[] = $arrStockouOrderSkuPickupItem;
+        }
+        return $arrStockoutOrderSkuPickupList;
+    }
+
 }

@@ -17,11 +17,17 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
     private $objServiceData;
 
     /**
+     * @var Service_Data_PlaceOrder
+     */
+    private $objDsPlaceOrder;
+
+    /**
      * Service_Page_Stockin_GetStockinOrderList constructor.
      */
     public function __construct()
     {
         $this->objServiceData = new Service_Data_Stockin_StockinOrder();
+        $this->objDsPlaceOrder = new Service_Data_PlaceOrder();
     }
 
     /**
@@ -61,7 +67,8 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
         $intPrintStatus = intval($arrInput['print_status']);
         $intPageNum = $arrInput['page_num'];
         $intPageSize = $arrInput['page_size'];
-        return $this->objServiceData->getStockinOrderList(
+        $intIsPlacedOrder = $arrInput['is_placed_order'];
+        $arrRet = $this->objServiceData->getStockinOrderList(
             $strStockinOrderType,
             $intDataSource,
             $strStockinOrderId,
@@ -77,7 +84,10 @@ class Service_Page_Stockin_GetStockinOrderList implements Order_Base_Page
             $arrStockinTime,
             $arrStockinDestroyTime,
             $intPrintStatus,
+            $intIsPlacedOrder,
             $intPageNum,
             $intPageSize);
+        $arrRet['list'] = $this->objDsPlaceOrder->checkIsAutoPlacedToStockinOrderList($arrRet['list']);
+        return $arrRet;
     }
 }

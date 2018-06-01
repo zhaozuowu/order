@@ -35,7 +35,7 @@ class Dao_Wrpc_Tms
         $arrRet = $this->objWrpcService->processWarehouseRequest($arrParams);
         Bd_Log::trace(sprintf("method[%s] processWarehouseRequest[%s]",
                                 __METHOD__, json_encode($arrRet)));
-        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+        if (false === $arrRet || empty($arrRet['data']) || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
                                         __METHOD__, json_encode($arrRet), $strRoutingKey));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_CREATE_SHIPMENTORDER_ERROR);
@@ -57,7 +57,7 @@ class Dao_Wrpc_Tms
         $arrParams = $this->getPickingAmountParams($intShipmentOrderId, $arrPickupSkus);
         $arrRet = $this->objWrpcService->pickingAmount($arrParams);
         Bd_Log::trace(sprintf("method[%s] pickingAmount[%s]", __METHOD__, json_encode($arrRet)));
-        if (0 != $arrRet['errno']) {
+        if (false === $arrRet || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
                                     __METHOD__, json_encode($arrRet), $strRoutingKey));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_NOTIFY_FINISHPICKUP_ERROR);
@@ -131,7 +131,7 @@ class Dao_Wrpc_Tms
         $arrWarehouseRequest['orderNumber'] = empty($arrInput['logistics_order_id']) ? 0 : intval($arrInput['logistics_order_id']);
         $arrWarehouseRequest['requireReceiveStartTime'] = empty($arrExpectArriveTime['start']) ? 0 : $arrExpectArriveTime['start'];
         $arrWarehouseRequest['requireReceiveEndTime'] = empty($arrExpectArriveTime['end']) ? 0 : $arrExpectArriveTime['end'];
-
+        $arrInput['skus_event'] = empty($arrInput['skus_event']) ? []: $arrInput['skus_event'];
         $arrWarehouseRequest['products'] = $this->getProducts($arrInput['skus'],$arrInput['skus_event']);
         $arrWarehouseRequest['userInfo'] = $this->getUserInfo($arrInput);
         if (!empty($arrInput['orderTime'])) {
@@ -208,5 +208,23 @@ class Dao_Wrpc_Tms
         $arrPoiInfo['districtName'] = empty($arrInput['customer_region_name']) ? '' : strval($arrInput['customer_region_name']);
         $arrPoiInfo['coordsType'] = empty($arrInput['customer_location_source']) ? 0 : intval($arrInput['customer_location_source']);
         return $arrPoiInfo;
+    }
+
+    /**
+     * 根据运单号获取tms排线号
+     * @param $arrShipmentOrderIds
+     * @throws Order_BusinessError
+     */
+    public function getTmsSnapshootNum($arrShipmentOrderIds)
+    {
+        $arrParams = ['shipmentIds'=>$arrShipmentOrderIds];
+        $arrRet = $this->objWrpcService->queryRouteIds($arrShipmentOrderIds);
+        Bd_Log::trace(sprintf("method[%s] queryRouteIds[%s]", __METHOD__, json_encode($arrRet)));
+        if (false === $arrRet || !empty($arrRet['errno'])) {
+            Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
+                __METHOD__, json_encode($arrRet)));
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL);
+        }
+        return $arrRet['data'];
     }
 }
