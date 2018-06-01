@@ -61,7 +61,7 @@ class Dao_Wrpc_Stock
         $arrRet = $this->objWrpcService->getPickableSkuBatchInfo($arrReqParams);
         Bd_Log::trace(sprintf("method[%s] get_sku_location_ret[%s]",
             __METHOD__, json_encode($arrRet)));
-        if (0 != $arrRet['errno']) {
+        if (false === $arrRet || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s] routing-key[%s]",
                 __METHOD__, json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::GET_SKU_STOCK_INFO_FAIL);
@@ -91,7 +91,7 @@ class Dao_Wrpc_Stock
         $arrRet = $this->objWrpcService->pickStock($arrReqParams);
         Bd_Log::trace(sprintf("method[%s] finish_pickup_notify_stock_ret[%s]",
             __METHOD__, json_encode($arrRet)));
-        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+        if (false === $arrRet || empty($arrRet['data']) || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s]",
                 __METHOD__, json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL, $arrRet['errmsg']);
@@ -117,7 +117,7 @@ class Dao_Wrpc_Stock
         $arrRet = $this->objWrpcService->cancelStockLocRecommend($arrReqParams);
         Bd_Log::trace(sprintf("method[%s] cancel_pickup_notify_stock_ret[%s]",
             __METHOD__, json_encode($arrRet)));
-        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+        if (false === $arrRet || empty($arrRet['data']) || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s] ret[%s]",
                 __METHOD__, json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::CANCEL_PICKUP_ORDER_NOTIFY_STOCK_FAIL);
@@ -145,7 +145,8 @@ class Dao_Wrpc_Stock
         $arrRet = $this->objWrpcService->confirmLocation($arrParams);
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
                 __METHOD__, json_encode($arrParams), json_encode($arrRet)));
-        if (0 != $arrRet['errno'] && Order_Error_Code::STOCK_REPETITIVE_OPRATION != $arrRet['errno']) {
+        if (false === $arrRet ||
+            (!empty($arrRet['errno']) && Order_Error_Code::STOCK_REPETITIVE_OPRATION != $arrRet['errno'])) {
             Bd_Log::warning(sprintf("confirm place order failed params[%s] ret[%s]",
                             json_encode($arrParams), json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NOTIFY_STOCK_PLACE_ORDER_CONFIRM_FAILE);
@@ -240,7 +241,7 @@ class Dao_Wrpc_Stock
         $arrRet = $this->objWrpcService->deliverStock($arrParams);
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
             __METHOD__, json_encode($arrParams), json_encode($arrRet)));
-        if (0 != $arrRet['errno']) {
+        if (false === $arrRet || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("unfreeze sku stock failed params[%s] ret[%s]",
                 json_encode($arrParams), json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_UNFREEZE_STOCK_FAIL);
@@ -269,7 +270,7 @@ class Dao_Wrpc_Stock
         $arrRet = $objApiRaler->getData($arrReq);
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
             __METHOD__, json_encode($arrReq), json_encode($arrRet)));
-        if (0 != $arrRet['errno']) {
+        if (false === $arrRet || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("reserve sku stock failed params[%s] ret[%s]",
                 json_encode($arrReq), json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
@@ -292,7 +293,7 @@ class Dao_Wrpc_Stock
         $arrRet = $this->objWrpcService->cancelReserveStock($arrParams);
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
             __METHOD__, json_encode($arrParams), json_encode($arrRet)));
-        if (0 != $arrRet['errno']) {
+        if (false === $arrRet || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("cancel reserve sku stock failed params[%s] ret[%s]",
                 json_encode($arrParams), json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_CANCEL_STOCK_FAIL);
@@ -321,7 +322,7 @@ class Dao_Wrpc_Stock
         $arrRet = is_array($arrRet) ? $arrRet:[];
         Bd_Log::trace(sprintf("method[%s] get_recommend_stock_loc_ret[%s]",
             __METHOD__, json_encode($arrRet)));
-        if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
+        if (false === $arrRet || empty($arrRet['data']) || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s]",
                 __METHOD__, json_encode($arrRet)));
            return [];

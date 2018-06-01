@@ -470,7 +470,7 @@ class Dao_Huskar_Stock
         $arrRet = $objApiRaler->getData($arrReq);
         Bd_Log::trace(sprintf("method[%s] params[%s] ret[%s]",
             __METHOD__, json_encode($arrReq), json_encode($arrRet)));
-        if (0 != $arrRet['errno']) {
+        if (false === $arrRet || !empty($arrRet['errno'])) {
             Bd_Log::warning(sprintf("reserve sku stock failed params[%s] ret[%s]",
                 json_encode($arrReq), json_encode($arrRet)));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_STOCKOUT_FREEZE_STOCK_FAIL);
