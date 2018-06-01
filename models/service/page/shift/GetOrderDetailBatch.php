@@ -32,8 +32,9 @@ class Service_Page_Shift_GetOrderDetailBatch
     {
         // 去掉前缀
         if(!empty($arrInput['shift_order_ids'])) {
-            $arrInput['shift_order_ids'] =
-                intval(str_replace("M","",$arrInput['shift_order_ids']));
+            foreach ($arrInput['shift_order_ids'] as $intKey => $strShiftOrderId) {
+                $arrInput['shift_order_ids'][$intKey] = intval(Order_Util::trimShiftOrderIdPrefix($strShiftOrderId));
+            }
         }
         $arrOrders = $this->objShiftOrder->getByOrderIds($arrInput['shift_order_ids']);
         if(empty($arrOrders)) {
