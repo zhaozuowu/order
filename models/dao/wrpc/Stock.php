@@ -79,6 +79,8 @@ class Dao_Wrpc_Stock
      */
     public function pickStock($intPickupOrderId, $intWarehouseId, $arrPickupSkus)
     {
+        //去除捡货数为0的sku
+        $arrPickupSkus = $this->unsetInvalidPickupAmountSku($arrPickupSkus);
         $arrReqParams['requestParams'] = [
             'warehouse_id' => $intWarehouseId,
             'ext_order_id' => strval($intPickupOrderId),
@@ -92,7 +94,7 @@ class Dao_Wrpc_Stock
         if (empty($arrRet['data']) || 0 != $arrRet['errno']) {
             Bd_Log::warning(sprintf("method[%s] arrRet[%s]",
                 __METHOD__, json_encode($arrRet)));
-            Order_BusinessError::throwException(Order_Error_Code::FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL);
+            Order_BusinessError::throwException(Order_Error_Code::FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL, $arrRet['errmsg']);
         }
         return $arrRet['data'];
     }
@@ -325,5 +327,21 @@ class Dao_Wrpc_Stock
            return [];
         }
         return $arrRet['data'];
+    }
+
+    /**
+     * 去除捡货数为0的sku
+     * @param $arrPickupSkus
+     * @return array
+     */
+    private function unsetInvalidPickupAmountSku($arrPickupSkus)
+    {
+        $arrRequestPickupSkus = [];
+        foreach ($arrPickupSkus as $arrPickupSku) {
+            if (0 != $arrPickupSku['pickup_amount']) {
+                $arrRequestPickupSkus[] = $arrPickupSku;
+            }
+        }
+        return $arrRequestPickupSkus;
     }
 }
