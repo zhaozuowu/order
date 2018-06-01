@@ -68,7 +68,7 @@ class Action_GetReserveOrderSkuByOrderSku extends Order_Base_Action
                 : strval($arrRet['sku_main_image']);
             $arrRoundResult['abandon_time'] = intval($arrRet['abandon_time']);
             $arrRoundResult['product_expire_time'] = intval($arrRet['product_expire_time']);
-
+            $arrRoundResult['sku_effect_type'] = intval($arrRet['sku_effect_type']);
             $arrFormatResult = $arrRoundResult;
         }
 
