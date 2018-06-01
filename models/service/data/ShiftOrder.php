@@ -326,7 +326,7 @@ class Service_Data_ShiftOrder
      * 校验库位
      * @param $arrOrder
      * @throws Nscm_Exception_Error
-     * @throws Nscm_Exception_System
+     * @throws Nscm_Exception_Business
      * @throws Order_BusinessError
      */
     public function checkLocationInfo($arrOrder)
@@ -334,15 +334,15 @@ class Service_Data_ShiftOrder
         $arrLocationRes = $this->getLocationInfoByIds($arrOrder['warehouse_id'], [$arrOrder['source_location'], $arrOrder['target_location']]);
         Bd_Log::trace('shift order get location info:'. json_encode($arrLocationRes));
 
-        if (2 != $arrLocationRes['total']) {
+        if (2 != count($arrLocationRes)) {
             Bd_Log::warning('shift order get location info fail, order info' . json_encode($arrOrder));
-            throw new Nscm_Exception_System(Order_Error_Code::SHIFT_ORDER_GET_LOCATION_INFO_FAILED, '库位信息获取失败');
+            throw new Nscm_Exception_Business(Order_Error_Code::SHIFT_ORDER_GET_LOCATION_INFO_FAILED, '库位信息获取失败');
         }
 
         foreach ($arrLocationRes as $strLocationCode => $arrLocationInfo) {
             if (Order_Define_ShiftOrder::LOCATION_STOP_USE == $arrLocationInfo['status']) {
                 Bd_Log::warning('shift order location stop use, location info' . json_encode($arrLocationInfo));
-                throw new Nscm_Exception_System(Order_Error_Code::SHIFT_ORDER_LOCATION_STOP_USE, '库位已停用');
+                throw new Nscm_Exception_Business(Order_Error_Code::SHIFT_ORDER_LOCATION_STOP_USE, '库位已停用');
             }
         }
 
