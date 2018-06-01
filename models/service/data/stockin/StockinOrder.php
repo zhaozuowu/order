@@ -1192,6 +1192,9 @@ class Service_Data_Stockin_StockinOrder
      */
     private function getSkuPrice($arrSkuIds, $intWarehouseId, $arrSkuInfoList)
     {
+        if (empty($arrSkuIds)) {
+            return [];
+        }
         //先从仓库获取成本价
         $arrSkuPriceInWarehouse = $this->getStockPrice($intWarehouseId, $arrSkuIds);
         $arrSkuIdsInWarehouse = array_keys($arrSkuPriceInWarehouse);
