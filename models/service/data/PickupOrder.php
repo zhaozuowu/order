@@ -893,8 +893,8 @@ class Service_Data_PickupOrder
                 $list['customer_contactor'] = $stockoutOrderList['customer_contactor'];
                 $list['customer_contact'] = $stockoutOrderList['customer_contact'];
                 $list['customer_address'] = $stockoutOrderList['customer_address'];
-                $list['order_supply_type'] = isset(Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$stockoutOrderList['order_supply_type']])?Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$stockoutOrderList['order_supply_type']]:'';
                 $arrShelfInfo = json_decode($stockoutOrderList['shelf_info'], true);
+                $list['order_supply_type'] = isset(Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']])?Order_Define_BusinessFormOrder::ORDER_SUPPLY_TYPE[$arrShelfInfo['supply_type']]:'';
                 $list['devices']  = Order_Define_Format::formatDevices($arrShelfInfo['devices']);
 //                $list['remark']  = $stockoutOrderList['stockout_order_remark'];
 
