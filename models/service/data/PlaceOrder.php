@@ -512,7 +512,7 @@ class Service_Data_PlaceOrder
         if (empty($intPlaceOrderId) || empty($arrPlacedSkus)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
-        $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
+        $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getAllPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
         if (empty($arrPlaceOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_NOT_EXIST);
         }
@@ -546,12 +546,18 @@ class Service_Data_PlaceOrder
         }
         Model_Orm_PlaceOrder::getConnection()->transaction(function ()
         use ($intPlaceOrderId, $arrMapPlacedSkus, $strUserName, $intUserId) {
-            Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrMapPlacedSkus);
-            Model_Orm_PlaceOrder::placeOrder($intPlaceOrderId, $strUserName, $intUserId);
+            $boolFlag = Model_Orm_PlaceOrderSku::updatePlaceOrderActualInfo($intPlaceOrderId, $arrMapPlacedSkus);
+            if ($boolFlag === false) {
+                Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
+            }
+            $boolFlag = Model_Orm_PlaceOrder::placeOrder($intPlaceOrderId, $strUserName, $intUserId);
             $arrPlaceOrderInfo = Model_Orm_PlaceOrder::getAllPlaceOrderInfoByPlaceOrderId($intPlaceOrderId);
             if ($arrPlaceOrderInfo['is_auto'] == Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO) {
                 $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
                 Model_Orm_StockinOrder::placeStockinOrder($arrStockinOrderIds, Order_Define_PlaceOrder::PLACE_ORDER_IS_AUTO);
+            }
+            if (false === $boolFlag) {
+                Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_PLACE_FAILED);
             }
         });
     }
