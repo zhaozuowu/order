@@ -43,4 +43,15 @@ class Action_CreatePickupOrder extends Order_Base_Action
        return $data;
     }
 
+    /**
+     * 添加参数校验规则，在需要的时候，进行重写
+     * @return array
+     */
+    public function addCheckParam()
+    {
+        return [
+          'pickup_order_type' =>$this->arrFilterResult['pickup_order_type'],
+        ];
+    }
+
 }
