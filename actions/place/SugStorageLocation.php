@@ -4,7 +4,7 @@
  * @desc Action_SugStorageLocation
  * @author huabang.xue@ele.me
  */
-class Action_SugStorageLocation extends Order_Base_ApiAction
+class Action_SugStorageLocation extends Order_Base_Action
 {
     /**
      * 参数数组
@@ -21,6 +21,8 @@ class Action_SugStorageLocation extends Order_Base_ApiAction
      * @var int
      */
     protected $intMethod = Order_Define_Const::METHOD_GET;
+
+    protected $boolCheckAuth = false;
 
     /**
      * init object
