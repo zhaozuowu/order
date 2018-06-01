@@ -36,10 +36,11 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
     /**
      * execute
      * @param array $arrInput
-     * @return int
-     * @throws Order_BusinessError
-     * @throws Wm_Orm_Error
+     * @return void
      * @throws Exception
+     * @throws Nscm_Exception_Error
+     * @throws Order_BusinessError
+     * @throws Order_Error
      */
     public function execute($arrInput)
     {
@@ -83,8 +84,10 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
         $intCreatorId = $arrInput['_session']['user_id'];
         $strCreatorName = $arrInput['_session']['user_name'];
         $boolIgnoreCheckDate = $arrInput['ignore_check_date'];
+        $intStockinDevice = $arrInput['stockin_device'];
         $intStockinOrderId = $this->objDataStockin->createStockinOrder($arrSourceOrderInfo, $arrSourceOrderSkus, $intWarehouseId,
-            $strStockinOrderRemark, $arrSkuInfoList, $intCreatorId, $strCreatorName, $intType, $boolIgnoreCheckDate);
+            $strStockinOrderRemark, $arrSkuInfoList, $intCreatorId, $strCreatorName, $intType, $boolIgnoreCheckDate,
+            $intStockinDevice);
         $arrCmdInput['stockin_order_ids'] = strval($intStockinOrderId);
         $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrCmdInput);
         if (false == $ret) {

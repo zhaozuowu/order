@@ -86,6 +86,7 @@ class Order_Define_StockoutOrder
     const  APP_NWMS_ORDER_APP_ID = 6;//日志app_id
     const  APP_NWMS_ORDER_LOG_TYPE = 6;//业务类型
 
+
     /**
      * 允许入库的状态
      * @var array

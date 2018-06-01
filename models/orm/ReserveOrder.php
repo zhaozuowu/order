@@ -139,7 +139,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
 
         // 分页条件
         $offset = (intval($intPageNum) - 1) * intval($intPageSize);
-        $limitCount = intval($intPageSize);
+        $limitCount = empty($intPageSize) ? null : intval($intPageSize);
 
         // 查找满足条件的所有列数据
         $arrCols = self::getAllColumns();
@@ -199,6 +199,29 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
     }
 
     /**
+     * 根据采购单号查询预约单详情，只查询未软删除的
+     *
+     * @param $intPurchaseOrderId
+     * @return mixed
+     */
+    public static function getReserveOrderInfoByPurchaseOrderId($intPurchaseOrderId)
+    {
+        // 只查询未软删除的
+        $arrCondition = [
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+            'purchase_order_id' => $intPurchaseOrderId,
+        ];
+
+        // 查找该行所有数据
+        $arrCols = self::getAllColumns();
+
+        // 查找满足条件的所有行数据
+        $arrResult = self::findRow($arrCols, $arrCondition);
+
+        return $arrResult;
+    }
+
+    /**
      * update status
      * @param $intStatus
      * @return bool
@@ -238,12 +261,13 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
      * @param $strVendorEmail
      * @param $strVendorAddress
      * @param $strReserveOrderRemark
+     * @param $intSkuKindAmount
      * @return int
      */
     public static function createReserveOrder($intReserveOrderId, $intPurchaseOrderId,
                                               $intWarehouseId, $strWarehouseName, $intReserveOrderPlanTime, $intReserveOrderPlanAmount,
                                               $intVendorId, $strVendorName, $strVendorContactor, $strVendorMobile, $strVendorEmail,
-                                              $strVendorAddress, $strReserveOrderRemark
+                                              $strVendorAddress, $strReserveOrderRemark, $intSkuKindAmount
     )
     {
         $arrDb = [
@@ -264,6 +288,7 @@ class Model_Orm_ReserveOrder extends Order_Base_Orm
             'vendor_email' => $strVendorEmail,
             'vendor_address' => $strVendorAddress,
             'reserve_order_remark' => $strReserveOrderRemark,
+            'sku_kind_amount' => $intSkuKindAmount
         ];
         return self::insert($arrDb);
     }

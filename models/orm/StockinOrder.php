@@ -73,6 +73,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param  int $intStockinOrderTotalPriceTax
      * @param  int $intCustomerId
      * @param  int $strCustomerName
+     * @param int $intStockinDevice
      * @return int
      */
     public static function createStockinOrder(
@@ -99,7 +100,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intStockinOrderTotalPrice,
         $intStockinOrderTotalPriceTax,
         $intCustomerId,
-        $strCustomerName
+        $strCustomerName,
+        $intStockinDevice = 0
     )
     {
         $arrRow = [
@@ -127,6 +129,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_total_price_tax' => $intStockinOrderTotalPriceTax,
             'customer_id' => $intCustomerId,
             'customer_name' => $strCustomerName,
+            'stockin_device' => $intStockinDevice,
         ];
         return self::insert($arrRow);
     }
@@ -231,6 +234,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
      * @param string $strCustomerId 客户id
      * @param string $strCustomerName 客户名称
      * @param string $strSourceSupplierId 客户id
+     * @param int $intSkuKindAmount
      * @return int
      */
     public static function createStayStockInOrder(
@@ -256,7 +260,8 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
         $intShipmentOrderId,
         $strCustomerId,
         $strCustomerName,
-        $strSourceSupplierId
+        $strSourceSupplierId,
+        $intSkuKindAmount
     )
     {
         $arrRow = [
@@ -283,6 +288,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'customer_id' => $strCustomerId,
             'customer_name' => $strCustomerName,
             'source_supplier_id' => $strSourceSupplierId,
+            'sku_kind_amount' => $intSkuKindAmount,
         ];
         return self::insert($arrRow);
     }
@@ -436,8 +442,10 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             $arrCondition['is_placed_order'] = $intIsPlacedOrder;
         }
 
-        // 至少要有一个必传的时间段
-        if(1 > $intTimesCount){
+        // 非单仓库时，至少要有一个必传的时间段
+        if(
+            (1 > $intTimesCount)
+            && (1 < count($arrWarehouseId))){
             Order_BusinessError::throwException(Order_Error_Code::TIME_PARAMS_LESS_THAN_ONE);
         }
 
@@ -479,8 +487,31 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
     {
         // 只查询未软删除的
         $arrCondition = [
-            'is_delete' => Order_Define_Const::NOT_DELETE,
             'stockin_order_id' => $intStockinOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
+        ];
+
+        // 查找该行所有数据
+        $arrCols = self::getAllColumns();
+
+        // 查找满足条件的所有行数据
+        $arrResult = self::findRow($arrCols, $arrCondition);
+
+        return $arrResult;
+    }
+
+    /**
+     * 根据运单号查询入库单详情
+     *
+     * @param $intShipmentOrderId
+     * @return mixed
+     */
+    public static function getStockinOrderInfoByShipmentOrderId($intShipmentOrderId)
+    {
+        // 只查询未软删除的
+        $arrCondition = [
+            'shipment_order_id' => $intShipmentOrderId,
+            'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
 
         // 查找该行所有数据
@@ -516,15 +547,18 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
 
     /**
      * 系统销退入库单确认入库
-     * @param int    $intStockInOrderId
-     * @param int    $intStockInTime
-     * @param int    $intStockInOrderRealAmount
-     * @param int    $intStockinBatchId
-     * @param int    $intRealPriceAmount
-     * @param int    $intRealPriceTaxAmount
+     * @param int $intStockInOrderId
+     * @param int $intStockInTime
+     * @param int $intStockInOrderRealAmount
      * @param string $strRemark
+     * @param int $intStockinBatchId
+     * @param int $intDeviceType
+     * @param $intRealPriceAmount
+     * @param $intRealPriceTaxAmount
      */
-    public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount, $strRemark, $intStockinBatchId, $intRealPriceAmount, $intRealPriceTaxAmount)
+    public static function confirmStockInOrder($intStockInOrderId, $intStockInTime, $intStockInOrderRealAmount,
+                                               $strRemark, $intStockinBatchId, $intDeviceType, $intRealPriceAmount,
+                                               $intRealPriceTaxAmount)
     {
         $arrCondition = [
             'stockin_order_id' => $intStockInOrderId,
@@ -537,6 +571,7 @@ class Model_Orm_StockinOrder extends Order_Base_Orm
             'stockin_order_total_price_tax' => $intRealPriceTaxAmount,
             'stockin_batch_id' => $intStockinBatchId,
             'stockin_order_status' => Order_Define_StockinOrder::STOCKIN_ORDER_STATUS_FINISH,
+            'stockin_device' => $intDeviceType,
         ];
         self::findOne($arrCondition)->update($arrUpdateInfo);
     }
