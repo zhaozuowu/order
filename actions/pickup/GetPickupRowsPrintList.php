@@ -72,7 +72,7 @@ class Action_GetPickupRowsPrintList extends Order_Base_Action
 
             $arrFormatRetItem['stockout_order_type'] = empty($arrRetItem['stockout_order_type']) ?
                 '' : Order_Define_StockoutOrder::STOCKOUT_ORDER_TYPE_LIST[$arrRetItem['stockout_order_type']];
-            $arrFormatRetItem['stockout_order_remark'] = empty($arrRetItem['stockout_order_remark']) ? '' : $arrRetItem['customer_address'];
+            $arrFormatRetItem['stockout_order_remark'] = empty($arrRetItem['stockout_order_remark']) ? '' : $arrRetItem['stockout_order_remark'];
             $arrFormatRetItem['stockout_order_skuinfo'] =  $this->formatSkuList($arrRetItem['stockout_order_skuinfo']);
             $arrFormatRet[] = $arrFormatRetItem;
         }

@@ -434,6 +434,31 @@ class Dao_Huskar_Stock
                 'page_size'         => $arrInput['page_size'],
             ];
 
+        //商品ID
+        if (!empty($arrInput['sku_id'])) {
+            $arrReq[self::API_RALER_GET_REMOVABLE_STOCK]['requestParams']['sku_ids'] = $arrInput['sku_id'];
+        }
+
+        //质量状态
+        if (!empty($arrInput['is_defective'])) {
+            $arrReq[self::API_RALER_GET_REMOVABLE_STOCK]['requestParams']['is_defective'] = $arrInput['is_defective'];
+        }
+
+        $intSkuEffectType = $arrInput['sku_effect_type'];
+        $intTime = $arrInput['production_or_expiration_time'];
+        //效期类型与时间
+        if (!empty($intSkuEffectType) && empty($intTime) || empty($intSkuEffectType) && !empty($intTime)) {
+            Bd_Log::warning(__METHOD__ . ' get sku stock frozen info failed, call ral param is error');
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_GET_STOCK_FROZEN_PARAM_ERROR);
+        } else if (!empty($intSkuEffectType) && !empty($intTime)) {
+            if (Nscm_Define_Sku::SKU_EFFECT_TO == $intSkuEffectType) {
+                $intTime = Order_Util_Stock::formatExpireTime($intTime);
+                $arrReq[self::API_RALER_GET_REMOVABLE_STOCK]['requestParams']['expiration_time'] = $intTime;
+            } else {
+                $arrReq[self::API_RALER_GET_REMOVABLE_STOCK]['requestParams']['production_time'] = $intTime;
+            }
+        }
+
         $this->objApiHuskar->setFormat(new Order_Util_HuskarFormat());
         $arrRet = $this->objApiHuskar->getData($arrReq);
         $arrRet = empty($arrRet[self::API_RALER_GET_REMOVABLE_STOCK]) ? [] : $arrRet[self::API_RALER_GET_REMOVABLE_STOCK];
