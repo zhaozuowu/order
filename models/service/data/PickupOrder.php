@@ -996,6 +996,7 @@ class Service_Data_PickupOrder
             $tmp['sku_net'] = $skuInfo['sku_net'].Nscm_Define_Sku::SKU_NET_UNIT_TEXT[$skuInfo['sku_net_unit']];
             $tmp['sku_net_text'] = $skuInfo['sku_net'].Nscm_Define_Sku::SKU_NET_UNIT_TEXT[$skuInfo['sku_net_unit']];
             $tmp['upc_unit_text'] = Nscm_Define_Sku::UPC_UNIT_MAP[$skuInfo['upc_unit']];
+            $tmp['distribute_amount'] =$skuInfo['distribute_amount'];
             $tmp['pickup_amount'] =$skuInfo['pickup_amount'];
             $tmp['recommend_pickup_extra_info'] = $this->formatRecommendPickupExtraInfo($skuInfo['pickup_extra_info'],$arrSkusInfo,$skuInfo['sku_id']);
             $list[] = $tmp;
