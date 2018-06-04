@@ -1450,11 +1450,14 @@ class Service_Data_Stockin_StockinOrder
             if (!empty($arrStockInOrderInfo['shipment_order_id'])) {
                 $this->sendConfirmStockinOrderInfoToOms($intStockInOrderId, $arrStockInOrderInfo['shipment_order_id'], $arrStockInOrderInfo['stockin_order_source'], $arrSkuInfoList);
             }
-            $arrInput['stockin_order_ids'] = $intStockInOrderId;
-            $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrInput);
-            if (false == $ret) {
-                Bd_Log::warning("send wmq failed arrInput[%s] cmd[%s]",
-                    json_encode($arrInput), Order_Define_Cmd::CMD_PLACE_ORDER_CREATE);
+            if ($arrStockInOrderInfo['stockin_order_type'] != Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT
+                || $arrStockInOrderInfo['stockin_order_system_type'] != Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_FROM_SYSTEM) {
+                $arrInput['stockin_order_ids'] = $intStockInOrderId;
+                $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrInput);
+                if (false == $ret) {
+                    Bd_Log::warning("send wmq failed arrInput[%s] cmd[%s]",
+                        json_encode($arrInput), Order_Define_Cmd::CMD_PLACE_ORDER_CREATE);
+                }
             }
         }
         try {
