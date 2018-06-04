@@ -725,6 +725,46 @@ class Service_Data_PickupOrder
     }
 
     /**
+     * @param $intPickupOrderId
+     * @throws Order_BusinessError
+     */
+    public function fixPickupOrder($intPickupOrderId)
+    {
+        $objPickupOrderInfo = Model_Orm_PickupOrder::getPickupOrderInfo($intPickupOrderId);
+        if (empty($objPickupOrderInfo)) {
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
+        }
+
+        if (Order_Define_PickupOrder::PICKUP_ORDER_STATUS_CANCEL != $objPickupOrderInfo->pickup_order_status) {
+            Bd_Log::warning("pickupOrder can't modify pickup_order_status by pickupOrderId:". $intPickupOrderId);
+            Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_IS_FINISHED);
+        }
+        //更新订单数据
+        Model_Orm_PickupOrder::getConnection()->transaction(function () use ($intPickupOrderId){
+            $arrOrderUpdateFields = [
+                'pickup_order_status' => Order_Define_PickupOrder::PICKUP_ORDER_STATUS_INIT,
+            ];
+            //更新订单数据
+            Model_Orm_PickupOrder::updatePickupOrderInfoById($intPickupOrderId, $arrOrderUpdateFields);
+
+            $arrStockoutOrderIds = Model_Orm_StockoutPickupOrder::getStockoutOrderIdsByPickupOrderId($intPickupOrderId);
+            if (empty($arrStockoutOrderIds)) {
+                return [];
+            }
+            $updateData = [
+                'is_pickup_ordered' => Order_Define_StockoutOrder::PICKUP_ORDERE_IS_CREATED,
+            ];
+            $arrConditions = [
+                'stockout_order_id' => ['in', $arrStockoutOrderIds],
+            ];
+            $result = $this->objOrmStockoutOrder->updateDataByConditions($arrConditions, $updateData);
+            return ['successNum'=>$result];
+        });
+
+
+    }
+
+    /**
      * 通知tms完成拣货（wmq）
      * @param $strStockoutOrderId
      * @param $pickupSkus
