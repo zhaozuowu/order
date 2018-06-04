@@ -1834,6 +1834,7 @@ class Service_Data_StockoutOrder
                 $arrPickupSkusMap[$intSkuId] = 0;
             } else {
                 $arrStockoutOrderSkuPickupMap[$intStockoutOrderId][$intSkuId] = $intSkuDistributeAmount;
+                $arrPickupSkusMap[$intSkuId] = $arrPickupSkusMap[$intSkuId] - $intSkuDistributeAmount;
             }
         }
 
