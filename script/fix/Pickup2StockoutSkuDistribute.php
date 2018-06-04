@@ -54,6 +54,9 @@ class Pickup2StockoutSkuDistribute
             return;
         }
         $ormStockoutSku = Model_Orm_StockoutOrderSku::populate($arrStockoutOrderSku);
+        Bd_Log::trace(sprintf('stockout_order_id[%d], sku_id[%d], old pickup amount[%d], new pickup amount[%d]',
+            $arrStockoutOrderSku['stockout_order_id'], $arrStockoutOrderSku['sku_id'],
+            $arrStockoutOrderSku['pickup_amount'], $intPickupAmount));
         $ormStockoutSku->pickup_amount = $intPickupAmount;
         $ormStockoutSku->update();
     }
