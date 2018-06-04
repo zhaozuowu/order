@@ -32,6 +32,7 @@ class UpdateIllegalSkuPickupAmount
             'stockout_order_id' => $intStockoutOrder,
         ]);
         foreach ($arrObjStockoutSkus as $objStockoutSku) {
+            Bd_Log::trace('old pickup amount: ' . $objStockoutSku->pickup_amount);
             $objStockoutSku->pickup_amount = 0;
             $objStockoutSku->update();
         }
