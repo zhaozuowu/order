@@ -38,13 +38,10 @@ class Pickup2StockoutSkuDistribute
         foreach ($arrStockoutOrderSkus as $arrStockoutOrderSku) {
             // update sku amount
             $intSkuId = $arrStockoutOrderSku['sku_id'];
-            $intPickupAmount = 0;
-            if ($arrHashPickupOrderSkus[$intSkuId]['pickup_amount'] > 0) {
-                if ($arrHashPickupOrderSkus[$intSkuId]['pickup_amount'] > $arrStockoutOrderSku['distribute_amount']) {
-                    $intPickupAmount = $arrStockoutOrderSku['distribute_amount'];
-                } else {
-                    $intPickupAmount = $arrHashPickupOrderSkus[$intSkuId]['pickup_amount'];
-                }
+            if ($arrHashPickupOrderSkus[$intSkuId]['pickup_amount'] > $arrStockoutOrderSku['distribute_amount']) {
+                $intPickupAmount = $arrStockoutOrderSku['distribute_amount'];
+            } else {
+                $intPickupAmount = $arrHashPickupOrderSkus[$intSkuId]['pickup_amount'] ?? 0;
             }
             $this->updateStockoutOrderSku($arrStockoutOrderSku, $intPickupAmount);
             $arrHashPickupOrderSkus[$intSkuId]['pickup_amount'] -= $intPickupAmount;
