@@ -114,6 +114,7 @@ class Order_Util_BarcodeUtil
 
     /**
      * generate Code128A encoded input text string
+     * support upper case, standard numbers, control symbol, special ASCII chars
      * @param $strInputText
      * @return string
      */
@@ -248,6 +249,7 @@ class Order_Util_BarcodeUtil
 
     /**
      * generate Code128B encoded input text string
+     * support upper case, lower case, special ASCII char
      * @param $strInputText
      * @return string
      */
