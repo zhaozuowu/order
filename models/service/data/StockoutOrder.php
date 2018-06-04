@@ -1327,7 +1327,7 @@ class Service_Data_StockoutOrder
         $appId = Order_Define_StockoutOrder::APP_NWMS_ORDER_APP_ID;
         $condtion = [
             'app_id' => $appId,
-            'quota_idx_int_1' => $strStockoutOrderId,
+            'log_type' => Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE, 'quota_idx_int_1' => $strStockoutOrderId,
             'page_size' => 100
         ];
         $list = Nscm_Service_OperationLog::getLogList($condtion);
