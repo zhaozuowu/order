@@ -15,7 +15,7 @@ try {
         echo 'input pickup order id!';
         exit;
     }
-    $objAso->work($intDistributeOrderId);
+    $objAso->work($intPickupOrderId);
 } catch (Exception $e) {
     Bd_Log::warning(sprintf('exec %s error. code[%d], msg[%s]',
         __FILE__, $e->getCode(), $e->getMessage()));
