@@ -84,7 +84,7 @@ class Order_Define_StockoutOrder
     const STOCKOUT_ORDER_NOT_CANCEL = 2;
 
     const  APP_NWMS_ORDER_APP_ID = 6;//日志app_id
-    const  APP_NWMS_ORDER_LOG_TYPE = 6;//业务类型
+    const  APP_NWMS_ORDER_LOG_TYPE = 6;//业务类型 默认类型
 
 
     /**
@@ -102,6 +102,11 @@ class Order_Define_StockoutOrder
     const OPERATION_TYPE_INSERT_SUCCESS = 1;
     const OPERATION_TYPE_UPDATE_SUCCESS = 2;
     const OPERATION_TYPE_DELETE_SUCCESS = 3;
+    const OPERATION_TYPE_CREATE = 4;//操作类型 创建出库单
+    const OPERATION_TYPE_DELIVERY = 5;//操作类型 完成揽收
+    const OPERATION_TYPE_SIGNUP = 6;//操作类型 完成签收
+    const OPERATION_TYPE_PICKUP = 7;//操作类型 完成拣货
+    const OPERATION_TYPE_CANCLE = 8;//操作类型 作废出库单
     /**
      * 签收状态
      * @var array

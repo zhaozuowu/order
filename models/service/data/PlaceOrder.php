@@ -44,13 +44,15 @@ class Service_Data_PlaceOrder
         Bd_Log::trace(sprintf("method[%s] stockin_order_ids[%s] stockin_order_infos[%s]",
                         __METHOD__, json_encode($arrStockinOrderIds), json_encode($arrStockinOrderInfo)));
         if (empty($arrStockinOrderInfo)) {
+            Bd_Log::warning(sprintf("get stockinorder[%s] failed when create place order", json_encode($arrStockinOrderIds)));
             Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_NOT_EXISTED);
         }
         //校验是否已生成上架单
         $arrStockinPlaceOrderInfo = Model_Orm_StockinPlaceOrder::getPlaceOrdersByStockinOrderIds($arrStockinOrderIds);
         Bd_Log::trace(sprintf("method[%s] stockin_order_ids[%s] stockin_place_orders[%s]",
-                            __METHOD__, json_encode($arrStockinOrderIds), json_encode($arrStockinOrderInfo)));
+                            __METHOD__, json_encode($arrStockinOrderIds), json_encode($arrStockinPlaceOrderInfo)));
         if (!empty($arrStockinPlaceOrderInfo)) {
+            Bd_Log::warning(sprintf("place order already create stockin_order_ids[%s]", json_encode($arrStockinOrderIds)));
             return [];
         }
         //创建上架单
@@ -58,6 +60,8 @@ class Service_Data_PlaceOrder
         Bd_Log::trace(sprintf("method[%s] split_order_infos[%s]", __METHOD__, json_encode($arrSplitOrderInfo)));
         if (empty($arrSplitOrderInfo) || (empty($arrSplitOrderInfo['good_skus'])
             && empty($arrSplitOrderInfo['bad_skus']))) {
+            Bd_Log::warning(sprintf("get stockin sku_extra_infos failed order_ids[%s]", json_encode($arrStockinOrderIds)));
+            Order_BusinessError::throwException(Order_Error_Code::STOCKIN_ORDER_STATUS_INVALID);
             return [];
         }
         list($arrOrderList, $arrSkuList, $arrMapOrderList) =
