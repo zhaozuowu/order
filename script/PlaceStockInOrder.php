@@ -9,7 +9,8 @@ Bd_Init::init();
 class PlaceStockInOrder
 {
     public function execute() {
-        $sql = 'SELECT DISTINCT
+        $sql = <<<EOF
+                SELECT DISTINCT
 	              stockin_order_id 
                 FROM
                   nwms_stock.sku_batch 
@@ -23,7 +24,8 @@ class PlaceStockInOrder
 	                    area_code = "AR001" 
 	                  AND warehouse_id NOT IN ( 1000001, 1000002 ) 
 	                  AND total_amount > 0 
-	              )';
+	              )
+EOF;
         $conn = Bd_Db_ConnMgr::getConn('nwms_order/nwms_order_gzns');
         $arrStockInOrderList = $conn->query($sql);
         foreach ($arrStockInOrderList as $arrStockInOrderInfo) {
