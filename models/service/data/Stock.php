@@ -12,6 +12,11 @@ class Service_Data_Stock
     protected $objDaoStock;
 
     /**
+     * @var Dao_Huskar_Stock
+     */
+    protected $objDaoHuskarStock;
+
+    /**
      * @var Dao_Ral_Sku
      */
     protected $objDaoSku;
@@ -20,8 +25,9 @@ class Service_Data_Stock
      * init
      */
     public function __construct() {
-        $this->objDaoStock = new Dao_Ral_Stock();
         $this->objDaoSku = new Dao_Ral_Sku();
+        $this->objDaoStock = new Dao_Ral_Stock();
+        $this->objDaoHuskarStock = new Dao_Huskar_Stock();
     }
 
     /**
@@ -90,7 +96,7 @@ class Service_Data_Stock
     public function getStockPeriodStock($intWarehouseId, $arrSkuIds) {
         $arrRet = [];
 
-        $arrStockInfo = $this->objDaoStock->getStockPeriodStock($intWarehouseId, $arrSkuIds);
+        $arrStockInfo = $this->objDaoHuskarStock->getStockPeriodStock($intWarehouseId, $arrSkuIds);
         if(empty($arrStockInfo)) {
             return $arrRet;
         }
@@ -119,7 +125,9 @@ class Service_Data_Stock
     public function getStockFrozenInfo($arrInput)
     {
         $arrRet = [];
-        $arrStockFrozenInfo = $this->objDaoStock->getStockFrozenInfo(
+
+        //get stock info
+        $arrStockFrozenInfo = $this->objDaoHuskarStock->getStockFrozenInfo(
             $arrInput['warehouse_id'],
             $arrInput['sku_id'],
             $arrInput['is_defective'],
@@ -132,7 +140,10 @@ class Service_Data_Stock
             return $arrRet;
         }
 
+        //get sku info
         $arrSkuInfo = $this->objDaoSku->getSkuInfos(array_unique(array_column($arrStockFrozenInfo['detail'], 'sku_id')));
+
+        //merge detail
         $arrSkus = [];
         foreach ($arrStockFrozenInfo['detail'] as $arrItem) {
             $intSkuId = $arrItem['sku_id'];
@@ -143,6 +154,7 @@ class Service_Data_Stock
             }
         }
 
+        //return
         $arrRet['total'] = $arrStockFrozenInfo['total'];
         $arrRet['skus'] = $arrSkus;
         return $arrRet;

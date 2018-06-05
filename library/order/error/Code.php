@@ -24,10 +24,22 @@ class Order_Error_Code extends Wm_Error_Code
     const RAL_ERROR = 200000;
 
     /**
+     * husker异常
+     * @var integer
+     */
+    const HUSKER_ERROR = 200003;
+
+    /**
      * 参数异常
      * @var integer
      */
     const PARAMS_ERROR = 200001;
+
+    /**
+     * 接口被废弃
+     * @var integer
+     */
+    const INTERFACE_HAS_BEEN_DISCARDED = 200002;
 
     /**
      * =============
@@ -233,7 +245,7 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_BUSINESS_FORM_ORDER_SUPPLY_TYPE_ERROR = 340004;
-    
+
     /**
      * 业态订单创建sku_id不能为空
      * @var integer
@@ -258,6 +270,12 @@ class Order_Error_Code extends Wm_Error_Code
      *
      */
     const NWMS_STOCKOUT_CANCEL_STOCK_FAIL = 340008;
+    /**
+     * 出库单存在于拣货任务中
+     * @var integer
+     *
+     */
+    const STOCKOUT_ORDER_IN_PICKING= 311001;
 
     /**
      * 创建业态订单参数错误
@@ -324,7 +342,7 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_ADJUST_GET_SKU_FAILED = 350019;
-    
+
     /**
      * 库存调整-SKU没有库存信息
      * @var integer
@@ -337,7 +355,13 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_ADJUST_SKU_AMOUNT_TOO_MUCH = 350021;
-    
+
+    /**
+     * 库存调整-库区编码不存在
+     * @var integer
+     */
+    const NWMS_ORDER_ADJUST_LOCATION_CODE_NOT_EXIST = 350022;
+
     /**
      * 获取商品信息失败
      * @var integer
@@ -355,6 +379,12 @@ class Order_Error_Code extends Wm_Error_Code
      * @var integer
      */
     const NWMS_ORDER_STOCKOUT_CUSTOMER_REGION_ID_ERROR = 340014;
+
+    /**
+     * 获取仓库产效期失败
+     * @var integer
+     */
+    const GET_SKU_STOCK_INFO_FAIL = 350001;
 
     /**
      * sku业态详细信息错误
@@ -438,9 +468,41 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const TIME_PARAMS_LESS_THAN_ONE = 340028;
 
+    /**
+     * 多仓库查询需要预约入库时间范围
+     */
+    const MULTI_WAREHOUSE_QUERY_PLAN_TIME_REQUIRED = 340029;
 
     /**
-     * 查询返回结果为空
+     * 输入商品id或条码id长度异常
+     */
+    const SKU_UPC_OR_SKU_ID_LENGTH_EXCEPTION = 340030;
+
+    /**
+     * 该商品不在该单据中
+     */
+    const RESERVE_ORDER_SKU_NOT_FOUND = 340031;
+
+    /**
+     * 该条码不存在，请联系采购人员
+     */
+    const RESERVE_ORDER_UPC_ID_NOT_EXIST = 340032;
+
+    /**
+     * 查询商品条码失败
+     */
+    const RESERVE_ORDER_UPC_QUERY_FAIL = 340033;
+
+    /**
+     * 该单据不在该仓库中
+     */
+    const ORDER_NOT_IN_GIVEN_WAREHOUSE = 340034;
+
+
+
+
+    /**
+     * 未找到结果
      * @var integer
      */
     const NWMS_ORDER_QUERY_RESULT_EMPTY = 360001;
@@ -449,6 +511,11 @@ class Order_Error_Code extends Wm_Error_Code
      * 该预约单不存在，请确认后输入
      */
     const NWMS_ORDER_RESERVE_ORDER_NOT_EXIST = 360002;
+
+    /**
+     * 该采购单不存在，请确认后输入
+     */
+    const NWMS_ORDER_PURCHASE_ORDER_NOT_EXIST = 360003;
 
     /**
      * 出库单已打印，无法取消
@@ -547,6 +614,17 @@ class Order_Error_Code extends Wm_Error_Code
      */
     const NWMS_UNFROZEN_BY_SYSTEM_ERROR = 351015;
 
+    /**
+     * 冻结单-获取库存仓库失败
+     * @var integer
+     */
+    const NWMS_GET_STOCK_WAREHOUSE_FAIL = 351016;
+
+    /**
+     * 冻结单-冻结单已关闭
+     * @var integer
+     */
+    const NWMS_UNFROZEN_ORDER_STATUS_ERROR = 351017;
 
     //------------------------------------------------冻结单------------------------------------------------
 
@@ -574,6 +652,133 @@ class Order_Error_Code extends Wm_Error_Code
      * 此订单已入库完成，无需再次入库
      */
     const STOCKIN_ORDER_STATUS_FINISHED = 370005;
+
+    /**
+     * 当前所选出库单都已经生成拣货单，请勿重复操作
+     */
+    const STOCKOUT_ORDER_PICKUP_ORDER_IS_CREATED = 390001;
+    /**
+     * 生成拣货单失败
+     */
+    const INVALID_STOCKOUT_ORDER_WAREHOUSE_NOT_CREATE_PICKUP_ORDER= 390002;
+
+    /**
+     * 拣货单不存在
+     */
+    const PICKUP_ORDER_NOT_EXISTED = 390010;
+    /**
+     * 拣货单在此状态下不允许拣货
+     */
+    const PICKUP_ORDER_STATUS_INVALID = 390011;
+    /**
+     * 拣货单不存在
+     */
+    const PICKUP_ORDER_CANCEL_FAILED = 390020;
+    /**
+     * 拣货单已取消
+     */
+    const PICKUP_ORDER_IS_CANCELED = 390021;
+    /**
+     * 拣货单已取消
+     */
+    const PICKUP_ORDER_IS_FINISHED = 390022;
+    /**
+     * 拣货商品数量小于等于零
+     */
+    const PICKUP_AMOUNT_ERROR = 390030;
+    /**
+     * 拣货单商品不存在
+     */
+    const PICKUP_ORDER_SKUS_NOT_EXISTED = 390031;
+    /**
+     * 完成拣货通知库存失败
+     */
+    const FINISH_PICKUP_ORDER_NOTIFY_STOCK_FAIL = 390040;
+    /**
+     * 作废拣货单通知库存失败
+     */
+    const CANCEL_PICKUP_ORDER_NOTIFY_STOCK_FAIL = 390041;
+    /**
+     * 获取tms排线号失败
+     */
+    const NWMS_ORDER_STOCKOUT_GET_TMSSNAPSHOOTNUM_FAIL = 390032;
+
+    /**
+     * 已生成拣货单，无法取消
+     */
+    const NWMS_ORDER_STOCKOUT_ORDER_IS_PICKUP_ORDERED = 390033;
+
+    /**
+     * 实拣数量大于分配数量
+     */
+    const PICKUP_ORDER_AMOUNT_OVER_DISTRIBUTE = 390034;
+
+    /**
+     * 库位推荐获取失败
+     */
+    const NWMS_ORDER_STOCKOUT_ORDER_GET_RECOMEND_STOCKLOC_FAIL = 390034;
+
+
+    /**
+     * 上架单创建失败
+     * @var integer
+     */
+    const PLACE_ORDER_CREATE_FAILED = 400001;
+
+    /**
+     * 创建上架单参数错误
+     * @var integer
+     */
+    const CREATE_PLACE_ORDER_PARAMS_ERROR = 400002;
+
+    /**
+     * 存在已生成上架单的入库单
+     * @var integer
+     */
+    const PLACE_ORDER_ALREADY_CREATE = 400003;
+
+    /**
+     * 通知库存上架单确认失败
+     * @var integer
+     */
+    const NOTIFY_STOCK_PLACE_ORDER_CONFIRM_FAILE = 400004;
+
+    /**
+     * 上架单不存在
+     * @var integer
+     */
+    const PLACE_ORDER_NOT_EXIST = 400005;
+
+    /**
+     * 上架单上架失败
+     * @var integer
+     */
+    const PLACE_ORDER_PLACE_FAILED = 400006;
+
+    /**
+     * 移位失败
+     * @var integer
+     */
+    const SHIFT_ORDER_MOVE_FAILED = 500001;
+
+    /**
+     * 获取可移位库存失败
+     * @var integer
+     */
+    const SHIFT_ORDER_GET_LOCATION_STOCK_FAILED = 500002;
+
+    /**
+     * 获取库位信息失败
+     * @var integer
+     */
+    const SHIFT_ORDER_GET_LOCATION_INFO_FAILED = 500003;
+
+    /**
+     * 获取库位信息失败
+     * @var integer
+     */
+    const SHIFT_ORDER_LOCATION_STOP_USE = 500004;
+
 
     /**
      * 确认销退入库单通知OMS失败
@@ -610,4 +815,11 @@ class Order_Error_Code extends Wm_Error_Code
      * stock lock
      */
     const STOCK_LOCK_CONFLICT = 310001;
+
+
+    /**
+     * stock sku price get failed
+     */
+    const STOCK_SKU_PRICE_GET_FAILED = 311002;
 }
+

@@ -65,6 +65,13 @@ class Service_Data_Reserve_ReserveOrder
         $arrRes = [];
         foreach ($arrSourceSku as $row)
         {
+            $strRowImage = $row['sku_image'][0]['url'];
+            foreach ($arrSkuInfo[$row['sku_id']]['sku_image'] as $rowImage) {
+                if (true == $rowImage['is_master']) {
+                    $strRowImage = $rowImage['url'];
+                    break;
+                }
+            }
             $arrRes[] = [
                 'sku_id' => $row['sku_id'],
                 'upc_id' => $row['upc_id'],
@@ -83,6 +90,7 @@ class Service_Data_Reserve_ReserveOrder
                 'reserve_order_sku_total_price' => $row['reserve_order_sku_total_price'],
                 'reserve_order_sku_total_price_tax' => $row['reserve_order_sku_total_price_tax'],
                 'reserve_order_sku_plan_amount' => $row['reserve_order_sku_plan_amount'],
+                'sku_main_image' => strval($strRowImage),
                 'upc_min_unit' => intval($arrSkuInfo[$row['sku_id']]['min_upc']['upc_unit']),
             ];
         }
@@ -128,9 +136,11 @@ class Service_Data_Reserve_ReserveOrder
             $strVendorEmail = '';
             $strVendorAddress = '';
             $strReserveOrderRemark = strval($arrOrderInfo['purchase_order_remark']);
+            $intCountSkus = count($arrSkus);
             Model_Orm_ReserveOrder::createReserveOrder($intReserveOrderId, $intPurchaseOrderId, $intWarehouseId,
                 $strWarehouseName, $intReserveOrderPlanTime, $intReserveOrderPlanAmount, $intVendorId, $strVendorName,
-                $strVendorContactor, $strVendorMobile, $strVendorEmail, $strVendorAddress, $strReserveOrderRemark);
+                $strVendorContactor, $strVendorMobile, $strVendorEmail, $strVendorAddress, $strReserveOrderRemark,
+                $intCountSkus);
             Bd_Log::debug('ORDER_SKUS:' . json_encode($arrSkus));
             Model_Orm_ReserveOrderSku::createReserveOrderSku($arrSkus, $intReserveOrderId);
         });
@@ -319,6 +329,19 @@ class Service_Data_Reserve_ReserveOrder
                 Order_Error_Code::QUERY_TIME_SPAN_ERROR);
         }
 
+        if(empty($strWarehouseId)){
+            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+        }
+        $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
+
+        // 如果为单仓时预约时间为选填参数，否则必填
+        if (1 < count($arrWarehouseId)) {
+            if (empty($arrOrderPlanTime) || empty($arrOrderPlanTime['start']) || empty($arrOrderPlanTime['end'])) {
+                Order_BusinessError::throwException(
+                    Order_Error_Code::MULTI_WAREHOUSE_QUERY_PLAN_TIME_REQUIRED);
+            }
+        }
+
         if (false === Order_Util::verifyUnixTimeSpan(
                 $arrOrderPlanTime['start'],
                 $arrOrderPlanTime['end'])) {
@@ -340,11 +363,6 @@ class Service_Data_Reserve_ReserveOrder
         if (false === Model_Orm_ReserveOrder::isReserveOrderStatusCorrect($arrReserveOrderStatus)) {
             Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
         }
-
-        if(empty($strWarehouseId)){
-            Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
-        }
-        $arrWarehouseId = Order_Util::extractIntArray($strWarehouseId);
 
         return Model_Orm_ReserveOrder::getReserveOrderList(
             $arrReserveOrderStatus,
@@ -384,6 +402,94 @@ class Service_Data_Reserve_ReserveOrder
         }
 
         return Model_Orm_ReserveOrder::getReserveOrderInfoByReserveOrderId($intReserveOrderId);
+    }
+
+    /**
+     * 根据采购单或者预约单号查询预约订单详情
+     *
+     * @param $stOrderId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getReserveOrderInfoByOrderId($stOrderId)
+    {
+        $arrRet = [];
+
+        $strOrderId = null;
+        if (true == Order_Util::isReserveOrderId($stOrderId)) {
+            $intReserveOrderId = intval(Order_Util::trimReserveOrderIdPrefix($stOrderId));
+            if (empty($intReserveOrderId)) {
+                Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+            }
+            $arrRet = Model_Orm_ReserveOrder::getReserveOrderInfoByReserveOrderId($intReserveOrderId);
+            $strOrderId = Nscm_Define_OrderPrefix::ASN . $arrRet['reserve_order_id'];
+        } else if (true == Order_Util::isPurchaseOrderId($stOrderId)) {
+            $intPurchaseOrderId = intval(Order_Util::trimPurchaseOrderIdPrefix($stOrderId));
+            if (empty($intPurchaseOrderId)) {
+                Order_BusinessError::throwException(Order_Error_Code::PARAM_ERROR);
+            }
+            $arrRet = Model_Orm_ReserveOrder::getReserveOrderInfoByPurchaseOrderId($intPurchaseOrderId);
+            $strOrderId = Nscm_Define_OrderPrefix::ASN . $arrRet['reserve_order_id'];
+        }
+
+        // 存在入库单为空的场景，校验查出来的单号是否合法
+        if (true == Order_Util::isReserveOrderId($strOrderId)) {
+            // 检查当前用户id的操作记录，返回操作信息
+            $objDaoRedis = new Dao_Redis_StockInOrder();
+            $arrOrderOperateRecord = $objDaoRedis->getOperateRecord($strOrderId);
+            if (!empty($arrOrderOperateRecord)) {
+                // 取出最后一条操作记录信息
+                $arrLastOperateRecord = end($arrOrderOperateRecord);
+                $arrRet['last_operate_record'] = $arrLastOperateRecord;
+            }
+        }
+
+        return $arrRet;
+    }
+
+    /**
+     * 根据预约单号和商品编码sku_id/条码upc_id查询商品信息
+     * @param $strReserveOrderId
+     * @param $strSkuUpcId
+     * @return array
+     * @throws Order_BusinessError
+     */
+    public function getReserveOrderSkuInfo($strReserveOrderId, $strSkuUpcId)
+    {
+        $strReserveOrderId = Order_Util::trimReserveOrderIdPrefix($strReserveOrderId);
+
+        // 判断sku_id还是upc_id
+        $strSkuId = null;
+        if (true == Order_Util_Sku::isSkuId($strSkuUpcId)) {
+            $strSkuId = $strSkuUpcId;
+        } else if (true == Order_Util_Sku::isUpcId($strSkuUpcId)) {
+            // 将upc_id转换成sku_id
+            $objVendorRalSku = new Dao_Ral_Sku();
+            $retInfo = $objVendorRalSku->getSkuInfosByIds([$strSkuUpcId]);
+            $strSkuId = $retInfo['result']['skus'][0]['sku_id'];
+            if(empty($strSkuId)) {
+                Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_UPC_ID_NOT_EXIST);
+            }
+        } else {
+            Order_BusinessError::throwException(Order_Error_Code::SKU_UPC_OR_SKU_ID_LENGTH_EXCEPTION);
+        }
+
+        // 根据sku_id拿到数据库sku信息
+        $arrOrderSkuInfo = Model_Orm_ReserveOrderSku::getReserveOrderSkuInfo($strReserveOrderId, $strSkuId);
+        if (empty($arrOrderSkuInfo)){
+            Order_BusinessError::throwException(Order_Error_Code::RESERVE_ORDER_SKU_NOT_FOUND);
+        }
+
+        // 根据库存函数计算过期时间 / 禁收日期信息
+        $intSkuEffectType = intval($arrOrderSkuInfo['sku_effect_type']);
+        $intSkuEffectDay = intval($arrOrderSkuInfo['sku_effect_day']);
+        $intSkuFromCountry = intval($arrOrderSkuInfo['sku_from_country']);
+        $arrRet = $arrOrderSkuInfo;
+        $arrRet['abandon_time'] = Nscm_Service_Stock::calculateProhibitStockinDate($intSkuEffectDay, $intSkuFromCountry);
+        $arrRet['product_expire_time'] =
+            Nscm_Service_Stock::calculateProductionTimeByNowEffectDay($intSkuEffectType, $intSkuEffectDay);
+
+        return $arrRet;
     }
 
     /**
@@ -456,7 +562,7 @@ class Service_Data_Reserve_ReserveOrder
         $arrWarehouseList = $objDao->getWareHouseList($arrWarehouseIds);
         $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
         $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
-        $arrSkuColumns = ['reserve_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount','sku_net_unit'];
+        $arrSkuColumns = ['reserve_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount','sku_net_unit','stockin_order_sku_extra_info'];
         $arrReserveSkuList = Model_Orm_ReserveOrderSku::findRows($arrSkuColumns, $arrConditions);
         //$arrReserveSkuList = array_column($arrReserveSkuList,null,'reserve_order_id');
         $arrReserveSkuList = $this->arrayToKeyValue($arrReserveSkuList, 'reserve_order_id');

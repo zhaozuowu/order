@@ -13,19 +13,23 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
     protected $objDaoSku;
 
     /**
-     * @var Dao_Ral_Stock
+     * @var Dao_Huskar_Stock
      */
-    protected $objDaoStock;
+    protected $objHuskarStock;
 
+    /**
+     * @var Service_Data_Frozen_StockFrozenOrderDetail
+     */
     protected $objDataOrderDetail;
 
     /**
      * init
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->objDaoSku = new Dao_Ral_Sku();
         $this->objDataOrderDetail = new Service_Data_Frozen_StockFrozenOrderDetail();
-        $this->objDaoStock = new Dao_Ral_Stock();
+        $this->objHuskarStock = new Dao_Huskar_Stock();
     }
 
     /**
@@ -35,7 +39,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    protected function getSkuInfos($arrSkuIds) {
+    protected function getSkuInfos($arrSkuIds)
+    {
         if(empty($arrSkuIds)) {
             return [];
         }
@@ -58,12 +63,18 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function unfrozen($arrInput) {
+    public function unfrozen($arrInput)
+    {
         //查询冻结单
         $objFrozenOrder = Model_Orm_StockFrozenOrder::getStockFrozenOrderById($arrInput['stock_frozen_order_id']);
         if(empty($objFrozenOrder)) {
             Bd_Log::warning('unfrozen failed. frozen order not exits. ', print_r($arrInput, true));
             Order_BusinessError::throwException(Order_Error_Code::NWMS_FROZEN_ORDER_NOT_EXIST);
+        }
+
+        //冻结单已关闭
+        if(Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_CLOSED == $objFrozenOrder->order_status) {
+            Order_BusinessError::throwException(Order_Error_Code::NWMS_UNFROZEN_ORDER_STATUS_ERROR);
         }
 
         //查询冻结单明细
@@ -102,7 +113,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @return array
      * @throws Order_BusinessError
      */
-    protected function getInsertUnfrozenDetail($arrInput, $arrSkuInfos) {
+    protected function getInsertUnfrozenDetail($arrInput, $arrSkuInfos)
+    {
         $arrOrderDetailArg = [];
         foreach ($arrInput['detail'] as $arrDetail) {
             if(intval($arrDetail['unfrozen_amount']) <= 0) {
@@ -112,12 +124,16 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
 
             $arrSkuInfo = $arrSkuInfos[$arrDetail['sku_id']];
             if(empty($arrSkuInfo)) {
-                Bd_Log::warning("sku info is empty. sku id: " . $arrDetail['sku_id'], Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput);
+                Bd_Log::warning(
+                    "sku info is empty. sku id: " . $arrDetail['sku_id'],
+                    Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR, $arrInput
+                );
                 Order_BusinessError::throwException(Order_Error_Code::NWMS_ADJUST_SKU_ID_NOT_EXIST_ERROR);
             }
 
             // 根据商品效期类型，计算生产日期和有效期
-            $arrDetail = Order_Util_Stock::getEffectTime($arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
+            $arrDetail = Order_Util_Stock::getEffectTime(
+                $arrDetail, $arrSkuInfo['sku_effect_type'], $arrSkuInfo['sku_effect_day']);
             $intCreator = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
             $strCreatorName = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
             $arrDetail = [
@@ -126,7 +142,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
                 'sku_id'                    => $arrDetail['sku_id'],
                 'upc_id'                    => $arrSkuInfo['min_upc']['upc_id'],
                 'sku_name'                  => $arrSkuInfo['sku_name'],
-                //'storage_location_id'       => $arrDetail['storage_location_id'],
+                'location_code'             => $arrDetail['location_code'],
                 'unfrozen_amount'           => $arrDetail['unfrozen_amount'],
                 'current_frozen_amount'     => $arrDetail['current_frozen_amount'] - $arrDetail['unfrozen_amount'],
                 'is_defective'              => $arrDetail['is_defective'],
@@ -146,7 +162,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $arrInput
      * @return int
      */
-    public function getOrderListCountGroupBySku($arrInput) {
+    public function getOrderListCountGroupBySku($arrInput)
+    {
         Bd_Log::trace(__METHOD__ . '  param ', 0, $arrInput);
 
         $arrSql = $this->buildGetOrderDetailListSql($arrInput);
@@ -161,7 +178,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $arrInput
      * @return array
      */
-    protected function getSkuIdsByOrderId($arrInput) {
+    protected function getSkuIdsByOrderId($arrInput)
+    {
         Bd_Log::trace(__METHOD__ . '  param ', 0, $arrInput);
 
         $arrSql = $this->buildGetOrderDetailListSql($arrInput);
@@ -170,6 +188,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             $arrSql['where'])->select(array('sku_id'))->groupBy(array('sku_id'))->orderBy(
                 $arrSql['order_by'])->offset($arrSql['offset'])->limit($arrSql['limit'])->rows();
         Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
+
         if(!empty($arrRet)) {
             return array_values(array_column($arrRet, 'sku_id'));
         }
@@ -183,17 +202,17 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    public function getOrderListGroupBySku($arrInput) {
+    public function getOrderListGroupBySku($arrInput)
+    {
         $arrSkuIds = $this->getSkuIdsByOrderId($arrInput);
         if(empty($arrSkuIds)) {
             Bd_Log::warning('frozen order id: ' . $arrInput['stock_frozen_order_id'] . ' detail is empty.');
             return [];
         }
-        $arrSql = $this->buildGetOrderListGroupBySkuSql($arrInput['stock_frozen_order_id'], $arrSkuIds);
 
+        $arrSql = $this->buildGetOrderListGroupBySkuSql($arrInput['stock_frozen_order_id'], $arrSkuIds);
         $arrRet = Model_Orm_StockFrozenOrderUnfrozenDetail::findRows($arrSql['columns'], $arrSql['where'],
             $arrSql['order_by']);
-        //Bd_Log::trace(__METHOD__ . 'sql return: ' . json_encode($arrRet));
 
         $arrSkuInfos = $this->getSkuInfos($arrSkuIds);
 
@@ -205,13 +224,13 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $arrSkuIds
      * @return array
      */
-    protected function buildGetOrderListGroupBySkuSql($intOrderId, $arrSkuIds) {
+    protected function buildGetOrderListGroupBySkuSql($intOrderId, $arrSkuIds)
+    {
         $arrSql = [];
 
         $arrWhere = [
             'is_delete'     => Order_Define_Const::NOT_DELETE,
         ];
-
         if(!empty($intOrderId)) {
             $arrWhere['stock_frozen_order_id'] = $intOrderId;
         }
@@ -230,7 +249,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $arrInput
      * @return array
      */
-    protected function buildGetOrderDetailListSql($arrInput) {
+    protected function buildGetOrderDetailListSql($arrInput)
+    {
         $arrSql = [];
 
         $intOffset = 0;
@@ -306,7 +326,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             //记录冻结单详情更新字段及条件
             $arrUpdateFrozenDetail[] = [
                 'columns' => [
-                    'current_frozen_amount' => $arrFrozenDetail['current_frozen_amount'] - $arrUnfrozenInfoItem['unfrozen_amount'],
+                    'current_frozen_amount' =>
+                        $arrFrozenDetail['current_frozen_amount'] - $arrUnfrozenInfoItem['unfrozen_amount'],
                     'version' => $arrFrozenDetail['version'] + 1,
                     'update_time' => time()
                 ],
@@ -320,13 +341,16 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
         //记录冻结单更新字段及条件
         $arrUpdateFrozenOrderColumns = [];
         if (Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_FROZEN == $objFrozenOrder->order_status) {
-            $arrUpdateFrozenOrderColumns['order_status'] = Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_PART_FROZEN;
+            $arrUpdateFrozenOrderColumns['order_status'] =
+                Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_PART_FROZEN;
         }
         if ($objFrozenOrder->current_total_frozen_amount <= 0) {
             $arrUpdateFrozenOrderColumns['order_status'] = Order_Define_StockFrozenOrder::FROZEN_ORDER_STATUS_CLOSED;
             $arrUpdateFrozenOrderColumns['close_time'] = time();
-            $arrUpdateFrozenOrderColumns['close_user_id'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
-            $arrUpdateFrozenOrderColumns['close_user_name'] = Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
+            $arrUpdateFrozenOrderColumns['close_user_id'] =
+                Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_id'];
+            $arrUpdateFrozenOrderColumns['close_user_name'] =
+                Nscm_Lib_Singleton::get('Nscm_Lib_Map')->get('user_info')['user_name'];
         }
         $arrUpdateFrozenOrderColumns['current_total_frozen_amount'] = $objFrozenOrder->current_total_frozen_amount;
         $arrUpdateFrozenOrderColumns['version'] = $objFrozenOrder->version + 1;
@@ -348,7 +372,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @return array
      * @throws Order_BusinessError
      */
-    protected function getUnfrozenInfoMap($arrInput) {
+    protected function getUnfrozenInfoMap($arrInput)
+    {
         $arrRes = [];
         $arrRes['warehouse_id'] = $arrInput['warehouse_id'];
         $arrRes['stock_frozen_order_id'] = $arrInput['stock_frozen_order_id'];
@@ -357,17 +382,19 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             $strUniqKey = $this->getUnfrozenInfoUniqKey(
                 $arrUnfrozenItem['sku_id'],
                 $arrUnfrozenItem['production_or_expire_time'],
-                $arrUnfrozenItem['is_defective']
+                $arrUnfrozenItem['is_defective'],
+                $arrUnfrozenItem['location_code']
             );
             if (array_key_exists($strUniqKey, $arrResItem)) {
-                Bd_Log::warning(__METHOD__ . 'sku_id-production_or_expire_time-is_defective repeated');
+                Bd_Log::warning(__METHOD__ . 'sku_id-production_or_expire_time-is_defective-location_code repeated');
                 Order_BusinessError::throwException(
                     Order_Error_Code::NWMS_UNFROZEN_PARAM_REPEATED,
                     sprintf(
-                        '解冻参数重复，商品ID：%s，产效期：%s，质量状态：%s',
+                        '解冻参数重复，商品ID：%s，产效期：%s，质量状态：%s，库位：%s',
                         $arrUnfrozenItem['sku_id'],
                         $arrUnfrozenItem['production_or_expire_time'],
-                        $arrUnfrozenItem['is_defective']
+                        $arrUnfrozenItem['is_defective'].
+                        $arrUnfrozenItem['location_code']
                     )
                 );
             }
@@ -382,13 +409,15 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $arrFrozenDetail
      * @return array
      */
-    protected function getFrozenDetailMap($arrFrozenDetail) {
+    protected function getFrozenDetailMap($arrFrozenDetail)
+    {
         $arrRes = [];
         foreach ($arrFrozenDetail as $arrFrozenDetailItem) {
             $intUniqKey = $this->getUnfrozenInfoUniqKey(
                 $arrFrozenDetailItem['sku_id'],
                 $arrFrozenDetailItem['sku_valid_time'],
-                $arrFrozenDetailItem['is_defective']
+                $arrFrozenDetailItem['is_defective'],
+                $arrFrozenDetailItem['location_code']
             );
             $arrRes[$intUniqKey] = $arrFrozenDetailItem;
         }
@@ -400,10 +429,12 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @param $intSkuId
      * @param $intProductionOrExpireTime
      * @param $intIsDefective
+     * @param $strLocationCode
      * @return string
      */
-    protected function getUnfrozenInfoUniqKey($intSkuId, $intProductionOrExpireTime, $intIsDefective) {
-       return $intSkuId . '-' . $intProductionOrExpireTime . '-' . $intIsDefective;
+    protected function getUnfrozenInfoUniqKey($intSkuId, $intProductionOrExpireTime, $intIsDefective, $strLocationCode)
+    {
+       return $intSkuId . '-' . $intProductionOrExpireTime . '-' . $intIsDefective . '-' . $strLocationCode;
     }
 
     /**
@@ -414,7 +445,8 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * @return array
      * @throws Exception
      */
-    protected function writeTransaction($arrUpdateFrozenOrder, $arrUpdateFrozenDetail, $arrInsertUnfrozenDetail) {
+    protected function writeTransaction($arrUpdateFrozenOrder, $arrUpdateFrozenDetail, $arrInsertUnfrozenDetail)
+    {
         $objDbConn = Wm_Orm_Connection::getConnection('nwms_order_cluster');
         $arrRes = $objDbConn->transaction(function() use (
             $arrUpdateFrozenOrder,
@@ -454,6 +486,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
      * 调用库存解冻
      * @param $arrInput
      * @param $arrSkuInfos
+     * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
     public function frozenSkuStock($arrInput, $arrSkuInfos)
@@ -470,6 +503,7 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
                 'frozen_amount' => $arrItem['current_frozen_amount'],
                 'unfreeze_amount' => $arrItem['unfrozen_amount'],
                 'is_defective' => $arrItem['is_defective'],
+                'location_code' => $arrItem['location_code'],
                 'expiration_time' => $intExpireTime
             ];
         }
@@ -487,6 +521,6 @@ class Service_Data_Frozen_StockUnfrozenOrderDetail
             'details'      => $arrDetails
         ];
 
-        $this->objDaoStock->unfrozenStock($arrPram);
+        $this->objHuskarStock->unfrozenStock($arrPram);
     }
 }

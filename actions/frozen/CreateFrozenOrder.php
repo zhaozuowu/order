@@ -1,12 +1,13 @@
 <?php
 /**
- * @name Action_Createfrozenorder
+ * @name Action_CreateFrozenOrder
  * @desc 创建冻结单
  * @author sunzhixin@iwaimai.baidu.com
  */
 
-class Action_Createfrozenorder extends Order_Base_Action
+class Action_CreateFrozenOrder extends Order_Base_Action
 {
+
     /**
      * input params
      * @var array
@@ -24,6 +25,7 @@ class Action_Createfrozenorder extends Order_Base_Action
                 'max_frozen_amount'         => 'int|required|min[1]',
                 'frozen_amount'             => 'int|required|min[1]',
                 'production_or_expire_time' => 'int|required',
+                'location_code'             => 'str|required',
             ],
         ]
     ];
@@ -55,8 +57,8 @@ class Action_Createfrozenorder extends Order_Base_Action
      */
     public function format($data)
     {
-        $arrFormatResult = [];
-        $arrFormatResult['stock_frozen_order_id']    = empty($data['stock_frozen_order_id']) ? '' : Nscm_Define_OrderPrefix::F . intval($data['stock_frozen_order_id']);
+        $arrFormatResult['stock_frozen_order_id'] = empty($data['stock_frozen_order_id'])
+            ? '' : Nscm_Define_OrderPrefix::F . intval($data['stock_frozen_order_id']);
 
         return $arrFormatResult;
     }

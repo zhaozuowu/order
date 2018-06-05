@@ -12,7 +12,8 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
      * @var array
      */
     protected $arrInputParams = [
-        'stockin_order_id' => 'regex|patern[/^SIO\d{13}$/]',
+        'stockin_order_id' => 'regex|patern[/^((SIO\d{13})|(\d{15}))$/]',
+        'warehouse_id' => 'str',
     ];
 
     /**
@@ -43,6 +44,7 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
      *
      * @param array $arrRet
      * @return array
+     * @throws Nscm_Exception_System
      */
     public function format($arrRet)
     {
@@ -67,6 +69,8 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
                 : Nscm_Define_OrderPrefix::SIO . strval($arrRet['stockin_order_id']);
             $arrRoundResult['warehouse_name'] = empty($arrRet['warehouse_name']) ? ''
                 : strval($arrRet['warehouse_name']);
+            $arrRoundResult['warehouse_session_privilege'] =
+                boolval(!Nscm_Service_Auth::checkWarehouse([$arrRet['warehouse_id']]));
             $arrRoundResult['city_id'] = empty($arrRet['city_id']) ? 0
                 : intval($arrRet['city_id']);
             $arrRoundResult['city_name'] = empty($arrRet['city_name']) ? ''
@@ -93,7 +97,17 @@ class Action_GetStockinOrderDetail extends Order_Base_Action
                 : strval($arrRet['source_info']);
             $arrRoundResult['stockin_order_remark'] = empty($arrRet['stockin_order_remark']) ? ''
                 : strval($arrRet['stockin_order_remark']);
-
+            $arrRoundResult['stockin_order_status'] = intval($arrRet['stockin_order_status']);
+            $arrRoundResult['display_operate_tip'] = empty($arrRet['display_operate_tip']) ? false
+                : boolval($arrRet['display_operate_tip']);
+            $arrRoundResult['last_operate_time'] = intval($arrRet['last_operate_time']);
+            $arrRoundResult['last_operate_name'] = empty($arrRet['last_operate_name'])
+                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : strval($arrRet['last_operate_name']);
+            $arrRoundResult['last_operate_device'] = empty($arrRet['last_operate_device'])
+                ? Order_Define_Const::DEFAULT_EMPTY_RESULT_STR
+                : strval($arrRet['last_operate_device']);
+            $arrRoundResult['shipment_order_id'] = intval($arrRet['shipment_order_id']);
             $arrRoundResult = $this->filterPrice($arrRoundResult);
             $arrFormatResult = $arrRoundResult;
         }

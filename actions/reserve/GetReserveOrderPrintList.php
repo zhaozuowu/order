@@ -76,9 +76,28 @@ class Action_GetReserveOrderPrintList extends Order_Base_Action
             $arrFormatSkuItem['upc_unit_text'] = empty($arrSkuItem['upc_unit']) ? '' : Nscm_Define_Sku::UPC_UNIT_MAP[$arrSkuItem['upc_unit']];
             $arrFormatSkuItem['plan_amount'] = empty($arrSkuItem['reserve_order_sku_plan_amount']) ? 0 : $arrSkuItem['reserve_order_sku_plan_amount'];
             $arrFormatSkuItem['real_amount'] = $boolHideRealAmount ? '' : $arrSkuItem['stockin_order_sku_real_amount'];
+            $stockin_order_sku_extra_info = json_decode($arrSkuItem['stockin_order_sku_extra_info'],true);
+            $arrFormatSkuItem['expire_date'] = $this->formatExpireDate($stockin_order_sku_extra_info);
             $arrFormatSkus[] = $arrFormatSkuItem;
         }
         return $arrFormatSkus;
+    }
+
+    /**
+     * @param $extrInfo
+     * @return array
+     */
+    private function formatExpireDate($extrInfo)
+    {
+        $list = [];
+        if (empty($extrInfo)) {
+            return [];
+        }
+        foreach ($extrInfo as $itemInfo)
+        {
+            $list[] = empty($itemInfo['expire_date']) ? '' : date('Y-m-d',$itemInfo['expire_date']);
+        }
+        return $list;
     }
 
 

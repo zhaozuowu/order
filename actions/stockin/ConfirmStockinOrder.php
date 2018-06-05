@@ -15,6 +15,7 @@ class Action_ConfirmStockinOrder extends Order_Base_Action
         'stockin_order_id' => 'regex|patern[/^((SIO)\d{13})?$/]',
         'stockin_order_remark' => 'strutf8',
         'ignore_check_date' => 'int|default[0]',
+        'stockin_device' => 'int|default[0]',
         'sku_info_list' => [
             'validate' => 'json|required|decode',
             'type' => 'array',

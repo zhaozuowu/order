@@ -32,8 +32,9 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
         'stockin_destroy_time_start' => 'int|min[0]',
         'stockin_destroy_time_end' => 'int|min[0]',
         'print_status' => 'int|min[0]',
+        'is_placed_order' => 'int|min[0]',
         'page_num' => 'int|default[1]|min[1]|optional',
-        'page_size' => 'int|required|min[1]|max[200]',
+        'page_size' => 'int|required|min[0]|max[200]',
     ];
 
     /**
@@ -133,6 +134,11 @@ class Action_GetStockinStockoutOrderList extends Order_Base_Action
                 isset(Order_Define_StockinOrder::STOCKIN_PRINT_STATUS[intval($arrListItem['stockin_order_is_print'])])
                 ? Order_Define_StockinOrder::STOCKIN_PRINT_STATUS[intval($arrListItem['stockin_order_is_print'])]
                 : Order_Define_Const::DEFAULT_EMPTY_RESULT_STR;
+            $arrRoundResult['is_placed_order'] = intval($arrListItem['is_placed_order']);
+            $arrRoundResult['is_placed_order_text'] = empty($arrRoundResult['is_placed_order']) ? ''
+                : Order_Define_StockinOrder::STOCKIN_IS_PLACED_MAP[$arrListItem['is_placed_order']];
+            $arrRoundResult['sku_kind_amount'] = empty($arrListItem['sku_kind_amount']) ? 0
+                : intval($arrListItem['sku_kind_amount']);
 
             $arrFormatResult['list'][] = $arrRoundResult;
         }

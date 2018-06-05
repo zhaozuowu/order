@@ -74,7 +74,7 @@ class Dao_Ral_Stock
     /**
      * 按照效期的方式，获取库存
      */
-    const API_RALER_STOCK_PERIOD_DETAIL = 'getskustockbatchinfo';
+    const API_RALER_STOCK_PERIOD_DETAIL = 'getadjustableskubatchinfo';
 
     /**
      * 库存调整-出库
@@ -93,6 +93,18 @@ class Dao_Ral_Stock
      * @var string
      */
     const  API_RALER_STOCK_IN = 'stockin';
+    /**
+     * 库存调整-出库
+     * @var string
+     */
+    const  API_RALER_GET_SKU_PRICE = 'getskupricebyorderid';
+
+    /**
+     * 拣货--获取商品库区库位
+     * @var string
+     */
+    //TODO 修改API&添加配置
+    const  API_RALER_GET_SKU_LOCATION = 'getskulocation';
 
     /**
      * freeze sku stock
@@ -280,7 +292,7 @@ class Dao_Ral_Stock
     }
 
     /**
-     * 获取sku库存信息，仓库、效期、良品维度
+     * 获取sku库存信息，仓库、库位、效期、良品维度
      * @param $intWarehouseId
      * @param $arrSkuIds
      * @return array|mixed
@@ -296,11 +308,12 @@ class Dao_Ral_Stock
         }
 
         $strSkuIds = implode(',', $arrSkuIds);
+        $req[self::API_RALER_STOCK_PERIOD_DETAIL] = [
+            'warehouse_id' => $intWarehouseId,
+            'sku_ids'      => $strSkuIds,
+        ];
 
-        $req[self::API_RALER_STOCK_PERIOD_DETAIL]['warehouse_id'] = $intWarehouseId;
-        $req[self::API_RALER_STOCK_PERIOD_DETAIL]['sku_ids'] = $strSkuIds;
-
-        Bd_Log::trace('ral call '. self::API_RALER_STOCK_PERIOD_DETAIL . ' input params ' . json_encode($req));
+        Bd_Log::trace('huskar call '. self::API_RALER_STOCK_PERIOD_DETAIL . ' input params ' . json_encode($req));
         $ret = $this->objApiRal->getData($req);
         $ret = empty($ret[self::API_RALER_STOCK_PERIOD_DETAIL]) ? [] : $ret[self::API_RALER_STOCK_PERIOD_DETAIL];
         if (empty($ret) || !empty($ret['error_no'])) {
@@ -567,4 +580,22 @@ class Dao_Ral_Stock
         return $ret;
     }
 
+
+    public function getBatchSkuPrice($arrStockOrderIds, $intOrderType)
+    {
+        $ret = [];
+        if (empty($arrStockOrderIds) || empty($intOrderType)) {
+            return $ret;
+        }
+        $req[self::API_RALER_GET_SKU_PRICE]['order_type'] = $intOrderType;
+        $req[self::API_RALER_GET_SKU_PRICE]['order_ids'] = implode(',', $arrStockOrderIds);
+        $ret = $this->objApiRal->getData($req);
+        Bd_Log::debug("getSkuPrice res:".json_encode($ret).",request data:".json_encode($req));
+        $ret = empty($ret[self::API_RALER_GET_SKU_PRICE]) ? [] : $ret[self::API_RALER_GET_SKU_PRICE];
+        if (empty($ret) || !empty($ret['error_no'])) {
+            Bd_Log::warning(sprintf("getSkuPrice res:[%s].getSkuPrice response:[%s]",json_encode($req),json_encode($ret)));
+//            Order_BusinessError::throwException(Order_Error_Code::STOCK_SKU_PRICE_GET_FAILED);
+        }
+        return $ret;
+    }
 }

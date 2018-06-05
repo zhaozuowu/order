@@ -235,6 +235,121 @@ class Order_Util
     }
 
     /**
+     * 去除移位单开头的S前缀
+     *
+     * @param $strStockAdjustOrderId
+     * @return string
+     */
+    public static function trimShiftOrderIdPrefix($strShiftOrderId)
+    {
+        // 返回结果默认为空
+        $strResult = '';
+
+        if (empty($strShiftOrderId)) {
+            return $strResult;
+        }
+
+        $strResult = ltrim($strShiftOrderId, Nscm_Define_OrderPrefix::SHO);
+
+        return $strResult;
+    }
+
+    /**
+     * 判断是否是采购单号（校验前缀PUR+13位数字）
+     * 为空则返回false
+     * @param $strOrderId
+     * @return bool
+     */
+    public static function isPurchaseOrderId($strOrderId)
+    {
+        if (empty($strOrderId)) {
+            false;
+        }
+
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::PUR . '\d{13}$/', $strOrderId))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 判断是否是预约单号（校验前缀ASN+13位数字）
+     * 为空则返回false
+     * @param $strOrderId
+     * @return bool
+     */
+    public static function isReserveOrderId($strOrderId)
+    {
+        if (empty($strOrderId)) {
+            false;
+        }
+
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::ASN . '\d{13}$/', $strOrderId))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 判断是否是出库单号（校验前缀SOO+13位数字）
+     * 为空则返回false
+     * @param $strOrderId
+     * @return bool
+     */
+    public static function isStockoutOrderId($strOrderId)
+    {
+        if (empty($strOrderId)) {
+            false;
+        }
+
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::SOO . '\d{13}$/', $strOrderId))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 判断是否是入库单号（SIO+13位数字）
+     * 为空则返回false
+     * @param $strOrderId
+     * @return bool
+     */
+    public static function isStockinOrderId($strOrderId)
+    {
+        if (empty($strOrderId)) {
+            false;
+        }
+
+        if (!empty(preg_match('/^' . Nscm_Define_OrderPrefix::SIO . '\d{13}$/', $strOrderId))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 判断是否是运单号（15位数字）
+     * 为空则返回false
+     * @param $strOrderId
+     * @return bool
+     */
+    public static function isShipmentOrderId($strOrderId)
+    {
+        if (empty($strOrderId)) {
+            false;
+        }
+
+        if (!empty(preg_match('/^\d{15}$/', $strOrderId))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * 判断value的值是否在数组中
      * 遇到空参数返回错误
      *
@@ -307,5 +422,28 @@ class Order_Util
         }
 
         return $arrFullRet;
+    }
+
+    /**
+     * 显示命令行的进度条
+     * 注释：进度条使用环境内如果出现输出换行则会从新行重新显示进度条
+     * 函数不做校验进度高于最大值的场景，方便发现不合理的计数场景
+     * @param $iValue          // 进度值
+     * @param $intMaxVal       // 最大值
+     */
+    public static function progressBar($iValue, $intMaxVal)
+    {
+        if ((0 > $iValue) || (0 >= $intMaxVal)) {
+            printf("\n progress bar arguments error, cannot below 0");
+            return;
+        }
+
+        printf("progress: [%-50s] %d%%\r",
+            str_repeat('#', $iValue * 50 / $intMaxVal),
+            $iValue * 100 / $intMaxVal);
+
+        if ($iValue == $intMaxVal) {
+            printf("\n");
+        }
     }
 }

@@ -23,7 +23,7 @@ class Action_GetReserveOrderList extends Order_Base_Action
         'stockin_time_start' => 'int|min[0]',
         'stockin_time_end' => 'int|min[0]',
         'page_num' => 'int|default[1]|min[1]|optional',
-        'page_size' => 'int|required|min[1]|max[200]',
+        'page_size' => 'int|required|min[0]|max[200]',
     ];
 
     /**
@@ -63,10 +63,14 @@ class Action_GetReserveOrderList extends Order_Base_Action
                 : strval($arrListItem['vendor_name']);
             $arrRoundResult['reserve_order_id'] = empty($arrListItem['reserve_order_id']) ? ''
                 : Nscm_Define_OrderPrefix::ASN . strval($arrListItem['reserve_order_id']);
+            $arrRoundResult['purchase_order_id'] = empty($arrListItem['purchase_order_id']) ? ''
+                : Nscm_Define_OrderPrefix::PUR . strval($arrListItem['purchase_order_id']);
             $arrRoundResult['stockin_order_id'] = empty($arrListItem['stockin_order_id']) ? ''
                 : Nscm_Define_OrderPrefix::SIO . strval($arrListItem['stockin_order_id']);
             $arrRoundResult['reserve_order_status'] = empty($arrListItem['reserve_order_status']) ? 0
                 : intval($arrListItem['reserve_order_status']);
+            $arrRoundResult['sku_kind_amount'] = empty($arrListItem['sku_kind_amount']) ? 0
+                : intval($arrListItem['sku_kind_amount']);
             $arrRoundResult['warehouse_name'] = empty($arrListItem['warehouse_name']) ? ''
                 : strval($arrListItem['warehouse_name']);
             $arrRoundResult['reserve_order_plan_time'] = empty($arrListItem['reserve_order_plan_time']) ? 0
@@ -85,6 +89,9 @@ class Action_GetReserveOrderList extends Order_Base_Action
                     : intval($arrListItem['stockin_order_real_amount']);
             $arrRoundResult['reserve_order_remark'] = empty($arrListItem['reserve_order_remark']) ? ''
                 : strval($arrListItem['reserve_order_remark']);
+            $arrRoundResult['is_placed_order'] = intval($arrListItem['is_placed_order']);
+            $arrRoundResult['is_placed_order_text'] = empty($arrRoundResult['is_placed_order']) ? ''
+                : Order_Define_StockinOrder::STOCKIN_IS_PLACED_MAP[$arrListItem['is_placed_order']];
 
             $arrFormatResult['list'][] = $arrRoundResult;
         }
