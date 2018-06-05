@@ -1371,6 +1371,18 @@ class Service_Data_Stockin_StockinOrder
     }
 
     /**
+     * 获取仓库是否开启库区库位
+     * @param int $intWarehouseId
+     * @return bool
+     */
+    private function getWarehouseLocationTag($intWarehouseId)
+    {
+        $daoWrpcWarehouse = new Dao_Wrpc_Warehouse();
+        $arrWarehouseInfo = $daoWrpcWarehouse->getWarehouseInfoByWarehouseId($intWarehouseId);
+        return $arrWarehouseInfo['storage_location_tag'];
+    }
+
+    /**
      * @param  string $strStockInOrderId 入库单id
      * @param  array $arrSkuInfoList 入库sku信息
      * @param  string $strRemark 入库备注
@@ -1450,8 +1462,9 @@ class Service_Data_Stockin_StockinOrder
             if (!empty($arrStockInOrderInfo['shipment_order_id'])) {
                 $this->sendConfirmStockinOrderInfoToOms($intStockInOrderId, $arrStockInOrderInfo['shipment_order_id'], $arrStockInOrderInfo['stockin_order_source'], $arrSkuInfoList);
             }
-            if ($arrStockInOrderInfo['stockin_order_type'] != Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT
-                || $arrStockInOrderInfo['data_source'] != Order_Define_StockinOrder::STOCKIN_DATA_SOURCE_FROM_SYSTEM) {
+            //判断是否开启库区库位
+            $intWarehouseLocationTag = $this->getWarehouseLocationTag($intWarehouseId);
+            if (Order_Define_Warehouse::STORAGE_LOCATION_TAG_DISABLE == $intWarehouseLocationTag) {
                 $arrInput['stockin_order_ids'] = $intStockInOrderId;
                 $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrInput);
                 if (false == $ret) {
