@@ -9,28 +9,21 @@ Bd_Init::init();
 class PlaceStockInOrder
 {
     public function execute() {
-        $sql = 'SELECT stockin_order_id FROM stockin_order WHERE
-	stockin_order_id IN (
-	SELECT
-		stockin_order_id 
-	FROM
-		nwms_stock.sku_batch 
-	WHERE
-		sku_batch_id IN (
-		SELECT
-			sku_batch_id 
-		FROM
-			nwms_stock.stock_location_map 
-		WHERE
-			area_code = "AR001" 
-			AND warehouse_id NOT IN ( 1000001, 1000002 ) 
-			AND total_amount > 0 
-		GROUP BY
-			sku_batch_id 
-		) 
-	GROUP BY
-	stockin_order_id 
-	)';
+        $sql = 'SELECT DISTINCT
+	              stockin_order_id 
+                FROM
+                  nwms_stock.sku_batch 
+                WHERE
+	              sku_batch_id IN (
+                      SELECT DISTINCT
+	                    sku_batch_id 
+                      FROM
+	                    nwms_stock.stock_location_map 
+                      WHERE
+	                    area_code = "AR001" 
+	                  AND warehouse_id NOT IN ( 1000001, 1000002 ) 
+	                  AND total_amount > 0 
+	              )';
         $conn = Bd_Db_ConnMgr::getConn('nwms_order/nwms_order_gzns');
         $arrStockInOrderList = $conn->query($sql);
         foreach ($arrStockInOrderList as $arrStockInOrderInfo) {
