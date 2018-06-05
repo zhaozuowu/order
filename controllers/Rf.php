@@ -20,5 +20,6 @@ class Controller_Rf extends Ap_Controller_Abstract {
         'getstockinskubyordersku' => 'actions/stockin/GetStockinSkuByOrderSku.php', #rf根据入库单号和扫码查询商品信息#,
         'createstockinorder' => 'actions/stockin/CreateStockinOrder.php', #rf创建预约入库单#
         'confirmstockinorder' => 'actions/stockin/ConfirmStockinOrder.php', #rf确认销退入库单#
+        'getbarcodeimg' => 'actions/rf/GetBarcodeImg.php', #rf获取条形码图像#
     );
 }
