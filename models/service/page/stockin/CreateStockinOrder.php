@@ -21,7 +21,10 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
      */
     private $objDataReserve;
 
-    private $objWarehouse;
+    /**
+     * @var Service_Data_Warehouse
+     */
+    private $objDaoWarehouse;
 
     /**
      * Service_Page_Stockin_CreateStockinOrder constructor.
@@ -31,6 +34,7 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
         $this->objDataStockin = new Service_Data_Stockin_StockinOrder();
         $this->objDataStockout = new Service_Data_StockoutOrder();
         $this->objDataReserve = new Service_Data_Reserve_ReserveOrder();
+        $this->objDaoWarehouse = new Service_Data_Warehouse();
     }
 
     /**
@@ -89,7 +93,9 @@ class Service_Page_Stockin_CreateStockinOrder implements Order_Base_Page
             $strStockinOrderRemark, $arrSkuInfoList, $intCreatorId, $strCreatorName, $intType, $boolIgnoreCheckDate,
             $intStockinDevice);
         $arrCmdInput['stockin_order_ids'] = strval($intStockinOrderId);
-        if ($intType == Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT) {
+        $intWarehouseLocationTag = $this->objDaoWarehouse->getWarehouseLocationTag($intWarehouseId);
+        if ($intType == Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_STOCKOUT
+            && Order_Define_Warehouse::STORAGE_LOCATION_TAG_ENABLED == $intWarehouseLocationTag) {
             return ;
         }
         $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrCmdInput);
