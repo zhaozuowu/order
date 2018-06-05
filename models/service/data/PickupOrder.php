@@ -243,11 +243,10 @@ class Service_Data_PickupOrder
                 $details[$key."_" .$skuId]['amount']+= $skuInfo['distribute_amount'];
             }
             $pickupOrderId = $key;
-            $intWarehouseId = isset($wareHouseIds[$key]) ? $wareHouseIds[$key]:0;
-            $arrWarehouseInfo = $this->objDaoWrpcWarehouse->getWarehouseInfoByWarehouseId($intWarehouseId);
-            $intLocationTag = $arrWarehouseInfo['storage_location_tag'];
-            if (!empty($details) && (Order_Define_Warehouse::STORAGE_LOCATION_TAG_ENABLED
-                == $intLocationTag)) {
+           $intWarehouseId = isset($wareHouseIds[$key]) ? $wareHouseIds[$key]:0;
+            //$arrWarehouseInfo = $this->objDaoWrpcWarehouse->getWarehouseInfoByWarehouseId($intWarehouseId);
+          //  $intLocationTag = $arrWarehouseInfo['storage_location_tag'];
+            if (!empty($details)) {
                 $recommendStockLocList = $this->objWrpcStock->getRecommendStockLoc($intWarehouseId,$pickupOrderId,$details);
                 $recommendStockLocList = $this->formatRecommendStockLocList($recommendStockLocList);
                 foreach($recommendStockLocList as $stockKey=>$stockItem) {
