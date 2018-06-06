@@ -78,8 +78,19 @@ class Service_Data_PlaceOrder
             if (!$boolFlag) {
                 Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_CREATE_FAILED);
             }
+            $arrInput = [
+                'order_list' => $arrOrderList,
+                'sku_list' => $arrSkuList,
+            ];
+            //发送wmq
+            $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_AUTO_CONFIRM, $arrInput);
+            if (false == $ret) {
+                Bd_Log::warning(sprintf("method[%s] send cmd[%s] params[%s] failed",
+                    __METHOD__, Order_Define_Cmd::CMD_PLACE_ORDER_AUTO_CONFIRM, json_encode($arrInput)));
+                Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_CREATE_FAILED);
+            }
+//            $this->autoPlaceOrder($arrOrderList, $arrSkuList);
         });
-        $this->autoPlaceOrder($arrOrderList, $arrSkuList);
     }
 
     /**
@@ -90,7 +101,7 @@ class Service_Data_PlaceOrder
      * @throws Nscm_Exception_Error
      * @throws Order_BusinessError
      */
-    protected function autoPlaceOrder($arrOrderList, $arrSkuList) {
+    public function autoPlaceOrder($arrOrderList, $arrSkuList) {
         if (empty($arrOrderList)) {
             return [];
         }
