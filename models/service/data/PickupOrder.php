@@ -276,7 +276,8 @@ class Service_Data_PickupOrder
         if (empty($arrPickupOrder)) {
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
         }
-
+        $stockoutOrderIds =   Model_Orm_StockoutPickupOrder::getStockoutOrderIdsByPickupOrderId($arrPickupOrder['pickup_order_id']);
+        $arrPickupOrder['stockout_order_ids'] = $stockoutOrderIds;
         $arrPickupOrderSkus = Model_Orm_PickupOrderSku::findRows(Model_Orm_PickupOrderSku::getAllColumns(), $arrConds);
         $skuIds = array_column($arrPickupOrderSkus,'sku_id');
         $arrSkusInfo = [];
