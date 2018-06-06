@@ -84,6 +84,11 @@ class Order_Define_Cmd
      * @var string
      */
     const CMD_PLACE_ORDER_CREATE = 'place_order_create';
+    /**
+     * cmd place order auto confirm
+     * @var string
+     */
+    const CMD_PLACE_ORDER_AUTO_CONFIRM = 'place_order_auto_confirm';
 
     /**
      * wmq使用的默认配置
