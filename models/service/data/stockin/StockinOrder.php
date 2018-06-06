@@ -1464,7 +1464,7 @@ class Service_Data_Stockin_StockinOrder
             }
             //判断是否开启库区库位
             $intWarehouseLocationTag = $this->getWarehouseLocationTag($intWarehouseId);
-            if (Order_Define_Warehouse::STORAGE_LOCATION_TAG_DISABLE == $intWarehouseLocationTag) {
+            if (Order_Define_Warehouse::STORAGE_LOCATION_TAG_DISABLE == $intWarehouseLocationTag && !empty($arrStockInSkuList)) {
                 $arrInput['stockin_order_ids'] = $intStockInOrderId;
                 $ret = Order_Wmq_Commit::sendWmqCmd(Order_Define_Cmd::CMD_PLACE_ORDER_CREATE, $arrInput);
                 if (false == $ret) {

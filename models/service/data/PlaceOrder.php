@@ -78,8 +78,8 @@ class Service_Data_PlaceOrder
             if (!$boolFlag) {
                 Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_CREATE_FAILED);
             }
+            $this->autoPlaceOrder($arrOrderList, $arrSkuList);
         });
-        $this->autoPlaceOrder($arrOrderList, $arrSkuList);
     }
 
     /**
