@@ -69,6 +69,7 @@ class Action_GetPickupOrderList extends Order_Base_Action
                 'create_time' => $item['create_time'],
                 'update_operator' => $item['update_operator'],
                 'update_time' => $item['update_time'],
+                'stockout_order_id' => empty($data['relations'][$item['pickup_order_id']]) ? '':(implode(",",$data['relations'][$item['pickup_order_id']]))
             ];
         }
         return $ret;

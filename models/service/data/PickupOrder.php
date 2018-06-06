@@ -423,6 +423,15 @@ class Service_Data_PickupOrder
             $intPickupOrderIsPrint,
             $intUpdateStartTime,
             $intUpdateEndTime);
+        if(!empty($ret['total'])) {
+            $pickupOrderIds = array_column($ret['rows'],'pickup_order_id');
+            $stockoutPickupOrderList =  Model_Orm_StockoutPickupOrder::getStockoutOrderIdsByPickupOrderIds($pickupOrderIds);
+            $list = [];
+            foreach($stockoutPickupOrderList as $key=>$item) {
+                 $list[$item['pickup_order_id']][] = $item['stockout_order_id'];
+            }
+        }
+        $ret['relations'] = $list;
         return $ret;
     }
 
