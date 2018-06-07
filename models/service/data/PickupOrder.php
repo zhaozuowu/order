@@ -1005,6 +1005,13 @@ class Service_Data_PickupOrder
         $pickupExtraInfo =  json_decode($pickupExtraInfo, true);
         $recommendList =  empty($pickupExtraInfo['finish_info']) ? []:$pickupExtraInfo['finish_info'];
         $recommendList = empty($recommendList) ? []:json_decode($recommendList,true);
+        if(empty($recommendList)) {
+            $tmp['expire_time'] = 0;
+            $tmp['recommend_amount'] = 0;
+            $tmp['location_code'] = '';
+            $list[] = $tmp;
+            return $list;
+        }
         foreach ($recommendList as $key=>$item) {
             $tmp['expire_time'] = $item['expiration_time'];
             $tmp['recommend_amount'] = $item['pick_amount'];
