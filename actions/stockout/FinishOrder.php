@@ -1,7 +1,7 @@
 <?php
 /**
  * @name Action_DeliveryOrder
- * @desc TMS完成揽收
+ * @desc TMS完成签收
  * @author  zhaozuowu@iwaimai.baidu.com
  */
 
