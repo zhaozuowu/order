@@ -569,10 +569,10 @@ class Service_Data_Stockin_StockinOrder
                 $intProductionTime = 0;
                 $intExpireTime = 0;
                 if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $arrDbSku['sku_effect_type']) {
-                    $intProductionTime = intval($skuRow['expire_date']);
+                    $intProductionTime = strtotime(date('Ymd', $skuRow['expire_date']));
                     $intExpireTime = $intProductionTime + intval($arrDbSku['sku_effect_day']) * 86400 - 1;
                 } else {
-                    $intExpireTime = intval($skuRow['expire_date']) + 86399;
+                    $intExpireTime = strtotime(date('Ymd', $skuRow['expire_date'])) + 86399;
                 }
 
                 // 良品数
