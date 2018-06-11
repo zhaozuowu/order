@@ -60,6 +60,7 @@ class Action_GetPickupOrderDetail extends Order_Base_Action
         }
 
         $arrRet['pickup_order_id'] = $data['pickup_order_id'];
+        $arrRet['stockout_order_ids'] = empty($data['stockout_order_ids']) ? '':implode(";",$data['stockout_order_ids']);
         $arrRet['remark'] = $data['remark'];
         $arrRet['pickup_order_type'] = $data['pickup_order_type'];
         $arrRet['pickup_order_type_text'] = Order_Define_PickupOrder::PICKUP_ORDER_TYPE_MAP[$data['pickup_order_type']];
