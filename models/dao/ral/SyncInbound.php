@@ -27,6 +27,7 @@ class Dao_Ral_SyncInbound
      * @param $arrItems
      * @return mixed
      * @throws Nscm_Exception_Error
+     * @deprecated
      */
     public static function syncInboundDirect($intInboundId, $intStatus, $intActualTime, $arrItems)
     {

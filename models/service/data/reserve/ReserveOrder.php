@@ -634,6 +634,6 @@ class Service_Data_Reserve_ReserveOrder
      */
     public function syncInboundDirect($intInboundId, $intStatus, $intActualTime, $arrItems)
     {
-        Dao_Ral_SyncInbound::syncInboundDirect($intInboundId, $intStatus, $intActualTime, $arrItems);
+        Dao_Huskar_SyncInbound::syncInboundDirect($intInboundId, $intStatus, $intActualTime, $arrItems);
     }
 }
