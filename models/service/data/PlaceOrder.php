@@ -277,37 +277,6 @@ class Service_Data_PlaceOrder
     }
 
     /**
-     * 计算到效期
-     * @param $arrDbSku
-     * @return array
-     */
-    protected function calculateExpire($arrDbSku)
-    {
-        $arrStockinOrderSkuExtraInfo = json_decode($arrDbSku['stockin_order_sku_extra_info'], true);
-        $arrBatchInfo = [];
-        foreach ($arrStockinOrderSkuExtraInfo as $skuRow) {
-            if ($skuRow['amount'] > 0) {
-                if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $arrDbSku['sku_effect_type']) {
-                    $intProductionTime = intval($skuRow['expire_date']);
-                    $intExpireTime = $intProductionTime + intval($arrDbSku['sku_effect_day']) * 86400 - 1;
-                    $arrBatchInfo[] = [
-                        'expire_time' => $intExpireTime,
-                        'production_time' => $intProductionTime,
-                        'amount'      => $skuRow['amount'],
-                    ];
-                } else {
-                    $intExpireTime = intval($skuRow['expire_date']) + 86399;
-                    $arrBatchInfo[] = [
-                        'expire_time' => $intExpireTime,
-                        'amount'      => $skuRow['amount'],
-                    ];
-                }
-            }
-        }
-        return $arrBatchInfo;
-    }
-
-    /**
      * 获取关联表写入参数
      * @param $arrStockinOrderIds
      * @param $intPlaceOrderId
