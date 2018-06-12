@@ -271,6 +271,7 @@ class Service_Data_Stockin_StockinOrder
         }
         $arrDbSkuInfoList = [];
         $arrWarningInfo = [];
+
         foreach ($arrSkuInfoList as $arrSkuInfo) {
             if (!isset($arrHashReserveOrderSkus[$arrSkuInfo['sku_id']])) {
                 // sku id not in purchase order or sku id repeat
