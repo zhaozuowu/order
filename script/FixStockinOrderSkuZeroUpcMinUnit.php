@@ -21,6 +21,8 @@ try {
 
 class FixStockinOrderSkuZeroUpcMinUnit
 {
+    const LIMIT_COUNT = 1000;
+
     /**
      * work
      * @throws Nscm_Exception_Error
@@ -113,8 +115,10 @@ class FixStockinOrderSkuZeroUpcMinUnit
 
             Bd_Log::trace('SCRIPT_UPDATE_STOCKIN_ORDER_SKU update id: ' . json_encode($intId));
 
-            usleep(150000);
             $intSuccess++;
+            if (0 == ($i % LIMIT_COUNT)) {
+                sleep(1);
+            }
         }
         printf("\n************************ >*FINISH*< **********************************\n");
         printf("\n Success %d, Failed %d, Total %d", $intSuccess, $intFailure, $intTotalCount);
