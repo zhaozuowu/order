@@ -276,7 +276,8 @@ class Service_Data_PickupOrder
         if (empty($arrPickupOrder)) {
             Order_BusinessError::throwException(Order_Error_Code::PICKUP_ORDER_NOT_EXISTED);
         }
-
+        $stockoutOrderIds =   Model_Orm_StockoutPickupOrder::getStockoutOrderIdsByPickupOrderId($arrPickupOrder['pickup_order_id']);
+        $arrPickupOrder['stockout_order_ids'] = $stockoutOrderIds;
         $arrPickupOrderSkus = Model_Orm_PickupOrderSku::findRows(Model_Orm_PickupOrderSku::getAllColumns(), $arrConds);
         $skuIds = array_column($arrPickupOrderSkus,'sku_id');
         $arrSkusInfo = [];
@@ -423,6 +424,15 @@ class Service_Data_PickupOrder
             $intPickupOrderIsPrint,
             $intUpdateStartTime,
             $intUpdateEndTime);
+        if(!empty($ret['total'])) {
+            $pickupOrderIds = array_column($ret['rows'],'pickup_order_id');
+            $stockoutPickupOrderList =  Model_Orm_StockoutPickupOrder::getStockoutOrderIdsByPickupOrderIds($pickupOrderIds);
+            $list = [];
+            foreach($stockoutPickupOrderList as $key=>$item) {
+                 $list[$item['pickup_order_id']][] = $item['stockout_order_id'];
+            }
+        }
+        $ret['relations'] = $list;
         return $ret;
     }
 
@@ -940,7 +950,7 @@ class Service_Data_PickupOrder
             }
 
         }
-        $skus = $this->getPickupOrderSkuPrintList($pickupOrder['pickup_order_id']);
+        $skus = $this->getPickupOrderSkuPrintList($pickupOrder['pickup_order_id'],$pickupOrder['pickup_order_status']);
         $list['pickup_skus'] = $skus;
         $arrWarehouseInfo = $this->objDaoWrpcWarehouse->getWarehouseInfoByWarehouseId($pickupOrder['warehouse_id']);
         $intLocationTag = $arrWarehouseInfo['storage_location_tag'];
@@ -970,15 +980,46 @@ class Service_Data_PickupOrder
           'pickup_order_type'=>$pickupOrder['pickup_order_type'],
           'pickup_order_id'=>$pickupOrder['pickup_order_id'],
         ];
+        if(Order_Define_PickupOrder::PICKUP_ORDER_STATUS_FINISHED !=$pickupOrder['pickup_order_status'] ) {
+            $list['sku_pickup_amount'] = empty($pickupOrder['sku_distribute_amount']) ? 0:$pickupOrder['sku_distribute_amount'];
+        }
         $list['is_recommend'] = ($intLocationTag == Order_Define_Warehouse::STORAGE_LOCATION_TAG_ENABLED)?1:0;
 
-        $skus = $this->getPickupOrderSkuPrintList($pickupOrder['pickup_order_id']);
+        $skus = $this->getPickupOrderSkuPrintList($pickupOrder['pickup_order_id'],$pickupOrder['pickup_order_status']);
         $list['pickup_skus'] = $skus;
         return $list;
 
 
     }
 
+    /**
+     * 格式化实际库位信息
+     * @param $pickupExtraInfo
+     * @param $arrSkusInfo
+     * @param $intSkuId
+     * @return array
+     */
+    private function formatRealPickupExtraInfo($pickupExtraInfo)
+    {
+        $list = [];
+        $pickupExtraInfo =  json_decode($pickupExtraInfo, true);
+        $recommendList =  empty($pickupExtraInfo['finish_info']) ? []:$pickupExtraInfo['finish_info'];
+        $recommendList = empty($recommendList) ? []:json_decode($recommendList,true);
+        if(empty($recommendList)) {
+            $tmp['expire_time'] = 0;
+            $tmp['recommend_amount'] = 0;
+            $tmp['location_code'] = '';
+            $list[] = $tmp;
+            return $list;
+        }
+        foreach ($recommendList as $key=>$item) {
+            $tmp['expire_time'] = $item['expiration_time'];
+            $tmp['recommend_amount'] = $item['pick_amount'];
+            $tmp['location_code'] = $item['location_code'];
+            $list[] = $tmp;
+        }
+        return $list;
+    }
     /**
      * 格式化推荐库位信息
      * @param $pickupExtraInfo
@@ -1013,7 +1054,7 @@ class Service_Data_PickupOrder
      * @return array
      * @throws Nscm_Exception_Error
      */
-    private function getPickupOrderSkuPrintList($pickupOrderId)
+    private function getPickupOrderSkuPrintList($pickupOrderId,$pickupOrderStatus)
     {
         $arrConds = [
             'pickup_order_id' =>$pickupOrderId,
@@ -1037,7 +1078,18 @@ class Service_Data_PickupOrder
             $tmp['upc_unit_text'] = Nscm_Define_Sku::UPC_UNIT_MAP[$skuInfo['upc_unit']];
             $tmp['distribute_amount'] =$skuInfo['distribute_amount'];
             $tmp['pickup_amount'] =$skuInfo['pickup_amount'];
-            $tmp['recommend_pickup_extra_info'] = $this->formatRecommendPickupExtraInfo($skuInfo['pickup_extra_info'],$arrSkusInfo,$skuInfo['sku_id']);
+            $tmp['differences_amount'] = 0;
+            if($pickupOrderStatus == Order_Define_PickupOrder::PICKUP_ORDER_STATUS_FINISHED )
+            {
+                $tmp['recommend_pickup_extra_info'] = $this->formatRealPickupExtraInfo($skuInfo['pickup_extra_info'],$arrSkusInfo,$skuInfo['sku_id']);
+            }else{
+                $tmp['recommend_pickup_extra_info'] = $this->formatRecommendPickupExtraInfo($skuInfo['pickup_extra_info'],$arrSkusInfo,$skuInfo['sku_id']);
+                $arrRecommendAmount = array_column( $tmp['recommend_pickup_extra_info'],'recommend_amount');
+                $intRecommendAmount = array_sum($arrRecommendAmount);
+                if($intRecommendAmount < $tmp['distribute_amount']) {
+                    $tmp['differences_amount']  = $tmp['distribute_amount']-$intRecommendAmount;
+                }
+            }
             $list[] = $tmp;
 
         }
