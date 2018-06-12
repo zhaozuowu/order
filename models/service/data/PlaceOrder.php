@@ -368,6 +368,7 @@ class Service_Data_PlaceOrder
             $strKey = $intSkuId . '#' . $intExpireDate;
             if (isset($arrMapSkus[$strKey])) {
                 $arrMapSkus[$strKey]['plan_amount'] += $arrSkuItem['plan_amount'];
+                continue;
             }
             $arrMapSkus[$strKey] = $arrSkuItem;
         }
