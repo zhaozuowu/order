@@ -343,9 +343,35 @@ class Service_Data_PlaceOrder
             Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_NOT_EXIST);
         }
         $arrPlaceOrderInfo['skus'] = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId);
+        $arrPlaceOrderInfo['skus'] = $this->uniquePlaceOrderSkus($arrPlaceOrderInfo['skus']);
         $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
         $arrPlaceOrderInfo['source_order_id'] = implode(',', $arrStockinOrderIds);
         return $arrPlaceOrderInfo;
+    }
+
+    /**
+     * 聚合上架单商品
+     * @param $arrSkus
+     * @return array
+     */
+    protected function uniquePlaceOrderSkus($arrSkus) {
+        if (empty($arrSkus)) {
+            return [];
+        }
+        $arrMapSkus = [];
+        foreach ((array)$arrSkus as $arrSkuItem) {
+            $intSkuId = $arrSkuItem['sku_id'];
+            $intExpireDate = $arrSkuItem['expire_date'];
+            if (empty($intSkuId) || empty($intExpireDate)) {
+                continue;
+            }
+            $strKey = $intSkuId . '#' . $intExpireDate;
+            if (isset($arrMapSkus[$strKey])) {
+                $arrMapSkus[$strKey]['plan_amount'] += $arrSkuItem['plan_amount'];
+            }
+            $arrMapSkus[$strKey] = $arrSkuItem;
+        }
+        return array_values($arrMapSkus);
     }
 
     /**
