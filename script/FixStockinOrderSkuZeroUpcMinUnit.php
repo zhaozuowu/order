@@ -58,12 +58,18 @@ class FixStockinOrderSkuZeroUpcMinUnit
             $arrAllSkusIdMap[$sku['id']] = $sku;
         }
 
-        $arrAllId = array_unique(
-            array_column($arrAllSkus, 'id')
-        );
+        $arrAllId =
+            array_values(
+                    array_unique(
+                            array_column($arrAllSkus, 'id')
+                    )
+            );
 
-        $arrAllSkuId = array_unique(
-                array_column($arrAllSkus, 'sku_id')
+        $arrAllSkuId =
+            array_values(
+                array_unique(
+                    array_column($arrAllSkus, 'sku_id')
+            )
         );
 
         Bd_log::trace('SCRIPT_UPDATE_SKU_ID all sku_id: ' . json_encode($arrAllSkus));
@@ -80,7 +86,6 @@ class FixStockinOrderSkuZeroUpcMinUnit
             printf("\n WARNING: get skus not match, source skus [%d], get skus[%d] \n",
                 count($arrAllSkuId), count($arrSkuInfosAll));
         }
-
         $arrSkuIdUpcMinUnitMap = [];
         foreach ($arrSkuInfosAll as $intSkuId => $skuInfo) {
             $arrSkuIdUpcMinUnitMap[$intSkuId] = $skuInfo['min_upc']['upc_unit'];
@@ -96,7 +101,7 @@ class FixStockinOrderSkuZeroUpcMinUnit
         foreach ($arrAllId as $intId) {
             $i++;
             Order_Util::progressBar($i, $intTotalCount);
-            $intSkuId = $arrAllSkusIdMap[$intId]['sku_id'];
+            $intSkuId = intval($arrAllSkusIdMap[$intId]['sku_id']);
             Bd_Log::trace(sprintf('SCRIPT_UPDATE_SKU_ID:[%d/%d] sku_id: %d', $i, $i, $intTotalCount, $intSkuId));
 
             $intSkuUpcMinUnit = $arrSkuIdUpcMinUnitMap[$intSkuId];
@@ -116,7 +121,7 @@ class FixStockinOrderSkuZeroUpcMinUnit
             Bd_Log::trace('SCRIPT_UPDATE_STOCKIN_ORDER_SKU update id: ' . json_encode($intId));
 
             $intSuccess++;
-            if (0 == ($i % LIMIT_COUNT)) {
+            if (0 == ($i % self::LIMIT_COUNT)) {
                 sleep(1);
             }
         }
