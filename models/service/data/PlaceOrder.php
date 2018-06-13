@@ -342,7 +342,7 @@ class Service_Data_PlaceOrder
         if (empty($arrPlaceOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_NOT_EXIST);
         }
-        $arrPlaceOrderInfo['skus'] = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId);
+        $arrPlaceOrderInfo['skus'] = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId,['sku_id' => 'asc','expire_date'=>'asc']);
         $arrPlaceOrderInfo['skus'] = $this->uniquePlaceOrderSkus($arrPlaceOrderInfo['skus']);
         $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
         $arrPlaceOrderInfo['source_order_id'] = implode(',', $arrStockinOrderIds);

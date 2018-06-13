@@ -32,7 +32,7 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
      * @param $intPlaceOrderId
      * @return array
      */
-    public static function getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId)
+    public static function getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId,$orderBy = [])
     {
         if (empty($intPlaceOrderId)) {
             return [];
@@ -42,7 +42,7 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
             'place_order_id' => $intPlaceOrderId,
             'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
-        return self::findRows($arrCols, $arrConditions);
+        return self::findRows($arrCols, $arrConditions,$orderBy);
     }
 
     /**
