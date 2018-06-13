@@ -53,6 +53,8 @@ class SetStockoutOrderEventsTime
                 if (empty($ormStockoutOrder)) {
                     continue;
                 }
+                //不影响数据平台即时数据
+                $arrEventsTime['update_time'] = $ormStockoutOrder->update_time;
                 $ormStockoutOrder->update($arrEventsTime);
                 Bd_Log::trace(sprintf("stockout_order_id[%d],success", $intStockoutOrderId));
                 echo sprintf("SUCCESS:order_id[%d]" . PHP_EOL, $intStockoutOrderId);
