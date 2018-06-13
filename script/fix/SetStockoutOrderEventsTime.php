@@ -30,7 +30,7 @@ class SetStockoutOrderEventsTime
     {
         $arrConds = [
             'is_delete' => Nscm_Define_Const::ENABLE,
-            'create_time' => ['<=' , time()],
+            'create_time' => ['<=', time()],
         ];
         $intOffset = 0;
         do {
@@ -38,19 +38,16 @@ class SetStockoutOrderEventsTime
             if (0 == count($arrStockOrderInfo)) {
                 continue;
             }
-            echo sprintf("OFFSET:[%d],时间[%d],[%s]".PHP_EOL, $intOffset, time(), date('Y-m-d H:i:s'));
-            Bd_Log::trace("STOCK_OUT_ORDER_OFFSET". $intOffset);
+            echo sprintf("OFFSET:[%d],时间[%d],[%s]" . PHP_EOL, $intOffset, time(), date('Y-m-d H:i:s'));
+            Bd_Log::trace("STOCK_OUT_ORDER_OFFSET" . $intOffset);
             $arrStockoutOrderIds = array_column($arrStockOrderInfo, 'stockout_order_id');
+            $arrLogList = $this->getLogListByConds($arrStockoutOrderIds);
             foreach ($arrStockoutOrderIds as $intStockoutOrderId) {
-                $appId = Order_Define_StockoutOrder::APP_NWMS_ORDER_APP_ID;
-                $condtion = [
-                    'app_id' => $appId,
-                    'log_type' => Order_Define_StockoutOrder::APP_NWMS_ORDER_LOG_TYPE, 'quota_idx_int_1' => $intStockoutOrderId,
-                    'page_size' => 100
-                ];
-                $list = Nscm_Service_OperationLog::getLogList($condtion);
-                $arrLogList = empty($list['log_list']) ? []:$list['log_list'];
-                $arrEventsTime = $this->getEventsTimeByLogList($arrLogList, $intStockoutOrderId);
+                if (!isset($arrLogList[$intStockoutOrderId])) {
+                    echo sprintf("FAILED:log_not_existed_order_id[%d]" . PHP_EOL, $intStockoutOrderId);
+                    continue;
+                }
+                $arrEventsTime = $this->getEventsTimeByLogList($arrLogList[$intStockoutOrderId], $intStockoutOrderId);
 
                 $ormStockoutOrder = Model_Orm_StockoutOrder::findOne(['stockout_order_id' => $intStockoutOrderId]);
                 if (empty($ormStockoutOrder)) {
@@ -58,7 +55,7 @@ class SetStockoutOrderEventsTime
                 }
                 $ormStockoutOrder->update($arrEventsTime);
                 Bd_Log::trace(sprintf("stockout_order_id[%d],success", $intStockoutOrderId));
-                echo sprintf("SUCCESS:order_id[%d]".PHP_EOL, $intStockoutOrderId);
+                echo sprintf("SUCCESS:order_id[%d]" . PHP_EOL, $intStockoutOrderId);
             }
             $intOffset += self::LIMIT;
             //执行100条getLogList&updateTime休息0.3秒
@@ -103,4 +100,26 @@ class SetStockoutOrderEventsTime
         }
         return $arrEventsTime;
     }
+
+    public function getLogListByConds($arrStockoutOrderIds)
+    {
+        $arrLogListRes = [];
+        $arrConds = [];
+        $intCurrentTime = time();
+
+        $intStartTime = date('Ymd', strtotime('- 6 month', $intCurrentTime))<'20171212'?strtotime('20171212'):strtotime('- 6 month', $intCurrentTime);
+        $intEndTime = $intCurrentTime;
+
+        $arrConds['create_time'] = ['between',$intStartTime,$intEndTime];
+        $arrConds['quota_idx_int_1'] = ['in', $arrStockoutOrderIds];
+
+
+        $arrLogList = Model_Orm_LogDetail::findRows(['*'], $arrConds);
+
+        foreach ($arrLogList as $item) {
+            $arrLogListRes[$item['quota_idx_int_1']][] = $item;
+        }
+        return $arrLogListRes;
+    }
+
 }
