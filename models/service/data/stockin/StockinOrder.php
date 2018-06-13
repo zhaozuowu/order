@@ -43,10 +43,12 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intOrderType) {
             $intPlanAmount =  $sourceOrderSkuInfo['reserve_order_sku_plan_amount'];
             $intSkuFromCountry = $sourceOrderSkuInfo['sku_from_country'];
+            $intUpcMinUnit = $sourceOrderSkuInfo['upc_min_unit'];
         } else {
             // 销退入库，计划入库数等于出库单拣货数
             $intPlanAmount = $sourceOrderSkuInfo['pickup_amount'];
             $intSkuFromCountry = $sourceOrderSkuInfo['import'];
+            $intUpcMinUnit = $sourceOrderSkuInfo['upc_unit'];
         }
         $intSkuPrice = $sourceOrderSkuInfo['sku_price'];
         $intSkuPriceTax = $sourceOrderSkuInfo['sku_price_tax'];
@@ -110,6 +112,7 @@ class Service_Data_Stockin_StockinOrder
             'sku_id' => $sourceOrderSkuInfo['sku_id'],
             'upc_id' => $sourceOrderSkuInfo['upc_id'],
             'upc_unit' => $sourceOrderSkuInfo['upc_unit'],
+            'upc_min_unit' => $intUpcMinUnit,
             'upc_unit_num' => $sourceOrderSkuInfo['upc_unit_num'],
             'sku_name' => $sourceOrderSkuInfo['sku_name'],
             'sku_net' => $sourceOrderSkuInfo['sku_net'],
@@ -271,6 +274,7 @@ class Service_Data_Stockin_StockinOrder
         }
         $arrDbSkuInfoList = [];
         $arrWarningInfo = [];
+
         foreach ($arrSkuInfoList as $arrSkuInfo) {
             if (!isset($arrHashReserveOrderSkus[$arrSkuInfo['sku_id']])) {
                 // sku id not in purchase order or sku id repeat
@@ -1269,6 +1273,7 @@ class Service_Data_Stockin_StockinOrder
                 'sku_id' => $intSkuId,
                 'upc_id' => $arrSkuInfo['min_upc']['upc_id'],
                 'upc_unit' => $arrSkuInfo['min_upc']['upc_unit'],
+                'upc_min_unit' => $arrSkuInfo['min_upc']['upc_unit'],
                 'upc_unit_num' => $arrSkuInfo['min_upc']['upc_unit_num'],
                 'sku_name' => $arrSkuInfo['sku_name'],
                 'sku_net' => $arrSkuInfo['sku_net'],
