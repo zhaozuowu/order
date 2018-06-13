@@ -29,6 +29,11 @@ class Order_Define_Sku
     ];
 
     /**
+     * 默认的sku最小包装单位文本
+     */
+    const UPC_UNIT_DEFAULT_UNIT_TEXT = '个';
+
+    /**
      * sku_id的字符串形式宽度
      */
     const SKU_ID_LENGTH = 7;

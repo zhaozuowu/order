@@ -43,10 +43,12 @@ class Service_Data_Stockin_StockinOrder
         if (Order_Define_StockinOrder::STOCKIN_ORDER_TYPE_RESERVE == $intOrderType) {
             $intPlanAmount =  $sourceOrderSkuInfo['reserve_order_sku_plan_amount'];
             $intSkuFromCountry = $sourceOrderSkuInfo['sku_from_country'];
+            $intUpcMinUnit = $sourceOrderSkuInfo['upc_min_unit'];
         } else {
             // 销退入库，计划入库数等于出库单拣货数
             $intPlanAmount = $sourceOrderSkuInfo['pickup_amount'];
             $intSkuFromCountry = $sourceOrderSkuInfo['import'];
+            $intUpcMinUnit = $sourceOrderSkuInfo['upc_unit'];
         }
         $intSkuPrice = $sourceOrderSkuInfo['sku_price'];
         $intSkuPriceTax = $sourceOrderSkuInfo['sku_price_tax'];
@@ -110,6 +112,7 @@ class Service_Data_Stockin_StockinOrder
             'sku_id' => $sourceOrderSkuInfo['sku_id'],
             'upc_id' => $sourceOrderSkuInfo['upc_id'],
             'upc_unit' => $sourceOrderSkuInfo['upc_unit'],
+            'upc_min_unit' => $intUpcMinUnit,
             'upc_unit_num' => $sourceOrderSkuInfo['upc_unit_num'],
             'sku_name' => $sourceOrderSkuInfo['sku_name'],
             'sku_net' => $sourceOrderSkuInfo['sku_net'],
@@ -271,6 +274,7 @@ class Service_Data_Stockin_StockinOrder
         }
         $arrDbSkuInfoList = [];
         $arrWarningInfo = [];
+
         foreach ($arrSkuInfoList as $arrSkuInfo) {
             if (!isset($arrHashReserveOrderSkus[$arrSkuInfo['sku_id']])) {
                 // sku id not in purchase order or sku id repeat
@@ -569,10 +573,10 @@ class Service_Data_Stockin_StockinOrder
                 $intProductionTime = 0;
                 $intExpireTime = 0;
                 if (Order_Define_Sku::SKU_EFFECT_TYPE_PRODUCT == $arrDbSku['sku_effect_type']) {
-                    $intProductionTime = intval($skuRow['expire_date']);
+                    $intProductionTime = strtotime(date('Ymd', $skuRow['expire_date']));
                     $intExpireTime = $intProductionTime + intval($arrDbSku['sku_effect_day']) * 86400 - 1;
                 } else {
-                    $intExpireTime = intval($skuRow['expire_date']) + 86399;
+                    $intExpireTime = strtotime(date('Ymd', $skuRow['expire_date'])) + 86399;
                 }
 
                 // 良品数
@@ -907,7 +911,7 @@ class Service_Data_Stockin_StockinOrder
         $arrWarehouseList = $objDao->getWareHouseList($arrWarehouseIds);
         $arrWarehouseList = isset($arrWarehouseList['query_result']) ? $arrWarehouseList['query_result']:[];
         $arrWarehouseList = array_column($arrWarehouseList,null,'warehouse_id');
-        $arrSkuColumns = ['stockin_order_id','upc_id','sku_name','sku_net','upc_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount','sku_net_unit','stockin_order_sku_extra_info'];
+        $arrSkuColumns = ['stockin_order_id','upc_id','sku_name','sku_net','upc_unit','upc_min_unit','reserve_order_sku_plan_amount','stockin_order_sku_real_amount','sku_net_unit','stockin_order_sku_extra_info'];
         $arrReserveSkuList = Model_Orm_StockinOrderSku::findRows($arrSkuColumns, $arrConditions);
         $arrReserveSkuList = $this->arrayToKeyValue($arrReserveSkuList, 'stockin_order_id');
         foreach ($arrRetList as $key=>$item) {
@@ -1269,6 +1273,7 @@ class Service_Data_Stockin_StockinOrder
                 'sku_id' => $intSkuId,
                 'upc_id' => $arrSkuInfo['min_upc']['upc_id'],
                 'upc_unit' => $arrSkuInfo['min_upc']['upc_unit'],
+                'upc_min_unit' => $arrSkuInfo['min_upc']['upc_unit'],
                 'upc_unit_num' => $arrSkuInfo['min_upc']['upc_unit_num'],
                 'sku_name' => $arrSkuInfo['sku_name'],
                 'sku_net' => $arrSkuInfo['sku_net'],
