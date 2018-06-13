@@ -276,7 +276,11 @@ class Service_Data_StockoutOrder
             Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
         }
          Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($nextStockoutOrderStatus, $strStockoutOrderId, $stockoutOrderInfo,$userId,$userName) {
-            $updateData = ['stockout_order_status' => $nextStockoutOrderStatus, 'destroy_order_status' => $stockoutOrderInfo['stockout_order_status']];
+            $updateData = [
+                'stockout_order_status' => $nextStockoutOrderStatus,
+                'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
+                'stockout_order_delivery_time' => time(),//揽收完成时间
+            ];
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
@@ -727,7 +731,10 @@ class Service_Data_StockoutOrder
         }
         return Model_Orm_StockoutOrder::getConnection()->transaction(function () use
                                             ($strStockoutOrderId, $intSignupStatus, $arrSignupSkus,$stockoutOrderInfo) {
-            $updateData = ['signup_status' => $intSignupStatus];
+            $updateData = [
+                'signup_status' => $intSignupStatus,
+                'stockout_order_signup_time' => time(), //签收时间点
+            ];
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
@@ -932,7 +939,12 @@ class Service_Data_StockoutOrder
                 $stockoutOrderPickupAmount += $item['pickup_amount'];
             }
             $nextStockoutStatus = $this->getNextStockoutOrderStatus($stockoutOrderInfo['stockout_order_status']);
-            $updateData = ['stockout_order_status' => $nextStockoutStatus, 'stockout_order_pickup_amount' => $stockoutOrderPickupAmount,'destroy_order_status' => $stockoutOrderInfo['stockout_order_status']];
+            $updateData = [
+                'stockout_order_status' => $nextStockoutStatus,
+                'stockout_order_pickup_amount' => $stockoutOrderPickupAmount,
+                'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
+                'stockout_order_finish_pickup_time' => time(),
+            ];
             $result = $this->objOrmStockoutOrder->updateStockoutOrderStatusById($strStockoutOrderId, $updateData);
             if (empty($result)) {
                 Order_BusinessError::throwException(Order_Error_Code::STOCKOUT_ORDER_STATUS_UPDATE_FAIL);
@@ -1020,6 +1032,7 @@ class Service_Data_StockoutOrder
         $updateData = [
             'stockout_order_status' => Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS,
             'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
+            'stockout_order_destroy_time' => time(),
         ];
         Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($strStockoutOrderId,$updateData,$stockoutOrderInfo,$remark) {
 
@@ -1279,6 +1292,7 @@ class Service_Data_StockoutOrder
         $updateData = [
             'stockout_order_status' => Order_Define_StockoutOrder::INVALID_STOCKOUT_ORDER_STATUS,
             'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
+            'stockout_order_destroy_time' => time(),
         ];
         Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($strStockoutOrderId,$updateData,$stockoutOrderInfo,$mark,$userId,$userName) {
 
@@ -1766,6 +1780,7 @@ class Service_Data_StockoutOrder
                 'stockout_order_status' => $nextStockoutStatus,
                 'stockout_order_pickup_amount' => $stockoutOrderPickupAmount,
                 'destroy_order_status' => $stockoutOrderInfo['stockout_order_status'],
+                'stockout_order_finish_pickup_time' => time(), //完成拣货时间点
             ];
             Model_Orm_StockoutOrder::getConnection()->transaction(function () use ($intStockoutOrderId, $updateData,
                 $arrPickupStockOrderSkus, $userId, $userName){
@@ -1781,10 +1796,10 @@ class Service_Data_StockoutOrder
                     $skuUpdateData = ['pickup_amount' => $item['pickup_amount']];
                     $this->objOrmSku->updateStockoutOrderStatusByCondition($condition, $skuUpdateData);
                 }
-                $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_UPDATE_SUCCESS;
+                $operationType = Order_Define_StockoutOrder::OPERATION_TYPE_PICKUP;
                 $userId = !empty($userId) ? $userId: Order_Define_Const::DEFAULT_SYSTEM_OPERATION_ID;
                 $userName = !empty($userName) ? $userName:Order_Define_Const::DEFAULT_SYSTEM_OPERATION_NAME ;
-                $this->addLog($userId, $userName, '完成揽收:'.$intStockoutOrderId,$operationType, $intStockoutOrderId);
+                $this->addLog($userId, $userName, '完成拣货:'.$intStockoutOrderId,$operationType, $intStockoutOrderId);
                 $this->notifyTmsFnishPick(strval($intStockoutOrderId), $arrPickupStockOrderSkus);
             });
            //更新报表
