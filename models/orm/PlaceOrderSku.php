@@ -32,7 +32,7 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
      * @param $intPlaceOrderId
      * @return array
      */
-    public static function getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId)
+    public static function getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId,$orderBy = [])
     {
         if (empty($intPlaceOrderId)) {
             return [];
@@ -42,7 +42,7 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
             'place_order_id' => $intPlaceOrderId,
             'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
-        return self::findRows($arrCols, $arrConditions);
+        return self::findRows($arrCols, $arrConditions,$orderBy);
     }
 
     /**
@@ -50,7 +50,7 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
      * @param $arrPlaceOrderIds
      * @return array
      */
-    public static function getPlaceOrderSkusByPlaceOrderIds($arrPlaceOrderIds)
+    public static function getPlaceOrderSkusByPlaceOrderIds($arrPlaceOrderIds,$orderBy=[])
     {
         if (empty($arrPlaceOrderIds)) {
             return [];
@@ -60,7 +60,7 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
             'place_order_id' => ['in', $arrPlaceOrderIds],
             'is_delete' => Order_Define_Const::NOT_DELETE,
         ];
-        return Model_Orm_PlaceOrderSku::findRows($arrCols, $arrConditions);
+        return Model_Orm_PlaceOrderSku::findRows($arrCols, $arrConditions,$orderBy);
     }
 
     /**
@@ -92,12 +92,10 @@ class Model_Orm_PlaceOrderSku extends Order_Base_Orm
                 'sku_id' => $intSkuId,
                 'expire_date' => $intExpireDate,
             ];
-            $objPlaceOrder = self::findOne($arrConditions);
-            if (empty($objPlaceOrder)) {
-                return false;
-            }
-            $objPlaceOrder->actual_info = json_encode($arrPlacedSkuItem);
-            $objPlaceOrder->update();
+            $arrCols = [
+                'actual_info' => json_encode($arrPlacedSkuItem),
+            ];
+            self::updateAll($arrCols, $arrConditions);
         }
         return true;
     }

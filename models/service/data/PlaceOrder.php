@@ -342,10 +342,37 @@ class Service_Data_PlaceOrder
         if (empty($arrPlaceOrderInfo)) {
             Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_NOT_EXIST);
         }
-        $arrPlaceOrderInfo['skus'] = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId);
+        $arrPlaceOrderInfo['skus'] = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderId($intPlaceOrderId,['sku_id' => 'asc','expire_date'=>'asc']);
+        $arrPlaceOrderInfo['skus'] = $this->uniquePlaceOrderSkus($arrPlaceOrderInfo['skus']);
         $arrStockinOrderIds = Model_Orm_StockinPlaceOrder::getStockinOrderIdsByPlaceOrderId($intPlaceOrderId);
         $arrPlaceOrderInfo['source_order_id'] = implode(',', $arrStockinOrderIds);
         return $arrPlaceOrderInfo;
+    }
+
+    /**
+     * 聚合上架单商品
+     * @param $arrSkus
+     * @return array
+     */
+    protected function uniquePlaceOrderSkus($arrSkus) {
+        if (empty($arrSkus)) {
+            return [];
+        }
+        $arrMapSkus = [];
+        foreach ((array)$arrSkus as $arrSkuItem) {
+            $intSkuId = $arrSkuItem['sku_id'];
+            $intExpireDate = $arrSkuItem['expire_date'];
+            if (empty($intSkuId) || empty($intExpireDate)) {
+                continue;
+            }
+            $strKey = $intSkuId . '#' . $intExpireDate;
+            if (isset($arrMapSkus[$strKey])) {
+                $arrMapSkus[$strKey]['plan_amount'] += $arrSkuItem['plan_amount'];
+                continue;
+            }
+            $arrMapSkus[$strKey] = $arrSkuItem;
+        }
+        return array_values($arrMapSkus);
     }
 
     /**
@@ -457,7 +484,7 @@ class Service_Data_PlaceOrder
         if (empty($arrPlaceOrderInfos)) {
             Order_BusinessError::throwException(Order_Error_Code::PLACE_ORDER_NOT_EXIST);
         }
-        $arrPlaceOrderSkus = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderIds($arrPlaceOrderIds);
+        $arrPlaceOrderSkus = Model_Orm_PlaceOrderSku::getPlaceOrderSkusByPlaceOrderIds($arrPlaceOrderIds,['sku_id' => 'asc','expire_date'=>'asc']);
         if (empty($arrPlaceOrderSkus)) {
             return [];
         }
@@ -472,6 +499,7 @@ class Service_Data_PlaceOrder
             $arrPlaceOrderInfos[$intKey]['print_uname'] = $strUserName;
             $arrPlaceOrderInfos[$intKey]['print_time'] = date("Y-m-d H:i:s", time());
             $arrPlaceOrderInfos[$intKey]['skus'] = $arrMapPlaceOrderSkus[$intPlaceOrderId];
+            $arrPlaceOrderInfos[$intKey]['skus'] =  $this->uniquePlaceOrderSkus($arrPlaceOrderInfos[$intKey]['skus']);
             $intTotalAmount = 0;
             foreach ((array)$arrPlaceOrderInfos[$intKey]['skus'] as $arrSkuItem) {
                 $intTotalAmount += $arrSkuItem['plan_amount'];
